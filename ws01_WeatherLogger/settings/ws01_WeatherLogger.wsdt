@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<Workspace>
+  <ConfigDictionary>
+    
+    
+    
+  <CurrentConfigs><Project>01_Temperature_RF_Sender/Debug</Project><Project>02_RF_ReceiveLogger/Debug</Project></CurrentConfigs><CurrentProj>02_RF_ReceiveLogger</CurrentProj><OverviewSelected>1</OverviewSelected></ConfigDictionary>
+  <Desktop>
+    <Static>
+      <Build>
+        
+        
+        
+        
+      <ColumnWidth0>20</ColumnWidth0><ColumnWidth1>1446</ColumnWidth1><ColumnWidth2>385</ColumnWidth2><ColumnWidth3>96</ColumnWidth3></Build>
+      <Workspace>
+        <ColumnWidths>
+          
+          
+          
+          
+        <Column0>264</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
+      </Workspace>
+    <TerminalIO/></Static>
+    <Windows>
+      
+      
+    <Wnd0>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-32003-27574</Identity>
+            <TabName>Build</TabName>
+            <Factory>Build</Factory>
+            <Session/>
+          </Tab>
+        </Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd0><Wnd1>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-9983-27578</Identity>
+            <TabName>Workspace</TabName>
+            <Factory>Workspace</Factory>
+            <Session>
+              
+            <NodeDict><ExpandedNode>01_Temperature_RF_Sender</ExpandedNode><ExpandedNode>&lt;ws&gt;</ExpandedNode><ExpandedNode>&lt;ws&gt;/01_Temperature_RF_Sender</ExpandedNode><ExpandedNode>&lt;ws&gt;/01_Temperature_RF_Sender/LibraryCommon</ExpandedNode><ExpandedNode>&lt;ws&gt;/02_RF_ReceiveLogger</ExpandedNode><ExpandedNode>&lt;ws&gt;/02_RF_ReceiveLogger/LibraryCommon</ExpandedNode></NodeDict></Session>
+          </Tab>
+        </Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd1></Windows>
+    <Editor>
+      
+      
+      
+      
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\pr01_Temperature_RF_Sender\mainTx.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>23</YPos2><SelStart2>561</SelStart2><SelEnd2>561</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\pr02_RF_ReceiveLogger\mainRx.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>414</SelStart2><SelEnd2>414</SelEnd2></Tab><ActiveTab>1</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\pr00_LibraryCommon\nRF_IRQ.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>9</YPos2><SelStart2>269</SelStart2><SelEnd2>269</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\pr02_RF_ReceiveLogger\nRF_Configuration.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>983</SelStart2><SelEnd2>983</SelEnd2></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Positions>
+      
+      
+      
+      
+      
+    <Top><Row0><Sizes><Toolbar-04758600><key>iaridepm.enu1</key></Toolbar-04758600></Sizes></Row0><Row1><Sizes/></Row1><Row2><Sizes/></Row2></Top><Left><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>1013</Bottom><Right>338</Right><x>-2</x><y>-2</y><xscreen>200</xscreen><yscreen>200</yscreen><sizeHorzCX>156495</sizeHorzCX><sizeHorzCY>144092</sizeHorzCY><sizeVertCX>266041</sizeVertCX><sizeVertCY>731268</sizeVertCY></Rect></Wnd1></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>330</Bottom><Right>1280</Right><x>-2</x><y>-2</y><xscreen>1282</xscreen><yscreen>332</yscreen><sizeHorzCX>1003130</sizeHorzCX><sizeHorzCY>239193</sizeHorzCY><sizeVertCX>156495</sizeVertCX><sizeVertCY>144092</sizeVertCY></Rect></Wnd0></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+  </Desktop>
+</Workspace>
+
+

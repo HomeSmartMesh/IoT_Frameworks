@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<workspace>
+  <project>
+    <path>$WS_DIR$\pr01_Temperature_RF_Sender\01_Temperature_RF_Sender.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\pr02_RF_ReceiveLogger\02_RF_ReceiveLogger.ewp</path>
+  </project>
+  <batchBuild/>
+</workspace>
+
+
