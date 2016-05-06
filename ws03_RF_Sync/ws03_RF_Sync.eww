@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<workspace>
+  <project>
+    <path>$WS_DIR$\pr01_RF_Client\pr01_RF_Client.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\pr02_RF_Server\pr02_RF_Server.ewp</path>
+  </project>
+  <batchBuild/>
+</workspace>
+
+
