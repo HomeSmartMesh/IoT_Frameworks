@@ -481,7 +481,7 @@
         <option>
           <name>OOCOutputFormat</name>
           <version>2</version>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>OCOutputOverride</name>
@@ -489,7 +489,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>01_Temperature_RF_Sender.hex</state>
+          <state></state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
@@ -497,7 +497,7 @@
         </option>
         <option>
           <name>OOCObjCopyEnable</name>
-          <state>1</state>
+          <state>0</state>
         </option>
       </data>
     </settings>
@@ -543,7 +543,7 @@
         </option>
         <option>
           <name>IlinkOutputFile</name>
-          <state>01_Temperature_RF_Sender.out</state>
+          <state>pr03_RFSender_LowPower.out</state>
         </option>
         <option>
           <name>IlinkDebugInfoEnable</name>
@@ -579,7 +579,7 @@
         </option>
         <option>
           <name>IlinkMapFile</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>IlinkLogFile</name>
@@ -1642,7 +1642,7 @@
     </file>
   </group>
   <file>
-    <name>$PROJ_DIR$\mainTx.c</name>
+    <name>$PROJ_DIR$\mainTxLP.c</name>
   </file>
   <file>
     <name>$PROJ_DIR$\nRF_Configuration.h</name>

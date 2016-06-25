@@ -16,7 +16,7 @@
 
 #include "commonTypes.h"
 
-void Initialise_OneWire_Pin_A2();
+void Initialise_OneWire_Pin();
  
 void OneWire_Reset();
 

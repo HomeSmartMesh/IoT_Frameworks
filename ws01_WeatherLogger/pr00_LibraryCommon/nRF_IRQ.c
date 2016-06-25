@@ -34,7 +34,6 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize);
 
 BYTE RxData[RX_DataSize];
 
-
 //---------------------------------------------------------------------------------------------
 #if(Enable_RX_IRQ == 1)
 void ProcessUserData_inIRQ()
@@ -42,7 +41,7 @@ void ProcessUserData_inIRQ()
   userRxCallBack(RxData,RX_DataSize);
   #if (Enable_Debug_IRQHandler_PortD_nRF == 1)
           IRQ_Printf("  Received Packet: ");
-          UARTPrintfHexTable(RxData,RX_DataSize);
+          UARTPrintfHexTable(RxData,dyn_RxDataSize);
           IRQ_Printf("\n\r");
   #endif
 	
@@ -87,19 +86,21 @@ __interrupt void IRQHandler_PortD_nRF(void)
 	#if(Enable_RX_IRQ == 1)
 	if(( status & (bit_RX_DR) ) != 0)//Rx IRQ was triggered
 	{
-		BYTE fifo_Status;
-		do
-		{
-			SPI_Read_Buf(RD_RX_PLOAD,RxData,RX_DataSize);
-			ProcessUserData_inIRQ();
-			
-			nRF_ClearStatus( bit_RX_DR );
-			
-			fifo_Status = SPI_Read_Register(FIFO_STATUS);
-			IRQ_Printf("  FifoStatus: ");
-			IRQ_PrintfHex(fifo_Status);
-			IRQ_Printf("\n\r");
-		}while((fifo_Status & 0x01) == 0 );
+            BYTE fifo_Status;
+            do
+            {
+                    SPI_Read_Buf(RD_RX_PLOAD,RxData,RX_DataSize);
+                    ProcessUserData_inIRQ();
+                    
+                    nRF_ClearStatus( bit_RX_DR );
+                    
+                    fifo_Status = SPI_Read_Register(FIFO_STATUS);
+                    IRQ_Printf("  FifoStatus: ");
+                    IRQ_PrintfHex(fifo_Status);
+                    IRQ_Printf("\n\r");
+            }while((fifo_Status & 0x01) == 0 );
+            //done reading, flush Rx to reset size
+            SPI_Cmd_FlushRx();
 	}
 	#endif
 	#if(Enable_TX_IRQ == 1)	

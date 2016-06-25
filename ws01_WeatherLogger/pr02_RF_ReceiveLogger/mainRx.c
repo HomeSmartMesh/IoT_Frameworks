@@ -20,19 +20,69 @@
 //User Rx CallBack
 void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 {
-  if(rx_DataSize == 2)
+  //if(rx_DataSize == 2)//useless as rx_DataSize still not dynamically identified
+  if(rxData[0]==0x35)
   {
-      UARTPrintf("Temperature : ");
-      UARTPrint_DS18B20_Temperature(rxData);
+    BYTE crc = rxData[0];
+    for(int i=1;i<4;i++)
+    {
+      crc ^= rxData[i];
+    }
+    if(crc == rxData[4])
+    {
+      UARTPrintf("NodeId:");
+      UARTPrintf_uint(rxData[1]);
+      UARTPrintf(",Temperature:");
+      UARTPrint_DS18B20_Temperature(rxData+2);
       UARTPrintfLn("");
+    }
+    else
+    {
+      UARTPrintf("Protocol Id: 0x35, CRC Fail\n");
+    }
+    
   }
-  else
+  else if(rxData[0]==0x75)
   {
-    UARTPrintf("Unexpected Format. Data Size: ");
-    UARTPrintf_uint(rx_DataSize);
-    UARTPrintf(" Data : ");
-    UARTPrintfHexTable(rxData,rx_DataSize);
-    UARTPrintf("\n\r");
+    BYTE crc = rxData[0] ^ rxData[1];
+    if(crc == rxData[2])
+    {
+      UARTPrintf("NodeId:");
+      UARTPrintf_uint(rxData[1]);
+      UARTPrintf(",is:Alive\r\n");
+    }
+    else
+    {
+      UARTPrintf("Protocol Id: 0x75, CRC Fail\n");
+    }
+  }
+  else if(rxData[0]==0xC5)
+  {
+    BYTE crc = rxData[0] ^ rxData[1] ^ rxData[2];
+    if(crc == rxData[3])
+    {
+      UARTPrintf("NodeId:");
+      UARTPrintf_uint(rxData[1]);
+      UARTPrintf(",is:");
+      if(rxData[2] == 0)
+      {
+        UARTPrintf("Low\r\n");
+      }
+      else
+      {
+        UARTPrintf("High\r\n");
+      }
+    }
+    else
+    {
+      UARTPrintf("Protocol Id: 0xC5, CRC Fail\r\n");
+    }
+  }
+  else 
+  {
+    UARTPrintf("Unexpected Protocol Id: ");
+    UARTPrintfHex(rxData[0]);
+    UARTPrintfLn("");
   }
   
 }
@@ -51,7 +101,8 @@ int main( void )
     InitialiseUART();
 	
     UARTPrintf("\r\n_________________________\n\r");
-    UARTPrintf("Logger Start\n\r");
+    UARTPrintf("ws01_WeatherLogger\\02_RF_ReceiverLogger\\\n\r");
+    UARTPrintf("Start\n\r");
 
     //Applies the compile time configured parameters from nRF_Configuration.h
     BYTE status = nRF_Config();

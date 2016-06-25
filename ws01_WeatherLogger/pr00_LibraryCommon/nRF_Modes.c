@@ -41,7 +41,6 @@ BYTE nRF_Config()
 
 	SPI_Write_Register(EN_AA,SPI_Write_Register_EN_AA);//disable auto acknowledgement for all pipes
 	SPI_Write_Register(SETUP_RETR,SPI_Write_Register_SETUP_RETR);//disable retransmission
-	SPI_Write_Register(RX_PW_P0,SPI_Write_Register_RX_PW_P0);//set pipe 0 width to 1
 	
 	//read previous config so that PWR_UP stay unchanged
 	ConfigVal = SPI_Read_Register(CONFIG);
@@ -182,7 +181,13 @@ BYTE nRF_SetMode_RX()
 	
 	ConfigVal |= bit_PRIM_RX;//here setting the RX Mode Flag
 	
-	status = SPI_Write_Register(CONFIG,ConfigVal);
+        status =  SPI_Write_Register(CONFIG,ConfigVal);
+
+	SPI_Write_Register(RX_PW_P0,RX_DataSize);//set pipe 0 width to 1
+        //SPI_Write_Register(FEATURE,0x04);//bit 2 ; EN_DPL, Enable Dynamic Payload
+        SPI_Write_Register(EN_RXADDR,0x01);//bit 0 ; only data pipe 0 enabled
+        //SPI_Write_Register(DYNPD,0x01);//bit 0 ; Enable Dynamic payload for pipe 0
+        
 	
 	CE_Pin_HighEnable();
 	
@@ -200,7 +205,7 @@ BYTE nRF_SetMode_RX()
 	nRF_SetMode_RX_Printf("Config updated with : ");
 	nRF_SetMode_RX_PrintfHex(ConfigVal);
 	nRF_SetMode_RX_Printf(" ; reread ");
-    ConfigVal = SPI_Read_Register(CONFIG);
+        ConfigVal = SPI_Read_Register(CONFIG);
 	nRF_SetMode_RX_PrintfHex(ConfigVal);
 	nRF_SetMode_RX_Printf(" ; ");
 	status = SPI_Read_Register(STATUS);			

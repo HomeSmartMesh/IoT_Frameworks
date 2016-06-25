@@ -20,15 +20,34 @@
 
 #include "ClockUartLed.h"
 
-//  !!!!! The one wire ds18B20 is using pin A2 on the STM8 Node Module !!!!!
+#define PinSensor_A3
+
+//  !!!!! The one wire ds18B20 pin configuration : A2 !!!!!
+#ifdef PinSensor_A2
+#define PinSensor_DDR   PA_DDR_bit.DDR2
+#define PinSensor_ODR   PA_ODR_bit.ODR2
+#define PinSensor_IDR   PA_IDR_bit.IDR2
+#define PinSensor_CR1   PA_CR1_bit.C12
+#define PinSensor_CR2   PA_CR2_bit.C22
+#endif
+#ifdef PinSensor_A3
+#define PinSensor_DDR   PA_DDR_bit.DDR3
+#define PinSensor_ODR   PA_ODR_bit.ODR3
+#define PinSensor_IDR   PA_IDR_bit.IDR3
+#define PinSensor_CR1   PA_CR1_bit.C13
+#define PinSensor_CR2   PA_CR2_bit.C23
+#endif
+
+//---------------------------------------------------------------
+
 
 //release is input
-#define OneWire_Release(); PA_DDR_bit.DDR2 = 0;
+#define OneWire_Release(); PinSensor_DDR = 0;
 
 //down is output, and low
-#define OneWire_Down(); PA_DDR_bit.DDR2 = 1;PA_ODR_bit.ODR2 = 0;
+#define OneWire_Down(); PinSensor_DDR = 1;PinSensor_ODR = 0;
 
-#define OneWire_State() PA_IDR_bit.IDR2
+#define OneWire_State() PinSensor_IDR
 
 
 
@@ -54,16 +73,16 @@
 
 BYTE DS18B20_ScratchPad[9];
 
-void Initialise_OneWire_Pin_A2()
+void Initialise_OneWire_Pin()
 {
-	PA_DDR_bit.DDR2 = 1;//output
+	PinSensor_DDR = 1;//output
 
-	PA_CR1_bit.C12 = 0;//open Drain
+	PinSensor_CR1 = 0;//open Drain
 
 	//   0: Output speed up to  2 MHz
 	//   1: Output speed up to 10 MHz
 	//
-	PA_CR2_bit.C22 = 1;
+	PinSensor_CR2 = 1;
 }
 
 void OneWire_Reset()

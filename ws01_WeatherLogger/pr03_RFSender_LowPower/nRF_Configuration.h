@@ -15,7 +15,7 @@
 
 //----------------------------------- Interruptions ---------------------------------------
 //whether to use the Reception IRQ 1, if not then 0
-#define	Enable_RX_IRQ	1
+#define	Enable_RX_IRQ	0
 //Transmission IRQ
 #define	Enable_TX_IRQ	0
 //Retransmission IRQ
@@ -23,7 +23,7 @@
 
 //----------------------------- nRF Communication Configuration ---------------------------------
 //data size, from 1 till 32 bytes payload
-#define RX_DataSize	4
+#define RX_DataSize	1
 //disable auto acknowledgement for all pipes
 #define SPI_Write_Register_EN_AA		0x00
 //disable retransmission
@@ -31,9 +31,9 @@
  
 //--------------------------------Debug log Enable or disable-----------------------------------
 // set to 1 or 0
-#define Enable_Debug_IRQHandler_PortD_nRF 		        0
-#define Enable_Debug_nRF_Config 				0
-#define Enable_Debug_nRF_SetMode_RX				0
+#define Enable_Debug_IRQHandler_PortD_nRF 		        1
+#define Enable_Debug_nRF_Config 				1
+#define Enable_Debug_nRF_SetMode_RX				1
 //-------------------------------------------------------------------------------------------------
 //-------------------------------- End of User Editable Section -----------------------------------
 //-------------------------------------------------------------------------------------------------
