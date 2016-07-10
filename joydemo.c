@@ -37,34 +37,17 @@ void joy_info(int fd)
 	printf("%s\n  %d Axes %d Buttons\n", name, axes, buttons);
 }
 
-void process_event(struct js_event jse) 
+void joy_process(struct js_event jse) 
 {
 	if (jse.type == JS_EVENT_AXIS) 
 	{
-		if (jse.number == 0) 
-		{
-			if (jse.value < 0) 
-			{
-				printf("LEFT\n");
-			} else if (jse.value > 0) 
-			{
-				printf("RIGHT\n");
-			}
-		} else 
-		{
-			if (jse.value < 0) 
-			{
-				printf("UP\n");
-			} else if (jse.value > 0) 
-			{
-				printf("DOWN\n");
-			}
-		}
+		float v = jse.value;
+		v = v / 32767;
+		printf("Axis %d @ %0.2f\n",jse.number,v);
 	}
-
-	if (jse.type == 1 && jse.value > 0) 
+	else if (jse.type == JS_EVENT_BUTTON && jse.value > 0) 
 	{
-		printf("%d\n", jse.number);
+		printf("Button %d\n", jse.number);
 	}
 }
 
@@ -80,7 +63,7 @@ int main()
 	{
 		while (read(fd, &jse, sizeof(jse)) > 0) 
 		{
-			process_event(jse);
+			joy_process(jse);
 		}
 	}
 
