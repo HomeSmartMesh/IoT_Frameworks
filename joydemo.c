@@ -43,11 +43,11 @@ void joy_process(struct js_event jse)
 	{
 		float v = jse.value;
 		v = v / 32767;
-		printf("Axis %d @ %0.2f\n",jse.number,v);
+		printf("%d : Axis %d @ %0.2f\n",jse.time,jse.number,v);
 	}
 	else if (jse.type == JS_EVENT_BUTTON && jse.value > 0) 
 	{
-		printf("Button %d\n", jse.number);
+		printf("%d : Button %d\n", jse.time,jse.number);
 	}
 }
 
