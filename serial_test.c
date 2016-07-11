@@ -90,7 +90,7 @@ int main()
 		int n = read (fd, buf, sizeof buf);  // read up to 100 characters if ready to read
 		if(n > 0)
 		{
-			printf("%s",buf);
+			printf("%d,%s",n,buf);
 		}
 		usleep (10000); 
 	}
