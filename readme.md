@@ -10,14 +10,14 @@ https://www.kernel.org/doc/Documentation/input/joystick-api.txt
 sudo apt-get install joystick
 
 * evironment test
-ls /dev/input
+"ls /dev/input"
 added "event2 js0"
 
 ls /dev/input/by-id/
-added Usb-Sony_Computer_Entertainment_Wireless_Controller-event-joystick" and " -joystick only"
+added "Usb-Sony_Computer_Entertainment_Wireless_Controller-event-joystick" and " -joystick only"
 
 * compilation
-gcc joydemo.c
+"gcc joydemo.c"
 
 * Launching the newly generated file
-./a.out
+"./a.out"
