@@ -88,6 +88,10 @@ int main()
 	{
 		char buf [100];
 		int n = read (fd, buf, sizeof buf);  // read up to 100 characters if ready to read
-		printf("%s",buf);
+		if(n > 0)
+		{
+			printf("%s",buf);
+		}
+		usleep (10000); 
 	}
 }
