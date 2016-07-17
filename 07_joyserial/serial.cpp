@@ -1,3 +1,5 @@
+#include "serial.hpp"
+
 #include <stdio.h>
 #include <errno.h>
 #include <fcntl.h> 
@@ -5,16 +7,13 @@
 #include <termios.h>
 #include <unistd.h>
 
-#define error_message printf
-
-int
-set_interface_attribs (int fd, int speed, int parity)
+int set_interface_attribs (int fd, int speed, int parity)
 {
         struct termios tty;
         memset (&tty, 0, sizeof tty);
         if (tcgetattr (fd, &tty) != 0)
         {
-                error_message ("error %d from tcgetattr", errno);
+                printf ("error %d from tcgetattr", errno);
                 return -1;
         }
 
@@ -42,56 +41,63 @@ set_interface_attribs (int fd, int speed, int parity)
 
         if (tcsetattr (fd, TCSANOW, &tty) != 0)
         {
-                error_message ("error %d from tcsetattr", errno);
+                printf ("error %d from tcsetattr", errno);
                 return -1;
         }
         return 0;
 }
 
-void
-set_blocking (int fd, int should_block)
+void set_blocking (int fd, int should_block)
 {
         struct termios tty;
         memset (&tty, 0, sizeof tty);
         if (tcgetattr (fd, &tty) != 0)
         {
-                error_message ("error %d from tggetattr", errno);
+                printf ("error %d from tggetattr", errno);
                 return;
         }
 
         tty.c_cc[VMIN]  = should_block ? 1 : 0;
-        tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
+        tty.c_cc[VTIME] = 0;            // immediate return
 
         if (tcsetattr (fd, TCSANOW, &tty) != 0)
-                error_message ("error %d setting term attributes", errno);
+                printf ("error %d setting term attributes", errno);
 }
 
 
-int main()
+void Serial::start(std::string port_name)
 {
-	char *portname = "/dev/ttyUSB0";
-	int fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
-	if (fd < 0)
+	fd = open (port_name.c_str(), O_RDWR | O_NOCTTY | O_SYNC);
+	if (fd >= 0)
 	{
-			error_message ("error %d opening %s: %s", errno, portname, strerror (errno));
-			return;
+		set_interface_attribs (fd, B115200, 0);  // set speed to 115,200 bps, 8n1 (no parity)
+		set_blocking (fd, 0);                // set no blocking
+		
 	}
-
-	set_interface_attribs (fd, B115200, 0);  // set speed to 115,200 bps, 8n1 (no parity)
-	set_blocking (fd, 0);                // set no blocking
-
-	write (fd, "hello!\n", 7);           // send 7 character greeting
-
-	usleep ((7 + 25) * 100);             // sleep enough to transmit the 7 plus
-										 // receive 25:  approx 100 uS per char transmit
-	while(1)
+	else
 	{
-		char buf [100];
-		int n = read (fd, buf, sizeof buf);  // read up to 100 characters if ready to read
-		if(n > 0)
-		{
-			printf("%d,%s",n,buf);
-		}
-		usleep (10000); 
+		printf ("error %d opening %s: %s", errno, port_name.c_str(), strerror (errno));
 	}
 }
+
+bool Serial::update()
+{
+	bool res = false;
+	int n = read (fd, buf, sizeof buf);  // read up to 100 characters if ready to read
+	if(n > 0)
+	{
+		res = true;
+	}
+	return res;
+}
+
+void Serial::print()
+{
+	//as we want to print it here, we make sure it is null terminated
+	if(n < sizeof buf)
+	{
+		buf[n] = '\0';//null terminated string
+	}
+	printf("%d,%s",n,buf);
+}
+

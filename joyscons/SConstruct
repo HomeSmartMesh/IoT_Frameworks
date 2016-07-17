@@ -1,1 +1,0 @@
-Program('joy', ['main.cpp', 'joystick.cpp'])

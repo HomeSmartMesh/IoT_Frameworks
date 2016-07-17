@@ -51,7 +51,7 @@ void joy_process(struct js_event jse)
 	}
 }
 
-int main() 
+int main_example() 
 {
 	int fd;
 	struct js_event jse;
