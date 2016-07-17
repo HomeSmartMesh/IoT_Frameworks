@@ -58,12 +58,13 @@ int main()
 		//Send Joystick pos through serial port
 		if(joy.getAxis(1).isUpdated())
 		{
-			char val = std::abs(joy.getAxis(1).getValue()*255);
+			const int s_path = 950;
+			int val = 1520 + s_path/2 + joy.getAxis(1).getValue()*s_path/2;
 			char data[4];
-			data[0] = 'S';
-			data[1] = 'r';
-			data[2] = val;
-			data[3] = ~val;
+			data[0] = 'H';
+			data[3] = 'R';
+			data[1] = val / 256;
+			data[2] = val % 256;
 			ser.send(data,4);
 		}
 		

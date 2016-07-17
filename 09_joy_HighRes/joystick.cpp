@@ -131,6 +131,9 @@ void Joystick::consumeAll()
 
 void Joystick::printUpdates()
 {
+	std::cout << std::fixed;
+	std::cout.precision(2);
+   
 	int index = 0;
 	for (std::vector<JAxis>::iterator axes_it = Axes.begin() ; axes_it != Axes.end(); ++axes_it)
 	{

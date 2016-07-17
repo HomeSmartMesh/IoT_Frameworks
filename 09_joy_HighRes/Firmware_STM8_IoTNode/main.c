@@ -28,21 +28,52 @@ void Apply_Cmd_To_Servo(BYTE pos)
   ServoTargetPos = pulse16;
   
 }
+void Apply_HR_Cmd_To_Servo(unsigned int val)
+{
+  ServoTargetPos = val;
+}
 
 void check_Rx_Frame()
 {
   if(rxTable[0] == 'S')
+  {
     if(rxTable[1] == 'r')
     {
       if((rxTable[2] ^ rxTable[3]) == 0xFF)
       {
         cmd = rxTable[2];
         Apply_Cmd_To_Servo(cmd);
-        UARTPrintf("Ack Rx ");
-        UARTPrintfHex(rxTable[2]);
-        UARTPrintf(" \n");
+        UARTPrintf("Y\n");
       }
     }
+  }
+  /*else if(rxTable[0] == 'H')
+  {
+    if(rxTable[3] == 'R')
+    {
+      unsigned int val = rxTable[1];
+      val = val * 256 + rxTable[2];
+      Apply_HR_Cmd_To_Servo(val);
+      UARTPrintf("Ack Rx ");        
+      UARTPrintf_uint(val);
+      UARTPrintf("\n");
+    }
+  }*/
+}
+void check_Rx_H_Frame()
+{
+  if(rxTable[0] == 'H')
+  {
+    if(rxTable[3] == 'R')
+    {
+      unsigned int val = rxTable[1];
+      val = val * 256 + rxTable[2];
+      Apply_HR_Cmd_To_Servo(val);
+      UARTPrintf("Ack Rx ");        
+      UARTPrintf_uint(val);
+      UARTPrintf("\n");
+    }
+  }
 }
 
 void check_UART_State()
@@ -76,7 +107,7 @@ __interrupt void IRQHandler_UART(void)
   //we do not expect two consecutive frames anyway as not enough time to process them
   if(rxIndex >= RX_FRAME_SIZE)//process the beginning
   {
-    check_Rx_Frame();
+    check_Rx_H_Frame();
     rxIndex = 0;
   }
 
