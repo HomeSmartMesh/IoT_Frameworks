@@ -32,6 +32,10 @@ added "Usb-Sony_Computer_Entertainment_Wireless_Controller-event-joystick" and "
 - Disconnect the USB cable of the PS4 controller from the RaspberryPi
 >sudo bluetoothctl
 
+- very important the help, and general understanding of the bluetooth features, Pairing, Trusting, reconnecting,...
+
+>[bluetooth]# help
+
 >[bluetooth]# agent on
 
 >[bluetooth]# default-agent
@@ -59,3 +63,6 @@ starts a scan for available devices, at this step, you should :
  
 >ls /dev/input
 > event2 js0
+
+- To switch off the PS4 controller, a long press on the home button is needed (around 10s)
+- Switching it on back again seams to reconnect at once, as the device is listed as trusted
