@@ -13,6 +13,7 @@ https://www.kernel.org/doc/Documentation/input/joystick-api.txt
 sudo apt-get install joystick
 ##Usage
 ###Compilation
+- first subdirectories are direct compile and makefile attempts, then scons is used for all others with SConstruct file
 >scons
 
 ### run
