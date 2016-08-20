@@ -1,13 +1,15 @@
 
 
-# Joystick to servo application on linux (RaspberryPi)
+# Joystick to servo on RaspberryPi linux + STM8 Board
 - Joytick code based on
 https://www.kernel.org/doc/Documentation/input/joystick-api.txt
 - C++ wrapper for joystick and serial port
+- STM8 for servo control
 
 ## Platform
 - PS4 Wireless controller : used with USB and wireless
 - Raspberry pi 3 : integrated bluetooth module
+- STM8S103F3 based Board, with 16bit PWM x7 channels (still not documented, priorisation on request).
 
 ## Setup:
 sudo apt-get install joystick
