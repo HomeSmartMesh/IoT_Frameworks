@@ -1,0 +1,2 @@
+ - "npm install" here to retrieve node_modules
+ - run with "node serial_server.js"
