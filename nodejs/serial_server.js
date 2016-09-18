@@ -1,18 +1,61 @@
 var SerialPort = require("serialport");
-var port = new SerialPort("/dev/ttyUSB0", {
-    baudRate: 115200,
-    parser: SerialPort.parsers.readline('\n')
+
+var port;
+
+
+
+SerialPort.list(function (err, ports) {
+	
+		
+	if(ports.length > 0)	
+	{
+		console.log(ports.length+ ' Ports Available:');
+		
+		ports.forEach(function(i_port) {
+			console.log('Name: ' + i_port.comName + ' ; pnpId: ' +i_port.pnpId + " ; Man: "+ i_port.manufacturer);
+		  });
+		
+		port = new SerialPort(ports[0].comName, 
+								{
+								autoOpen: false,
+								baudRate: 115200,
+								parser: SerialPort.parsers.readline('\n')
+								}
+							);		
+							
+		port.on('open', function () {
+				console.log('Port '+ ports[0].comName +' is open');
+		});
+		
+		port.open(function (err){
+			if (err) 
+			{
+				console.log('Error opening port: ', err.message);
+				process.exit(1);
+				return;
+			}
+		});
+
+		port.on('data', function (datalog) {
+			console.log(datalog);
+			// broadcast message to all connected clients
+			var json = JSON.stringify({ type: 'message', data: datalog });
+			for (var i = 0; i < clients.length; i++) {
+				clients[i].sendUTF(json);
+			}
+		});
+	}
+	else
+	{
+		console.log('No Serial Ports Available');
+	}
+	
+
+	  
+  
 });
 
-port.on('open', function () {
-        console.log('Port is open');
-});
 
-// open errors will be emitted as an error event 
-port.on('error', function (err) {
-    console.log('Error: ', err.message);
-	process.exit(1);
-})
 
 var webSocketsServerPort = 4785;
 var webSocketServer = require('websocket').server;
@@ -20,20 +63,16 @@ var http = require('http');
 // list of currently connected clients (users)
 var clients = [];
 
-port.on('data', function (datalog) {
-    console.log(datalog);
-    // broadcast message to all connected clients
-    var json = JSON.stringify({ type: 'message', data: datalog });
-    for (var i = 0; i < clients.length; i++) {
-        clients[i].sendUTF(json);
-    }
-});
 
 var server = http.createServer(function (request, response) {
     // Not important for us. We're writing WebSocket server, not HTTP server
 });
 server.listen(webSocketsServerPort, function () {
+	
+
     console.log((new Date()) + " Server is listening on port " + webSocketsServerPort);
+	
+	
 });
 var wsServer = new webSocketServer({
     // WebSocket server is tied to a HTTP server. WebSocket request is just
