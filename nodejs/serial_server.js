@@ -104,6 +104,7 @@ wsServer.on('request', function (request) {
                 command = htmlEntities(message.utf8Data);
                 connection.sendUTF(JSON.stringify({ type:'ack', data: command }));
                 console.log((new Date()) + ' Command: ' + command );
+				if(port != undefined)
 				if(port.isOpen())
 				{
 					port.write(command+'\r');
