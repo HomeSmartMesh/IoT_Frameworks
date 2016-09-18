@@ -51,9 +51,9 @@ SerialPort.list(function (err, ports) {
 		});
 
 		port.on('data', function (datalog) {
-			console.log(datalog);
+			console.log(ports[0].comName+'>'+datalog);
 			// broadcast message to all connected clients
-			var json = JSON.stringify({ type: 'message', data: datalog });
+			var json = JSON.stringify({ type: 'message', data: ports[0].comName+'>'+datalog });
 			for (var i = 0; i < clients.length; i++) {
 				clients[i].sendUTF(json);
 			}
