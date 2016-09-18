@@ -2,6 +2,13 @@ var SerialPort = require("serialport");
 
 var port;
 
+/**
+ * Helper function for escaping input strings
+ */
+function htmlEntities(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
 
 
 SerialPort.list(function (err, ports) {
@@ -88,6 +95,15 @@ wsServer.on('request', function (request) {
 
     console.log((new Date()) + ' Connection accepted.');
 
+    // user sent some message
+    connection.on('message', function(message) {
+        if (message.type === 'utf8') { // accept only text
+                // remember user name
+                command = htmlEntities(message.utf8Data);
+                connection.sendUTF(JSON.stringify({ type:'ack', data: command }));
+                console.log((new Date()) + ' Command: ' + command );
+        }
+    });
 
     // user disconnected
     connection.on('close', function (connection) {
