@@ -65,6 +65,9 @@ $(function () {
         } else if (json.type === 'ack') { // acknowledge of sent message
             input.removeAttr('disabled'); // let the user write another message
             addMessage(json.data);
+        } else if (json.type === 'message') { // acknowledge of sent message
+            input.removeAttr('disabled'); // let the user write another message
+            addMessage(json.data);
         } else {
             console.log('Hmm..., I\'ve never seen JSON like this: ', json);
         }

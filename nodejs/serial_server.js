@@ -2,6 +2,13 @@ var SerialPort = require("serialport");
 
 var port;
 
+var webSocketsServerPort = 4785;
+var webSocketServer = require('websocket').server;
+var http = require('http');
+// list of currently connected clients (users)
+var clients = [];
+
+
 /**
  * Helper function for escaping input strings
  */
@@ -64,11 +71,6 @@ SerialPort.list(function (err, ports) {
 
 
 
-var webSocketsServerPort = 4785;
-var webSocketServer = require('websocket').server;
-var http = require('http');
-// list of currently connected clients (users)
-var clients = [];
 
 
 var server = http.createServer(function (request, response) {
@@ -102,6 +104,10 @@ wsServer.on('request', function (request) {
                 command = htmlEntities(message.utf8Data);
                 connection.sendUTF(JSON.stringify({ type:'ack', data: command }));
                 console.log((new Date()) + ' Command: ' + command );
+				if(port.isOpen())
+				{
+					port.write(command+'\r');
+				}
         }
     });
 
