@@ -1,6 +1,20 @@
+
+function btCall(elem)
+{
+	document.getElementById(elem.id+"Led").setAttribute("class", "led-green-on");
+	
+}
+
+function btLedCall(elem)
+{
+	document.getElementById(elem.id).setAttribute("class", "led-green-on");
+	
+}
+
 $(function () {
     "use strict";
 
+	
     // for better performance - to avoid searching in DOM
     var content = $('#content');
     var input = $('#input');
@@ -115,4 +129,14 @@ $(function () {
     function addMessage(message) {
         content.prepend('<p><span style="color:Black"></span>' + message + '</p>');
     }
+	
+	//document.getElementById("myBtn").onclick = function() {document.getElementById("demo").innerHTML = "Hello World";};
+	$("#myBtn").onclick = function() {document.getElementById("demo").innerHTML = "Hello You";};
+	/*$("button").button({
+		icon: { icon: "ui-icon-gear" },
+  classes: {
+    "ui-button": "highlight"
+  }
+});*/
+	
 });

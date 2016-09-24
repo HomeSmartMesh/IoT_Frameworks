@@ -9,13 +9,33 @@
         p { line-height:18px; }
         div { margin-left:auto; margin-right:auto;}
         #content { padding:5px; background:#ddd; border-radius:5px; overflow-y: scroll;
-                   border:1px solid #CCC; margin-top:10px; height: 480px; }
+                   border:1px solid #CCC; margin-top:10px; height: 180px; }
         #input { border-radius:2px; border:1px solid #ccc;
                  margin-top:10px; padding:5px; width:400px;  }
         #status { width:88px; display:block; float:left; margin-top:15px; }
         </style>
-    </head>
+		<link rel="stylesheet" type="text/css" href="ledStyles.css">
     <body>
+		<p id="demo"></p>
+		<table style="width:100px">
+			<tr>	<td> 	<button type="button" onclick="btCall(this)" 	id="BT0">Light 0</button>	</td>
+					<td>	<div class="led-green-off"	onclick="btLedCall(this)"					id="BT0Led"></div>				</td>	</tr>
+			<tr>	<td> 	<button type="button" onclick="btCall(this)" 	id="BT1">Light 1</button>	</td>
+					<td>	<div class="led-green-off"						id="BT1Led"></div>				</td>	</tr>
+			<tr>	<td> 	<button type="button" onclick="btCall(this)"	id="BT2">Light 2</button>	</td>
+					<td>	<div class="led-green-off"						id="BT2Led"></div>				</td>	</tr>
+			<tr>	<td> 	<button type="button" onclick="btCall(this)" 	id="BT3">Light 3</button>	</td>
+					<td>	<div class="led-green-off"						id="BT3Led"></div>				</td>	</tr>
+			<tr>	<td> 	<button type="button" onclick="btCall(this)" 	id="BT4">Light 4</button>	</td>
+					<td>	<div class="led-green-off"						id="BT4Led"></div>				</td>	</tr>
+			<tr>	<td> 	<button type="button" onclick="btCall(this)" 	id="BT5">Light 5</button>	</td>
+					<td>	<div class="led-green-off"						id="BT5Led"></div>				</td>	</tr>
+			<tr>	<td> 	<button type="button" onclick="btCall(this)" 	id="BT6">Light 6</button>	</td>
+					<td>	<div class="led-green-off"						id="BT6Led"></div>				</td>	</tr>
+			<tr>	<td> 	<button type="button" onclick="btCall(this)" 	id="BT7">Light 7</button>	</td>
+					<td>	<div class="led-green-off"						id="BT7Led"></div>				</td>	</tr>
+		</table>
+		
         <div id="content"></div>
         <div>
             <span id="status">Connecting...</span>
@@ -24,5 +44,6 @@
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <script src="./frontend.js"></script>
+
     </body>
 </html>
