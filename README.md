@@ -7,7 +7,7 @@ The nodejs server controls the serial port and uses websockets to mirror the ser
 ## Web client
 - The client connects to the server to send and receive text commands
 - The client has also Leds GUI to control output with clicks that compute the command out of the desired led status
-<img src="https://raw.githubusercontent.com/wassfila/smartio/master/client/printscreen.png" height="200">
+<img src="https://raw.githubusercontent.com/wassfila/smartio/master/client/printscreen.png" height="300">
 
 ## Firmware
 [The IO Expander Firmware](https://github.com/wassfila/STM8_IoT_Base/tree/master/ws04_IOExpander_Sequencer/02_EESeqence_Console) 
