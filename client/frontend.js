@@ -1,14 +1,20 @@
 
-function btCall(elem)
-{
-	document.getElementById(elem.id+"Led").setAttribute("class", "led-green-on");
-	
-}
 
+//8 leds array status
+var LedStatus = [false,false,false,false,false,false,false,false];
+//used from html led div onclick
 function btLedCall(elem)
 {
-	document.getElementById(elem.id).setAttribute("class", "led-green-on");
-	
+	if(LedStatus[elem.id] == true)
+	{
+		document.getElementById(elem.id).setAttribute("class", "led-green-off");
+		LedStatus[elem.id] = false;
+	}
+	else
+	{
+		document.getElementById(elem.id).setAttribute("class", "led-green-on");
+		LedStatus[elem.id] = true;
+	}
 }
 
 $(function () {
