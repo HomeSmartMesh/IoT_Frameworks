@@ -16,7 +16,12 @@
         </style>
 		<link rel="stylesheet" type="text/css" href="ledStyles.css">
     <body>
-		<table style="width:100px">
+	<p>click on the Green Leds to switch on and off, or send text commands "P" "S" "Se00" "Se0C",...</p>
+	<table style="width:100%;height:100%">
+	<td>
+		<table style="width:120px">
+			<tr>	<td><p>All On</p></td><td>	<div class="led-all-on"	onclick="btAllLedCall(this)" id="AllOn"></div></td></tr>
+			<tr>	<td><p>All Off</p></td><td>	<div class="led-all-off"	onclick="btAllLedCall(this)" id="AllOff"></div></td></tr>
 			<tr>	<td><p>Light 0</p></td><td>	<div class="led-green-off"	onclick="btLedCall(this)" id="0"></div></td></tr>
 			<tr>	<td><p>Light 1</p></td><td>	<div class="led-green-off"	onclick="btLedCall(this)" id="1"></div></td></tr>
 			<tr>	<td><p>Light 2</p></td><td>	<div class="led-green-off"	onclick="btLedCall(this)" id="2"></div></td></tr>
@@ -26,12 +31,17 @@
 			<tr>	<td><p>Light 6</p></td><td>	<div class="led-green-off"	onclick="btLedCall(this)" id="6"></div></td></tr>
 			<tr>	<td><p>Light 7</p></td><td>	<div class="led-green-off"	onclick="btLedCall(this)" id="7"></div></td></tr>
 		</table>
-		
+	</td>
+	<td>
         <div id="content"></div>
         <div>
             <span id="status">Connecting...</span>
             <input type="text" id="input" disabled="disabled" />
         </div>
+	</td>
+	</table>
+	
+		
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <script src="./frontend.js"></script>

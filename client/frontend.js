@@ -1,21 +1,63 @@
 
+// open connection
+var connection = new WebSocket('ws://localhost:4785');
+
 
 //8 leds array status
-var LedStatus = [false,false,false,false,false,false,false,false];
+var LedStatus = ["0","0","0","0","0","0","0","0"];
 //used from html led div onclick
+function applyStatus()
+{
+	var Text = LedStatus.join('');
+	console.log(Text);
+	var a = parseInt(Text,2);
+	var cmd;
+	if(a <= 0xF)
+		cmd = "Se0" + a.toString(16).toUpperCase();
+	else
+		cmd = "Se" + a.toString(16).toUpperCase();
+	
+	console.log(cmd);
+	
+	connection.send(cmd);
+	for(var i = 0;i<8;i++)
+	{
+		if(LedStatus[i] == "1")
+		{
+			document.getElementById(i).setAttribute("class", "led-green-on");
+		}
+		else
+		{
+			document.getElementById(i).setAttribute("class", "led-green-off");
+		}
+	}
+}
 function btLedCall(elem)
 {
-	if(LedStatus[elem.id] == true)
+	if(LedStatus[elem.id] == "1")
 	{
-		document.getElementById(elem.id).setAttribute("class", "led-green-off");
-		LedStatus[elem.id] = false;
+		LedStatus[elem.id] = "0";
 	}
 	else
 	{
-		document.getElementById(elem.id).setAttribute("class", "led-green-on");
-		LedStatus[elem.id] = true;
+		LedStatus[elem.id] = "1";
 	}
+	applyStatus();
 }
+
+function btAllLedCall(elem)
+{
+	if(elem.id == "AllOn")
+	{
+		LedStatus = ["1","1","1","1","1","1","1","1"];
+	}
+	else
+	{
+		LedStatus = ["0","0","0","0","0","0","0","0"];
+	}
+	applyStatus();
+}
+
 
 $(function () {
     "use strict";
@@ -43,8 +85,6 @@ $(function () {
         return;
     }
 
-    // open connection
-    var connection = new WebSocket('ws://localhost:4785');
 
     connection.onopen = function () {
         // first we want users to enter their names
@@ -137,7 +177,7 @@ $(function () {
     }
 	
 	//document.getElementById("myBtn").onclick = function() {document.getElementById("demo").innerHTML = "Hello World";};
-	$("#myBtn").onclick = function() {document.getElementById("demo").innerHTML = "Hello You";};
+	//$("#myBtn").onclick = function() {document.getElementById("demo").innerHTML = "Hello You";};
 	/*$("button").button({
 		icon: { icon: "ui-icon-gear" },
   classes: {
