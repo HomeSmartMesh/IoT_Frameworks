@@ -1,6 +1,8 @@
 
+
 // open connection
-var connection = new WebSocket('ws://localhost:4785');
+//var connection = new WebSocket('ws://localhost:4785');
+var connection = new WebSocket('ws://'+window.location.hostname+':4785');
 
 
 //8 leds array status
@@ -64,6 +66,7 @@ $(function () {
 
 	
     // for better performance - to avoid searching in DOM
+	//var host = $('#host');
     var content = $('#content');
     var input = $('#input');
     var status = $('#status');
@@ -76,6 +79,8 @@ $(function () {
     // if user is running mozilla then use it's built-in WebSocket
     window.WebSocket = window.WebSocket || window.MozWebSocket;
 
+	//host.html($('<p>', { text: 'Hostname: '+window.location.hostname} ));
+	
     // if browser doesn't support WebSocket, just show some notification and exit
     if (!window.WebSocket) {
         content.html($('<p>', { text: 'Sorry, but your browser doesn\'t '
