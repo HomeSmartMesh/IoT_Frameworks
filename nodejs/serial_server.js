@@ -19,51 +19,83 @@ function htmlEntities(str) {
 
 
 SerialPort.list(function (err, ports) {
-	
-		
+
+	var listOnly = false;
+	var requestedPortNum = -1;
+	if(process.argv.length > 2)
+	{
+		if(process.argv[2] == '--list')
+		{
+			listOnly = true;
+		}
+		else
+		{
+			
+		}
+	}
+	else
+	{
+		console.log("\r\nCommands help:\r\nList ony available ports and exit with 'node serial_server.js --list'");		
+		console.log("then request a particular port number with e.g. 'node serial_server.js 2': \r\n");
+	}
 	if(ports.length > 0)	
 	{
-		console.log(ports.length+ ' Ports Available:');
+		console.log(ports.length+ ' Ports Available: indexes from 0 to ' + (ports.length-1));
 		
 		ports.forEach(function(i_port) {
 			console.log('Name: ' + i_port.comName + ' ; pnpId: ' +i_port.pnpId + " ; Man: "+ i_port.manufacturer);
 		  });
 		
-		port = new SerialPort(ports[0].comName, 
-								{
-								autoOpen: false,
-								baudRate: 115200,
-								parser: SerialPort.parsers.readline('\n')
-								}
-							);		
-							
-		port.on('open', function () {
-				console.log('Port '+ ports[0].comName +' is open');
-		});
-		
-		port.open(function (err){
-			if (err) 
+		//if a listing only request then exit at this stage
+		if(!listOnly)
+		{
+			var portNum = ports.length - 1;//we take the last one as it's likely that it's the last connected USB adapter
+			if(requestedPortNum == -1)
 			{
-				console.log('Error opening port: ', err.message);
-				process.exit(1);
-				return;
+				console.log("no portNum requested, last one taken: "+portNum);
+				portNum = ports.length - 1;//we take the last one as it's likely that it's the last connected USB adapter
+				console.log("request a particular port number with e.g. 'node serial_server.js 2': ");
 			}
-		});
+			port = new SerialPort(ports[portNum].comName, 
+									{
+									autoOpen: false,
+									baudRate: 115200,
+									parser: SerialPort.parsers.readline('\n')
+									}
+								);		
+			port.on('open', function () {
+					console.log('Port '+ ports[portNum].comName +' is open');
+			});
+		
+			port.open(function (err){
+				if (err) 
+				{
+					console.log('Error opening port: ', err.message);
+					process.exit(1);
+					return;
+				}
+			});
 
-		port.on('data', function (datalog) {
-			console.log(ports[0].comName+'>'+datalog);
-			// broadcast message to all connected clients
-			var json = JSON.stringify({ type: 'message', data: ports[0].comName+'>'+datalog });
-			for (var i = 0; i < clients.length; i++) {
-				clients[i].sendUTF(json);
-			}
-		});
+			port.on('data', function (datalog) {
+				console.log(ports[portNum].comName+'>'+datalog);
+				// broadcast message to all connected clients
+				var json = JSON.stringify({ type: 'message', data: ports[portNum].comName+'>'+datalog });
+				for (var i = 0; i < clients.length; i++) {
+					clients[i].sendUTF(json);
+				}
+			});
+		}
 	}
 	else
 	{
 		console.log('No Serial Ports Available');
 	}
-	
+	if(listOnly)
+	{
+		console.log("Listing only with param '--list' now exiting");
+		process.exit();
+	}
+
 
 	  
   
