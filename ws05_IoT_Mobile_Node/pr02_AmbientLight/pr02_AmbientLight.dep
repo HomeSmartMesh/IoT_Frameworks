@@ -2,7 +2,7 @@
 
 <project>
   <fileVersion>2</fileVersion>
-  <fileChecksum>4071828441</fileChecksum>
+  <fileChecksum>4205682551</fileChecksum>
   <configuration>
     <name>Debug</name>
     <outputs>
@@ -52,12 +52,32 @@
       <file>$PROJ_DIR$\Debug\Obj\main.o</file>
       <file>$TOOLKIT_DIR$\lib\dlstm8smn.a</file>
       <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\pr02_AmbientLight.pbd</file>
       <file>$TOOLKIT_DIR$\inc\iostm8l151f3.h</file>
       <file>$PROJ_DIR$\Debug\Obj\nRF_LowLevel.o</file>
       <file>$PROJ_DIR$\Debug\Obj\WS2812B.o</file>
       <file>$TOOLKIT_DIR$\inc\io_macros.h</file>
       <file>$TOOLKIT_DIR$\inc\c\intrinsics.h</file>
       <file>$PROJ_DIR$\Debug\Exe\pr02_AmbientLight.out</file>
+      <file>$PROJ_DIR$\..\..\libs\ClockUartLed.h</file>
+      <file>$PROJ_DIR$\..\..\libs\nRF_LowLevel.c</file>
+      <file>$PROJ_DIR$\..\..\libs\nRF_RegText.c</file>
+      <file>$PROJ_DIR$\..\..\libs\nRF_RegText.h</file>
+      <file>$PROJ_DIR$\..\..\libs\nRF_SPI.c</file>
+      <file>$PROJ_DIR$\..\..\libs\nRF_SPI.h</file>
+      <file>$PROJ_DIR$\..\..\libs\nRF_Tx.h</file>
+      <file>$PROJ_DIR$\..\..\libs\WS2812B.c</file>
+      <file>$PROJ_DIR$\..\..\libs\WS2812B.h</file>
+      <file>$PROJ_DIR$\..\..\libs\temp_ds18b20.h</file>
+      <file>$PROJ_DIR$\..\..\libs\nRF_Modes.c</file>
+      <file>$PROJ_DIR$\..\..\libs\nRF_IRQ.c</file>
+      <file>$PROJ_DIR$\..\..\libs\temp_ds18b20.c</file>
+      <file>$PROJ_DIR$\..\..\libs\nRF_Modes.h</file>
+      <file>$PROJ_DIR$\..\..\libs\nRF_Tx.c</file>
+      <file>$PROJ_DIR$\..\..\libs\nRF_LowLevel.h</file>
+      <file>$PROJ_DIR$\..\..\libs\commonTypes.h</file>
+      <file>$PROJ_DIR$\..\..\libs\ClockUartLed.c</file>
+      <file>$PROJ_DIR$\..\..\libs\nRF_IRQ.h</file>
     </outputs>
     <file>
       <name>$PROJ_DIR$\..\pr00_LibraryCommon\ClockUartLed.c</name>
@@ -74,11 +94,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 46 1 49</file>
+          <file> 47 1 50</file>
         </tool>
         <tool>
           <name>ICCSTM8</name>
-          <file> 1 46 49</file>
+          <file> 1 47 50</file>
         </tool>
       </inputs>
     </file>
@@ -97,11 +117,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 37 1 6 0 21 46 34 10 31 50 49</file>
+          <file> 37 1 6 0 21 47 34 10 31 51 50</file>
         </tool>
         <tool>
           <name>ICCSTM8</name>
-          <file> 50 46 49 0 34 1 6 21 10 37 31</file>
+          <file> 51 47 50 0 34 1 6 21 10 37 31</file>
         </tool>
       </inputs>
     </file>
@@ -114,17 +134,17 @@
         </tool>
         <tool>
           <name>ICCSTM8</name>
-          <file> 47</file>
+          <file> 48</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 49 46 6 2</file>
+          <file> 50 47 6 2</file>
         </tool>
         <tool>
           <name>ICCSTM8</name>
-          <file> 46 49 2 6</file>
+          <file> 47 50 2 6</file>
         </tool>
       </inputs>
     </file>
@@ -133,7 +153,7 @@
       <outputs>
         <tool>
           <name>ILINK</name>
-          <file> 51</file>
+          <file> 52</file>
         </tool>
       </outputs>
     </file>
@@ -244,11 +264,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 1 6 24 46 49</file>
+          <file> 53 69 24 47 50</file>
         </tool>
         <tool>
           <name>ICCSTM8</name>
-          <file> 24 6 1 46 49</file>
+          <file> 24 69 53 47 50</file>
         </tool>
       </inputs>
     </file>
@@ -267,11 +287,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 37 21 24 50 10 1 6 49 46</file>
+          <file> 59 58 24 69 51 66 53 47 50</file>
         </tool>
         <tool>
           <name>ICCSTM8</name>
-          <file> 46 49 50 21 6 10 37 1 24</file>
+          <file> 47 50 51 58 69 66 59 53 24</file>
         </tool>
       </inputs>
     </file>
@@ -290,11 +310,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 1 46 6 49 20</file>
+          <file> 1 47 6 50 20</file>
         </tool>
         <tool>
           <name>ICCSTM8</name>
-          <file> 20 6 46 49 1</file>
+          <file> 20 6 47 50 1</file>
         </tool>
       </inputs>
     </file>
@@ -307,17 +327,17 @@
         </tool>
         <tool>
           <name>ICCSTM8</name>
-          <file> 48</file>
+          <file> 49</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 49 1 7 6 46</file>
+          <file> 50 1 7 6 47</file>
         </tool>
         <tool>
           <name>ICCSTM8</name>
-          <file> 7 6 46 49 1</file>
+          <file> 7 6 47 50 1</file>
         </tool>
       </inputs>
     </file>
@@ -326,7 +346,214 @@
       <inputs>
         <tool>
           <name>ILINK</name>
-          <file> 41 14 35 43 36 47 16 9 38 40 26 48 44 42</file>
+          <file> 41 14 35 43 36 48 16 9 38 40 26 49 44 42</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\libs\nRF_LowLevel.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 28</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 48</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 50 47 69 68</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 47 50 68 69</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\libs\nRF_RegText.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 12</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 9</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 69 58 56 53</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 56 69 58 53</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\libs\nRF_SPI.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 25</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 38</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 53 68 69 58</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 58 69 68 53</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\libs\WS2812B.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 8</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 49</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 53 61 69 47 50</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 61 69 47 50 53</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\libs\nRF_Modes.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 29</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 16</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 68 69 71 53 34 58 56 66</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 66 69 34 71 58 68 56 53</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\libs\nRF_IRQ.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 30</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 36</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 59 53 50 69 71 58 47 34 66 56 51</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 51 47 50 71 34 53 69 58 66 59 56</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\libs\temp_ds18b20.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 27</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 26</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 53 69 47 50 62</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 62 69 47 50 53</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\libs\nRF_Tx.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 39</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 40</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 68 69 58 66 53 59</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 59 69 66 58 53 68</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\libs\ClockUartLed.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 13</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 14</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 47 69 53 50</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 53 69 47 50</file>
         </tool>
       </inputs>
     </file>

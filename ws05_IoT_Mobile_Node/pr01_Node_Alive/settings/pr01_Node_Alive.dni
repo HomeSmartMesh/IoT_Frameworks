@@ -38,7 +38,11 @@ ShowSource=1
 [Simulator]
 Freq=16000000
 [DebugChecksum]
-Checksum=-1653866288
+Checksum=571804570
+[CallStack]
+ShowArgs=0
+[Disassembly]
+MixedMode=1
 [DataSample]
 LogEnabled=0
 GraphEnabled=0
@@ -51,10 +55,6 @@ Category=_ 0
 [TermIOLog]
 LoggingEnabled=_ 0
 LogFile=_ ""
-[CallStack]
-ShowArgs=0
-[Disassembly]
-MixedMode=1
 [Breakpoints]
 Count=0
 [Aliases]

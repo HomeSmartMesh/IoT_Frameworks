@@ -9,13 +9,30 @@
 //for abs
 #include <cmath>
 
-#include "serial.hpp"
+//for exit()
+#include <cstdlib>
 
-int main() 
+#include "serial.hpp"
+#include "utils.hpp"
+
+int main( int argc, char** argv )
 {
+	strmap conf;
+	utl::args2map(argc,argv,conf);
 	Serial 		ser;
+
+	if(utl::exists(conf,"port"))
+	{
+		std::cout << "port was parsed as : " << conf["port"] << "\r\n";
+		ser.start(conf["port"]);
+	}
+	else
+	{
+		std::cout << "argumentrequired 'port:/dev/ttyUSB0'\r\n";
+		exit(1);
+	}
 	
-	ser.start("/dev/ttyUSB0");
+	
 
 	
 	//std::cout << MAGENTA << "Colored " << CYAN << "Text" << RESET << std::endl;

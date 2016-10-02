@@ -78,13 +78,22 @@ int set_interface_attribs (int fd, speed_t baudrate, int parity)
 }
 
 
-void Serial::start(std::string port_name)
+void Serial::start(std::string port_name,bool s_500)
 {
 	fd = open (port_name.c_str(), O_RDWR | O_NOCTTY | O_SYNC);
 	if (fd >= 0)
 	{
-		set_interface_attribs (fd, B500000, 0);
-		//set_interface_attribs (fd, B115200, 0);  // set speed to 115,200 bps, 8n1 (no parity)
+		printf ("port %s: open @", port_name.c_str());
+		if(s_500)
+		{
+			set_interface_attribs (fd, B500000, 0);
+			printf ("B500000\r\n");
+		}
+		else
+		{
+			set_interface_attribs (fd, B115200, 0);  // set speed to 115,200 bps, 8n1 (no parity)
+			printf ("B115200\r\n");
+		}
 	}
 	else
 	{

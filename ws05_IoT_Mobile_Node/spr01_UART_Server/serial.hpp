@@ -19,7 +19,7 @@ private:
 public:
 	std::string 	Name;
 public:
-	void start(std::string device);
+	void start(std::string port_name,bool s_500 = false);
 	bool update();
 	void print();
 	void send(char* buffer,int size);

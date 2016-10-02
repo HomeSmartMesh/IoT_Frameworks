@@ -7,22 +7,29 @@
       <Project>pr03_PressHumTemp/Debug</Project>
       <Project>pr02_AmbientLight/Debug</Project>
     </CurrentConfigs>
-    <CurrentProj>pr01_Node_Alive</CurrentProj>
+    <CurrentProj>pr02_AmbientLight</CurrentProj>
     <OverviewSelected>1</OverviewSelected>
   </ConfigDictionary>
   <Desktop>
     <Static>
       <Workspace>
         <ColumnWidths>
-          <Column0>256</Column0>
+          <Column0>303</Column0>
           <Column1>27</Column1>
           <Column2>27</Column2>
           <Column3>27</Column3>
         </ColumnWidths>
       </Workspace>
+      <Build>
+        <ColumnWidth0>20</ColumnWidth0>
+        <ColumnWidth1>1302</ColumnWidth1>
+        <ColumnWidth2>347</ColumnWidth2>
+        <ColumnWidth3>86</ColumnWidth3>
+      </Build>
+      <TerminalIO/>
     </Static>
     <Windows>
-      <Wnd0>
+      <Wnd2>
         <Tabs>
           <Tab>
             <Identity>TabID-21194-7828</Identity>
@@ -32,12 +39,25 @@
               <NodeDict>
                 <ExpandedNode>&lt;ws&gt;</ExpandedNode>
                 <ExpandedNode>&lt;ws&gt;/pr01_Node_Alive</ExpandedNode>
+                <ExpandedNode>&lt;ws&gt;/pr02_AmbientLight</ExpandedNode>
+                <ExpandedNode>&lt;ws&gt;/pr03_PressHumTemp</ExpandedNode>
               </NodeDict>
             </Session>
           </Tab>
         </Tabs>
         <SelectedTab>0</SelectedTab>
-      </Wnd0>
+      </Wnd2>
+      <Wnd3>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-26317-8756</Identity>
+            <TabName>Build</TabName>
+            <Factory>Build</Factory>
+            <Session/>
+          </Tab>
+        </Tabs>
+        <SelectedTab>0</SelectedTab>
+      </Wnd3>
     </Windows>
     <Editor>
       <Pane>
@@ -49,11 +69,35 @@
           <SelStart>0</SelStart>
           <SelEnd>0</SelEnd>
           <XPos2>0</XPos2>
-          <YPos2>0</YPos2>
-          <SelStart2>0</SelStart2>
-          <SelEnd2>0</SelEnd2>
+          <YPos2>53</YPos2>
+          <SelStart2>1942</SelStart2>
+          <SelEnd2>1942</SelEnd2>
         </Tab>
-        <ActiveTab>0</ActiveTab>
+        <Tab>
+          <Factory>TextEditor</Factory>
+          <Filename>$WS_DIR$\pr02_AmbientLight\main.c</Filename>
+          <XPos>0</XPos>
+          <YPos>0</YPos>
+          <SelStart>0</SelStart>
+          <SelEnd>0</SelEnd>
+          <XPos2>0</XPos2>
+          <YPos2>241</YPos2>
+          <SelStart2>6321</SelStart2>
+          <SelEnd2>6321</SelEnd2>
+        </Tab>
+        <ActiveTab>1</ActiveTab>
+        <Tab>
+          <Factory>TextEditor</Factory>
+          <Filename>$WS_DIR$\pr03_PressHumTemp\main.c</Filename>
+          <XPos>0</XPos>
+          <YPos>0</YPos>
+          <SelStart>0</SelStart>
+          <SelEnd>0</SelEnd>
+          <XPos2>0</XPos2>
+          <YPos2>374</YPos2>
+          <SelStart2>9227</SelStart2>
+          <SelEnd2>9227</SelEnd2>
+        </Tab>
       </Pane>
       <ActivePane>0</ActivePane>
       <Sizes>
@@ -77,22 +121,22 @@
       <Left>
         <Row0>
           <Sizes>
-            <Wnd0>
+            <Wnd2>
               <Rect>
                 <Top>-2</Top>
                 <Left>-2</Left>
-                <Bottom>1109</Bottom>
-                <Right>330</Right>
+                <Bottom>911</Bottom>
+                <Right>377</Right>
                 <x>-2</x>
                 <y>-2</y>
-                <xscreen>200</xscreen>
+                <xscreen>144</xscreen>
                 <yscreen>200</yscreen>
-                <sizeHorzCX>111421</sizeHorzCX>
+                <sizeHorzCX>87326</sizeHorzCX>
                 <sizeHorzCY>173310</sizeHorzCY>
-                <sizeVertCX>184958</sizeVertCX>
-                <sizeVertCY>962738</sizeVertCY>
+                <sizeVertCX>229836</sizeVertCX>
+                <sizeVertCY>791161</sizeVertCY>
               </Rect>
-            </Wnd0>
+            </Wnd2>
           </Sizes>
         </Row0>
       </Left>
@@ -103,7 +147,24 @@
       </Right>
       <Bottom>
         <Row0>
-          <Sizes/>
+          <Sizes>
+            <Wnd3>
+              <Rect>
+                <Top>-2</Top>
+                <Left>-2</Left>
+                <Bottom>198</Bottom>
+                <Right>1651</Right>
+                <x>-2</x>
+                <y>-2</y>
+                <xscreen>1653</xscreen>
+                <yscreen>200</yscreen>
+                <sizeHorzCX>1002426</sizeHorzCX>
+                <sizeHorzCY>173310</sizeHorzCY>
+                <sizeVertCX>87326</sizeVertCX>
+                <sizeVertCY>173310</sizeVertCY>
+              </Rect>
+            </Wnd3>
+          </Sizes>
         </Row0>
       </Bottom>
       <Float>

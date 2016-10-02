@@ -55,6 +55,8 @@
       <file>$PROJ_DIR$\..\pr00_LibraryCommon\temp_ds18b20.h</file>
       <file>$TOOLKIT_DIR$\inc\io_macros.h</file>
       <file>$PROJ_DIR$\Debug\Obj\main.o</file>
+      <file>$PROJ_DIR$\..\pr03_PressHumTemp\main.c</file>
+      <file>$PROJ_DIR$\..\pr02_AmbientLight\main.c</file>
       <file>$PROJ_DIR$\..\..\libs\nRF_LowLevel.c</file>
       <file>$PROJ_DIR$\..\..\libs\nRF_LowLevel.h</file>
       <file>$PROJ_DIR$\..\..\libs\nRF_Tx.h</file>
@@ -292,11 +294,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 51 52 54 22 61 59 47 24</file>
+          <file> 53 54 56 22 63 61 47 24</file>
         </tool>
         <tool>
           <name>ICCSTM8</name>
-          <file> 24 47 22 29 5 6 39 3</file>
+          <file> 24 47 22 56 54 63 53 61</file>
         </tool>
       </inputs>
     </file>
@@ -338,7 +340,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 47 24 52 50</file>
+          <file> 47 24 54 52</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 24 47 52 54</file>
         </tool>
       </inputs>
     </file>
@@ -357,7 +363,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 59 58 52 24 47</file>
+          <file> 61 60 54 24 47</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 60 54 24 47 61</file>
         </tool>
       </inputs>
     </file>
@@ -376,7 +386,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 52 54 64 59</file>
+          <file> 54 56 66 61</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 66 54 56 61</file>
         </tool>
       </inputs>
     </file>
@@ -395,7 +409,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 24 52 59 47</file>
+          <file> 24 54 61 47</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 61 54 24 47</file>
         </tool>
       </inputs>
     </file>
@@ -414,7 +432,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 51 59 47 52 55 54 24 42 61 64 22</file>
+          <file> 53 61 47 54 57 56 24 42 63 66 22</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 22 24 47 57 42 61 54 56 63 53 66</file>
         </tool>
       </inputs>
     </file>
@@ -433,7 +455,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 59 50 52 54</file>
+          <file> 61 52 54 56</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 56 54 52 61</file>
         </tool>
       </inputs>
     </file>
@@ -452,7 +478,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 59 52 24 47 67</file>
+          <file> 61 54 24 47 69</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 69 54 24 47 61</file>
         </tool>
       </inputs>
     </file>
@@ -471,7 +501,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 50 52 55 59 42 54 64 61</file>
+          <file> 52 54 57 61 42 56 66 63</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 63 54 42 57 56 52 66 61</file>
         </tool>
       </inputs>
     </file>
@@ -490,54 +524,14 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 50 52 54 61 59 51</file>
+          <file> 52 54 56 63 61 53</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 53 54 63 56 61 52</file>
         </tool>
       </inputs>
     </file>
-    <forcedrebuild>
-      <name>[MULTI_TOOL]</name>
-      <tool>ILINK</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\main.c</name>
-      <tool>ICCSTM8</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\libs\nRF_LowLevel.c</name>
-      <tool>ICCSTM8</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\libs\WS2812B.c</name>
-      <tool>ICCSTM8</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\libs\nRF_RegText.c</name>
-      <tool>ICCSTM8</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\libs\ClockUartLed.c</name>
-      <tool>ICCSTM8</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\libs\nRF_IRQ.c</name>
-      <tool>ICCSTM8</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\libs\nRF_SPI.c</name>
-      <tool>ICCSTM8</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\libs\temp_ds18b20.c</name>
-      <tool>ICCSTM8</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\libs\nRF_Modes.c</name>
-      <tool>ICCSTM8</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\libs\nRF_Tx.c</name>
-      <tool>ICCSTM8</tool>
-    </forcedrebuild>
   </configuration>
   <configuration>
     <name>Release</name>

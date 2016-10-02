@@ -38,7 +38,7 @@ ShowSource=1
 [Simulator]
 Freq=16000000
 [DebugChecksum]
-Checksum=-1226383190
+Checksum=802157691
 [CallStack]
 ShowArgs=0
 [Disassembly]
@@ -48,13 +48,6 @@ LogEnabled=0
 GraphEnabled=0
 ShowTimeLog=1
 ShowTimeSum=1
-[Log file]
-LoggingEnabled=_ 0
-LogFile=_ ""
-Category=_ 0
-[TermIOLog]
-LoggingEnabled=_ 0
-LogFile=_ ""
 [Breakpoints]
 Bp0=_ "STD_CODE" "{$PROJ_DIR$\i2c_m.c}.73.3" 1 0 0 0 "" 0 ""
 Bp1=_ "STD_CODE" "{$PROJ_DIR$\i2c_m.c}.104.2" 1 0 0 0 "" 0 ""
@@ -63,6 +56,13 @@ Bp3=_ "STD_CODE" "{$PROJ_DIR$\i2c_m.c}.262.5" 1 0 0 0 "" 0 ""
 Bp4=_ "STD_CODE" "{$PROJ_DIR$\main.c}.277.5" 1 0 0 0 "" 0 ""
 Bp5=_ "STD_CODE" "{$PROJ_DIR$\i2c_m.c}.95.5" 1 0 0 0 "" 0 ""
 Count=6
+[Log file]
+LoggingEnabled=_ 0
+LogFile=_ ""
+Category=_ 0
+[TermIOLog]
+LoggingEnabled=_ 0
+LogFile=_ ""
 [Aliases]
 Count=0
 SuppressDialog=0
