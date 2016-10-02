@@ -257,7 +257,7 @@
         </option>
         <option>
           <name>CCIncludePath2</name>
-          <state>$PROJ_DIR$\..\pr00_LibraryCommon</state>
+          <state>$PROJ_DIR$\..\..\libs</state>
           <state>$PROJ_DIR$</state>
         </option>
         <option>
@@ -1588,63 +1588,63 @@
     </settings>
   </configuration>
   <group>
-    <name>pr00_LibraryCommon</name>
+    <name>libs</name>
     <file>
-      <name>$PROJ_DIR$\..\pr00_LibraryCommon\ClockUartLed.c</name>
+      <name>$PROJ_DIR$\..\..\libs\ClockUartLed.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\pr00_LibraryCommon\ClockUartLed.h</name>
+      <name>$PROJ_DIR$\..\..\libs\ClockUartLed.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\pr00_LibraryCommon\commonTypes.h</name>
+      <name>$PROJ_DIR$\..\..\libs\commonTypes.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\pr00_LibraryCommon\nRF_IRQ.c</name>
+      <name>$PROJ_DIR$\..\..\libs\nRF_IRQ.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\pr00_LibraryCommon\nRF_IRQ.h</name>
+      <name>$PROJ_DIR$\..\..\libs\nRF_IRQ.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\pr00_LibraryCommon\nRF_LowLevel.c</name>
+      <name>$PROJ_DIR$\..\..\libs\nRF_LowLevel.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\pr00_LibraryCommon\nRF_LowLevel.h</name>
+      <name>$PROJ_DIR$\..\..\libs\nRF_LowLevel.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\pr00_LibraryCommon\nRF_Modes.c</name>
+      <name>$PROJ_DIR$\..\..\libs\nRF_Modes.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\pr00_LibraryCommon\nRF_Modes.h</name>
+      <name>$PROJ_DIR$\..\..\libs\nRF_Modes.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\pr00_LibraryCommon\nRF_RegText.c</name>
+      <name>$PROJ_DIR$\..\..\libs\nRF_RegText.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\pr00_LibraryCommon\nRF_RegText.h</name>
+      <name>$PROJ_DIR$\..\..\libs\nRF_RegText.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\pr00_LibraryCommon\nRF_SPI.c</name>
+      <name>$PROJ_DIR$\..\..\libs\nRF_SPI.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\pr00_LibraryCommon\nRF_SPI.h</name>
+      <name>$PROJ_DIR$\..\..\libs\nRF_SPI.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\pr00_LibraryCommon\nRF_Tx.c</name>
+      <name>$PROJ_DIR$\..\..\libs\nRF_Tx.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\pr00_LibraryCommon\nRF_Tx.h</name>
+      <name>$PROJ_DIR$\..\..\libs\nRF_Tx.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\pr00_LibraryCommon\temp_ds18b20.c</name>
+      <name>$PROJ_DIR$\..\..\libs\temp_ds18b20.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\pr00_LibraryCommon\temp_ds18b20.h</name>
+      <name>$PROJ_DIR$\..\..\libs\temp_ds18b20.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\pr00_LibraryCommon\WS2812B.c</name>
+      <name>$PROJ_DIR$\..\..\libs\WS2812B.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\pr00_LibraryCommon\WS2812B.h</name>
+      <name>$PROJ_DIR$\..\..\libs\WS2812B.h</name>
     </file>
   </group>
   <file>
