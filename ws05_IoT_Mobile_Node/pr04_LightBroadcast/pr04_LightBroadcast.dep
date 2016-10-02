@@ -59,6 +59,8 @@
       <file>$PROJ_DIR$\..\..\libs\nRF_LowLevel.h</file>
       <file>$PROJ_DIR$\..\..\libs\WS2812B.c</file>
       <file>$PROJ_DIR$\..\..\libs\WS2812B.h</file>
+      <file>$PROJ_DIR$\..\pr02_AmbientLight\main.c</file>
+      <file>$PROJ_DIR$\..\pr03_PressHumTemp\main.c</file>
     </outputs>
     <file>
       <name>[ROOT_NODE]</name>
@@ -97,7 +99,7 @@
       <inputs>
         <tool>
           <name>ILINK</name>
-          <file> 7 35 6 4</file>
+          <file> 7 8 9 35 10 11 12 13 0 1 2 5 6 4</file>
         </tool>
       </inputs>
     </file>
@@ -118,6 +120,10 @@
           <name>BICOMP</name>
           <file> 23 28 37 27</file>
         </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 37 28 23 27</file>
+        </tool>
       </inputs>
     </file>
     <file>
@@ -135,7 +141,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 37 28 34 23 27</file>
+          <file> 23 28 37 34 27</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 34 28 37 23 27</file>
         </tool>
       </inputs>
     </file>
@@ -156,6 +166,10 @@
           <name>BICOMP</name>
           <file> 50 28 25 26 37 24</file>
         </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 24 28 26 25 37 50</file>
+        </tool>
       </inputs>
     </file>
     <file>
@@ -174,6 +188,10 @@
         <tool>
           <name>BICOMP</name>
           <file> 37 28 23 27 40</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 40 28 23 27 37</file>
         </tool>
       </inputs>
     </file>
@@ -194,6 +212,10 @@
           <name>BICOMP</name>
           <file> 50 28 41 37 29 25 46 26</file>
         </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 26 28 29 41 25 50 46 37</file>
+        </tool>
       </inputs>
     </file>
     <file>
@@ -212,6 +234,10 @@
         <tool>
           <name>BICOMP</name>
           <file> 28 25 46 37</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 46 28 25 37</file>
         </tool>
       </inputs>
     </file>
@@ -232,6 +258,10 @@
           <name>BICOMP</name>
           <file> 24 37 27 28 41 25 23 29 26 46 33</file>
         </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 33 23 27 41 29 37 28 25 26 24 46</file>
+        </tool>
       </inputs>
     </file>
     <file>
@@ -250,6 +280,10 @@
         <tool>
           <name>BICOMP</name>
           <file> 27 23 28 50</file>
+        </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 23 27 50 28</file>
         </tool>
       </inputs>
     </file>
@@ -270,6 +304,10 @@
           <name>BICOMP</name>
           <file> 37 50 28 25</file>
         </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 25 28 50 37</file>
+        </tool>
       </inputs>
     </file>
     <file>
@@ -289,12 +327,12 @@
           <name>BICOMP</name>
           <file> 37 52 28 23 27</file>
         </tool>
+        <tool>
+          <name>ICCSTM8</name>
+          <file> 52 28 23 27 37</file>
+        </tool>
       </inputs>
     </file>
-    <forcedrebuild>
-      <name>[MULTI_TOOL]</name>
-      <tool>ILINK</tool>
-    </forcedrebuild>
   </configuration>
   <configuration>
     <name>Release</name>

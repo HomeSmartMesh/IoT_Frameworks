@@ -105,22 +105,24 @@ void I2C_Init()
 								// CR1_NOSTRETCH	Clock Strtching enabled
 								// CR1_ENGC 		General call disabled
 								// CR2_POS 			ACK controls the current byte
-	I2C1_FREQR = 16;             // clk at least 1 MHz for Standard and 4MHz for Fast
+  I2C1_FREQR = 10;             // 10:10MHz clk at least 1 MHz for Standard and 4MHz for Fast
 	I2C1_CCRH_F_S = 0;           // I2C running is standard mode.
-	//I2C1_CCRL = 0x50;            // I2C period = 2 * CCR * tMASTER 100KHz : tabe 50 RM0016 P 315
+        
+	//I2C1_CCRL = 0x50;            // I2C period = 2 * CCR * tMASTER 100KHz : tabe 50 RM0016 P 315 for STM8S103
 	//I2C1_CCRH = 0x00;			// CCR[11:8] = 0
-	I2C1_CCRL = 0xA0;            // I2C period = 2 * CCR * tMASTER 100KHz : tabe 50 RM0016 P 315
-	I2C1_CCRH = 0x00;			// CCR[11:8] = 0
-								// I2C1_CCRH_F_S : Standard mode, DUTY unused in standard mode
+        //400KHz %Err=0%, I2C_CCr = 1 ; Duty_bit = 1
+	I2C1_CCRL = 0x01;            // I2C period = 2 * CCR * tMASTER 100KHz : tabe 50 RM0031 P 517 for STM8L151
+	I2C1_CCRH = 0xC0;	     // F/S = 1 ; DUTY = 1 ; res = 0; CCR[11:8] = 0;
 
 	I2C1_OARH_ADDMODE = 0;               // 7-bit slave address
 	I2C1_OARH_ADDCONF = 1;               // This bit must be set by software
 										// ADD[9:8] unused
 
-	I2C1_TRISER = 17;			//Maximum time used by the feedback loop to keep SCL Freq stable whatever SCL rising time is
+	I2C1_TRISER = 6;			//Maximum time used by the feedback loop to keep SCL Freq stable whatever SCL rising time is
 								//Standard mode max rise time is 1000ns
-								//example for 8MHz : (1000ns / 125 ns = 8 ) + 1 = 9
-								//for 16 MHz : (1000 ns / 62.5 ns = 16 ) + 1 = 17
+                                                                //Fast mode 300ns
+								//example for 16MHz-S : (1000ns / 62.5 ns = 16 ) + 1 = 17
+								//for 16 MHz-F : (300 ns / 62.5 ns = 16 ) + 1 = 6
 
 	// ------------------------ Interrupts are enabled ------------------------ 
 	I2C1_ITR_ITEVTEN = 1;                //Event  Enables 				: SB, ADDR, ADD10, STOPF, BTF, WUFH
@@ -200,7 +202,7 @@ __interrupt void I2C_IRQ()
 			i2c.buffer_index = 0;		//init the counter
                         i2c.Step = 2;
 		}
-		else if(I2C1_SR3_TRA)			//(TRA) we are writing to the slave
+		else if(I2C1_SR3_TRA)			//(TRA) Data Bytes Transmitted
 		{
 			if (I2C1_SR1_TXE)		//(TXE) Data Register Empty
 			{
@@ -219,9 +221,9 @@ __interrupt void I2C_IRQ()
 			{
 				i2c.Stop = 1;
 			}
-			else
+			else//this is the end of the Transmit procedure
 			{
-				I2C_IRQ_Printf("TRA, no TXE and not Stop !\n\r");
+				//I2C_IRQ_Printf("TRA, no TXE and not Stop !\n\r");
 				i2c.Stop = 1;
 			}
 		}
@@ -259,7 +261,7 @@ __interrupt void I2C_IRQ()
 			}
 			else 
 			{
-				I2C_IRQ_Printf("Not TRA, no RXNE and not StopF !\n\r");
+				//I2C_IRQ_Printf("Not TRA, no RXNE and not StopF !\n\r");
 				i2c.Stop = 1;
 			}
 		}

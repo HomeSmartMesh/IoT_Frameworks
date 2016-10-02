@@ -246,9 +246,9 @@ BYTE ReadReg(BYTE address)
     BYTE result;
 
     I2C_Write(0x4A, &address,1);
-    delay_1ms_Count(10);
+    delay_100us();
     I2C_Read(0x4A, &result,1); 
-    delay_1ms_Count(100);//wait to complete before writing into unallocated variable
+    delay_100us();//wait to complete before writing into unallocated variable
     
     return result;
 }

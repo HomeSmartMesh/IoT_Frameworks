@@ -15,7 +15,7 @@
     <Static>
       <Workspace>
         <ColumnWidths>
-          <Column0>211</Column0>
+          <Column0>194</Column0>
           <Column1>27</Column1>
           <Column2>27</Column2>
           <Column3>27</Column3>
@@ -43,6 +43,7 @@
                 <ExpandedNode>&lt;ws&gt;/pr02_AmbientLight</ExpandedNode>
                 <ExpandedNode>&lt;ws&gt;/pr03_PressHumTemp</ExpandedNode>
                 <ExpandedNode>&lt;ws&gt;/pr04_LightBroadcast</ExpandedNode>
+                <ExpandedNode>&lt;ws&gt;/pr04_LightBroadcast/libs</ExpandedNode>
               </NodeDict>
             </Session>
           </Tab>
@@ -83,11 +84,10 @@
           <SelStart>0</SelStart>
           <SelEnd>0</SelEnd>
           <XPos2>0</XPos2>
-          <YPos2>235</YPos2>
-          <SelStart2>6327</SelStart2>
-          <SelEnd2>6327</SelEnd2>
+          <YPos2>217</YPos2>
+          <SelStart2>6293</SelStart2>
+          <SelEnd2>6293</SelEnd2>
         </Tab>
-        <ActiveTab>1</ActiveTab>
         <Tab>
           <Factory>TextEditor</Factory>
           <Filename>$WS_DIR$\pr03_PressHumTemp\main.c</Filename>
@@ -96,9 +96,70 @@
           <SelStart>0</SelStart>
           <SelEnd>0</SelEnd>
           <XPos2>0</XPos2>
-          <YPos2>374</YPos2>
-          <SelStart2>9227</SelStart2>
-          <SelEnd2>9227</SelEnd2>
+          <YPos2>0</YPos2>
+          <SelStart2>12</SelStart2>
+          <SelEnd2>12</SelEnd2>
+        </Tab>
+        <Tab>
+          <Factory>TextEditor</Factory>
+          <Filename>C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.0\stm8\inc\iostm8l151f3.h</Filename>
+          <XPos>0</XPos>
+          <YPos>0</YPos>
+          <SelStart>0</SelStart>
+          <SelEnd>0</SelEnd>
+          <XPos2>0</XPos2>
+          <YPos2>4510</YPos2>
+          <SelStart2>157481</SelStart2>
+          <SelEnd2>157490</SelEnd2>
+        </Tab>
+        <Tab>
+          <Factory>TextEditor</Factory>
+          <Filename>$WS_DIR$\pr04_LightBroadcast\main.c</Filename>
+          <XPos>0</XPos>
+          <YPos>0</YPos>
+          <SelStart>0</SelStart>
+          <SelEnd>0</SelEnd>
+          <XPos2>0</XPos2>
+          <YPos2>228</YPos2>
+          <SelStart2>5841</SelStart2>
+          <SelEnd2>5841</SelEnd2>
+        </Tab>
+        <ActiveTab>4</ActiveTab>
+        <Tab>
+          <Factory>TextEditor</Factory>
+          <Filename>$WS_DIR$\..\libs\i2c_m.c</Filename>
+          <XPos>0</XPos>
+          <YPos>0</YPos>
+          <SelStart>0</SelStart>
+          <SelEnd>0</SelEnd>
+          <XPos2>0</XPos2>
+          <YPos2>188</YPos2>
+          <SelStart2>8566</SelStart2>
+          <SelEnd2>8586</SelEnd2>
+        </Tab>
+        <Tab>
+          <Factory>TextEditor</Factory>
+          <Filename>$WS_DIR$\..\libs\ClockUartLed.c</Filename>
+          <XPos>0</XPos>
+          <YPos>0</YPos>
+          <SelStart>0</SelStart>
+          <SelEnd>0</SelEnd>
+          <XPos2>0</XPos2>
+          <YPos2>123</YPos2>
+          <SelStart2>0</SelStart2>
+          <SelEnd2>0</SelEnd2>
+        </Tab>
+        <Tab>
+          <Factory>TextEditor</Factory>
+          <Filename>$WS_DIR$\..\libs\ClockUartLed.h</Filename>
+          <XPos>0</XPos>
+          <YPos>0</YPos>
+          <SelStart>0</SelStart>
+          <SelEnd>0</SelEnd>
+          <XPos2>0</XPos2>
+          <YPos2>0</YPos2>
+          <SelStart2>329</SelStart2>
+          <SelEnd2>340</SelEnd2>
         </Tab>
       </Pane>
       <ActivePane>0</ActivePane>
@@ -119,6 +180,12 @@
             </Toolbar-08457468>
           </Sizes>
         </Row0>
+        <Row1>
+          <Sizes/>
+        </Row1>
+        <Row2>
+          <Sizes/>
+        </Row2>
       </Top>
       <Left>
         <Row0>
@@ -133,9 +200,9 @@
                 <y>-2</y>
                 <xscreen>144</xscreen>
                 <yscreen>200</yscreen>
-                <sizeHorzCX>122972</sizeHorzCX>
+                <sizeHorzCX>107784</sizeHorzCX>
                 <sizeHorzCY>173310</sizeHorzCY>
-                <sizeVertCX>245090</sizeVertCX>
+                <sizeVertCX>214820</sizeVertCX>
                 <sizeVertCY>791161</sizeVertCY>
               </Rect>
             </Wnd0>
@@ -155,14 +222,14 @@
                 <Top>-2</Top>
                 <Left>-2</Left>
                 <Bottom>198</Bottom>
-                <Right>1173</Right>
+                <Right>1338</Right>
                 <x>-2</x>
                 <y>-2</y>
-                <xscreen>1175</xscreen>
+                <xscreen>1340</xscreen>
                 <yscreen>200</yscreen>
-                <sizeHorzCX>1003416</sizeHorzCX>
+                <sizeHorzCX>1002994</sizeHorzCX>
                 <sizeHorzCY>173310</sizeHorzCY>
-                <sizeVertCX>122972</sizeVertCX>
+                <sizeVertCX>107784</sizeVertCX>
                 <sizeVertCY>173310</sizeVertCY>
               </Rect>
             </Wnd1>
