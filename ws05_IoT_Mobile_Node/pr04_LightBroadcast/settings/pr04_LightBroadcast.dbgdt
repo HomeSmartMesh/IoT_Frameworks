@@ -1,43 +1,62 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 
-<Workspace>
-  <ConfigDictionary>
-    <CurrentConfigs>
-      <Project>pr01_Node_Alive/Debug</Project>
-      <Project>pr03_PressHumTemp/Debug</Project>
-      <Project>pr02_AmbientLight/Debug</Project>
-      <Project>pr04_LightBroadcast/Debug</Project>
-    </CurrentConfigs>
-    <CurrentProj>pr04_LightBroadcast</CurrentProj>
-    <OverviewSelected>1</OverviewSelected>
-  </ConfigDictionary>
+<Project>
   <Desktop>
     <Static>
+      <Debug-Log>
+        <ColumnWidth0>20</ColumnWidth0>
+        <ColumnWidth1>1277</ColumnWidth1>
+      </Debug-Log>
+      <Build>
+        <ColumnWidth0>20</ColumnWidth0>
+        <ColumnWidth1>957</ColumnWidth1>
+        <ColumnWidth2>255</ColumnWidth2>
+        <ColumnWidth3>63</ColumnWidth3>
+      </Build>
       <Workspace>
         <ColumnWidths>
-          <Column0>211</Column0>
+          <Column0>124</Column0>
           <Column1>27</Column1>
           <Column2>27</Column2>
           <Column3>27</Column3>
         </ColumnWidths>
       </Workspace>
-      <Build>
-        <ColumnWidth0>20</ColumnWidth0>
-        <ColumnWidth1>1302</ColumnWidth1>
-        <ColumnWidth2>347</ColumnWidth2>
-        <ColumnWidth3>86</ColumnWidth3>
-      </Build>
-      <TerminalIO/>
-      <Debug-Log>
-        <ColumnWidth0>20</ColumnWidth0>
-        <ColumnWidth1>1277</ColumnWidth1>
-      </Debug-Log>
+      <Disassembly>
+        <col-names>
+          <item>Disassembly</item>
+          <item>_I0</item>
+        </col-names>
+        <col-widths>
+          <item>500</item>
+          <item>20</item>
+        </col-widths>
+        <DisasmHistory/>
+        <ShowCodeCoverage>1</ShowCodeCoverage>
+        <ShowInstrProfiling>1</ShowInstrProfiling>
+      </Disassembly>
     </Static>
     <Windows>
-      <Wnd2>
+      <Wnd0>
         <Tabs>
           <Tab>
-            <Identity>TabID-21194-7828</Identity>
+            <Identity>TabID-14823-22258</Identity>
+            <TabName>Debug Log</TabName>
+            <Factory>Debug-Log</Factory>
+            <Session/>
+          </Tab>
+          <Tab>
+            <Identity>TabID-14300-22268</Identity>
+            <TabName>Build</TabName>
+            <Factory>Build</Factory>
+            <Session/>
+          </Tab>
+        </Tabs>
+        <SelectedTab>0</SelectedTab>
+      </Wnd0>
+      <Wnd1>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-25571-22261</Identity>
             <TabName>Workspace</TabName>
             <Factory>Workspace</Factory>
             <Session>
@@ -48,24 +67,18 @@
           </Tab>
         </Tabs>
         <SelectedTab>0</SelectedTab>
-      </Wnd2>
-      <Wnd3>
+      </Wnd1>
+      <Wnd2>
         <Tabs>
           <Tab>
-            <Identity>TabID-26317-8756</Identity>
-            <TabName>Build</TabName>
-            <Factory>Build</Factory>
-            <Session/>
-          </Tab>
-          <Tab>
-            <Identity>TabID-24028-16950</Identity>
-            <TabName>Debug Log</TabName>
-            <Factory>Debug-Log</Factory>
+            <Identity>TabID-3552-22264</Identity>
+            <TabName>Disassembly</TabName>
+            <Factory>Disassembly</Factory>
             <Session/>
           </Tab>
         </Tabs>
         <SelectedTab>0</SelectedTab>
-      </Wnd3>
+      </Wnd2>
     </Windows>
     <Editor>
       <Pane>
@@ -186,43 +199,61 @@
           </Sizes>
         </Row0>
         <Row1>
-          <Sizes/>
+          <Sizes>
+            <Toolbar-18640780>
+              <key>debuggergui.enu1</key>
+            </Toolbar-18640780>
+          </Sizes>
         </Row1>
-        <Row2>
-          <Sizes/>
-        </Row2>
       </Top>
       <Left>
+        <Row0>
+          <Sizes>
+            <Wnd1>
+              <Rect>
+                <Top>-2</Top>
+                <Left>-2</Left>
+                <Bottom>887</Bottom>
+                <Right>198</Right>
+                <x>-2</x>
+                <y>-2</y>
+                <xscreen>200</xscreen>
+                <yscreen>200</yscreen>
+                <sizeHorzCX>149701</sizeHorzCX>
+                <sizeHorzCY>173310</sizeHorzCY>
+                <sizeVertCX>149701</sizeVertCX>
+                <sizeVertCY>770364</sizeVertCY>
+              </Rect>
+            </Wnd1>
+          </Sizes>
+        </Row0>
+      </Left>
+      <Right>
         <Row0>
           <Sizes>
             <Wnd2>
               <Rect>
                 <Top>-2</Top>
                 <Left>-2</Left>
-                <Bottom>911</Bottom>
-                <Right>285</Right>
+                <Bottom>887</Bottom>
+                <Right>198</Right>
                 <x>-2</x>
                 <y>-2</y>
-                <xscreen>144</xscreen>
+                <xscreen>200</xscreen>
                 <yscreen>200</yscreen>
-                <sizeHorzCX>107784</sizeHorzCX>
+                <sizeHorzCX>149701</sizeHorzCX>
                 <sizeHorzCY>173310</sizeHorzCY>
-                <sizeVertCX>214820</sizeVertCX>
-                <sizeVertCY>791161</sizeVertCY>
+                <sizeVertCX>149701</sizeVertCX>
+                <sizeVertCY>770364</sizeVertCY>
               </Rect>
             </Wnd2>
           </Sizes>
-        </Row0>
-      </Left>
-      <Right>
-        <Row0>
-          <Sizes/>
         </Row0>
       </Right>
       <Bottom>
         <Row0>
           <Sizes>
-            <Wnd3>
+            <Wnd0>
               <Rect>
                 <Top>-2</Top>
                 <Left>-2</Left>
@@ -234,10 +265,10 @@
                 <yscreen>200</yscreen>
                 <sizeHorzCX>1002994</sizeHorzCX>
                 <sizeHorzCY>173310</sizeHorzCY>
-                <sizeVertCX>107784</sizeVertCX>
+                <sizeVertCX>149701</sizeVertCX>
                 <sizeVertCY>173310</sizeVertCY>
               </Rect>
-            </Wnd3>
+            </Wnd0>
           </Sizes>
         </Row0>
       </Bottom>
@@ -246,6 +277,6 @@
       </Float>
     </Positions>
   </Desktop>
-</Workspace>
+</Project>
 
 

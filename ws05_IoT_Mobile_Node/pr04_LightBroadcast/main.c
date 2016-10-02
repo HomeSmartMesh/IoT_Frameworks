@@ -21,6 +21,8 @@ unsigned char NodeId;
 // - CPU and Peripheral clocks stopped, RTC running
 // - wakeup from RTC, or external/Reset
 
+BYTE sensorData[2];
+
 void RfAlive()
 {
       unsigned char Tx_Data[3];
@@ -28,6 +30,17 @@ void RfAlive()
       Tx_Data[1]=NodeId;
       Tx_Data[2]= Tx_Data[0] ^ NodeId;
       nRF_Transmit(Tx_Data,3);
+}
+
+void Rf_Light()
+{
+      unsigned char Tx_Data[5];
+      Tx_Data[0]=0x3B;//Light is 0x3B
+      Tx_Data[1]=NodeId;
+      Tx_Data[2]=sensorData[0];
+      Tx_Data[3]=sensorData[1];
+      Tx_Data[4]= Tx_Data[0] ^ NodeId;
+      nRF_Transmit(Tx_Data,5);
 }
 
 void RfSwitch(unsigned char state)
@@ -69,19 +82,6 @@ __interrupt void IRQHandler_Pin0(void)
 }
 
 
-#pragma vector = RTC_WAKEUP_vector
-__interrupt void IRQHandler_RTC(void)
-{
-  if(RTC_ISR2_WUTF)
-  {
-    RTC_ISR2_WUTF = 0;
-    
-    RfAlive();
-    
-    //LogMagnets();
-  }
-  
-}
 
 
 void SMT8L_Switch_ToHSI()
@@ -209,7 +209,6 @@ void PingUart(unsigned char index)
 
 BYTE iRL_count;
 BYTE iRL_result;
-BYTE sensorData[2];
 BYTE iRL_address;
 unsigned int SensorVal;
 
@@ -277,55 +276,25 @@ void ReadLight_sm()
   i2c_ReadLight_StateMachine();
   delay_100us();
   i2c_ReadLight_StateMachine();
-  delay_100us();
 }
-
-void ReadLight()
-{
-    BYTE sensorData[2];
-    BYTE result,address;
-
-    //sensorData[0] = ReadReg(0x03);
-	address = 0x03;
-    I2C_Write(0x4A, &address,1);
-    delay_100us();
-    I2C_Read(0x4A, &result,1); 
-    delay_100us();//wait to complete before writing into unallocated variable
-    sensorData[0] = result;
-
-    //sensorData[1] = ReadReg(0x04);
-	address = 0x04;
-    I2C_Write(0x4A, &address,1);
-    delay_100us();
-    I2C_Read(0x4A, &result,1); 
-    delay_100us();//wait to complete before writing into unallocated variable
-    sensorData[1] = result;
-
-    UARTPrintf("Light: ");
-    unsigned int Val = sensorData[0];
-    Val <<= 4;//shift to make place for the 4 LSB
-    Val = Val + (0x0F & sensorData[1]);
-    UARTPrintf_uint(Val);
-    UARTPrintf("\n");
-  
-}
-
 
 void i2c_user_Rx_Callback(BYTE *userdata,BYTE size)
 {
-	/*UARTPrintf("I2C Transaction complete, received:\n\r");
+	UARTPrintf("I2C Transaction complete, received:\n\r");
 	UARTPrintfHexTable(userdata,size);
-	UARTPrintf("\n\r");*/
-  //i2c_ReadLight_StateMachine();
+	UARTPrintf("\n\r");
+	//cannot call the state machine from interruption context
+	//i2c_ReadLight_StateMachine();
         
 }
 
 void i2c_user_Tx_Callback(BYTE *userdata,BYTE size)
 {
-	/*UARTPrintf("I2C Transaction complete, Transmitted:\n\r");
+	UARTPrintf("I2C Transaction complete, Transmitted:\n\r");
 	UARTPrintfHexTable(userdata,size);
-	UARTPrintf("\n\r");*/
-  //i2c_ReadLight_StateMachine();
+	UARTPrintf("\n\r");
+	//cannot call the state machine from interruption context
+	//i2c_ReadLight_StateMachine();
 }
 
 
@@ -351,6 +320,36 @@ void i2c_user_Error_Callback(BYTE l_sr2)
 }
 
 
+#pragma vector = RTC_WAKEUP_vector
+__interrupt void IRQHandler_RTC(void)
+{
+  if(RTC_ISR2_WUTF)
+  {
+    RTC_ISR2_WUTF = 0;
+    
+	
+	delay_1ms_Count(1000);
+    RfAlive();
+    
+	UARTPrintf("Now Log Magnet\r\n");
+    LogMagnets();
+	
+	delay_1ms_Count(1000);
+
+	UARTPrintf("Initialise_STM8L_Clock\r\n");
+	Initialise_STM8L_Clock();
+	UARTPrintf("I2C Init\r\n");
+	I2C_Init();
+
+	delay_1ms_Count(1000);	
+	UARTPrintf("Now Read Light\r\n");
+	delay_1ms_Count(1);
+    ReadLight_sm();
+	delay_1ms_Count(1);
+    
+  }
+  
+}
 
 int main( void )
 {
@@ -386,11 +385,12 @@ int main( void )
     //
     while (1)
     {
-      ReadLight();
-      delay_1ms_Count(2000);
-	  ReadLight_sm();
-      delay_1ms_Count(2000);
-      //__halt();
+		RfAlive();
+		delay_1ms_Count(1000);
+		ReadLight_sm();
+		Rf_Light();
+		delay_1ms_Count(4000);
+		//__halt();
       
     }
 }

@@ -17,6 +17,8 @@
 
 #include "temp_ds18b20.h"
 
+unsigned int SensorVal;
+
 //User Rx CallBack
 void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 {
@@ -54,6 +56,25 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
     else
     {
       UARTPrintf("Protocol Id: 0x75, CRC Fail\n");
+    }
+  }
+  else if(rxData[0]==0x3B)//Light
+  {
+    BYTE crc = rxData[0] ^ rxData[1];
+    if(crc == rxData[4])
+    {
+      UARTPrintf("NodeId:");
+      UARTPrintf_uint(rxData[1]);
+      UARTPrintf(",Light: ");
+      SensorVal = rxData[2];
+      SensorVal <<= 4;//shift to make place for the 4 LSB
+      SensorVal = SensorVal + (0x0F & rxData[3]);
+      UARTPrintf_uint(SensorVal);
+      UARTPrintf("\n");
+    }
+    else
+    {
+      UARTPrintf("Protocol Id: 0x3B, CRC Fail\n");
     }
   }
   else if(rxData[0]==0xC5)
