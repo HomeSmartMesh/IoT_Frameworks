@@ -114,28 +114,15 @@
         </Tab>
         <Tab>
           <Factory>TextEditor</Factory>
-          <Filename>$WS_DIR$\pr04_LightBroadcast\main.c</Filename>
-          <XPos>0</XPos>
-          <YPos>0</YPos>
-          <SelStart>0</SelStart>
-          <SelEnd>0</SelEnd>
-          <XPos2>0</XPos2>
-          <YPos2>228</YPos2>
-          <SelStart2>5841</SelStart2>
-          <SelEnd2>5841</SelEnd2>
-        </Tab>
-        <ActiveTab>4</ActiveTab>
-        <Tab>
-          <Factory>TextEditor</Factory>
           <Filename>$WS_DIR$\..\libs\i2c_m.c</Filename>
           <XPos>0</XPos>
           <YPos>0</YPos>
           <SelStart>0</SelStart>
           <SelEnd>0</SelEnd>
           <XPos2>0</XPos2>
-          <YPos2>188</YPos2>
+          <YPos2>218</YPos2>
           <SelStart2>8566</SelStart2>
-          <SelEnd2>8586</SelEnd2>
+          <SelEnd2>8566</SelEnd2>
         </Tab>
         <Tab>
           <Factory>TextEditor</Factory>
@@ -161,6 +148,19 @@
           <SelStart2>329</SelStart2>
           <SelEnd2>340</SelEnd2>
         </Tab>
+        <Tab>
+          <Factory>TextEditor</Factory>
+          <Filename>$WS_DIR$\pr04_LightBroadcast\main.c</Filename>
+          <XPos>0</XPos>
+          <YPos>0</YPos>
+          <SelStart>0</SelStart>
+          <SelEnd>0</SelEnd>
+          <XPos2>0</XPos2>
+          <YPos2>270</YPos2>
+          <SelStart2>7251</SelStart2>
+          <SelEnd2>7251</SelEnd2>
+        </Tab>
+        <ActiveTab>7</ActiveTab>
       </Pane>
       <ActivePane>0</ActivePane>
       <Sizes>

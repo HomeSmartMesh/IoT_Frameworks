@@ -219,10 +219,12 @@ __interrupt void I2C_IRQ()
 			}
 			else if(I2C1_SR1_STOPF)//could only be a Stop Event then...
 			{
+                                //i2c_user_Tx_Callback(i2c.masterBuffer,i2c.masterTransactionLength);//Notify the user
 				i2c.Stop = 1;
 			}
 			else//this is the end of the Transmit procedure
 			{
+                                
 				//I2C_IRQ_Printf("TRA, no TXE and not Stop !\n\r");
 				i2c.Stop = 1;
 			}

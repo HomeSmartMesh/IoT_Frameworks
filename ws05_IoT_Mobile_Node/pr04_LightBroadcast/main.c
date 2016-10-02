@@ -206,11 +206,117 @@ void PingUart(unsigned char index)
       UARTPrintf(" \n");
 }
 
+
+BYTE iRL_count;
+BYTE iRL_result;
+BYTE sensorData[2];
+BYTE iRL_address;
+unsigned int SensorVal;
+
+void i2c_ReadLight_StateMachine()
+{
+  //    sensorData[0] = ReadReg(0x03);
+  //    sensorData[1] = ReadReg(0x04);
+
+  UARTPrintf("rsm: ");
+  UARTPrintf_uint(iRL_count);
+  UARTPrintf("\n");
+
+  switch(iRL_count)
+  {
+	case 0:                                       //set reg to 0x03
+		{
+			iRL_address = 0x03;
+			I2C_Write(0x4A, &iRL_address,1);
+		}
+	break;
+	case 1:                                       //read reg 0x03
+		{
+			I2C_Read(0x4A, &iRL_result,1); 
+		}
+	break;
+	case 2:
+		{
+			sensorData[0] = iRL_result;             //result of reg[0x03]
+			iRL_address = 0x04;                     //set reg to 0x04
+			I2C_Write(0x4A, &iRL_address,1);
+		}
+	break;
+	case 3:                                       //read reg 0x04
+		{
+			I2C_Read(0x4A, &iRL_result,1); 
+		}
+	break;
+	case 4:                                       //read reg 0x04
+		{
+			sensorData[1] = iRL_result;             //result of reg[0x04]
+			UARTPrintf("Light: ");
+			SensorVal = sensorData[0];
+			SensorVal <<= 4;//shift to make place for the 4 LSB
+			SensorVal = SensorVal + (0x0F & sensorData[1]);
+			UARTPrintf_uint(SensorVal);
+			UARTPrintf("\n");
+		}
+	break;
+	default:
+		UARTPrintf("Unexpected default case\n");
+	break;
+  }
+  iRL_count++;
+}
+
+void ReadLight_sm()
+{
+  iRL_count = 0;
+  i2c_ReadLight_StateMachine();
+  delay_100us();
+  i2c_ReadLight_StateMachine();
+  delay_100us();
+  i2c_ReadLight_StateMachine();
+  delay_100us();
+  i2c_ReadLight_StateMachine();
+  delay_100us();
+  i2c_ReadLight_StateMachine();
+  delay_100us();
+}
+
+void ReadLight()
+{
+    BYTE sensorData[2];
+    BYTE result,address;
+
+    //sensorData[0] = ReadReg(0x03);
+	address = 0x03;
+    I2C_Write(0x4A, &address,1);
+    delay_100us();
+    I2C_Read(0x4A, &result,1); 
+    delay_100us();//wait to complete before writing into unallocated variable
+    sensorData[0] = result;
+
+    //sensorData[1] = ReadReg(0x04);
+	address = 0x04;
+    I2C_Write(0x4A, &address,1);
+    delay_100us();
+    I2C_Read(0x4A, &result,1); 
+    delay_100us();//wait to complete before writing into unallocated variable
+    sensorData[1] = result;
+
+    UARTPrintf("Light: ");
+    unsigned int Val = sensorData[0];
+    Val <<= 4;//shift to make place for the 4 LSB
+    Val = Val + (0x0F & sensorData[1]);
+    UARTPrintf_uint(Val);
+    UARTPrintf("\n");
+  
+}
+
+
 void i2c_user_Rx_Callback(BYTE *userdata,BYTE size)
 {
 	/*UARTPrintf("I2C Transaction complete, received:\n\r");
 	UARTPrintfHexTable(userdata,size);
 	UARTPrintf("\n\r");*/
+  //i2c_ReadLight_StateMachine();
         
 }
 
@@ -219,7 +325,10 @@ void i2c_user_Tx_Callback(BYTE *userdata,BYTE size)
 	/*UARTPrintf("I2C Transaction complete, Transmitted:\n\r");
 	UARTPrintfHexTable(userdata,size);
 	UARTPrintf("\n\r");*/
+  //i2c_ReadLight_StateMachine();
 }
+
+
 
 void i2c_user_Error_Callback(BYTE l_sr2)
 {
@@ -241,31 +350,7 @@ void i2c_user_Error_Callback(BYTE l_sr2)
 	}
 }
 
-BYTE ReadReg(BYTE address)
-{
-    BYTE result;
 
-    I2C_Write(0x4A, &address,1);
-    delay_100us();
-    I2C_Read(0x4A, &result,1); 
-    delay_100us();//wait to complete before writing into unallocated variable
-    
-    return result;
-}
-
-void ReadLight()
-{
-    BYTE sensorData[2];
-    sensorData[0] = ReadReg(0x03);
-    sensorData[1] = ReadReg(0x04);
-    UARTPrintf("Light: ");
-    unsigned int Val = sensorData[0];
-    Val <<= 4;//shift to make place for the 4 LSB
-    Val = Val + (0x0F & sensorData[1]);
-    UARTPrintf_uint(Val);
-    UARTPrintf("\n");
-  
-}
 
 int main( void )
 {
@@ -302,6 +387,8 @@ int main( void )
     while (1)
     {
       ReadLight();
+      delay_1ms_Count(2000);
+	  ReadLight_sm();
       delay_1ms_Count(2000);
       //__halt();
       
