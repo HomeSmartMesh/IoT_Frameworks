@@ -12,23 +12,23 @@
  */
 
 // UINT type definition
-#ifndef _UINT_DEF_
-#define _UINT_DEF_
+#ifndef _COMMON_TYPES_
+#define _COMMON_TYPES_
+
+
 typedef unsigned int UINT;
-#endif  
-
-// BYTE type definition
-#ifndef _BYTE_DEF_
-#define _BYTE_DEF_
 typedef unsigned char BYTE;
-#endif   
+
+typedef unsigned char   U8_t;
+typedef signed char     S8_t;
+typedef unsigned short  U16_t;
+typedef signed int      S16_t;
+typedef unsigned long   U32_t;
+typedef signed long     S32_t;
 
 
-#ifndef E_OK
-#define E_OK 						0x00
-#endif   
+#define E_OK 				0x00
 
-#ifndef E_Already_Initialised
 #define E_Already_Initialised 		0x01
-#endif   
 
+#endif  /*_COMMON_TYPES_*/

@@ -47,3 +47,6 @@ Temporary Items
 .apdisk
 *.hex
 *.map
+ws05_IoT_Mobile_Node/pr01_Node_Alive/Debug/
+ws05_IoT_Mobile_Node/pr02_AmbientLight/Debug/
+ws05_IoT_Mobile_Node/pr03_PressHumTemp/Debug/
