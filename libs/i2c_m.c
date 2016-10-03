@@ -64,6 +64,7 @@ void I2C_SW_Init()
 // 9th bit is acknowledge from the slave
 void I2C_Init()
 {
+	I2C1_CR1_PE = 0;	//Make sure the I2C Peripheral is disabled for proper re-Init
   //STM8L SCL : C1
   //      SDA : C0
     PC_DDR_DDR0 = 0;// 0: Input - 1: Output
@@ -82,19 +83,22 @@ void I2C_Init()
     PC_CR1_C11 = 0;// Input mode: 0: Floating input - 1: Input with pull-up // Output mode: 0: Pseudo open drain 1: Push-pull
    
     BYTE count = 0;
-    while(I2C1_SR3_BUSY)//first recovery level - clock the i2c
-    {
-      PC_ODR_ODR1 = 0;
-      delay_1ms_Count(1);
-      PC_ODR_ODR1 = 1;
-      delay_1ms_Count(1);
-      count++;
-      if(count == 10)//doesnt help righ away, take some time to have effect
-      {
+    if(I2C1_SR3_BUSY)//first recovery level - clock the i2c
+	{
+		while(I2C1_SR3_BUSY && (count < 10))//first recovery level - clock the i2c
+		{
+		  PC_ODR_ODR1 = 0;
+		  delay_1ms_Count(1);
+		  PC_ODR_ODR1 = 1;
+		  delay_1ms_Count(1);
+		  count++;
+		}
         delay_1ms_Count(1000);  
-        count = 0;
-      }
-    }
+		if(I2C1_SR3_BUSY)
+		{
+			UARTPrintf("I2C_Busy Recoevry Fail\n\r");
+		}
+	}
     
     PC_DDR_DDR0 = 0;// 0: Input - 1: Output
     PC_CR1_C10 = 0;// Input mode: 0: Floating input - 1: Input with pull-up // Output mode: 0: Pseudo open drain 1: Push-pull
@@ -142,7 +146,10 @@ void I2C_Init()
 
 void I2C_Transaction(BYTE read,BYTE slaveAddress, BYTE* buffer,BYTE count)
 {
-	while(	i2c.Stop == 0);//re-entrancy protection
+	if(	i2c.Stop == 0)
+	{
+		UARTPrintf("Error - collision of i2c transactions!\n\r");
+	}//re-entrancy protection
 	i2c.Stop = 0;
 	i2c.readwrite = read;
 	i2c.SlaveAddress = slaveAddress;
@@ -191,6 +198,12 @@ void I2C_Write(BYTE slaveAddress, BYTE* buffer,BYTE count)
 //#pragma vector = I2C1_RXNE_vector	// all have same vector
 __interrupt void I2C_IRQ()
 {
+	BYTE act_Send_Next = 0;
+	/*UARTPrintf("SR1/2: ");
+	UARTPrintfHex(I2C1_SR1);
+	UARTPrintf(" ");
+	UARTPrintfHex(I2C1_SR2);
+	UARTPrintf("\r\n");*/
 	if(i2c.masterMode)				//using soft flag not MSL because MSL is 0 when the master receives the last RxNE data that is 0
 	{
 		if (I2C1_SR1_SB)			//(SB) The Start Byte has been sent
@@ -204,22 +217,14 @@ __interrupt void I2C_IRQ()
 			i2c.reg = I2C1_SR1;			//clearing status registers
 			i2c.reg = I2C1_SR3;			//clearing status registers
 			i2c.buffer_index = 0;		//init the counter
-                        i2c.Step = 2;
+            i2c.Step = 2;
+			act_Send_Next = 1;
 		}
 		else if(I2C1_SR3_TRA)			//(TRA) Data Bytes Transmitted
 		{
 			if (I2C1_SR1_TXE)		//(TXE) Data Register Empty
 			{
-				
-				I2C1_DR = i2c.masterBuffer[i2c.buffer_index++];
-                                i2c.Step = 3;
-				if (i2c.buffer_index == i2c.masterTransactionLength)
-				{
-					I2C1_CR2_STOP = 1;	//Generate Stop condition
-                                        i2c.Step = 4;
-                                        i2c.Stop = 1;//allow restarts
-					i2c_user_Tx_Callback(i2c.masterBuffer,i2c.masterTransactionLength);//Notify the user
-				}
+				act_Send_Next = 1;
 			}
 			else if(I2C1_SR1_STOPF)//could only be a Stop Event then...
 			{
@@ -317,6 +322,19 @@ __interrupt void I2C_IRQ()
 		}
 	}
 	
+
+	if(act_Send_Next)
+	{
+		I2C1_DR = i2c.masterBuffer[i2c.buffer_index++];
+						i2c.Step = 3;
+		if (i2c.buffer_index == i2c.masterTransactionLength)
+		{
+			I2C1_CR2_STOP = 1;	//Generate Stop condition
+								i2c.Step = 4;
+								i2c.Stop = 1;//allow restarts
+			i2c_user_Tx_Callback(i2c.masterBuffer,i2c.masterTransactionLength);//Notify the user
+		}
+	}
 	//in either cases, handle the stop notification
 	//reading SR1 register followed by a write in the CR2 register	
 	
@@ -361,7 +379,7 @@ __interrupt void I2C_IRQ()
 		I2C1_CR2 = 0x00;		//a write to this register is needed to clear the STOP Flag
 		
 	}
-	
+	//UARTPrintf("IRQ-I2C end.\r\n");	
 }
 
 

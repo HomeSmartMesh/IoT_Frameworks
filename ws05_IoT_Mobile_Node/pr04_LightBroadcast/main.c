@@ -81,9 +81,6 @@ __interrupt void IRQHandler_Pin0(void)
   EXTI_SR1 = 0xFF;//acknowledge all interrupts pins
 }
 
-
-
-
 void SMT8L_Switch_ToHSI()
 {
   CLK_SWCR_SWEN = 1;                  //  Enable switching.
@@ -279,32 +276,45 @@ void ReadLight_sm()
   i2c_ReadLight_StateMachine();*/
 }
 
+void ReadLight()
+{
+  iRL_count = 0;
+  I2C_SW_Init();
+  i2c_ReadLight_StateMachine();
+  delay_100us();
+  i2c_ReadLight_StateMachine();
+  delay_100us();
+  i2c_ReadLight_StateMachine();
+  delay_100us();
+  i2c_ReadLight_StateMachine();
+  delay_100us();
+  i2c_ReadLight_StateMachine();
+}
+
 void i2c_user_Rx_Callback(BYTE *userdata,BYTE size)
 {
-	UARTPrintf("I2C Transaction complete, received:\n\r");
+	/*UARTPrintf("I2C Transaction complete, received:\n\r");
 	UARTPrintfHexTable(userdata,size);
 	UARTPrintf("\n\r");
 	//cannot call the state machine from interruption context
 	if(iRL_count < 5)
 	{
 		i2c_ReadLight_StateMachine();
-	}
+	}*/
         
 }
 
 void i2c_user_Tx_Callback(BYTE *userdata,BYTE size)
 {
-	UARTPrintf("I2C Transaction complete, Transmitted:\n\r");
+	/*UARTPrintf("I2C Transaction complete, Transmitted:\n\r");
 	UARTPrintfHexTable(userdata,size);
 	UARTPrintf("\n\r");
 	//cannot call the state machine from interruption context
 	if(iRL_count < 5)
 	{
 		i2c_ReadLight_StateMachine();
-	}
+	}*/
 }
-
-
 
 void i2c_user_Error_Callback(BYTE l_sr2)
 {
@@ -330,19 +340,20 @@ void i2c_user_Error_Callback(BYTE l_sr2)
 	}
 }
 
-
 #pragma vector = RTC_WAKEUP_vector
 __interrupt void IRQHandler_RTC(void)
 {
   if(RTC_ISR2_WUTF)
   {
     RTC_ISR2_WUTF = 0;
-    
+    delay_1ms_Count(1);
+	UARTPrintf("RT-Wakeup\r\n");
 	
+	UARTPrintf("RF-Alive\r\n");
     RfAlive();
     
-	
-	ReadLight_sm();
+	//It is forbidden to enter Halt mode while communication is on going
+	//ReadLight_sm();call from main
 	
 	//UARTPrintf("Now Log Magnet\r\n");
     //LogMagnets();
@@ -359,6 +370,7 @@ __interrupt void IRQHandler_RTC(void)
 	delay_1ms_Count(1);
 	*/
     
+	UARTPrintf("IRQ-RTC end.\r\n");
   }
   
 }
@@ -394,14 +406,9 @@ int main( void )
     //
     while (1)
     {
-      //ReadLight_sm();
-		/*RfAlive();
-		delay_1ms_Count(1000);
-		ReadLight_sm();
-		Rf_Light();
-		delay_1ms_Count(4000);
-		*/
+		UARTPrintf("main __halt()\n\r");
 		__halt();
-      
+		UARTPrintf("woke up from RTC, call Read Light\n\r");
+		ReadLight();
     }
 }

@@ -84,7 +84,7 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 2 39 4 0 48</file>
+          <file> 39 2 4 0 48</file>
         </tool>
         <tool>
           <name>ICCSTM8</name>
