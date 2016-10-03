@@ -52,6 +52,10 @@ struct i2c_s {
 //
 //all reset to 0
 //------------------------------------------------------------------------------------------------------------------
+void I2C_SW_Init()
+{
+  i2c.Stop = 1;//stop event still not received, re-entrancy protection  
+}
 
 //
 // STM8 I2C system.
@@ -213,8 +217,8 @@ __interrupt void I2C_IRQ()
 				{
 					I2C1_CR2_STOP = 1;	//Generate Stop condition
                                         i2c.Step = 4;
-					i2c_user_Tx_Callback(i2c.masterBuffer,i2c.masterTransactionLength);//Notify the user
                                         i2c.Stop = 1;//allow restarts
+					i2c_user_Tx_Callback(i2c.masterBuffer,i2c.masterTransactionLength);//Notify the user
 				}
 			}
 			else if(I2C1_SR1_STOPF)//could only be a Stop Event then...
@@ -244,6 +248,7 @@ __interrupt void I2C_IRQ()
 					I2C1_CR2_ACK = 0;	//Nack during the last operation
 					I2C1_CR2_STOP = 1;	//Generate a Stop condition
                                         i2c.Step = 6;
+                                        i2c.Stop = 1;                   //allow new transactions
 					i2c_user_Rx_Callback(i2c.masterBuffer,i2c.masterTransactionLength);//Notify the user
 				}
 				//(no more data while rxNE = 1) This is EV7 from Figure 108 of the reference manual RM0016 in page 297
@@ -315,7 +320,9 @@ __interrupt void I2C_IRQ()
 	//in either cases, handle the stop notification
 	//reading SR1 register followed by a write in the CR2 register	
 	
-	BYTE error_status = I2C1_SR2 & 0x0F;
+	//BYTE error_status = I2C1_SR2 & 0x0F;
+        //check all errors
+	BYTE error_status = I2C1_SR2;
 	if(error_status)				//(OVR)
 	{
 		if(I2C1_SR2_AF)
@@ -337,6 +344,10 @@ __interrupt void I2C_IRQ()
 		if(I2C1_SR2_BERR)
 		{
 			I2C1_SR2_BERR = 0;
+		}
+		if(I2C1_SR2_WUFH)//Wake Up From Halt
+		{
+			I2C1_SR2_WUFH = 0;	
 		}
 		if(I2C1_SR3_MSL)//If we are still Master of the bus, only then stop the transaction
 		{

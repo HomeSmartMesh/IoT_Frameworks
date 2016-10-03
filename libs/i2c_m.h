@@ -63,6 +63,7 @@
 // Addresses are 7/10 bits (one or two bytes), a Genral Call address can be enabled or disabled
 // 9th bit is acknowledge from the slave
 void I2C_Init();
+void I2C_SW_Init();
 
 void I2C_Transaction(BYTE read,BYTE slaveAddress, BYTE* buffer,BYTE count);
 

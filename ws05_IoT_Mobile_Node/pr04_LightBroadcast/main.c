@@ -135,7 +135,7 @@ void Initialise_STM8L_RTC_LowPower()
     
     //with 38KHz has about 61us resolution
     //225-0 with RTC_CR1_WUCKSEL = 3
-    RTC_WUTRH_WUT = 255;// to match a bit less than 10s
+    RTC_WUTRH_WUT = 60;//255 - to match a bit less than 10s
     RTC_WUTRL_WUT = 255;//
     
     RTC_CR2_WUTE = 1;//Wakeup timer enable - starts downcounting
@@ -267,15 +267,16 @@ void i2c_ReadLight_StateMachine()
 void ReadLight_sm()
 {
   iRL_count = 0;
+  I2C_SW_Init();
   i2c_ReadLight_StateMachine();
+  delay_100us();
+  /*i2c_ReadLight_StateMachine();
   delay_100us();
   i2c_ReadLight_StateMachine();
   delay_100us();
   i2c_ReadLight_StateMachine();
   delay_100us();
-  i2c_ReadLight_StateMachine();
-  delay_100us();
-  i2c_ReadLight_StateMachine();
+  i2c_ReadLight_StateMachine();*/
 }
 
 void i2c_user_Rx_Callback(BYTE *userdata,BYTE size)
@@ -284,7 +285,10 @@ void i2c_user_Rx_Callback(BYTE *userdata,BYTE size)
 	UARTPrintfHexTable(userdata,size);
 	UARTPrintf("\n\r");
 	//cannot call the state machine from interruption context
-	//i2c_ReadLight_StateMachine();
+	if(iRL_count < 5)
+	{
+		i2c_ReadLight_StateMachine();
+	}
         
 }
 
@@ -294,7 +298,10 @@ void i2c_user_Tx_Callback(BYTE *userdata,BYTE size)
 	UARTPrintfHexTable(userdata,size);
 	UARTPrintf("\n\r");
 	//cannot call the state machine from interruption context
-	//i2c_ReadLight_StateMachine();
+	if(iRL_count < 5)
+	{
+		i2c_ReadLight_StateMachine();
+	}
 }
 
 
@@ -317,6 +324,10 @@ void i2c_user_Error_Callback(BYTE l_sr2)
 	{
 		UARTPrintf("[I2C Bus Overrun]\n\r");
 	}
+	if(l_sr2 & 0x20)
+	{
+		UARTPrintf("[Wake Up From Halt]\n\r");
+	}
 }
 
 
@@ -328,15 +339,15 @@ __interrupt void IRQHandler_RTC(void)
     RTC_ISR2_WUTF = 0;
     
 	
-	delay_1ms_Count(1000);
     RfAlive();
     
-	UARTPrintf("Now Log Magnet\r\n");
-    LogMagnets();
 	
-	delay_1ms_Count(1000);
-
-	UARTPrintf("Initialise_STM8L_Clock\r\n");
+	ReadLight_sm();
+	
+	//UARTPrintf("Now Log Magnet\r\n");
+    //LogMagnets();
+	
+	/*UARTPrintf("Initialise_STM8L_Clock\r\n");
 	Initialise_STM8L_Clock();
 	UARTPrintf("I2C Init\r\n");
 	I2C_Init();
@@ -346,6 +357,7 @@ __interrupt void IRQHandler_RTC(void)
 	delay_1ms_Count(1);
     ReadLight_sm();
 	delay_1ms_Count(1);
+	*/
     
   }
   
@@ -365,32 +377,31 @@ int main( void )
     delay_1ms_Count(1000);
 
     I2C_Init();
-    __enable_interrupt();
     
     
     //Applies the compile time configured parameters from nRF_Configuration.h
     nRF_Config();
 
-    //The TX Mode is independently set from nRF_Config() and can be changed on run time
-    //nRF_SetMode_TX();
-      
     
     //Init_Magnet_PB0();
     //Init_Magnet_PD0();
     
-    //Initialise_STM8L_RTC_LowPower();
+    Initialise_STM8L_RTC_LowPower();
 
+    __enable_interrupt();
     //
     // Main loop
     //
     while (1)
     {
-		RfAlive();
+      //ReadLight_sm();
+		/*RfAlive();
 		delay_1ms_Count(1000);
 		ReadLight_sm();
 		Rf_Light();
 		delay_1ms_Count(4000);
-		//__halt();
+		*/
+		__halt();
       
     }
 }
