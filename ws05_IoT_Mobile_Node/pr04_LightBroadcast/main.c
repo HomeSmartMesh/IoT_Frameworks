@@ -217,9 +217,9 @@ void i2c_ReadLight_StateMachine()
   //    sensorData[0] = ReadReg(0x03);
   //    sensorData[1] = ReadReg(0x04);
 
-  UARTPrintf("rsm: ");
+  /*UARTPrintf("rsm: ");
   UARTPrintf_uint(iRL_count);
-  UARTPrintf("\n");
+  UARTPrintf("\n");*/
 
   switch(iRL_count)
   {
@@ -280,9 +280,9 @@ void ReadLight_sm()
 
 void i2c_user_Rx_Callback(BYTE *userdata,BYTE size)
 {
-	UARTPrintf("I2C Transaction complete, received:\n\r");
+	/*UARTPrintf("I2C Transaction complete, received:\n\r");
 	UARTPrintfHexTable(userdata,size);
-	UARTPrintf("\n\r");
+	UARTPrintf("\n\r");*/
 	//cannot call the state machine from interruption context
 	//i2c_ReadLight_StateMachine();
         
@@ -290,9 +290,9 @@ void i2c_user_Rx_Callback(BYTE *userdata,BYTE size)
 
 void i2c_user_Tx_Callback(BYTE *userdata,BYTE size)
 {
-	UARTPrintf("I2C Transaction complete, Transmitted:\n\r");
+	/*UARTPrintf("I2C Transaction complete, Transmitted:\n\r");
 	UARTPrintfHexTable(userdata,size);
-	UARTPrintf("\n\r");
+	UARTPrintf("\n\r");*/
 	//cannot call the state machine from interruption context
 	//i2c_ReadLight_StateMachine();
 }
@@ -328,10 +328,10 @@ __interrupt void IRQHandler_RTC(void)
     RTC_ISR2_WUTF = 0;
     
 	
-	delay_1ms_Count(1000);
+	delay_1ms_Count(10);
     RfAlive();
     
-	UARTPrintf("Now Log Magnet\r\n");
+	/*UARTPrintf("Now Log Magnet\r\n");
     LogMagnets();
 	
 	delay_1ms_Count(1000);
@@ -345,7 +345,7 @@ __interrupt void IRQHandler_RTC(void)
 	UARTPrintf("Now Read Light\r\n");
 	delay_1ms_Count(1);
     ReadLight_sm();
-	delay_1ms_Count(1);
+	delay_1ms_Count(1);*/
     
   }
   
@@ -385,9 +385,11 @@ int main( void )
     //
     while (1)
     {
-		RfAlive();
+		//RfAlive();
 		delay_1ms_Count(1000);
+		UARTPrintf("ReadLight_sm\n\r");
 		ReadLight_sm();
+		UARTPrintf("RF_Light\n\r");
 		Rf_Light();
 		delay_1ms_Count(4000);
 		//__halt();
