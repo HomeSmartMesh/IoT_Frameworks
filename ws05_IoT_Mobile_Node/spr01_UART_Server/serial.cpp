@@ -14,6 +14,12 @@
 //for warnx()
 #include <err.h>
 
+//for ios::out,...
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
 void set_custom_speed(int fd,int rate)
 {
 	struct serial_struct serinfo;
@@ -77,6 +83,15 @@ int set_interface_attribs (int fd, speed_t baudrate, int parity)
         return 0;
 }
 
+void Serial::start_logfile(std::string fileName)
+{
+	logfile.open(fileName.c_str(), (std::ios::out|std::ios::app) );
+	if(!logfile.is_open())
+	{
+		printf("could not open file:%s\r\n",fileName.c_str());
+	}
+	cutLine = true;//starts with timestamp on first write;
+}
 
 void Serial::start(std::string port_name,bool s_500)
 {
@@ -108,18 +123,60 @@ bool Serial::update()
 	if(n > 0)
 	{
 		res = true;
+		//as we want to print it here, we make sure it is null terminated
+		if(n < sizeof buf)
+		{
+			buf[n] = '\0';//null terminated string
+		}
+		else
+		{
+			buf[(sizeof buf)-1] = '\0';//must insert a null terminated string, otherwise not safe to print nor search,...
+			printf("Warning : Slow app Max Buffer reached, loss of data !!!\r\n");
+		}
 	}
 	return res;
 }
 
 void Serial::print()
 {
-	//as we want to print it here, we make sure it is null terminated
-	if(n < sizeof buf)
-	{
-		buf[n] = '\0';//null terminated string
-	}
+	//buf is null terminated from update();
 	printf("%s",buf);
+}
+
+void Serial::log()
+{
+	if(logfile.is_open())
+	{
+		logfile.write(buf,n);
+		if(n>0)
+		{
+			logfile.flush();
+		}
+	}
+}
+void Serial::logLn()
+{
+	if(logfile.is_open())
+	{
+		if(n>0)
+		{
+			string str(buf);
+			do
+			{
+				bool prev_cutLine = cutLine;
+				string Line = ParseRemTill(str,'\n',cutLine);
+				if(!Line.empty())
+				{
+					if(prev_cutLine)
+					{
+						logfile << Timestamp();
+					}
+					logfile << Line << std::endl;
+				}
+				logfile.flush();
+			}while(!str.empty());
+		}
+	}
 }
 
 void Serial::send(char* buffer,int size)

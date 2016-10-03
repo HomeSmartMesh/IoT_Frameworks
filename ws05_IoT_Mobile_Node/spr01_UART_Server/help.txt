@@ -1,0 +1,8 @@
+serial logger help 
+command line example 
+'./ser param1:value1 param2:value2':
+
+Parameters:
+- port: e.g 'port:/dev/ttyUSB0'
+- logfile: e.g 'logfile:logfile.txt'
+- logcmd: e.g 'logcmd:1'

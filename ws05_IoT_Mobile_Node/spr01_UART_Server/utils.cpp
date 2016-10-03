@@ -11,6 +11,21 @@ std::string ParseRemTill(std::string &str,char sep)
 	return Parsed;
 }
 
+std::string utl::ParseRemTill(std::string &str,char sep,bool &found)
+{
+	size_t first = str.find_first_of(sep);
+	if(first!=std::string::npos)
+	{
+		found = true;
+	}
+	else
+	{
+		found = false;
+	}
+	std::string Parsed = str.substr(0 , first);
+	str = str.substr(first+1 ,str.length());
+	return Parsed;
+}
 
 void utl::args2map( int argc, char** argv ,strmap &params)
 {
