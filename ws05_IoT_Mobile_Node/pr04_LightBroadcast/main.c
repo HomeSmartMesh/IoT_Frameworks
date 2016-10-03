@@ -325,10 +325,11 @@ __interrupt void IRQHandler_RTC(void)
 {
   if(RTC_ISR2_WUTF)
   {
+	delay_1ms_Count(10);//some time is needed to recover the right clock
+	UARTPrintf("RTC IRQ\n\r");
     RTC_ISR2_WUTF = 0;
     
 	
-	delay_1ms_Count(10);
     RfAlive();
     
 	/*UARTPrintf("Now Log Magnet\r\n");
@@ -378,7 +379,7 @@ int main( void )
     //Init_Magnet_PB0();
     //Init_Magnet_PD0();
     
-    //Initialise_STM8L_RTC_LowPower();
+    Initialise_STM8L_RTC_LowPower();
 
     //
     // Main loop
@@ -386,13 +387,13 @@ int main( void )
     while (1)
     {
 		//RfAlive();
-		delay_1ms_Count(1000);
-		UARTPrintf("ReadLight_sm\n\r");
+		UARTPrintf("main() ReadLight_sm\n\r");
 		ReadLight_sm();
 		UARTPrintf("RF_Light\n\r");
 		Rf_Light();
-		delay_1ms_Count(4000);
-		//__halt();
+		delay_1ms_Count(10);
+		UARTPrintf("Back to __halt()\n\r");
+		__halt();
       
     }
 }
