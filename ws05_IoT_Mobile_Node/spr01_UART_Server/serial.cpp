@@ -175,7 +175,8 @@ void Serial::logLn()
 			char * buf_end = buf + n;
 			while(buf_w != buf_end)
 			{
-				if(newLine)
+				//avoid empty lines do not create a new timestamp if the char is a line ending
+				if(newLine && ((*buf_w) != '\r') && ((*buf_w) != '\n'))
 				{
 					logfile << utl::getTime() << "\t";
 					newLine = false;
