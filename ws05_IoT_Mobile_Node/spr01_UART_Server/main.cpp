@@ -71,6 +71,7 @@ int main( int argc, char** argv )
 		if(ser.update())
 		{
 			ser.log();
+			ser.logLn();
 			ser.print();
 		}
 		usleep (10000);

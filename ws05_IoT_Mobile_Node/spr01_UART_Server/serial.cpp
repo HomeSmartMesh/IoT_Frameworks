@@ -1,4 +1,7 @@
 #include "serial.hpp"
+//for getTime
+#include "utils.hpp"
+
 
 #include <stdio.h>
 #include <errno.h>
@@ -17,6 +20,7 @@
 //for ios::out,...
 #include <iostream>
 #include <fstream>
+
 
 using namespace std;
 
@@ -90,7 +94,7 @@ void Serial::start_logfile(std::string fileName)
 	{
 		printf("could not open file:%s\r\n",fileName.c_str());
 	}
-	cutLine = true;//starts with timestamp on first write;
+	newLine = true;//starts with timestamp on first write;
 }
 
 void Serial::start(std::string port_name,bool s_500)
@@ -154,29 +158,37 @@ void Serial::log()
 		}
 	}
 }
+
+int find_chr(char*buf,int n,char c)
+{
+}
+
 void Serial::logLn()
 {
 	if(logfile.is_open())
 	{
 		if(n>0)
 		{
-			string str(buf);
-			do
+			char * buf_w = buf;
+			char * buf_end = buf + n;
+			int pos = 0;
+			while(buf_w != buf_end)
 			{
-				bool prev_cutLine = cutLine;
-				string Line = ParseRemTill(str,'\n',cutLine);
-				if(!Line.empty())
+				if(newLine)
 				{
-					if(prev_cutLine)
-					{
-						logfile << Timestamp();
-					}
-					logfile << Line << std::endl;
+					logfile << utl::getTime() << "\t";
+					newLine = false;
 				}
-				logfile.flush();
-			}while(!str.empty());
+				if((*buf_w) == '\n')
+				{
+					newLine = true;
+				}
+				logfile.write(buf_w,1);
+				buf_w++;
+			}
 		}
 	}
+	logfile.flush();
 }
 
 void Serial::send(char* buffer,int size)

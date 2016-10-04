@@ -12,7 +12,7 @@ serial port cpp wrapper
 //for file
 #include <fstream>
 
-#define buf_size 2000;
+#define buf_size 2000
 
 class Serial
 {
@@ -20,7 +20,7 @@ private:
 	int fd;
 	char buf [buf_size];
 	int n;
-	bool cutLine;
+	bool newLine;
 public:
 	std::string 	Name;
 	std::ofstream 	logfile;
@@ -30,6 +30,7 @@ public:
 	bool update();
 	void print();
 	void log();
+	void logLn();
 	void send(char* buffer,int size);
 	
 };
