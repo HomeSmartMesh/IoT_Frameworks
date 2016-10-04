@@ -60,6 +60,8 @@ int set_interface_attribs (int fd, speed_t baudrate, int parity)
 
         cfsetospeed (&tty, baudrate);
         cfsetispeed (&tty, baudrate);
+		
+		cfmakeraw(&tty);						//very important to avoid swapping CR to LF
 
         tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;     // 8-bit chars
 
@@ -171,7 +173,6 @@ void Serial::logLn()
 		{
 			char * buf_w = buf;
 			char * buf_end = buf + n;
-			int pos = 0;
 			while(buf_w != buf_end)
 			{
 				if(newLine)
@@ -183,7 +184,10 @@ void Serial::logLn()
 				{
 					newLine = true;
 				}
-				logfile.write(buf_w,1);
+				if((*buf_w) != '\r')//skip the CR
+				{
+					logfile.write(buf_w,1);
+				}
 				buf_w++;
 			}
 		}

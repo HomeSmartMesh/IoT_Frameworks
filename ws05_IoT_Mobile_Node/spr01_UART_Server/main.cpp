@@ -70,7 +70,6 @@ int main( int argc, char** argv )
 		//display Received log
 		if(ser.update())
 		{
-			ser.log();
 			ser.logLn();
 			ser.print();
 		}
