@@ -175,17 +175,19 @@ void Serial::logLn()
 			char * buf_end = buf + n;
 			while(buf_w != buf_end)
 			{
+				bool isp = isprint(*buf_w);
 				//avoid empty lines do not create a new timestamp if the char is a line ending
-				if(newLine && ((*buf_w) != '\r') && ((*buf_w) != '\n'))
+				if(newLine && isp)
 				{
 					logfile << utl::getTime() << "\t";
 					newLine = false;
 				}
-				if((*buf_w) == '\n')
+				if((*buf_w) == '\n')//only allowed printable character
 				{
 					newLine = true;
+					logfile.write(buf_w,1);
 				}
-				if((*buf_w) != '\r')//skip the CR
+				else if(isp)//skip the CR and any other control
 				{
 					logfile.write(buf_w,1);
 				}

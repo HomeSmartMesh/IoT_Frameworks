@@ -73,7 +73,7 @@ int main( int argc, char** argv )
 			ser.logLn();
 			ser.print();
 		}
-		usleep (10000);
+		usleep (1000);
 		
 	}
 

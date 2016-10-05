@@ -55,3 +55,4 @@ ws01_WeatherLogger/pr01_Temperature_RF_Sender/Debug/
 ws01_WeatherLogger/pr02_RF_ReceiveLogger/Debug/
 ws02_RF_ColorsBroadcast/pr02_RF_ColorReceiver/Debug/
 ws03_RF_Sync/pr01_RF_Client/Debug/
+*.bak
