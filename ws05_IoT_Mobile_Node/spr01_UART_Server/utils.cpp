@@ -32,7 +32,7 @@ void utl::args2map( int argc, char** argv ,strmap &params)
 	while(argc--)
 	{
 		std::string argv_str(*argv++);
-		std::string arg_name = TakeParseTo(argv_str,':');
+		std::string arg_name = TakeParseTo(argv_str,'=');
 		params[arg_name] = argv_str;
 	}
 }

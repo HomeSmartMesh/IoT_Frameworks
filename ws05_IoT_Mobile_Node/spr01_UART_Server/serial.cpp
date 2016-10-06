@@ -94,32 +94,38 @@ void Serial::start_logfile(std::string fileName)
 	logfile.open(fileName.c_str(), (std::ios::out|std::ios::app) );
 	if(!logfile.is_open())
 	{
-		printf("could not open file:%s\r\n",fileName.c_str());
+		printf("could not open log file:%s\r\n",fileName.c_str());
 	}
 	newLine = true;//starts with timestamp on first write;
 }
 
 void Serial::start(std::string port_name,bool s_500)
 {
+	std::string strlog;
 	fd = open (port_name.c_str(), O_RDWR | O_NOCTTY | O_SYNC);
 	if (fd >= 0)
 	{
-		printf ("port %s: open @", port_name.c_str());
+		strlog+= "port "+port_name+" is open @";
 		if(s_500)
 		{
 			set_interface_attribs (fd, B500000, 0);
-			printf ("B500000\r\n");
+			strlog+="B500000";
 		}
 		else
 		{
 			set_interface_attribs (fd, B115200, 0);  // set speed to 115,200 bps, 8n1 (no parity)
-			printf ("B115200\r\n");
+			strlog+="B115200";
 		}
 	}
 	else
 	{
-		printf ("error %d opening %s: %s", errno, port_name.c_str(), strerror (errno));
+		//https://github.com/wassfila/STM8_IoT_Base/issues/3
+		char buferr[20];
+		sprintf(buferr,"%d",errno);
+		std::string err_str(buferr);
+		strlog+="error "+err_str+" opening "+port_name+" : "+strerror(errno);
 	}
+	log(strlog);
 }
 
 bool Serial::update()
@@ -143,30 +149,20 @@ bool Serial::update()
 	return res;
 }
 
-void Serial::print()
+void Serial::log(const std::string &str)
 {
-	//buf is null terminated from update();
+	std::string t = utl::getTime();
+	logfile << t << "\t";
+	logfile << str << "\n";
+
+	std::cout << t << "\t";
+	std::cout << str << "\n";
+
+}
+
+void Serial::logBuffer()
+{
 	printf("%s",buf);
-}
-
-void Serial::log()
-{
-	if(logfile.is_open())
-	{
-		logfile.write(buf,n);
-		if(n>0)
-		{
-			logfile.flush();
-		}
-	}
-}
-
-int find_chr(char*buf,int n,char c)
-{
-}
-
-void Serial::logLn()
-{
 	if(logfile.is_open())
 	{
 		if(n>0)

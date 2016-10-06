@@ -28,9 +28,8 @@ public:
 	void start(std::string port_name,bool s_500 = false);
 	void start_logfile(std::string fileName);
 	bool update();
-	void print();
-	void log();
-	void logLn();
+	void log(const std::string &str);
+	void logBuffer();
 	void send(char* buffer,int size);
 	
 };

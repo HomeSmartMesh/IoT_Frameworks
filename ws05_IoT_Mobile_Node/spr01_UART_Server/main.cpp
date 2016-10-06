@@ -32,7 +32,7 @@ void help_arguments()
 	}
 	else
 	{
-		std::cout << "help file missing reinstall SW\r\n";
+		std::cout << "help file missing reinstall SW" << std::endl;
 	}
 	
 }
@@ -44,20 +44,20 @@ int main( int argc, char** argv )
 	utl::args2map(argc,argv,conf);
 	Serial 		ser;
 
+	if(utl::exists(conf,"logfile"))
+	{
+		std::cout << "parsed logfile = " << conf["logfile"] << std::endl;
+		ser.start_logfile(conf["logfile"]);
+	}
 	if(utl::exists(conf,"port"))
 	{
-		std::cout << "port was parsed as : " << conf["port"] << "\r\n";
+		std::cout << "parsed port = " << conf["port"] << std::endl;
 		ser.start(conf["port"]);
 	}
 	else
 	{
 		help_arguments();
 		exit(1);
-	}
-	if(utl::exists(conf,"logfile"))
-	{
-		std::cout << "logfile was parsed as : " << conf["logfile"] << "\r\n";
-		ser.start_logfile(conf["logfile"]);
 	}
 	
 	
@@ -70,10 +70,9 @@ int main( int argc, char** argv )
 		//display Received log
 		if(ser.update())
 		{
-			ser.logLn();
-			ser.print();
+			ser.logBuffer();
 		}
-		usleep (1000);
+		usleep(500000);
 		
 	}
 
