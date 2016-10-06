@@ -51,12 +51,20 @@ void utl::args2map( int argc, char** argv ,strmap &params)
 	configfile.open(params["configfile"].c_str());
 	if(configfile.is_open())
 	{
+		std::cout << "reading from 'configfile.txt'" << std::endl;
 		string line;
 		while ( getline (configfile,line) )
 		{
 			line = TakeParseTo(line,'#');//allow comment character
 			std::string arg_name = TakeParseTo(line,'=');
+			if(!utl::exists(params,arg_name))//if the new parameter from the file was not already provided in cmd line
+			{
 			params[arg_name] = TakeParseTo(line,'\r');//take the windows line ending out
+			}//else ignore it and keep precedence for cmd line
+			else
+			{
+				std::cout << arg_name << " => command line parameter takes over definition in file" << std::endl;
+			}
 		}
 	}
 	else
