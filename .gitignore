@@ -56,3 +56,7 @@ ws01_WeatherLogger/pr02_RF_ReceiveLogger/Debug/
 ws02_RF_ColorsBroadcast/pr02_RF_ColorReceiver/Debug/
 ws03_RF_Sync/pr01_RF_Client/Debug/
 *.bak
+ws05_IoT_Mobile_Node/pr03_PressHumTemp/settings/
+ws05_IoT_Mobile_Node/pr04_LightBroadcast/settings/
+ws05_IoT_Mobile_Node/pr01_Node_Alive/settings/
+ws05_IoT_Mobile_Node/pr02_AmbientLight/settings/
