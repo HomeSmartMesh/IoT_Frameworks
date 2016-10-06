@@ -13,7 +13,7 @@ Parameters:
   Optionnal
   e.g 'logfile=logfile.txt'
 
-- logcmd: e.g 'logcmd=1'
+- logout: e.g 'logcmd=1'
   Optional
 
 - configfile:

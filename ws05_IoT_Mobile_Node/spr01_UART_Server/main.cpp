@@ -49,6 +49,15 @@ int main( int argc, char** argv )
 		std::cout << "logfile = " << conf["logfile"] << std::endl;
 		ser.start_logfile(conf["logfile"]);
 	}
+	if(utl::exists(conf,"logout"))
+	{
+		std::cout << "logout = " << conf["logout"] << std::endl;
+		ser.isLogOut = true;//by default
+		if(conf["logout"] == "0")
+		{
+			ser.isLogOut = false;
+		}
+	}
 	if(utl::exists(conf,"port"))
 	{
 		std::cout << "port = " << conf["port"] << std::endl;
@@ -63,11 +72,11 @@ int main( int argc, char** argv )
 	
 
 	
-	//std::cout << MAGENTA << "Colored " << CYAN << "Text" << RESET << std::endl;
+	//discard first trash buffer if available right after opening the port
+	ser.update();
 	
 	while (1) 
 	{
-		//display Received log
 		if(ser.update())
 		{
 			ser.logBuffer();

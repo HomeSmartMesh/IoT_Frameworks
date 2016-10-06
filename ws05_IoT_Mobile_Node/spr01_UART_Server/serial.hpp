@@ -24,6 +24,8 @@ private:
 public:
 	std::string 	Name;
 	std::ofstream 	logfile;
+	bool			isLogFile;
+	bool			isLogOut;
 public:
 	void start(std::string port_name,bool s_500 = false);
 	void start_logfile(std::string fileName);

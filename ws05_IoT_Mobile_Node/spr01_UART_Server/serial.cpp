@@ -105,6 +105,10 @@ void Serial::start_logfile(std::string fileName)
 void Serial::start(std::string port_name,bool s_500)
 {
 	std::string strlog;
+	
+	isLogFile = true;
+	isLogOut = true;
+	
 	fd = open (port_name.c_str(), O_RDWR | O_NOCTTY | O_SYNC);
 	if (fd >= 0)
 	{
