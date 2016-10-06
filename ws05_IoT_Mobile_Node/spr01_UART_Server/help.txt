@@ -1,8 +1,21 @@
-serial logger help 
-command line example 
-'./ser param1:value1 param2:value2':
+help 
+
+Command line example 
+'./ser param1=value1 param2=value2':
 
 Parameters:
-- port: e.g 'port:/dev/ttyUSB0'
-- logfile: e.g 'logfile:logfile.txt'
-- logcmd: e.g 'logcmd:1'
+
+- port:	the serial device to be used
+  Mandatory
+  e.g 'port=/dev/ttyUSB0'
+
+- logfile: file where the logged data will be saved.
+  Optionnal
+  e.g 'logfile=logfile.txt'
+
+- logcmd: e.g 'logcmd=1'
+  Optional
+
+- configfile:
+  Optional if not provided, an attempt is made to read config from 'configfile.txt' if available.
+  e.g 'configfile=conf2.txt'

@@ -3,6 +3,12 @@
 #include "utils.hpp"
 #include <time.h>
 
+//for file
+#include <fstream>
+#include <iostream>
+
+using namespace std;
+
 std::string TakeParseTo(std::string &str,char sep)
 {
 	size_t first = str.find_first_of(sep);
@@ -35,6 +41,29 @@ void utl::args2map( int argc, char** argv ,strmap &params)
 		std::string arg_name = TakeParseTo(argv_str,'=');
 		params[arg_name] = argv_str;
 	}
+	//once all params in cmd line parsed check if a config file is available
+	std::ifstream 	configfile;
+	if(!utl::exists(params,"configfile"))//the parameter 'configfile' was not passed, so check the default one
+	{
+		params["configfile"] = "configfile.txt";
+	}
+	std::cout << "configfile = " << params["configfile"] << std::endl;
+	configfile.open(params["configfile"].c_str());
+	if(configfile.is_open())
+	{
+		string line;
+		while ( getline (configfile,line) )
+		{
+			line = TakeParseTo(line,'#');//allow comment character
+			std::string arg_name = TakeParseTo(line,'=');
+			params[arg_name] = TakeParseTo(line,'\r');//take the windows line ending out
+		}
+	}
+	else
+	{
+		std::cout << "Config file not provided checking parameters only" << std::endl << std::endl;
+	}
+	
 }
 
 bool utl::exists(const strmap &params,const std::string param)

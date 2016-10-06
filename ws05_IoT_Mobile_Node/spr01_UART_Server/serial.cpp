@@ -1,3 +1,9 @@
+
+//for ios::out,... #issue once placed in the end of the includes, it does not recognise cout part of std::
+#include <iostream>
+#include <fstream>
+#include <string>
+
 #include "serial.hpp"
 //for getTime
 #include "utils.hpp"
@@ -17,9 +23,6 @@
 //for warnx()
 #include <err.h>
 
-//for ios::out,...
-#include <iostream>
-#include <fstream>
 
 
 using namespace std;
@@ -153,10 +156,10 @@ void Serial::log(const std::string &str)
 {
 	std::string t = utl::getTime();
 	logfile << t << "\t";
-	logfile << str << "\n";
+	logfile << str << std::endl;
 
 	std::cout << t << "\t";
-	std::cout << str << "\n";
+	std::cout << str << std::endl;
 
 }
 

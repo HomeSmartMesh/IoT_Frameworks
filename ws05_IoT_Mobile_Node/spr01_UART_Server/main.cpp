@@ -46,12 +46,12 @@ int main( int argc, char** argv )
 
 	if(utl::exists(conf,"logfile"))
 	{
-		std::cout << "parsed logfile = " << conf["logfile"] << std::endl;
+		std::cout << "logfile = " << conf["logfile"] << std::endl;
 		ser.start_logfile(conf["logfile"]);
 	}
 	if(utl::exists(conf,"port"))
 	{
-		std::cout << "parsed port = " << conf["port"] << std::endl;
+		std::cout << "port = " << conf["port"] << std::endl;
 		ser.start(conf["port"]);
 	}
 	else
