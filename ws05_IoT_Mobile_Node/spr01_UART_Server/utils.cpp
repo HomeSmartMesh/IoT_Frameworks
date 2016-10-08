@@ -9,6 +9,14 @@
 
 using namespace std;
 
+std::string TakeParseToLast(std::string &str,char sep)
+{
+	size_t first = str.find_last_of(sep);
+	std::string Parsed = str.substr(0 , first);
+	str = str.substr(first+1 ,str.length());
+	return Parsed;
+}
+
 std::string TakeParseTo(std::string &str,char sep)
 {
 	size_t first = str.find_first_of(sep);
@@ -35,9 +43,12 @@ std::string utl::ParseRemTill(std::string &str,char sep,bool &found)
 
 void utl::args2map( int argc, char** argv ,strmap &params)
 {
+	std::string exepath(*argv);//placed here before pointer is shifted
 	while(argc--)
 	{
 		std::string argv_str(*argv++);
+		//to debug parameters list
+		//std::cout << "[" << argv_str << "]" << std::endl;
 		std::string arg_name = TakeParseTo(argv_str,'=');
 		params[arg_name] = argv_str;
 	}
@@ -45,13 +56,13 @@ void utl::args2map( int argc, char** argv ,strmap &params)
 	std::ifstream 	configfile;
 	if(!utl::exists(params,"configfile"))//the parameter 'configfile' was not passed, so check the default one
 	{
-		params["configfile"] = "configfile.txt";
+		exepath = TakeParseToLast(exepath,'/');
+		params["configfile"] = exepath + "/configfile.txt";
 	}
-	std::cout << "configfile = " << params["configfile"] << std::endl;
 	configfile.open(params["configfile"].c_str());
 	if(configfile.is_open())
 	{
-		std::cout << "reading from 'configfile.txt'" << std::endl;
+		std::cout << "configfile = "<< params["configfile"] << std::endl;
 		string line;
 		while ( getline (configfile,line) )
 		{
@@ -69,7 +80,7 @@ void utl::args2map( int argc, char** argv ,strmap &params)
 	}
 	else
 	{
-		std::cout << "Config file not provided checking parameters only" << std::endl << std::endl;
+		std::cout << "No Config file in cmd line and not found in exe dir: " <<  params["configfile"] << endl;
 	}
 	
 }
