@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
 
 #include "serial.hpp"
 //for getTime
@@ -158,20 +159,20 @@ bool Serial::update()
 
 void Serial::log(const std::string &str)
 {
+	std::string d = utl::getDay();
 	std::string t = utl::getTime();
-	logfile << t << "\t";
+	logfile << d << "\t" << t << "\t";
 	logfile << str << std::endl;
 
-	std::cout << t << "\t";
+	std::cout << d << "\t" << t << "\t";
 	std::cout << str << std::endl;
 
 }
 
+//we use Serial::buf for data and Serial::n for data size
 void Serial::logBuffer()
 {
-	printf("%s",buf);
-	if(logfile.is_open())
-	{
+	std::stringstream sLog;
 		if(n>0)
 		{
 			char * buf_w = buf;
@@ -182,23 +183,30 @@ void Serial::logBuffer()
 				//avoid empty lines do not create a new timestamp if the char is a line ending
 				if(newLine && isp)
 				{
-					logfile << utl::getTime() << "\t";
+				sLog << utl::getDay() << "\t" << utl::getTime() << "\t";
 					newLine = false;
 				}
 				if((*buf_w) == '\n')//only allowed printable character
 				{
 					newLine = true;
-					logfile.write(buf_w,1);
+				sLog.put(*buf_w);
 				}
 				else if(isp)//skip the CR and any other control
 				{
-					logfile.write(buf_w,1);
+				sLog.put(*buf_w);
 				}
 				buf_w++;
 			}
 		}
+	if(isLogOut)
+	{
+		std::cout << sLog.str();//already contain end of line
 	}
+	if(isLogFile && logfile.is_open())
+	{
+		logfile << sLog.str();//already contain end of line
 	logfile.flush();
+	}
 }
 
 void Serial::send(char* buffer,int size)
