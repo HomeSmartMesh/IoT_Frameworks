@@ -1,0 +1,4 @@
+Program('joy', ['main.cpp', 'joystick.cpp'])
+#Program( 'joy', Split('main.cpp joystick.cpp') )
+#src_files = Split('main.cpp joystick.cpp')
+#Program(target = 'program', source = src_files)
