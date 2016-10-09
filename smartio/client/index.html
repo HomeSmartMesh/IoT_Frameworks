@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Smart IO</title>
+
+        <style>
+        * { font-family:tahoma; font-size:12px; padding:0px; margin:0px; }
+        p { line-height:18px; }
+        div { margin-left:auto; margin-right:auto;}
+        #content { padding:5px; background:#ddd; border-radius:5px; overflow-y: scroll;
+                   border:1px solid #CCC; margin-top:10px; height: 180px; }
+        #input { border-radius:2px; border:1px solid #ccc;
+                 margin-top:10px; padding:5px; width:400px;  }
+        #status { width:88px; display:block; float:left; margin-top:15px; }
+        </style>
+		<link rel="stylesheet" type="text/css" href="ledStyles.css">
+    <body>
+	<p>click on the Green Leds to switch on and off, or send text commands "P" "S" "Se00" "Se0C",...</p>
+	<table style="width:100%;height:100%">
+	<td>
+		<table style="width:120px">
+			<tr>	<td><p>All On</p></td><td>	<div class="led-all-on"	onclick="btAllLedCall(this)" id="AllOn"></div></td></tr>
+			<tr>	<td><p>All Off</p></td><td>	<div class="led-all-off"	onclick="btAllLedCall(this)" id="AllOff"></div></td></tr>
+			<tr>	<td><p>Light 0</p></td><td>	<div class="led-green-off"	onclick="btLedCall(this)" id="0"></div></td></tr>
+			<tr>	<td><p>Light 1</p></td><td>	<div class="led-green-off"	onclick="btLedCall(this)" id="1"></div></td></tr>
+			<tr>	<td><p>Light 2</p></td><td>	<div class="led-green-off"	onclick="btLedCall(this)" id="2"></div></td></tr>
+			<tr>	<td><p>Light 3</p></td><td>	<div class="led-green-off"	onclick="btLedCall(this)" id="3"></div></td></tr>
+			<tr>	<td><p>Light 4</p></td><td>	<div class="led-green-off"	onclick="btLedCall(this)" id="4"></div></td></tr>
+			<tr>	<td><p>Light 5</p></td><td>	<div class="led-green-off"	onclick="btLedCall(this)" id="5"></div></td></tr>
+			<tr>	<td><p>Light 6</p></td><td>	<div class="led-green-off"	onclick="btLedCall(this)" id="6"></div></td></tr>
+			<tr>	<td><p>Light 7</p></td><td>	<div class="led-green-off"	onclick="btLedCall(this)" id="7"></div></td></tr>
+		</table>
+	</td>
+	<td>
+        <div id="content"></div>
+        <div>
+            <span id="status">Connecting...</span>
+            <input type="text" id="input" disabled="disabled" />
+        </div>
+	</td>
+	</table>
+	
+		
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script src="./frontend.js"></script>
+
+    </body>
+</html>
