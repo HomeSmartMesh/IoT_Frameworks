@@ -1,10 +1,9 @@
-# IoT Framework Projects
-
+# IoT Frameworks
 Complete working samples for specific use cases including
-- STM8 firmware for a specific IoT Board out of the [STM8 IoT Boards](https://github.com/wassfila/STM8_IoT_Boards)
-- Linux c++ applications on Raspberry Pi
-- Nodejs servers for back end
-- Javascript clients for front end
+- **Sensors firmware** : for a specific IoT Board such as the [STM8 IoT Boards](https://github.com/wassfila/STM8_IoT_Boards)
+- **Server Drivers** : Linux c++ applications on Raspberry Pi
+- **Server Back end** : Nodejs servers for back end
+- **Client Front End** : Javascript clients for front end
 
 These projects are of intermediate level, for a beginning [STM8 IoT Hello World Samples](https://github.com/wassfila/STM8_IoT_HelloWorld) are available on a separate repository.
 
