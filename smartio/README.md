@@ -1,7 +1,8 @@
-# smartio
-web based gui server and client for the Smart IO Expander Board
-- Tested on windows
-- Tested on Linux Raspberry Pi 3
+## SmartIO a Raspberry Pi 3
+- RPi 3 wifi used to provide an access point with "hostapd" and "dnsmasq", see this nice [tutorial](https://frillip.com/using-your-raspberry-pi-3-as-a-wifi-access-point-with-hostapd/)
+- RPi 3 serves the javascript web client with ["apache2"](https://www.raspberrypi.org/documentation/remote-access/web-server/apache.md)
+
+<img src="https://github.com/wassfila/IoT_Frameworks/blob/master/smartio/WebIO.jpg" height=300>
 
 ## Printed Circuit Board
 [The IO Expander Board wiki page](http://www.technolab.ddns.net/display/SSN/Smart+IO+Expander)
@@ -21,8 +22,3 @@ converts the serial commands into PIO output status on or off.
 The nodejs server controls the serial port and uses websockets to mirror the serial port tx and rx in text mode for the clients.
 Note that a [new version of nodejs](http://node-arm.herokuapp.com/node_latest_armhf.deb) has to be used (v4.x.x) for the serial_port component to be installed with npm.
 
-## Raspberry Pi 3
-- RPi 3 wifi used to provide an access point with "hostapd" and "dnsmasq", see this nice [tutorial](https://frillip.com/using-your-raspberry-pi-3-as-a-wifi-access-point-with-hostapd/)
-- RPi 3 serves the javascript web client with ["apache2"](https://www.raspberrypi.org/documentation/remote-access/web-server/apache.md)
-
-<img src="https://github.com/wassfila/IoT_Frameworks/blob/master/smartio/WebIO.jpg" height=300>
