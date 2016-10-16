@@ -60,3 +60,8 @@ ws05_IoT_Mobile_Node/pr03_PressHumTemp/settings/
 ws05_IoT_Mobile_Node/pr04_LightBroadcast/settings/
 ws05_IoT_Mobile_Node/pr01_Node_Alive/settings/
 ws05_IoT_Mobile_Node/pr02_AmbientLight/settings/
+sensors_logger/pr01_Node_Alive/Debug/
+sensors_logger/pr01_Node_Alive/settings/
+sensors_logger/pr03_PressHumTemp/Debug/
+sensors_logger/pr03_PressHumTemp/settings/
+sensors_logger/settings/
