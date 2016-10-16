@@ -286,6 +286,7 @@ void Read_BME280_Registers(BYTE Start, BYTE Number,BYTE *data)
     delay_100us();
     I2C_Read(0x76, data,Number); 
     delay_100us();//wait to complete before writing into unallocated variable
+    //i²c repeat 3rd should be worked around here
   
 }
 
@@ -300,7 +301,7 @@ void Print_BME280_Registers(BYTE Start, BYTE Number)
   UARTPrintf("\n");
 }
 
-void BME280_ReadId()
+void BME280_PrintId()
 {
     BYTE Id = BME280_ReadReg(0xD0);//id : 0xD0
     UARTPrintf("BME280 id = ");
@@ -308,22 +309,69 @@ void BME280_ReadId()
     UARTPrintf("\n");
 }
 
-void BME280_ForceOneTempMeasure()//Bug 2 writes do not work, a third one to apply the second !!!!
+#define CTMS_OSRS_T_Skip     0x00
+#define CTMS_OSRS_T_x1       0x20
+#define CTMS_OSRS_T_x2       0x40
+#define CTMS_OSRS_P_Skip     0x00
+#define CTMS_OSRS_P_x1       0x04
+#define CTMS_OSRS_P_x2       0x08
+#define CTMS_MODE_Sleep      0x00
+#define CTMS_MODE_Forced     0x01
+
+#define CTHM_OSRS_H_Skip     0x00
+#define CTHM_OSRS_H_x1       0x01
+#define CTHM_OSRS_H_x2       0x02
+
+//previous humidity only is interesting because the Temperature and Pressures are on the 
+//same register that needs to be triggered for the measure
+BYTE prev_Hum = 0;
+
+void BME280_ForceOneMeasure(BYTE Press,BYTE Temp,BYTE Hum)//Bug 2 writes do not work, a third one to apply the second !!!!
 {
     BYTE data[4];
 
+    if(Hum != prev_Hum)
+    {
+      //Control Humidity Register
+      data[0] = 0xF2;//Register address ctrl_hum 0xF2
+      data[1] = CTHM_OSRS_H_Skip;
+      if(Hum)
+      {
+        data[1] = CTHM_OSRS_H_x1;
+      }
+      I2C_Write(0x76, data,2);
+      delay_100us();
+      prev_Hum = Hum;
+    }
+
+    //Control Temperature Pressure Register
     data[0] = 0xF4;//Register address ctrl_meas 0xF4
-    data[1] = 0x21;//[001][000][01] in mode[1:0], osrs_t and osrs_p @0 as per reset state
+    data[1] = CTMS_MODE_Forced;
+    if(Temp)
+    {
+      data[1] |= CTMS_OSRS_T_x1;
+    }
+    if(Press)
+    {
+      data[1] |= CTMS_OSRS_P_x1;
+    }
     I2C_Write(0x76, data,2);
     delay_100us();
+    
 }
 
 void BME280_Print_Status()
 {
-    BYTE status = BME280_ReadReg(0xF3);//status : 0xF3
+    BYTE status = BME280_ReadReg(0xF2);//status : 0xF3
+    UARTPrintf("BME280 ctrl_hum = ");
+    UARTPrintfHex(status);
+    UARTPrintf("\n");
+
+    status = BME280_ReadReg(0xF3);//status : 0xF3
     UARTPrintf("BME280 status = ");
     UARTPrintfHex(status);
     UARTPrintf("\n");
+
     status = BME280_ReadReg(0xF4);//ctrl_meas
     UARTPrintf("BME280 ctrl_meas = ");
     UARTPrintfHex(status);
@@ -333,19 +381,6 @@ void BME280_Print_Status()
     UARTPrintf("BME280 config = ");
     UARTPrintfHex(status);
     UARTPrintf("\n");
-}
-
-void BME280_ReadTemperature()
-{
-    BME280_ForceOneTempMeasure();//single read mode
-
-    BME280_Print_Status();
-    UARTPrintf("delay reprint\n");
-    delay_1ms_Count(1000);
-    BME280_Print_Status();
-    
-    Print_BME280_Registers(0xFA, 3);
-
 }
 
 int main( void )
@@ -368,14 +403,12 @@ int main( void )
     //Applies the compile time configured parameters from nRF_Configuration.h
     //nRF_Config();
     
-    BME280_ReadId();
-
-    Print_BME280_Registers(0x88,10);
-    Print_BME280_Registers(0x92,10);
-    Print_BME280_Registers(0x9C,6);
-
-    Print_BME280_Registers(0xD0,1);
-    Print_BME280_Registers(0xE0,1);
+    BME280_PrintId();
+    UARTPrintf("calib data:\n");
+    Print_BME280_Registers(0x88,11);
+    Print_BME280_Registers(0x92,11);
+    Print_BME280_Registers(0x9C,7);
+    Print_BME280_Registers(0xE1,8);
     //
     // Main loop
     //
@@ -385,16 +418,16 @@ int main( void )
       UARTPrintf("counter :");
       UARTPrintfHexLn(counter++);
 
+      UARTPrintf("Measure---------------\n");
+      BME280_ForceOneMeasure(1,1,1);//Pressure, Temperature, Humidity
+      delay_1ms_Count(100);
+      //BME280_Print_Status();
+      //delay_1ms_Count(100);
+      //reading 9 not 8 because of the 3rd repeat issue
+      Print_BME280_Registers(0xF7, 9);
+      delay_1ms_Count(100);
 
-      UARTPrintf("Temp---------------\n");
-      BME280_ReadTemperature();
-
-      //UARTPrintf("Press---------------\n");
-      //Print_BME280_Registers(0xF7, 3);
-      //UARTPrintf("Hum---------------\n");
-      //Print_BME280_Registers(0xFD, 2);
-
-      delay_1ms_Count(1000);
+      delay_1ms_Count(2000);
       
     }
 }
