@@ -174,7 +174,6 @@ void UARTPrintfHexLn(unsigned char val)
 	UARTPrintf4Bits(MSB);
 	UARTPrintf4Bits(LSB);
 	putc('\n');
-	putc('\r');
 }
 
 
