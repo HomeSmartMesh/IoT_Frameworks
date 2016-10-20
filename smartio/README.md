@@ -1,7 +1,7 @@
 ## SmartIO a Raspberry Pi 3
 - RPi 3 wifi used to provide an access point with "hostapd" and "dnsmasq", see this nice [tutorial](https://frillip.com/using-your-raspberry-pi-3-as-a-wifi-access-point-with-hostapd/)
 - RPi 3 serves the javascript web client with ["apache2"](https://www.raspberrypi.org/documentation/remote-access/web-server/apache.md)
-
+- connect on "http://172.24.1.1/client/"
 <img src="https://github.com/wassfila/IoT_Frameworks/blob/master/smartio/WebIO.jpg" height=300>
 
 ## Printed Circuit Board
