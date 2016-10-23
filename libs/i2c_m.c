@@ -118,7 +118,7 @@ void I2C_Init()
 	I2C1_OARH_ADDCONF = 1;               // This bit must be set by software
 										// ADD[9:8] unused
 
-	I2C1_TRISER = 6;			//Maximum time used by the feedback loop to keep SCL Freq stable whatever SCL rising time is
+	I2C1_TRISER = 3;			//Maximum time used by the feedback loop to keep SCL Freq stable whatever SCL rising time is
 								//Standard mode max rise time is 1000ns
                                                                 //Fast mode 300ns
 								//example for 16MHz-S : (1000ns / 62.5 ns = 16 ) + 1 = 17
