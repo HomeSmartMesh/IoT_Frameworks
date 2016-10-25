@@ -53,6 +53,43 @@ void LogMagnets()
       delay_100us();
 }
 
+void i2c_user_Rx_Callback(BYTE *userdata,BYTE size)
+{
+	/*UARTPrintf("I2C Transaction complete, received:\n\r");
+	UARTPrintfHexTable(userdata,size);
+	UARTPrintf("\n\r");*/
+        
+}
+
+void i2c_user_Tx_Callback(BYTE *userdata,BYTE size)
+{
+  /*
+	UARTPrintf("I2C Transaction complete, Transmitted:\n\r");
+	UARTPrintfHexTable(userdata,size);
+	UARTPrintf("\n\r");
+        */
+}
+
+void i2c_user_Error_Callback(BYTE l_sr2)
+{
+	if(l_sr2 & 0x01)
+	{
+		UARTPrintf("[I2C Bus Error]\n\r");
+	}
+	if(l_sr2 & 0x02)
+	{
+		UARTPrintf("[I2C Arbitration Lost]\n\r");
+	}
+	if(l_sr2 & 0x04)
+	{
+		UARTPrintf("[I2C no Acknowledge]\n\r");//this is ok for the slave
+	}
+	if(l_sr2 & 0x08)
+	{
+		UARTPrintf("[I2C Bus Overrun]\n\r");
+	}
+}
+
 //bit 0 - pin interrupt
 #pragma vector = EXTI0_vector
 __interrupt void IRQHandler_Pin0(void)

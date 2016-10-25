@@ -65,3 +65,9 @@ sensors_logger/pr01_Node_Alive/settings/
 sensors_logger/pr03_PressHumTemp/Debug/
 sensors_logger/pr03_PressHumTemp/settings/
 sensors_logger/settings/
+sensors_logger/firmware_rf_sensors_node/pr01_Node_Alive/Debug/
+sensors_logger/firmware_rf_sensors_node/pr03_PressHumTemp/Debug/
+sensors_logger/firmware_rf_sensors_node/pr04_LightBroadcast/Debug/
+sensors_logger/firmware_rf_sensors_node/pr02_AmbientLight/Debug/
+sensors_logger/firmware_rf_sensors_node/pr01_Node_Alive/settings/
+sensors_logger/firmware_rf_sensors_node/pr03_PressHumTemp/settings/
