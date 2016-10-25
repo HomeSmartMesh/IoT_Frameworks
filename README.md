@@ -12,6 +12,7 @@ These projects are of intermediate level, for a beginning [STM8 IoT Hello World 
 Here have firmware for the Mobile Node which is the base for the sensors:
  - *BME280* Temperature Humidity Pressure
  - *MAX44009* Ambient Light
+ 
 More details on the [githubio](https://wassfila.github.io/#P2)
 
 <img src="https://github.com/wassfila/IoT_Frameworks/blob/master/sensors_logger/IoT_Node_Mobile_v2.JPG" height=300>
