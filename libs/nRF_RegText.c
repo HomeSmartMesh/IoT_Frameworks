@@ -11,46 +11,46 @@
 
 #include "nRF_RegText.h"
 #include "nRF_SPI.h"
-#include "ClockUartLed.h"
+#include "uart.h"
 
 void nRF_PrintStatus(BYTE status)
 {
-	UARTPrintf("STATUS: ");
+	printf("STATUS: ");
 	UARTPrintfHex(status);
-	UARTPrintf(" : ");
+	printf(" : ");
 
 	if(status & bit_RX_DR)
 	{
-		UARTPrintf("Data Ready i; ");
+		printf("Data Ready i; ");
 	}
 	if(status & bit_TX_DS)
 	{
-		UARTPrintf("Data Sent i; ");
+		printf("Data Sent i; ");
 	}
 	if(status & bit_MAX_RT)
 	{
-		UARTPrintf("Max Ret i; ");
+		printf("Max Ret i; ");
 	}
 	if(	(status & bit_Mask_RXPNO) == bit_RXPNO_NotUsed)
 	{
-		UARTPrintf("Rx Pipe not used ; ");
+		printf("Rx Pipe not used ; ");
 	}
 	else if(	(status & bit_Mask_RXPNO) == bit_RXPNO_RxFFEmpty)
 	{
-		//UARTPrintf("Rx Fifo Empty ; ");// this is the default state not log for it
+		//printf("Rx Fifo Empty ; ");// this is the default state not log for it
 	}
 	else 
 	{
 		BYTE PipeNb = (status & bit_Mask_RXPNO)>>1;
-		UARTPrintf("Rx Pipe Nb ");
+		printf("Rx Pipe Nb ");
 		UARTPrintfHex(PipeNb);
-		UARTPrintf(" ; ");
+		printf(" ; ");
 	}
 	if(status & bit_TX_FULL)
 	{
-		UARTPrintf("TX Fifo Full;");
+		printf("TX Fifo Full;");
 	}
-	UARTPrintf("\n\r");
+	printf("\n\r");
 }
 
 void nRF_PrintConfig()

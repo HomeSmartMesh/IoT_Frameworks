@@ -24,7 +24,7 @@
 //configuration application section, not to be edited
 //---------------------------------------------------------------------------------------------
 #if (Enable_Debug_I2C_IRQ == 1)
-#define I2C_IRQ_Printf(x) 					UARTPrintf(x)
+#define I2C_IRQ_Printf(x) 					printf(x)
 #define I2C_IRQ_PrintfHex(x)				UARTPrintfHex(x)
 #define I2C_IRQ_PrintStatus(x)				nRF_PrintStatus(x)
 #else

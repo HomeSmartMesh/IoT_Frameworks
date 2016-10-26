@@ -12,7 +12,8 @@
  */
 
 #include "i2c_m.h"
-#include "ClockUartLed.h"
+#include "uart.h"
+#include "clock_led.h"
 
 #include <iostm8l151f3.h>
 

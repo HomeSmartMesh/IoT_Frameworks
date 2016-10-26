@@ -17,7 +17,7 @@
         <debug>1</debug>
         <option>
           <name>GenDeviceSelectMenu</name>
-          <state>STM8L151F3	STM8L151F3</state>
+          <state>STM8S103F3P	STM8S103F3P</state>
         </option>
         <option>
           <name>GenCodeModel</name>
@@ -543,7 +543,7 @@
         </option>
         <option>
           <name>IlinkOutputFile</name>
-          <state>pr03_PressHumTemp.out</state>
+          <state>rf_receiver_logger.out</state>
         </option>
         <option>
           <name>IlinkDebugInfoEnable</name>
@@ -607,7 +607,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$TOOLKIT_DIR$\config\lnkstm8l151f3.icf</state>
+          <state>lnk0t.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -671,7 +671,7 @@
         </option>
         <option>
           <name>IlinkProgramEntryLabel</name>
-          <state>__iar_program_start</state>
+          <state></state>
         </option>
         <option>
           <name>DoFill</name>
@@ -1590,10 +1590,10 @@
   <group>
     <name>libs</name>
     <file>
-      <name>$PROJ_DIR$\..\..\..\libs\clock_led.c</name>
+      <name>$PROJ_DIR$\..\..\..\libs\ClockUartLed.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\libs\clock_led.h</name>
+      <name>$PROJ_DIR$\..\..\..\libs\ClockUartLed.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\libs\commonTypes.h</name>
@@ -1641,27 +1641,18 @@
       <name>$PROJ_DIR$\..\..\..\libs\nRF_Tx.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\libs\uart.c</name>
+      <name>$PROJ_DIR$\..\..\..\libs\temp_ds18b20.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\libs\uart.h</name>
+      <name>$PROJ_DIR$\..\..\..\libs\temp_ds18b20.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\libs\uart_regs_stm8x.c</name>
+      <name>$PROJ_DIR$\..\..\..\libs\WS2812B.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\libs\uart_regs_stm8x.h</name>
+      <name>$PROJ_DIR$\..\..\..\libs\WS2812B.h</name>
     </file>
   </group>
-  <file>
-    <name>$PROJ_DIR$\BMP280_API.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$\BMP280_API.h</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$\deviceType.h</name>
-  </file>
   <file>
     <name>$PROJ_DIR$\main.c</name>
   </file>

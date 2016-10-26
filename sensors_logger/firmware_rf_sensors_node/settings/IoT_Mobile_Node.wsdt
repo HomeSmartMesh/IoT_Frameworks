@@ -2,50 +2,43 @@
 
 <Workspace>
   <ConfigDictionary>
-    <CurrentConfigs>
-      <Project>pr01_Node_Alive/Debug</Project>
-      <Project>pr03_PressHumTemp/Debug</Project>
-      <Project>pr04_LightBroadcast/Debug</Project>
-      <Project>pr02_AmbientLight/Debug</Project>
-    </CurrentConfigs>
-    <CurrentProj>pr03_PressHumTemp</CurrentProj>
-    <OverviewSelected>1</OverviewSelected>
-  </ConfigDictionary>
+    
+    
+    
+  <CurrentConfigs><Project>pr01_Node_Alive/Debug</Project><Project>pr03_PressHumTemp/Debug</Project><Project>pr04_LightBroadcast/Debug</Project><Project>pr02_AmbientLight/Debug</Project></CurrentConfigs><CurrentProj>pr03_PressHumTemp</CurrentProj><OverviewSelected>1</OverviewSelected></ConfigDictionary>
   <Desktop>
     <Static>
       <Workspace>
         <ColumnWidths>
-          <Column0>381</Column0>
-          <Column1>27</Column1>
-          <Column2>27</Column2>
-          <Column3>27</Column3>
-        </ColumnWidths>
+          
+          
+          
+          
+        <Column0>381</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
       </Workspace>
       <Build>
-        <ColumnWidth0>20</ColumnWidth0>
-        <ColumnWidth1>1197</ColumnWidth1>
-        <ColumnWidth2>319</ColumnWidth2>
-        <ColumnWidth3>79</ColumnWidth3>
-      </Build>
-    </Static>
+        
+        
+        
+        
+      <ColumnWidth0>20</ColumnWidth0><ColumnWidth1>1197</ColumnWidth1><ColumnWidth2>319</ColumnWidth2><ColumnWidth3>79</ColumnWidth3></Build>
+    <TerminalIO/></Static>
     <Windows>
-      <Wnd0>
+      
+      
+    <Wnd0>
         <Tabs>
           <Tab>
             <Identity>TabID-16861-9806</Identity>
             <TabName>Workspace</TabName>
             <Factory>Workspace</Factory>
             <Session>
-              <NodeDict>
-                <ExpandedNode>&lt;ws&gt;</ExpandedNode>
-                <ExpandedNode>&lt;ws&gt;/pr03_PressHumTemp</ExpandedNode>
-              </NodeDict>
-            </Session>
+              
+            <NodeDict><ExpandedNode>&lt;ws&gt;</ExpandedNode><ExpandedNode>&lt;ws&gt;/pr03_PressHumTemp</ExpandedNode><ExpandedNode>&lt;ws&gt;/pr03_PressHumTemp/libs</ExpandedNode></NodeDict></Session>
           </Tab>
         </Tabs>
-        <SelectedTab>0</SelectedTab>
-      </Wnd0>
-      <Wnd1>
+        
+      <SelectedTab>0</SelectedTab></Wnd0><Wnd1>
         <Tabs>
           <Tab>
             <Identity>TabID-8789-10162</Identity>
@@ -54,109 +47,21 @@
             <Session/>
           </Tab>
         </Tabs>
-        <SelectedTab>0</SelectedTab>
-      </Wnd1>
-    </Windows>
+        
+      <SelectedTab>0</SelectedTab></Wnd1></Windows>
     <Editor>
-      <Pane>
-        <Tab>
-          <Factory>TextEditor</Factory>
-          <Filename>$WS_DIR$\pr01_Node_Alive\main.c</Filename>
-          <XPos>0</XPos>
-          <YPos>0</YPos>
-          <SelStart>0</SelStart>
-          <SelEnd>0</SelEnd>
-          <XPos2>0</XPos2>
-          <YPos2>39</YPos2>
-          <SelStart2>1932</SelStart2>
-          <SelEnd2>1932</SelEnd2>
-        </Tab>
-        <ActiveTab>0</ActiveTab>
-        <Tab>
-          <Factory>TextEditor</Factory>
-          <Filename>$WS_DIR$\pr03_PressHumTemp\main.c</Filename>
-          <XPos>0</XPos>
-          <YPos>0</YPos>
-          <SelStart>0</SelStart>
-          <SelEnd>0</SelEnd>
-          <XPos2>0</XPos2>
-          <YPos2>195</YPos2>
-          <SelStart2>4978</SelStart2>
-          <SelEnd2>5715</SelEnd2>
-        </Tab>
-      </Pane>
-      <ActivePane>0</ActivePane>
-      <Sizes>
-        <Pane>
-          <X>1000000</X>
-          <Y>1000000</Y>
-        </Pane>
-      </Sizes>
-      <SplitMode>1</SplitMode>
-    </Editor>
+      
+      
+      
+      
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\..\libs\ClockUartLed.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>144</SelStart2><SelEnd2>169</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\pr03_PressHumTemp\nRF_Configuration.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>48</YPos2><SelStart2>3266</SelStart2><SelEnd2>3266</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\..\libs\clock_led.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>0</SelStart2><SelEnd2>142</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\..\libs\i2c_m.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>174</SelStart2><SelEnd2>174</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\..\libs\i2c_m.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>767</SelStart2><SelEnd2>767</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\..\libs\nRF_IRQ.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>271</SelStart2><SelEnd2>271</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\..\libs\nRF_LowLevel.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\..\libs\nRF_Modes.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>341</SelStart2><SelEnd2>341</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\..\libs\nRF_Modes.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\..\libs\nRF_RegText.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>125</SelStart2><SelEnd2>125</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\..\libs\nRF_SPI.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>185</SelStart2><SelEnd2>185</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\..\libs\uart.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>61</YPos2><SelStart2>234</SelStart2><SelEnd2>234</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\..\libs\uart_regs_stm8x.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\pr03_PressHumTemp\BMP280_API.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\pr03_PressHumTemp\main.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>381</YPos2><SelStart2>9579</SelStart2><SelEnd2>9579</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\..\libs\nRF_Tx.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>274</SelStart2><SelEnd2>274</SelEnd2></Tab><ActiveTab>15</ActiveTab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
     <Positions>
-      <Top>
-        <Row0>
-          <Sizes>
-            <Toolbar-05049418>
-              <key>iaridepm.enu1</key>
-            </Toolbar-05049418>
-          </Sizes>
-        </Row0>
-      </Top>
-      <Left>
-        <Row0>
-          <Sizes>
-            <Wnd0>
-              <Rect>
-                <Top>-2</Top>
-                <Left>-2</Left>
-                <Bottom>911</Bottom>
-                <Right>455</Right>
-                <x>-2</x>
-                <y>-2</y>
-                <xscreen>200</xscreen>
-                <yscreen>200</yscreen>
-                <sizeHorzCX>120846</sizeHorzCX>
-                <sizeHorzCY>173310</sizeHorzCY>
-                <sizeVertCX>276133</sizeVertCX>
-                <sizeVertCY>791161</sizeVertCY>
-              </Rect>
-            </Wnd0>
-          </Sizes>
-        </Row0>
-      </Left>
-      <Right>
-        <Row0>
-          <Sizes/>
-        </Row0>
-      </Right>
-      <Bottom>
-        <Row0>
-          <Sizes>
-            <Wnd1>
-              <Rect>
-                <Top>-2</Top>
-                <Left>-2</Left>
-                <Bottom>198</Bottom>
-                <Right>1657</Right>
-                <x>-2</x>
-                <y>-2</y>
-                <xscreen>1659</xscreen>
-                <yscreen>200</yscreen>
-                <sizeHorzCX>1002417</sizeHorzCX>
-                <sizeHorzCY>173310</sizeHorzCY>
-                <sizeVertCX>120846</sizeVertCX>
-                <sizeVertCY>173310</sizeVertCY>
-              </Rect>
-            </Wnd1>
-          </Sizes>
-        </Row0>
-      </Bottom>
-      <Float>
-        <Sizes/>
-      </Float>
-    </Positions>
+      
+      
+      
+      
+      
+    <Top><Row0><Sizes><Toolbar-04ACA4C0><key>iaridepm.enu1</key></Toolbar-04ACA4C0></Sizes></Row0></Top><Left><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>912</Bottom><Right>455</Right><x>-2</x><y>-2</y><xscreen>200</xscreen><yscreen>200</yscreen><sizeHorzCX>120846</sizeHorzCX><sizeHorzCY>173160</sizeHorzCY><sizeVertCX>276133</sizeVertCX><sizeVertCY>791342</sizeVertCY></Rect></Wnd0></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>198</Bottom><Right>1657</Right><x>-2</x><y>-2</y><xscreen>1659</xscreen><yscreen>200</yscreen><sizeHorzCX>1002417</sizeHorzCX><sizeHorzCY>173160</sizeHorzCY><sizeVertCX>120846</sizeVertCX><sizeVertCY>173160</sizeVertCY></Rect></Wnd1></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
   </Desktop>
 </Workspace>
 

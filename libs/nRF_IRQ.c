@@ -16,7 +16,6 @@
 
 #include "nRF_Configuration.h"
 
-#include "ClockUartLed.h"
 #include "commonTypes.h"
 
 //for direct SPI_Read_Register()

@@ -17,7 +17,7 @@
 #include "nRF_Modes.h"
 //for SPI_Write_Buf
 #include "nRF_SPI.h"
-#include "ClockUartLed.h"
+#include "clock_led.h"
 #include "nRF_LowLevel.h"
 
 //returns the status byte

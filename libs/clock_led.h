@@ -24,25 +24,6 @@
 
 #define delay_10ms(); delay(19998);
 
-
-void InitialiseUART();
-
-void putc(char c);
-
-void UARTPrintf(char const *message);
-
-void UARTPrintfLn(char const *message);
-
-void UARTPrintfHex(unsigned char val);
-
-void UARTPrintfHexTable(unsigned char *pval,unsigned char length);
-
-void UARTPrintfHexLn(unsigned char val);
-
-void UARTPrintf_sint(signed int num);
-
-void UARTPrintf_uint(U16_t num);
-
 void delay(unsigned int n);
 
 void delay_1ms_Count(unsigned int n);

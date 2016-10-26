@@ -15,8 +15,6 @@
 
 #include "nRF_IRQ.h"
 
-#include "temp_ds18b20.h"
-
 unsigned int SensorVal;
 
 //User Rx CallBack

@@ -21,8 +21,9 @@
 
 #include "nRF_RegText.h"
 
+#include "uart.h"
 //for delay
-#include "ClockUartLed.h"
+#include "clock_led.h"
 
 
 
