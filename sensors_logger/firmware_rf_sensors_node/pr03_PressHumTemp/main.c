@@ -359,7 +359,20 @@ void BME280_ForceOneMeasure(BYTE Press,BYTE Temp,BYTE Hum)//Bug 2 writes do not 
     delay_100us();
     
 }
-
+void BME280_Wait_Measures()
+{
+    BYTE status;
+    BYTE count = 0;
+   do
+   {
+     status = BME280_ReadReg(0xF2);//status : 0xF3
+     count++;
+   }while(((status & 0x08) != 0) && (count<200));
+    
+    UARTPrintf("Measure done ");
+    UARTPrintf_uint(count);
+    UARTPrintf(" poll\n");
+}
 void BME280_Print_Status()
 {
     BYTE status = BME280_ReadReg(0xF2);//status : 0xF3
@@ -393,7 +406,10 @@ int main( void )
     InitialiseUART();//Tx only
     
     UARTPrintf("\n_________________________________\n");
-    UARTPrintf("sensors_logger\\pr03_PressHumTemp\n");
+    UARTPrintf("sensors_logger\\firmware_rf_sensors_node\n");
+    UARTPrintf("Node id ");
+    UARTPrintfHex(NodeId);
+    UARTPrintf("\n");
     delay_1ms_Count(1000);
 
     I2C_Init();
@@ -405,9 +421,9 @@ int main( void )
     
     BME280_PrintId();
     UARTPrintf("calib data:\n");
-    Print_BME280_Registers(0x88,11);
-    Print_BME280_Registers(0x92,11);
-    Print_BME280_Registers(0x9C,7);
+    Print_BME280_Registers(0x88,10);
+    Print_BME280_Registers(0x92,10);
+    Print_BME280_Registers(0x9C,6);
     Print_BME280_Registers(0xE1,8);
     //
     // Main loop
@@ -420,12 +436,8 @@ int main( void )
 
       UARTPrintf("Measure---------------\n");
       BME280_ForceOneMeasure(1,1,1);//Pressure, Temperature, Humidity
-      delay_1ms_Count(100);
-      //BME280_Print_Status();
-      //delay_1ms_Count(100);
-      //reading 9 not 8 because of the 3rd repeat issue
-      Print_BME280_Registers(0xF7, 9);
-      delay_1ms_Count(100);
+      BME280_Wait_Measures();
+      Print_BME280_Registers(0xF7, 8);
 
       delay_1ms_Count(2000);
       
