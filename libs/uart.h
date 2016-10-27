@@ -12,7 +12,7 @@
 
 #include "commonTypes.h"
 
-//for InitialiseUART(); putc(char c);  UARTPrintf(char const *message);
+//for InitialiseUART(); putc(char c);  printf(char const *message);
 #include "uart_stm8x.h"
 
 void UARTPrintfLn(char const *message);

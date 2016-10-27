@@ -41,7 +41,7 @@ void ProcessUserData_inIRQ()
   userRxCallBack(RxData,RX_DataSize);
   #if (Enable_Debug_IRQHandler_PortD_nRF == 1)
           IRQ_Printf("  Received Packet: ");
-          UARTPrintfHexTable(RxData,dyn_RxDataSize);
+          UARTPrintfHexTable(RxData,RX_DataSize);
           IRQ_Printf("\n\r");
   #endif
 	

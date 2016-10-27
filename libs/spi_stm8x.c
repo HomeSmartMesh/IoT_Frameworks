@@ -155,6 +155,10 @@ BYTE SPI_WriteRead(BYTE Data)
 //	PC3 GPIO_OUT CE  Chip Enable (this signal is active high and used to activate the chip in RX or TX mode)
 //----------------------------------------------------------------------------------------------------------
  
+void SPI_Init_SCK_MOSI_MISO_Pins()
+{
+    //HW managed pins directions do not need to be configured for the STM8S
+}
  
 void SPI_Init_ChipEnable_Pin()
 {

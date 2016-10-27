@@ -14,7 +14,9 @@
 #include "nRF_Tx.h"
 #include "nRF_RegText.h"
 
-#include "nRF_IRQ.h"
+#include "nRF_IRQ_stm8x.h"
+
+#include "temp_ds18b20.h"
 
 unsigned int SensorVal;
 
@@ -118,11 +120,10 @@ int main( void )
 
     Test_Led_Off();
 
-    InitialiseUART();
+    uart_init();
 	
-    printf("\r\n_________________________\n\r");
-    printf("ws01_WeatherLogger\\02_RF_ReceiverLogger\\\n\r");
-    printf("Start\n\r");
+    printf("\r\n__________________________________________________\n\r");
+    printf("sensors_logger\\firmware_rf_dongle\\rf_receiver_logger\\\n\r");
 
     //Applies the compile time configured parameters from nRF_Configuration.h
     BYTE status = nRF_Config();

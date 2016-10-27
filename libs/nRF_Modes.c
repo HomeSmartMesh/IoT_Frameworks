@@ -14,7 +14,7 @@
 
 #include "nRF_Modes.h"
 #include "nRF_Configuration.h"
-#include "nRF_IRQ.h"
+#include "nRF_IRQ_stm8x.h"
 
 #include "nRF_SPI.h"
 #include "spi_stm8x.h"

@@ -74,3 +74,4 @@ sensors_logger/firmware_rf_sensors_node/pr03_PressHumTemp/settings/
 sensors_logger/firmware_rf_dongle/rf_receiver_logger/Debug/
 sensors_logger/firmware_rf_dongle/settings/
 *.dep
+ws01_WeatherLogger/settings/

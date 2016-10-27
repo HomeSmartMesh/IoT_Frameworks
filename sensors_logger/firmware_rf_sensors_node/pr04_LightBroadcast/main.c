@@ -7,7 +7,8 @@
 
 #include "nRF_Tx.h"
 
-#include "ClockUartLed.h"
+#include "clock_led.h"
+#include "uart.h"
 
 #include "i2c_stm8x.h"
 #include "commonTypes.h"
@@ -60,11 +61,11 @@ void LogMagnets()
       unsigned char Magnet_B0,Magnet_D0;
       Magnet_B0 = PB_IDR_IDR0;
       Magnet_D0 = PD_IDR_IDR0;
-      //UARTPrintf(" LVD0 ");
+      //printf(" LVD0 ");
       UARTPrintf_uint(Magnet_D0);
-      //UARTPrintf(" ; HH B0 ");
+      //printf(" ; HH B0 ");
       UARTPrintf_uint(Magnet_B0);
-      UARTPrintf("\n");
+      printf("\n");
       delay_100us();
       delay_100us();
 }
@@ -75,7 +76,7 @@ __interrupt void IRQHandler_Pin0(void)
 {
   if(EXTI_SR1_P0F == 1)
   {
-    //UARTPrintf("Pin0_Interrupt ");LogMagnets();
+    //printf("Pin0_Interrupt ");LogMagnets();
     RfSwitch(PB_IDR_IDR0);
   }
   EXTI_SR1 = 0xFF;//acknowledge all interrupts pins
@@ -201,9 +202,9 @@ void PingColor()
 }
 void PingUart(unsigned char index)
 {
-      UARTPrintf("Ping Color STM8L ");
+      printf("Ping Color STM8L ");
       UARTPrintf_uint(index);
-      UARTPrintf(" \n");
+      printf(" \n");
 }
 
 
@@ -217,9 +218,9 @@ void i2c_ReadLight_StateMachine()
   //    sensorData[0] = ReadReg(0x03);
   //    sensorData[1] = ReadReg(0x04);
 
-  /*UARTPrintf("rsm: ");
+  /*printf("rsm: ");
   UARTPrintf_uint(iRL_count);
-  UARTPrintf("\n");*/
+  printf("\n");*/
 
   switch(iRL_count)
   {
@@ -249,16 +250,16 @@ void i2c_ReadLight_StateMachine()
 	case 4:                                       //read reg 0x04
 		{
 			sensorData[1] = iRL_result;             //result of reg[0x04]
-			UARTPrintf("Light: ");
+			printf("Light: ");
 			SensorVal = sensorData[0];
 			SensorVal <<= 4;//shift to make place for the 4 LSB
 			SensorVal = SensorVal + (0x0F & sensorData[1]);
 			UARTPrintf_uint(SensorVal);
-			UARTPrintf("\n");
+			printf("\n");
 		}
 	break;
 	default:
-		UARTPrintf("Unexpected default case\n");
+		printf("Unexpected default case\n");
 	break;
   }
   iRL_count++;
@@ -280,9 +281,9 @@ void ReadLight_sm()
 
 void i2c_user_Rx_Callback(BYTE *userdata,BYTE size)
 {
-	/*UARTPrintf("I2C Transaction complete, received:\n\r");
+	/*printf("I2C Transaction complete, received:\n\r");
 	UARTPrintfHexTable(userdata,size);
-	UARTPrintf("\n\r");*/
+	printf("\n\r");*/
 	//cannot call the state machine from interruption context
 	//i2c_ReadLight_StateMachine();
         
@@ -290,9 +291,9 @@ void i2c_user_Rx_Callback(BYTE *userdata,BYTE size)
 
 void i2c_user_Tx_Callback(BYTE *userdata,BYTE size)
 {
-	/*UARTPrintf("I2C Transaction complete, Transmitted:\n\r");
+	/*printf("I2C Transaction complete, Transmitted:\n\r");
 	UARTPrintfHexTable(userdata,size);
-	UARTPrintf("\n\r");*/
+	printf("\n\r");*/
 	//cannot call the state machine from interruption context
 	//i2c_ReadLight_StateMachine();
 }
@@ -303,19 +304,19 @@ void i2c_user_Error_Callback(BYTE l_sr2)
 {
 	if(l_sr2 & 0x01)
 	{
-		UARTPrintf("[I2C Bus Error]\n\r");
+		printf("[I2C Bus Error]\n\r");
 	}
 	if(l_sr2 & 0x02)
 	{
-		UARTPrintf("[I2C Arbitration Lost]\n\r");
+		printf("[I2C Arbitration Lost]\n\r");
 	}
 	if(l_sr2 & 0x04)
 	{
-		UARTPrintf("[I2C no Acknowledge]\n\r");//this is ok for the slave
+		printf("[I2C no Acknowledge]\n\r");//this is ok for the slave
 	}
 	if(l_sr2 & 0x08)
 	{
-		UARTPrintf("[I2C Bus Overrun]\n\r");
+		printf("[I2C Bus Overrun]\n\r");
 	}
 }
 
@@ -326,24 +327,24 @@ __interrupt void IRQHandler_RTC(void)
   if(RTC_ISR2_WUTF)
   {
 	delay_1ms_Count(10);//some time is needed to recover the right clock
-	UARTPrintf("RTC IRQ\n\r");
+	printf("RTC IRQ\n\r");
     RTC_ISR2_WUTF = 0;
     
 	
     RfAlive();
     
-	/*UARTPrintf("Now Log Magnet\r\n");
+	/*printf("Now Log Magnet\r\n");
     LogMagnets();
 	
 	delay_1ms_Count(1000);
 
-	UARTPrintf("Initialise_STM8L_Clock\r\n");
+	printf("Initialise_STM8L_Clock\r\n");
 	Initialise_STM8L_Clock();
-	UARTPrintf("I2C Init\r\n");
+	printf("I2C Init\r\n");
 	I2C_Init();
 
 	delay_1ms_Count(1000);	
-	UARTPrintf("Now Read Light\r\n");
+	printf("Now Read Light\r\n");
 	delay_1ms_Count(1);
     ReadLight_sm();
 	delay_1ms_Count(1);*/
@@ -360,9 +361,9 @@ int main( void )
     Initialise_STM8L_Clock();
     
     SYSCFG_RMPCR1_USART1TR_REMAP = 1; // Remap 01: USART1_TX on PA2 and USART1_RX on PA3
-    InitialiseUART();//Tx only
+    uart_init();//Tx only
     
-    UARTPrintf("ws04_Node_LowSimple\\pr02_AmbientLight\n\r");
+    printf("ws04_Node_LowSimple\\pr02_AmbientLight\n\r");
     delay_1ms_Count(1000);
 
     I2C_Init();
@@ -387,12 +388,12 @@ int main( void )
     while (1)
     {
 		//RfAlive();
-		UARTPrintf("main() ReadLight_sm\n\r");
+		printf("main() ReadLight_sm\n\r");
 		ReadLight_sm();
-		UARTPrintf("RF_Light\n\r");
+		printf("RF_Light\n\r");
 		Rf_Light();
 		delay_1ms_Count(10);
-		UARTPrintf("Back to __halt()\n\r");
+		printf("Back to __halt()\n\r");
 		__halt();
       
     }

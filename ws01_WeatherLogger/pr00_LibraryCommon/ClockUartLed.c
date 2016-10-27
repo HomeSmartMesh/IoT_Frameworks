@@ -12,13 +12,7 @@
 
 #include "ClockUartLed.h"
 
-#ifdef DEVICE_STM8S
-	#include <iostm8s103f3.h>
-#else ifdef DEVICE_STM8L
-	#include <iostm8l151f3.h>
-#else
-	#error No DEVICE_STM8X define
-#endif
+#include <iostm8s103f3.h>
 
 #define Test_Led_PB5 PB_ODR_ODR5
 

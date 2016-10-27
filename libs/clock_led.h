@@ -28,6 +28,7 @@ void delay(unsigned int n);
 
 void delay_1ms_Count(unsigned int n);
 
+void InitialiseSystemClock();
 
 // L E D 
 void Initialise_TestLed_GPIO_B5();
