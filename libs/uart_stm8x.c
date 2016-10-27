@@ -1,4 +1,4 @@
-/** @file uart_regs_stm8x.c
+/** @file uart_stm8x.c
  *
  * @author Wassim FILALI  STM8L
  *
@@ -10,7 +10,7 @@
  *
  */
 
-#include "uart_regs_stm8x.h"
+#include "uart_stm8x.h"
 
 //to know which DEVICE_STM8 we have
 #include "deviceType.h"

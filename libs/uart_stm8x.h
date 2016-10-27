@@ -1,4 +1,4 @@
-/** @file uart_regs_stm8x.h
+/** @file uart_stm8x.h
  *
  * @author Wassim FILALI
  *

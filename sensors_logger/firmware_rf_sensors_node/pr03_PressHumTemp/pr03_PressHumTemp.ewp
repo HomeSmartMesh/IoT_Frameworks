@@ -1599,22 +1599,16 @@
       <name>$PROJ_DIR$\..\..\..\libs\commonTypes.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\libs\i2c_m.c</name>
+      <name>$PROJ_DIR$\..\..\..\libs\i2c_stm8x.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\libs\i2c_m.h</name>
+      <name>$PROJ_DIR$\..\..\..\libs\i2c_stm8x.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\libs\nRF_IRQ.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\libs\nRF_IRQ.h</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\..\libs\nRF_LowLevel.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\..\libs\nRF_LowLevel.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\libs\nRF_Modes.c</name>
@@ -1641,16 +1635,22 @@
       <name>$PROJ_DIR$\..\..\..\libs\nRF_Tx.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\libs\spi_stm8x.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\spi_stm8x.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\libs\uart.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\libs\uart.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\libs\uart_regs_stm8x.c</name>
+      <name>$PROJ_DIR$\..\..\..\libs\uart_stm8x.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\libs\uart_regs_stm8x.h</name>
+      <name>$PROJ_DIR$\..\..\..\libs\uart_stm8x.h</name>
     </file>
   </group>
   <file>

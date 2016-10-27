@@ -11,7 +11,7 @@
  */
 
 #include "nRF_SPI.h"
-#include "nRF_LowLevel.h"
+#include "spi_stm8x.h"
 #include "clock_led.h"
 
 const unsigned char nRF24L01pRegNumber = 0x18;

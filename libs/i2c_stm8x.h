@@ -1,4 +1,4 @@
-/** @file i2c.h
+/** @file i2c_stm8x.h
  *
  * @author Wassim FILALI
  *
@@ -7,6 +7,7 @@
  *
  *
  * $Date: 04.01.2016
+ * $Date: 27.10.2016 - i2c_stm8x.h
  * $Revision:
  *
  */

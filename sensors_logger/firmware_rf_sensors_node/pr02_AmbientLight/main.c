@@ -9,7 +9,7 @@
 
 #include "ClockUartLed.h"
 
-#include "i2c_m.h"
+#include "i2c_stm8x.h"
 #include "commonTypes.h"
 
 

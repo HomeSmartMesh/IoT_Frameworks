@@ -17,7 +17,7 @@
 #include "nRF_IRQ.h"
 
 #include "nRF_SPI.h"
-#include "nRF_LowLevel.h"
+#include "spi_stm8x.h"
 
 #include "nRF_RegText.h"
 

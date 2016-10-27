@@ -18,7 +18,7 @@
 //for SPI_Write_Buf
 #include "nRF_SPI.h"
 #include "clock_led.h"
-#include "nRF_LowLevel.h"
+#include "spi_stm8x.h"
 
 //returns the status byte
 BYTE nRF_Transmit(BYTE* payload, BYTE size)
