@@ -11,8 +11,8 @@
  */
 
 #include "nRF_SPI.h"
-#include "nRF_LowLevel.h"
-#include "ClockUartLed.h"
+#include "spi_stm8x.h"
+#include "clock_led.h"
 
 const unsigned char nRF24L01pRegNumber = 0x18;
 
@@ -82,6 +82,24 @@ BYTE SPI_Read_Register(BYTE reg)
 	return(reg_val);        
 }
 
+BYTE SPI_Cmd_ReadRxPayloadWidth()
+{
+	BYTE payload_Width;
+
+	CSN_Pin_LowSelect();
+	SPI_RW(R_RX_PL_WID);
+	payload_Width = SPI_RW(0);    
+	CSN_Pin_HighDisable();  
+
+	return(payload_Width);
+}
+
+void SPI_Cmd_FlushRx()
+{
+	CSN_Pin_LowSelect();
+	SPI_RW(FLUSH_RX);
+	CSN_Pin_HighDisable();  
+}
 
 BYTE SPI_Write_Register(BYTE reg, BYTE value)
 {

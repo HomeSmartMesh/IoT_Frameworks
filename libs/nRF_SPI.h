@@ -38,6 +38,7 @@
 #define FLUSH_TX        0xE1  // Define flush TX register command
 #define FLUSH_RX        0xE2  // Define flush RX register command
 #define REUSE_TX_PL     0xE3  // Define reuse TX payload register command
+#define R_RX_PL_WID     0x60  // Read RX payload width for the top R_RX_PAYLOAD in the RX FIFO (Flush if >32)
 #define NOP             0xFF  // Define No Operation, might be used to read status register
 
 //********************************************************************************************************************//
@@ -111,6 +112,10 @@ BYTE SPI_Write_Register(BYTE reg, BYTE value);         // Uses the command WRITE
 
 BYTE SPI_Write_Buf(BYTE reg, BYTE *pBuf, BYTE bytes);  // Writes multiply bytes to one register
 BYTE SPI_Read_Buf(BYTE reg, BYTE *pBuf, BYTE bytes);   // Read multiply bytes from one register
+
+
+BYTE SPI_Cmd_ReadRxPayloadWidth();
+void SPI_Cmd_FlushRx();
 
 BYTE SPI_Command(BYTE reg, BYTE value);					//generic command out of nRF24L01P Page 51 revision 1.0
 

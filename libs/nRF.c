@@ -7,22 +7,24 @@
  * @compiler IAR STM8
  *
  *
- * $Date: 12.12.2015
+ * $Date: 12.12.2015 nRF_Modes.c
+ * $Date: 29.10.2016 nRF.c
  * $Revision:
  *
  */
 
-#include "nRF_Modes.h"
+#include "nRF.h"
 #include "nRF_Configuration.h"
-#include "nRF_IRQ.h"
+#include "nRF_IRQ_stm8x.h"
 
 #include "nRF_SPI.h"
-#include "nRF_LowLevel.h"
+#include "spi_stm8x.h"
 
 #include "nRF_RegText.h"
 
+#include "uart.h"
 //for delay
-#include "ClockUartLed.h"
+#include "clock_led.h"
 
 
 

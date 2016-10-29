@@ -72,7 +72,7 @@
 //-----------------------nRF_Modes configuration application, not to be edited------------
 //----------------------------------------------------------------------------------------
 #if (Enable_Debug_nRF_Config == 1)
-#define nRF_Config_Printf(x) 			UARTPrintf(x)
+#define nRF_Config_Printf(x) 			printf(x)
 #define nRF_Config_PrintfHex(x)	        UARTPrintfHex(x)
 #define nRF_Config_PrintStatus(x)		nRF_PrintStatus(x)
 #else
@@ -82,7 +82,7 @@
 #endif
 
 #if (Enable_Debug_nRF_SetMode_RX == 1)
-#define nRF_SetMode_RX_Printf(x) 		UARTPrintf(x)
+#define nRF_SetMode_RX_Printf(x) 		printf(x)
 #define nRF_SetMode_RX_PrintfHex(x)		UARTPrintfHex(x)
 #define nRF_SetMode_RX_PrintStatus(x)	nRF_PrintStatus(x)
 #else
@@ -95,7 +95,7 @@
 //configuration application section, not to be edited
 //---------------------------------------------------------------------------------------------
 #if (Enable_Debug_IRQHandler_PortD_nRF == 1)
-#define IRQ_Printf(x) 					UARTPrintf(x)
+#define IRQ_Printf(x) 					printf(x)
 #define IRQ_PrintfHex(x)				UARTPrintfHex(x)
 #define IRQ_PrintStatus(x)				nRF_PrintStatus(x)
 #else

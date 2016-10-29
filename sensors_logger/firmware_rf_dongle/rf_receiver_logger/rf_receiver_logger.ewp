@@ -17,7 +17,7 @@
         <debug>1</debug>
         <option>
           <name>GenDeviceSelectMenu</name>
-          <state>STM8L151F3	STM8L151F3</state>
+          <state>STM8S103F3P	STM8S103F3P</state>
         </option>
         <option>
           <name>GenCodeModel</name>
@@ -543,7 +543,7 @@
         </option>
         <option>
           <name>IlinkOutputFile</name>
-          <state>pr03_PressHumTemp.out</state>
+          <state>rf_receiver_logger.out</state>
         </option>
         <option>
           <name>IlinkDebugInfoEnable</name>
@@ -607,7 +607,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$TOOLKIT_DIR$\config\lnkstm8l151f3.icf</state>
+          <state>$TOOLKIT_DIR$\config\lnkstm8s103f3.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -1599,12 +1599,6 @@
       <name>$PROJ_DIR$\..\..\..\libs\commonTypes.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\libs\i2c_stm8x.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\..\libs\i2c_stm8x.h</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\..\..\..\libs\nRF.c</name>
     </file>
     <file>
@@ -1635,10 +1629,22 @@
       <name>$PROJ_DIR$\..\..\..\libs\nRF_Tx.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\libs\rx_protocol.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\rx_protocol.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\libs\spi_stm8x.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\libs\spi_stm8x.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\temp_ds18b20.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\temp_ds18b20.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\libs\uart.c</name>
@@ -1653,12 +1659,6 @@
       <name>$PROJ_DIR$\..\..\..\libs\uart_stm8x.h</name>
     </file>
   </group>
-  <file>
-    <name>$PROJ_DIR$\BMP280_API.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$\BMP280_API.h</name>
-  </file>
   <file>
     <name>$PROJ_DIR$\deviceType.h</name>
   </file>

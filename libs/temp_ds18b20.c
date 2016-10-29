@@ -16,19 +16,46 @@
 
 #include "temp_ds18b20.h"
 
-#include <iostm8l151f3.h>
+#include "deviceType.h"
 
-#include "ClockUartLed.h"
+#if DEVICE_STM8L == 1
+  #error This sensor was not planned to be used with the low power device 3.3V, not even for RF reception
+#elif DEVICE_STM8S == 1
+	#include <iostm8s103f3.h>
+#else
+  #error needs a file deviceType.h with DEVICE_STM8L 1  or S 1 defined
+#endif
 
-//  !!!!! The one wire ds18B20 is using pin A2 on the STM8 Node Module !!!!!
+#include "uart.h"
+#include "clock_led.h"
+#define PinSensor_A3
+
+//  !!!!! The one wire ds18B20 pin configuration : A2 !!!!!
+#ifdef PinSensor_A2
+#define PinSensor_DDR   PA_DDR_bit.DDR2
+#define PinSensor_ODR   PA_ODR_bit.ODR2
+#define PinSensor_IDR   PA_IDR_bit.IDR2
+#define PinSensor_CR1   PA_CR1_bit.C12
+#define PinSensor_CR2   PA_CR2_bit.C22
+#endif
+#ifdef PinSensor_A3
+#define PinSensor_DDR   PA_DDR_bit.DDR3
+#define PinSensor_ODR   PA_ODR_bit.ODR3
+#define PinSensor_IDR   PA_IDR_bit.IDR3
+#define PinSensor_CR1   PA_CR1_bit.C13
+#define PinSensor_CR2   PA_CR2_bit.C23
+#endif
+
+//---------------------------------------------------------------
+
 
 //release is input
-#define OneWire_Release(); PA_DDR_bit.DDR2 = 0;
+#define OneWire_Release(); PinSensor_DDR = 0;
 
 //down is output, and low
-#define OneWire_Down(); PA_DDR_bit.DDR2 = 1;PA_ODR_bit.ODR2 = 0;
+#define OneWire_Down(); PinSensor_DDR = 1;PinSensor_ODR = 0;
 
-#define OneWire_State() PA_IDR_bit.IDR2
+#define OneWire_State() PinSensor_IDR
 
 
 
@@ -54,16 +81,16 @@
 
 BYTE DS18B20_ScratchPad[9];
 
-void Initialise_OneWire_Pin_A2()
+void Initialise_OneWire_Pin()
 {
-	PA_DDR_bit.DDR2 = 1;//output
+	PinSensor_DDR = 1;//output
 
-	PA_CR1_bit.C12 = 0;//open Drain
+	PinSensor_CR1 = 0;//open Drain
 
 	//   0: Output speed up to  2 MHz
 	//   1: Output speed up to 10 MHz
 	//
-	PA_CR2_bit.C22 = 1;
+	PinSensor_CR2 = 1;
 }
 
 void OneWire_Reset()
@@ -272,7 +299,28 @@ void UARTPrint_DS18B20_Temperature(BYTE * data)
     frac+=5000;
   }
   UARTPrintf_sint(trunc);
-  UARTPrintf(".");
+  printf(".");
   UARTPrintf_uint(frac);
+}
+
+void rx_temperature_ds18b20(BYTE *rxData,BYTE rx_DataSize)
+{
+	BYTE crc = rxData[0];
+	for(int i=1;i<4;i++)
+	{
+	  crc ^= rxData[i];
+	}
+	if(crc == rxData[4])
+	{
+	  printf("NodeId:");
+	  UARTPrintf_uint(rxData[1]);
+	  printf(",Temperature:");
+	  UARTPrint_DS18B20_Temperature(rxData+2);
+	  UARTPrintfLn("");
+	}
+	else
+	{
+	  printf("Protocol Id: 0x35, CRC Fail\n");
+	}
 }
 

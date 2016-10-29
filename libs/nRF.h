@@ -1,4 +1,4 @@
-/** @file nRF_Modes.h
+/** @file nRF.h
  *
  * @author Wassim FILALI
  * Directly inferred from the Datasheet
@@ -7,7 +7,8 @@
  * @compiler IAR STM8
  *
  *
- * $Date: 12.12.2015
+ * $Date: 12.12.2015 nRF_Modes.h
+ * $Date: 29.10.2016 renamed to nRF.h
  * $Revision:
  *
  */

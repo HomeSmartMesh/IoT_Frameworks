@@ -3,13 +3,14 @@
 
 #include "nRF_SPI.h"
 //for nRF_SetMode_TX()
-#include "nRF_Modes.h"
+#include "nRF.h"
 
 #include "nRF_Tx.h"
 
-#include "ClockUartLed.h"
+#include "clock_led.h"
+#include "uart.h"
 
-#include "i2c_m.h"
+#include "i2c_stm8x.h"
 #include "commonTypes.h"
 
 
@@ -47,11 +48,11 @@ void LogMagnets()
       unsigned char Magnet_B0,Magnet_D0;
       Magnet_B0 = PB_IDR_IDR0;
       Magnet_D0 = PD_IDR_IDR0;
-      //UARTPrintf(" LVD0 ");
+      //printf(" LVD0 ");
       UARTPrintf_uint(Magnet_D0);
-      //UARTPrintf(" ; HH B0 ");
+      //printf(" ; HH B0 ");
       UARTPrintf_uint(Magnet_B0);
-      UARTPrintf("\n");
+      printf("\n");
       delay_100us();
       delay_100us();
 }
@@ -62,7 +63,7 @@ __interrupt void IRQHandler_Pin0(void)
 {
   if(EXTI_SR1_P0F == 1)
   {
-    //UARTPrintf("Pin0_Interrupt ");LogMagnets();
+    //printf("Pin0_Interrupt ");LogMagnets();
     RfSwitch(PB_IDR_IDR0);
   }
   EXTI_SR1 = 0xFF;//acknowledge all interrupts pins
@@ -201,43 +202,43 @@ void PingColor()
 }
 void PingUart(unsigned char index)
 {
-      UARTPrintf("Ping Color STM8L ");
+      printf("Ping Color STM8L ");
       UARTPrintf_uint(index);
-      UARTPrintf(" \n");
+      printf(" \n");
 }
 
 void i2c_user_Rx_Callback(BYTE *userdata,BYTE size)
 {
-	/*UARTPrintf("I2C Transaction complete, received:\n\r");
+	/*printf("I2C Transaction complete, received:\n\r");
 	UARTPrintfHexTable(userdata,size);
-	UARTPrintf("\n\r");*/
+	printf("\n\r");*/
         
 }
 
 void i2c_user_Tx_Callback(BYTE *userdata,BYTE size)
 {
-	/*UARTPrintf("I2C Transaction complete, Transmitted:\n\r");
+	/*printf("I2C Transaction complete, Transmitted:\n\r");
 	UARTPrintfHexTable(userdata,size);
-	UARTPrintf("\n\r");*/
+	printf("\n\r");*/
 }
 
 void i2c_user_Error_Callback(BYTE l_sr2)
 {
 	if(l_sr2 & 0x01)
 	{
-		UARTPrintf("[I2C Bus Error]\n\r");
+		printf("[I2C Bus Error]\n\r");
 	}
 	if(l_sr2 & 0x02)
 	{
-		UARTPrintf("[I2C Arbitration Lost]\n\r");
+		printf("[I2C Arbitration Lost]\n\r");
 	}
 	if(l_sr2 & 0x04)
 	{
-		UARTPrintf("[I2C no Acknowledge]\n\r");//this is ok for the slave
+		printf("[I2C no Acknowledge]\n\r");//this is ok for the slave
 	}
 	if(l_sr2 & 0x08)
 	{
-		UARTPrintf("[I2C Bus Overrun]\n\r");
+		printf("[I2C Bus Overrun]\n\r");
 	}
 }
 
@@ -258,12 +259,12 @@ void ReadLight()
     BYTE sensorData[2];
     sensorData[0] = ReadReg(0x03);
     sensorData[1] = ReadReg(0x04);
-    UARTPrintf("Light: ");
+    printf("Light: ");
     unsigned int Val = sensorData[0];
     Val <<= 4;//shift to make place for the 4 LSB
     Val = Val + (0x0F & sensorData[1]);
     UARTPrintf_uint(Val);
-    UARTPrintf("\n");
+    printf("\n");
   
 }
 
@@ -275,9 +276,9 @@ int main( void )
     Initialise_STM8L_Clock();
     
     SYSCFG_RMPCR1_USART1TR_REMAP = 1; // Remap 01: USART1_TX on PA2 and USART1_RX on PA3
-    InitialiseUART();//Tx only
+    uart_init();//Tx only
     
-    UARTPrintf("ws04_Node_LowSimple\\pr02_AmbientLight\n\r");
+    printf("ws04_Node_LowSimple\\pr02_AmbientLight\n\r");
     delay_1ms_Count(1000);
 
     I2C_Init();

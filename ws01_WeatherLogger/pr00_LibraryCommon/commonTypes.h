@@ -1,4 +1,4 @@
-/** @file nRF_Modes.h
+/** @file commonTypes.h
  *
  * @author Wassim FILALI
  * 

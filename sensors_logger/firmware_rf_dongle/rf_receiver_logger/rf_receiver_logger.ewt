@@ -58,10 +58,22 @@
       <name>$PROJ_DIR$\..\..\..\libs\nRF_Tx.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\libs\rx_protocol.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\rx_protocol.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\libs\spi_stm8x.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\libs\spi_stm8x.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\temp_ds18b20.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\temp_ds18b20.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\libs\uart.c</name>

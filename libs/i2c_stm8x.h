@@ -1,4 +1,4 @@
-/** @file i2c.h
+/** @file i2c_stm8x.h
  *
  * @author Wassim FILALI
  *
@@ -7,12 +7,14 @@
  *
  *
  * $Date: 04.01.2016
+ * $Date: 27.10.2016 - i2c_stm8x.h
  * $Revision:
  *
  */
 
 #include "commonTypes.h"
 
+#include "uart.h"
 //------------------------------------------------------------------------------------------------------------------
 //					User configuration
 //------------------------------------------------------------------------------------------------------------------
@@ -24,7 +26,7 @@
 //configuration application section, not to be edited
 //---------------------------------------------------------------------------------------------
 #if (Enable_Debug_I2C_IRQ == 1)
-#define I2C_IRQ_Printf(x) 					UARTPrintf(x)
+#define I2C_IRQ_Printf(x) 					printf(x)
 #define I2C_IRQ_PrintfHex(x)				UARTPrintfHex(x)
 #define I2C_IRQ_PrintStatus(x)				nRF_PrintStatus(x)
 #else
