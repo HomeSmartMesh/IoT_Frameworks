@@ -174,14 +174,14 @@ void I2C_Transaction(BYTE read,BYTE slaveAddress, BYTE* buffer,BYTE count)
 	I2C1_CR2_START = 1;	//Launch the process
 }
 
-void I2C_Read(BYTE slaveAddress, BYTE* buffer,BYTE count)
+void I2C_Read(BYTE slave_7msb_Address, BYTE* buffer,BYTE count)
 {
-	I2C_Transaction(0x01,slaveAddress,buffer,count);
+	I2C_Transaction(0x01,slave_7msb_Address,buffer,count);
 }
 
-void I2C_Write(BYTE slaveAddress, BYTE* buffer,BYTE count)
+void I2C_Write(BYTE slave_7msb_Address, BYTE* buffer,BYTE count)
 {
-	I2C_Transaction(0x00,slaveAddress,buffer,count);
+	I2C_Transaction(0x00,slave_7msb_Address,buffer,count);
 }
 
 

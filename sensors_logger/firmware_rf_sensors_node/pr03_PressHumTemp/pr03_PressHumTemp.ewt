@@ -19,6 +19,12 @@
   <group>
     <name>libs</name>
     <file>
+      <name>$PROJ_DIR$\..\..\..\libs\bme280.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\bme280.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\libs\clock_led.c</name>
     </file>
     <file>
@@ -32,6 +38,12 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\libs\i2c_stm8x.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\max44009.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\max44009.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\libs\nRF.c</name>
@@ -62,6 +74,12 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\libs\nRF_Tx.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\rf_protocol.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\rf_protocol.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\libs\spi_stm8x.c</name>

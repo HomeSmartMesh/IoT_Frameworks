@@ -1,0 +1,32 @@
+rfId:0xE2;Error:dataSize not 11 but 10
+rfId:0xE2;Error:CRC
+__________________________________________________
+
+sensors_logger\firmware_rf_dongle\rf_receiver_logger\
+
+
+__________________________________________________
+
+sensors_logger\firmware_rf_dongle\rf_receiver_logger\
+
+rfId:0xE2;Error:CRC
+NodeId:6,is:Alive
+
+__________________________________________________
+
+sensors_logger\firmware_rf_dongle\rf_receiver_logger\
+
+NodeId:4,is:Alive
+NodeId:7;BME280: 0x07 53 F5 00 7E F6 00 73 EB 
+NodeId:7;BME280: 0x07 53 F7 00 7E F7 00 73 07 
+NodeId:7;BME280: 0x07 53 F9 00 7E F5 00 73 BB 
+NodeId:6,is:Alive
+NodeId:6,Light: 1701
+NodeId:4,is:Alive
+NodeId:7;BME280: 0x07 53 F7 00 7E F7 00 73 6C 
+NodeId:7;BME280: 0x07 53 F3 00 7E F1 00 74 3F 
+NodeId:6,is:Alive
+NodeId:6,Light: 1700
+NodeId:7;BME280: 0x07 53 F6 00 7E ED 00 73 70 
+NodeId:4,is:Alive
+NodeId:7;BME280: 0x07 53 F5 00 7E EF 00 74 44 

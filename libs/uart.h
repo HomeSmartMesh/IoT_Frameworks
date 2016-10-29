@@ -15,6 +15,12 @@
 //for InitialiseUART(); putc(char c);  printf(char const *message);
 #include "uart_stm8x.h"
 
+#define printf_byte	UARTPrintfHex
+#define printf_hex	UARTPrintfHex
+#define printf_uint	UARTPrintf_uint
+#define printf_tab	UARTPrintfHexTable
+#define printf_ln();	UARTPrintfLn("");
+
 void UARTPrintfLn(char const *message);
 
 void UARTPrintfHex(unsigned char val);

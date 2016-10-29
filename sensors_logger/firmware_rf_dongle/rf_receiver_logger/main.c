@@ -23,32 +23,39 @@
 #include "temp_ds18b20.h"
 
 //for rx_pids and callbacks
-#include "rx_protocol.h"
+#include "rf_protocol.h"
 
+//for parsing rf bme280 data
+#include "bme280.h"
 
 //User Rx CallBack
 void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 {
 	switch(rxData[0])
 	{
-		case rx_pid_0x35_temperature:
+		case rf_pid_0x35_temperature:
 			{
 				rx_temperature_ds18b20(rxData,rx_DataSize);
 			}
 			break;
-		case rx_pid_0x75_alive:
+		case rf_pid_0x75_alive:
 			{
 				rx_alive(rxData,rx_DataSize);
 			}
 			break;
-		case rx_pid_0x3B_light:
+		case rf_pid_0x3B_light:
 			{
 				rx_light(rxData,rx_DataSize);
 			}
 			break;
-		case rx_pid_0xC5_magnet:
+		case rf_pid_0xC5_magnet:
 			{
 				rx_magnet(rxData,rx_DataSize);
+			}
+			break;
+		case rf_pid_0xE2_bme280:
+			{
+				bme280_rx_measures(rxData,rx_DataSize);
 			}
 			break;
 		default :

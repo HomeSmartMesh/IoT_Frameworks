@@ -66,11 +66,11 @@
 // 9th bit is acknowledge from the slave
 void I2C_Init();
 
-void I2C_Transaction(BYTE read,BYTE slaveAddress, BYTE* buffer,BYTE count);
+void I2C_Transaction(BYTE read,BYTE slave_7msb_Address, BYTE* buffer,BYTE count);
 
-void I2C_Read(BYTE slaveAddress, BYTE* buffer,BYTE count);
+void I2C_Read(BYTE slave_7msb_Address, BYTE* buffer,BYTE count);
 
-void I2C_Write(BYTE slaveAddress, BYTE* buffer,BYTE count);
+void I2C_Write(BYTE slave_7msb_Address, BYTE* buffer,BYTE count);
 
 void i2c_user_Rx_Callback(BYTE *userdata,BYTE size);
 

@@ -19,6 +19,12 @@
   <group>
     <name>libs</name>
     <file>
+      <name>$PROJ_DIR$\..\..\..\libs\bme280.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\bme280.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\libs\clock_led.c</name>
     </file>
     <file>
@@ -58,10 +64,10 @@
       <name>$PROJ_DIR$\..\..\..\libs\nRF_Tx.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\libs\rx_protocol.c</name>
+      <name>$PROJ_DIR$\..\..\..\libs\rf_protocol.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\libs\rx_protocol.h</name>
+      <name>$PROJ_DIR$\..\..\..\libs\rf_protocol.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\libs\spi_stm8x.c</name>

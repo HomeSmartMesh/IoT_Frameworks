@@ -1,4 +1,4 @@
-/** @file rx_protocol.c
+/** @file rf_protocol.c
  *
  * @author Wassim FILALI  STM8L
  *
@@ -10,13 +10,19 @@
  *
 */
 
-//for BYTE
-#include "commonTypes.h"
+#include "rf_protocol.h"
 
 //for printf
 #include "uart.h"
 
 
+
+void rf_get_tx_alive_3B(BYTE NodeId, BYTE* tx_data)
+{
+      tx_data[0]= rf_pid_0x75_alive;
+      tx_data[1]= NodeId;
+      tx_data[2]= tx_data[0] ^ NodeId;
+}
 
 void rx_alive(BYTE *rxData,BYTE rx_DataSize)
 {

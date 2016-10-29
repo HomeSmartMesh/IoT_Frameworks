@@ -2,10 +2,10 @@
 #include <iostm8l151f3.h>
 #include <intrinsics.h>
 
-#include "nRF_SPI.h"
-//for nRF_SetMode_TX()
-#include "nRF.h"
 
+//for config
+#include "nRF.h"
+//for transmit
 #include "nRF_Tx.h"
 
 #include "uart.h"
@@ -14,6 +14,10 @@
 #include "i2c_stm8x.h"
 #include "commonTypes.h"
 
+#include "bme280.h"
+
+//to format the tx data
+#include "rf_protocol.h"
 
 #define EEPROM_Offset 0x1000
 #define NODE_ID       (char *) EEPROM_Offset;
@@ -23,25 +27,29 @@ unsigned char NodeId;
 // - CPU and Peripheral clocks stopped, RTC running
 // - wakeup from RTC, or external/Reset
 
-void RfAlive()
+void rf_send_alive()
 {
-      unsigned char Tx_Data[3];
-      Tx_Data[0]=0x75;
-      Tx_Data[1]=NodeId;
-      Tx_Data[2]= Tx_Data[0] ^ NodeId;
-      nRF_Transmit(Tx_Data,3);
+	BYTE tx_data[3];
+	rf_get_tx_alive_3B(NodeId, tx_data);
+	nRF_Transmit(tx_data,3);
 }
 
 void RfSwitch(unsigned char state)
 {
-      unsigned char Tx_Data[4];
-      Tx_Data[0]=0xC5;
-      Tx_Data[1]=NodeId;
-      Tx_Data[2]=state;
-      Tx_Data[3]= Tx_Data[0] ^ NodeId ^ state;
-      nRF_Transmit(Tx_Data,4);
+	unsigned char Tx_Data[4];
+	Tx_Data[0]=0xC5;
+	Tx_Data[1]=NodeId;
+	Tx_Data[2]=state;
+	Tx_Data[3]= Tx_Data[0] ^ NodeId ^ state;
+	nRF_Transmit(Tx_Data,4);
 }
 
+void rf_send_bme280_measures()
+{
+	BYTE tx_data[11];
+	bme280_get_tx_measures_11B(NodeId, tx_data);
+	nRF_Transmit(tx_data,11);
+}
 
 void LogMagnets()
 {
@@ -78,7 +86,7 @@ __interrupt void IRQHandler_RTC(void)
   {
     RTC_ISR2_WUTF = 0;
     
-    RfAlive();
+    rf_send_alive();
     
     //LogMagnets();
   }
@@ -201,12 +209,6 @@ void PingColor()
       Tx_Data[3]=0x59;
       nRF_Transmit(Tx_Data,4);
 }
-void PingUart(unsigned char index)
-{
-      printf("Ping Color STM8L ");
-      UARTPrintf_uint(index);
-      printf(" \n");
-}
 
 void i2c_user_Rx_Callback(BYTE *userdata,BYTE size)
 {
@@ -245,203 +247,54 @@ void i2c_user_Error_Callback(BYTE l_sr2)
 	}
 }
 
-BYTE ReadReg(BYTE address)
-{
-    BYTE result;
-
-    I2C_Write(0x4A, &address,1);
-    delay_1ms_Count(10);
-    I2C_Read(0x4A, &result,1); 
-    delay_1ms_Count(100);//wait to complete before writing into unallocated variable
-    
-    return result;
-}
-
-void ReadLight()
-{
-    BYTE sensorData[2];
-    sensorData[0] = ReadReg(0x03);
-    sensorData[1] = ReadReg(0x04);
-    printf("Light: ");
-    unsigned int Val = sensorData[0];
-    Val <<= 4;//shift to make place for the 4 LSB
-    Val = Val + (0x0F & sensorData[1]);
-    UARTPrintf_uint(Val);
-    printf("\n");
-  
-}
-
-BYTE BME280_ReadReg(BYTE address)
-{
-    BYTE result;
-    I2C_Write(0x76, &address,1);
-    delay_100us();
-    I2C_Read(0x76, &result,1); 
-    delay_100us();
-    
-    return result;
-}
-
-void Read_BME280_Registers(BYTE Start, BYTE Number,BYTE *data)
-{
-    I2C_Write(0x76, &Start,1);//start address
-    delay_100us();
-    I2C_Read(0x76, data,Number); 
-    delay_100us();//wait to complete before writing into unallocated variable
-    //i²c repeat 3rd should be worked around here
-  
-}
-
-void Print_BME280_Registers(BYTE Start, BYTE Number)
-{
-  BYTE data[16];
-  Read_BME280_Registers(Start,Number,data);
-  printf("Reg ");
-  UARTPrintfHex(Start);
-  printf(" : ");
-  UARTPrintfHexTable(data,Number);
-  printf("\n");
-}
-
-void BME280_PrintId()
-{
-    BYTE Id = BME280_ReadReg(0xD0);//id : 0xD0
-    printf("BME280 id = ");
-    UARTPrintfHex(Id);
-    printf("\n");
-}
-
-#define CTMS_OSRS_T_Skip     0x00
-#define CTMS_OSRS_T_x1       0x20
-#define CTMS_OSRS_T_x2       0x40
-#define CTMS_OSRS_P_Skip     0x00
-#define CTMS_OSRS_P_x1       0x04
-#define CTMS_OSRS_P_x2       0x08
-#define CTMS_MODE_Sleep      0x00
-#define CTMS_MODE_Forced     0x01
-
-#define CTHM_OSRS_H_Skip     0x00
-#define CTHM_OSRS_H_x1       0x01
-#define CTHM_OSRS_H_x2       0x02
-
-//previous humidity only is interesting because the Temperature and Pressures are on the 
-//same register that needs to be triggered for the measure
-BYTE prev_Hum = 0;
-
-void BME280_ForceOneMeasure(BYTE Press,BYTE Temp,BYTE Hum)//Bug 2 writes do not work, a third one to apply the second !!!!
-{
-    BYTE data[4];
-
-    if(Hum != prev_Hum)
-    {
-      //Control Humidity Register
-      data[0] = 0xF2;//Register address ctrl_hum 0xF2
-      data[1] = CTHM_OSRS_H_Skip;
-      if(Hum)
-      {
-        data[1] = CTHM_OSRS_H_x1;
-      }
-      I2C_Write(0x76, data,2);
-      delay_100us();
-      prev_Hum = Hum;
-    }
-
-    //Control Temperature Pressure Register
-    data[0] = 0xF4;//Register address ctrl_meas 0xF4
-    data[1] = CTMS_MODE_Forced;
-    if(Temp)
-    {
-      data[1] |= CTMS_OSRS_T_x1;
-    }
-    if(Press)
-    {
-      data[1] |= CTMS_OSRS_P_x1;
-    }
-    I2C_Write(0x76, data,2);
-    delay_100us();
-    
-}
-void BME280_Wait_Measures()
-{
-    BYTE status;
-    BYTE count = 0;
-   do
-   {
-     status = BME280_ReadReg(0xF2);//status : 0xF3
-     count++;
-   }while(((status & 0x08) != 0) && (count<200));
-    
-    printf("Measure done ");
-    UARTPrintf_uint(count);
-    printf(" poll\n");
-}
-void BME280_Print_Status()
-{
-    BYTE status = BME280_ReadReg(0xF2);//status : 0xF3
-    printf("BME280 ctrl_hum = ");
-    UARTPrintfHex(status);
-    printf("\n");
-
-    status = BME280_ReadReg(0xF3);//status : 0xF3
-    printf("BME280 status = ");
-    UARTPrintfHex(status);
-    printf("\n");
-
-    status = BME280_ReadReg(0xF4);//ctrl_meas
-    printf("BME280 ctrl_meas = ");
-    UARTPrintfHex(status);
-    printf("\n");
-
-    status = BME280_ReadReg(0xF5);//Filter
-    printf("BME280 config = ");
-    UARTPrintfHex(status);
-    printf("\n");
-}
-
 int main( void )
 {
-    BYTE counter = 0;
-    NodeId = *NODE_ID;
-    Initialise_STM8L_Clock();
-    
-    SYSCFG_RMPCR1_USART1TR_REMAP = 1; // Remap 01: USART1_TX on PA2 and USART1_RX on PA3
-    uart_init();//Tx only
-    
-    printf("\n_________________________________\n");
-    printf("sensors_logger\\firmware_rf_sensors_node\n");
-    printf("Node id ");
-    UARTPrintfHex(NodeId);
-    printf("\n");
-    delay_1ms_Count(1000);
+	BYTE counter = 0;
+	NodeId = *NODE_ID;
+	Initialise_STM8L_Clock();
 
-    I2C_Init();
-    __enable_interrupt();
-    
-    
-    //Applies the compile time configured parameters from nRF_Configuration.h
-    //nRF_Config();
-    
-    BME280_PrintId();
-    printf("calib data:\n");
-    Print_BME280_Registers(0x88,10);
-    Print_BME280_Registers(0x92,10);
-    Print_BME280_Registers(0x9C,6);
-    Print_BME280_Registers(0xE1,8);
-    //
-    // Main loop
-    //
-    while (1)
-    {
-      printf("\n");
-      printf("counter :");
-      UARTPrintfHexLn(counter++);
+	SYSCFG_RMPCR1_USART1TR_REMAP = 1; // Remap 01: USART1_TX on PA2 and USART1_RX on PA3
+	uart_init();//Tx only
 
-      printf("Measure---------------\n");
-      BME280_ForceOneMeasure(1,1,1);//Pressure, Temperature, Humidity
-      BME280_Wait_Measures();
-      Print_BME280_Registers(0xF7, 8);
+	printf("\n_________________________________\n");
+	printf("sensors_logger\\firmware_rf_sensors_node\n");
+	printf("Node id ");
+	UARTPrintfHex(NodeId);
+	printf("\n");
+	delay_1ms_Count(1000);
 
-      delay_1ms_Count(2000);
-      
-    }
+	I2C_Init();
+	__enable_interrupt();
+
+
+	//Applies the compile time configured parameters from nRF_Configuration.h
+	nRF_Config();
+
+	//this is only for verification, if this fails, the error will be printed and no matter what happens next
+	bme280_check_id();
+
+	bme280_print_CalibData();
+
+	//
+	// Main loop
+	//
+	while (1)
+	{
+		printf("\n");
+		printf("counter :");
+		UARTPrintfHexLn(counter++);
+
+		printf("Measure---------------\n");
+		bme280_force_OneMeasure(1,1,1);//Pressure, Temperature, Humidity
+
+		bme280_wait_measures();
+
+		bme280_print_measures();
+		
+		printf("rf_send---------------\n");
+		rf_send_bme280_measures();
+
+		delay_1ms_Count(10000);
+
+	}
 }
