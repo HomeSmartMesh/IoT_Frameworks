@@ -1,3 +1,14 @@
+/*
+	main.c for 
+		IoT_Frameworks
+			\sensors_logger
+				\firmware_rf_dongle
+					\rf_receiver_logger
+
+	started	
+	refactored	29.10.2016
+	
+*/
 
 //Test Led is Port B Pin 5
 
@@ -8,97 +19,46 @@
 //for nRF_Config() nRF_SetMode_RX() 
 #include "nRF.h"
 
+//to parse the RF response with rx_temperature_ds18b20()
 #include "temp_ds18b20.h"
 
-unsigned int SensorVal;
+//for rx_pids and callbacks
+#include "rx_protocol.h"
+
 
 //User Rx CallBack
 void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 {
-  //if(rx_DataSize == 2)//useless as rx_DataSize still not dynamically identified
-  if(rxData[0]==0x35)
-  {
-    BYTE crc = rxData[0];
-    for(int i=1;i<4;i++)
-    {
-      crc ^= rxData[i];
-    }
-    if(crc == rxData[4])
-    {
-      printf("NodeId:");
-      UARTPrintf_uint(rxData[1]);
-      printf(",Temperature:");
-      UARTPrint_DS18B20_Temperature(rxData+2);
-      UARTPrintfLn("");
-    }
-    else
-    {
-      printf("Protocol Id: 0x35, CRC Fail\n");
-    }
-    
-  }
-  else if(rxData[0]==0x75)
-  {
-    BYTE crc = rxData[0] ^ rxData[1];
-    if(crc == rxData[2])
-    {
-      printf("NodeId:");
-      UARTPrintf_uint(rxData[1]);
-      printf(",is:Alive\r\n");
-    }
-    else
-    {
-      printf("Protocol Id: 0x75, CRC Fail\n");
-    }
-  }
-  else if(rxData[0]==0x3B)//Light
-  {
-    BYTE crc = rxData[0] ^ rxData[1];
-    if(crc == rxData[4])
-    {
-      printf("NodeId:");
-      UARTPrintf_uint(rxData[1]);
-      printf(",Light: ");
-      SensorVal = rxData[2];
-      SensorVal <<= 4;//shift to make place for the 4 LSB
-      SensorVal = SensorVal + (0x0F & rxData[3]);
-      UARTPrintf_uint(SensorVal);
-      printf("\n");
-    }
-    else
-    {
-      printf("Protocol Id: 0x3B, CRC Fail\n");
-    }
-  }
-  else if(rxData[0]==0xC5)
-  {
-    BYTE crc = rxData[0] ^ rxData[1] ^ rxData[2];
-    if(crc == rxData[3])
-    {
-      printf("NodeId:");
-      UARTPrintf_uint(rxData[1]);
-      printf(",is:");
-      if(rxData[2] == 0)
-      {
-        printf("Low\r\n");
-      }
-      else
-      {
-        printf("High\r\n");
-      }
-    }
-    else
-    {
-      printf("Protocol Id: 0xC5, CRC Fail\r\n");
-    }
-  }
-  else 
-  {
-    printf("Unexpected Protocol Id: ");
-    UARTPrintfHex(rxData[0]);
-    UARTPrintfLn("");
-  }
-  
+	switch(rxData[0])
+	{
+		case rx_pid_0x35_temperature:
+			{
+				rx_temperature_ds18b20(rxData,rx_DataSize);
+			}
+			break;
+		case rx_pid_0x75_alive:
+			{
+				rx_alive(rxData,rx_DataSize);
+			}
+			break;
+		case rx_pid_0x3B_light:
+			{
+				rx_light(rxData,rx_DataSize);
+			}
+			break;
+		case rx_pid_0xC5_magnet:
+			{
+				rx_magnet(rxData,rx_DataSize);
+			}
+			break;
+		default :
+			{
+				printf("Unknown Protocol Id: ");
+				UARTPrintfHex(rxData[0]);
+				UARTPrintfLn("");
+			}
+			break;
+	}
 }
 
 int main( void )

@@ -19,7 +19,7 @@
 #include "deviceType.h"
 
 #if DEVICE_STM8L == 1
-  #error This sensor was not planned to be used with the low power device 3.3V
+  #error This sensor was not planned to be used with the low power device 3.3V, not even for RF reception
 #elif DEVICE_STM8S == 1
 	#include <iostm8s103f3.h>
 #else
@@ -301,5 +301,26 @@ void UARTPrint_DS18B20_Temperature(BYTE * data)
   UARTPrintf_sint(trunc);
   printf(".");
   UARTPrintf_uint(frac);
+}
+
+void rx_temperature_ds18b20(BYTE *rxData,BYTE rx_DataSize)
+{
+	BYTE crc = rxData[0];
+	for(int i=1;i<4;i++)
+	{
+	  crc ^= rxData[i];
+	}
+	if(crc == rxData[4])
+	{
+	  printf("NodeId:");
+	  UARTPrintf_uint(rxData[1]);
+	  printf(",Temperature:");
+	  UARTPrint_DS18B20_Temperature(rxData+2);
+	  UARTPrintfLn("");
+	}
+	else
+	{
+	  printf("Protocol Id: 0x35, CRC Fail\n");
+	}
 }
 
