@@ -4,7 +4,7 @@
 
 #include "nRF_SPI.h"
 //for nRF_SetMode_TX()
-#include "nRF_Modes.h"
+#include "nRF.h"
 
 #include "nRF_Tx.h"
 

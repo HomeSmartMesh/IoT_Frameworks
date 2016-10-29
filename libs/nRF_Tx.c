@@ -14,7 +14,7 @@
 
 #include "nRF_Tx.h"
 //for nRF_Mode
-#include "nRF_Modes.h"
+#include "nRF.h"
 //for SPI_Write_Buf
 #include "nRF_SPI.h"
 #include "clock_led.h"

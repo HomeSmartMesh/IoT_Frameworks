@@ -5,16 +5,8 @@
 #include "uart.h"
 #include "clock_led.h"
 
-//for direct SPI_Read_Register()
-#include "nRF_SPI.h"
-
-//for nRF_SetMode_TX()
-#include "nRF_Modes.h"
-
-#include "nRF_Tx.h"
-#include "nRF_RegText.h"
-
-#include "nRF_IRQ_stm8x.h"
+//for nRF_Config() nRF_SetMode_RX() 
+#include "nRF.h"
 
 #include "temp_ds18b20.h"
 

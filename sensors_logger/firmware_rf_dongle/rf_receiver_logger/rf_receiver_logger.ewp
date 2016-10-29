@@ -1599,16 +1599,16 @@
       <name>$PROJ_DIR$\..\..\..\libs\commonTypes.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\libs\nRF.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\nRF.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\libs\nRF_IRQ_stm8x.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\libs\nRF_IRQ_stm8x.h</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\..\libs\nRF_Modes.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\..\libs\nRF_Modes.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\libs\nRF_RegText.c</name>
