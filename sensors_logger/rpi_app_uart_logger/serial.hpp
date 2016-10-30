@@ -11,16 +11,35 @@ serial port cpp wrapper
 #include <string>
 //for file
 #include <fstream>
+//for stringstream
+#include <sstream>
 
 #define buf_size 2000
 
-class Serial
+class LogBuffer_c
 {
-private:
-	int fd;
+public:
+	LogBuffer_c();//constructor
+public:
 	char buf [buf_size];
+	char linebuf [buf_size];
+	char * plinebuf;//has to be global to keep half lines position
 	int n;
 	bool newLine;
+	std::string day;
+	std::string time;
+	std::string line;
+public:
+	bool update(int fd);
+};
+
+class Serial
+{
+public:
+	Serial();//constructor
+private:
+	int fd;
+	LogBuffer_c logbuf;
 public:
 	std::string 	Name;
 	std::ofstream 	logfile;
@@ -30,9 +49,10 @@ public:
 	void start(std::string port_name,bool s_500 = false);
 	void start_logfile(std::string fileName);
 	bool update();
-	void log(const std::string &str);
+	void log(const std::string &str);//append timestamp and output to file and cout
 	void logBuffer();
 	void send(char* buffer,int size);
+	void processLine();
 	
 };
 

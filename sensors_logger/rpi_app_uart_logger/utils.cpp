@@ -17,12 +17,94 @@ std::string TakeParseToLast(std::string &str,char sep)
 	return Parsed;
 }
 
+//take what's left if no separator found 
+//important for robust parsing when lat delimiter is forgotten
 std::string TakeParseTo(std::string &str,char sep)
 {
+	std::string Parsed;
 	size_t first = str.find_first_of(sep);
-	std::string Parsed = str.substr(0 , first);
-	str = str.substr(first+1 ,str.length());
+	if(first != string::npos)
+	{
+		Parsed = str.substr(0 , first);
+		str = str.substr(first+1 ,str.length());
+	}
+	else//not found, then take what's left
+	{
+		Parsed = str;
+		str = "";
+	}
 	return Parsed;
+}
+
+int char2int(char input)
+{
+	if(input >= '0' && input <= '9')
+		return input - '0';
+	if(input >= 'A' && input <= 'F')
+		return input - 'A' + 10;
+	if(input >= 'a' && input <= 'f')
+		return input - 'a' + 10;
+}
+
+void utl::hextext2data(const std::string &str, uint8_t *data)
+{
+	int i=0;
+	while(i<str.length()-1)
+	{
+		*(data++) = char2int(str[i])*16 + char2int(str[i+1]);
+		i += 2;
+	}
+}
+
+std::string utl::remove_spaces(std::string &str)
+{
+	//remove_if not found
+	//str.erase(remove_if(str.begin(), str.end(), isspace), str.end());
+	std::string res;
+    for(int i=0; i<str.size(); i++)
+	{
+		if(str[i]!=' ')
+			res+=str[i];
+	}
+	str = res;
+    return res;	
+}
+
+std::string utl::remove_0x(std::string &str)
+{
+	//remove_if not found
+	//str.erase(remove_if(str.begin(), str.end(), isspace), str.end());
+	std::string res;
+    for(int i=0; i<str.size()-1; i++)
+	{
+		if((str[i]=='0') && (str[i+1]=='x'))
+		{
+			//not only skip, but skip two characters by incrementing the counter
+			i++;
+		}
+		else
+		{
+			res+=str[i];			
+		}
+	}
+	str = res;
+    return res;	
+}
+
+void utl::remove(const std::string &substr, std::string &str)
+{
+	/*
+	std::string resstr;
+	size_t l = substr.length();
+
+	size_t pos = str.find_first_of(substr);
+	while(pos != string::npos)
+	{
+		resstr += str.substr(0 , first);
+		resstr += str.substr(first+substr.length() ,str.length());
+		pos = str.find_first_of(substr,pos+1);
+	}
+	*/
 }
 
 std::string utl::ParseRemTill(std::string &str,char sep,bool &found)
@@ -39,6 +121,24 @@ std::string utl::ParseRemTill(std::string &str,char sep,bool &found)
 	std::string Parsed = str.substr(0 , first);
 	str = str.substr(first+1 ,str.length());
 	return Parsed;
+}
+
+//here the parsed line should be as follows
+//var1:valx;var3:valy;
+//note that a safety limitation restricts the number of params to max 20
+void utl::str2map(const std::string &str ,strmap &params)
+{
+	int max = 0;
+	std::string vstr = str;
+	//DBG_CMT std::cout << "START with : " << vstr << std::endl;
+	while((!vstr.empty()) && (max < 20))
+	{
+		//DBG_CMT std::cout << "LOOP with : " << vstr << std::endl;
+		std::string arg_name = TakeParseTo(vstr,':');
+		params[arg_name] = TakeParseTo(vstr,';');
+		max++;
+	}
+	//DBG_CMT std::cout << "DONE with : " << vstr << std::endl;
 }
 
 void utl::args2map( int argc, char** argv ,strmap &params)
@@ -87,7 +187,7 @@ void utl::args2map( int argc, char** argv ,strmap &params)
 
 bool utl::exists(const strmap &params,const std::string param)
 {
-	return params.find(param) != params.end();
+	return (params.find(param) != params.end());
 }
 
 std::string	utl::getTime()
