@@ -234,7 +234,7 @@ void bme280_rx_measures(BYTE* rx_data, BYTE rx_DataSize)
 		printf("NodeId:");
 		printf_uint(rx_data[1]);// Byte 1 is Node Id
 		printf(";BME280: ");
-		printf_tab(&(rx_data[1]),rx_DataSize-2);//do not print Id nor CRC
+		printf_tab(&(rx_data[2]),rx_DataSize-3);//do not print pId nor NodeId nor CRC
 		printf_ln();
 	}
 	else
