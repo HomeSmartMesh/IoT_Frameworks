@@ -8,6 +8,7 @@
 //for getTime
 #include "utils.hpp"
 
+#include "bme280_server.hpp"
 
 #include <stdio.h>
 #include <errno.h>
@@ -23,7 +24,6 @@
 //for warnx()
 #include <err.h>
 
-#include "bme280_server.hpp"
 
 
 using namespace std;
@@ -191,18 +191,6 @@ void Serial::processLine()
 	//reset the line buffer pointer to the beginning of the line
 	logbuf.plinebuf = logbuf.linebuf;
 	
-	strmap notif_map;
-	utl::str2map( logline, notif_map);
-	
-	if(utl::exists(notif_map,"BME280"))
-	{
-		uint8_t sensors_data[8];
-		std::string vals = notif_map["BME280"];
-		utl::remove_spaces(vals);
-		utl::remove_0x(vals);
-		std::cout << "BME280 here !!!! with value: " << vals << std::endl;
-	}
-	
 	if(isLogOut)
 	{
 		std::cout << logbuf.day << "\t" << logbuf.time << "\t" << logline;
@@ -213,6 +201,24 @@ void Serial::processLine()
 		logfile.flush();
 	}
 	
+	strmap notif_map;
+	utl::str2map( logline, notif_map);
+	
+	bme_measures_c measures;
+	if(utl::exists(notif_map,"BME280"))
+	{
+		measures.update_text(notif_map["BME280"]);
+		std::cout << "Temperature: " << measures.get_temperature() << std::endl;
+		std::cout << "Humidity: " << measures.get_humidity() << std::endl;
+		std::cout << "Pressure: " << measures.get_pressure() << std::endl;
+
+		/*uint8_t data_vals[8];
+		std::string text_vals = notif_map["BME280"];
+		utl::hextext2data(text_vals,data_vals);
+		std::string check_str = utl::data2hextext(data_vals,8);
+		std::cout << "BME280 here !!!! with value: " << check_str << std::endl;*/
+		
+	}
 }
 
 //we use Serial::buf for data and Serial::n for data size

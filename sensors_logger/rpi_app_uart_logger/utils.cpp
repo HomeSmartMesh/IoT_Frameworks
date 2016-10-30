@@ -6,6 +6,10 @@
 //for file
 #include <fstream>
 #include <iostream>
+#include <sstream>
+
+//for setfill
+#include <iomanip>
 
 using namespace std;
 
@@ -48,12 +52,46 @@ int char2int(char input)
 
 void utl::hextext2data(const std::string &str, uint8_t *data)
 {
+	std::string v_str = str;
+	utl::remove_spaces(v_str);
+	utl::remove_0x(v_str);
 	int i=0;
-	while(i<str.length()-1)
+	while(i<v_str.length()-1)
 	{
-		*(data++) = char2int(str[i])*16 + char2int(str[i+1]);
+		*(data++) = char2int(v_str[i])*16 + char2int(v_str[i+1]);
 		i += 2;
 	}
+}
+
+//doesn work
+//input : 0x23 0xCA 0x5F
+//output : 0x0# 0▒ 0_
+std::string data2hextext_(const uint8_t *data,int data_size)
+{
+	std::stringstream s_text;
+	s_text << "0x";
+	for(int i=0;i<data_size;i++)
+	{
+		s_text << std::hex << std::setfill('0') << std::setw(2) << data[i] << " ";
+	}
+	
+	return s_text.str();
+}
+
+std::string utl::data2hextext(const uint8_t *data,int data_size)
+{
+	char text[data_size*3+1];
+	char* p_text = text;
+	sprintf(p_text,"0x");
+	p_text+=2;
+	for(int i=0;i<data_size;i++)
+	{
+		sprintf(p_text,"%02X ",data[i]);
+		p_text+=3;
+	}
+	p_text='\0';
+	std::string s_text(text);
+	return s_text;
 }
 
 std::string utl::remove_spaces(std::string &str)

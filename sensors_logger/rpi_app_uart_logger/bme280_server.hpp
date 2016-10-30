@@ -12,10 +12,22 @@
 #include <cstdint>
 #include <string>
 
-namespace bme
+class bme_measures_c
 {
-	void text2data(const std::string &str, uint8_t* data);
-}
+	public:
+		float	temperature;
+		float	humidity;
+		float	pressure;
+	private:
+		uint8_t data[8];
+	public:
+		void update_text(std::string text_data);
+		void update(uint8_t *v_data);
+		std::string get_temperature();
+		std::string get_humidity();
+		std::string get_pressure();
+};
+
 
 
 #endif /*__BME_280_SERVER__*/
