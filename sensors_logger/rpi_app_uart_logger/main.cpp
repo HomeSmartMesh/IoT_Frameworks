@@ -1,5 +1,5 @@
 
-//for usleep
+//for usleep() sleep()
 #include <unistd.h>
 //for printf
 #include <stdio.h>
@@ -71,8 +71,9 @@ int main( int argc, char** argv )
 	
 	
 
-	
+	//#2 issue, it is likely that someone else is using the port in parallel
 	//discard first trash buffer if available right after opening the port
+	//this discard measure is not enough as ibberish appears still
 	ser.update();
 	
 	while (1) 
@@ -81,7 +82,7 @@ int main( int argc, char** argv )
 		{
 			ser.logBuffer();
 		}
-		usleep(500000);
+		sleep(1);
 		
 	}
 
