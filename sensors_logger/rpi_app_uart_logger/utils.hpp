@@ -14,6 +14,7 @@ namespace utl
 	void str2map(const std::string &str ,strmap &params);
 	bool exists(const strmap &params,const std::string param);
 	std::string ParseRemTill(std::string &str,char sep,bool &found);
+	std::string TakeParseTo(std::string &str,char sep);
 	std::string	getTime();
 	std::string	getDay();
 	

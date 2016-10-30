@@ -7,6 +7,8 @@ serial port cpp wrapper
 
 */
 
+#include "bme280_server.hpp"
+
 #include <linux/joystick.h>
 #include <string>
 //for file
@@ -40,6 +42,7 @@ public:
 private:
 	int fd;
 	LogBuffer_c logbuf;
+	bme_measures_c measures;
 public:
 	std::string 	Name;
 	std::ofstream 	logfile;

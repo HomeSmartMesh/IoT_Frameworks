@@ -23,7 +23,7 @@ std::string TakeParseToLast(std::string &str,char sep)
 
 //take what's left if no separator found 
 //important for robust parsing when lat delimiter is forgotten
-std::string TakeParseTo(std::string &str,char sep)
+std::string utl::TakeParseTo(std::string &str,char sep)
 {
 	std::string Parsed;
 	size_t first = str.find_first_of(sep);
@@ -53,8 +53,11 @@ int char2int(char input)
 void utl::hextext2data(const std::string &str, uint8_t *data)
 {
 	std::string v_str = str;
+	//std::cout << "C1: " << v_str << std::endl;
 	utl::remove_spaces(v_str);
+	//std::cout << "C2: " << v_str << std::endl;
 	utl::remove_0x(v_str);
+	//std::cout << "C3: " << v_str << std::endl;
 	int i=0;
 	while(i<v_str.length()-1)
 	{
@@ -122,7 +125,11 @@ std::string utl::remove_0x(std::string &str)
 		}
 		else
 		{
-			res+=str[i];			
+			res+=str[i];
+			if(i == (str.size()-2))//last pass, and not "0x"
+			{
+				res+=str[i+1];//don't forget last character
+			}
 		}
 	}
 	str = res;

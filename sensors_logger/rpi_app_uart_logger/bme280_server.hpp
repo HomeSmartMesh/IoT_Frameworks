@@ -15,12 +15,14 @@
 class bme_measures_c
 {
 	public:
+		int		NodeId;
 		float	temperature;
 		float	humidity;
 		float	pressure;
 	private:
 		uint8_t data[8];
 	public:
+		void load_calib_data(std::string filename);
 		void update_text(std::string text_data);
 		void update(uint8_t *v_data);
 		std::string get_temperature();

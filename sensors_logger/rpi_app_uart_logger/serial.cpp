@@ -102,6 +102,7 @@ LogBuffer_c::LogBuffer_c()
 
 Serial::Serial()
 {
+	measures.load_calib_data("/home/pi/IoT_Frameworks/sensors_logger/rpi_app_uart_logger/calib_data.txt");
 }
 
 void Serial::start_logfile(std::string fileName)
@@ -204,7 +205,7 @@ void Serial::processLine()
 	strmap notif_map;
 	utl::str2map( logline, notif_map);
 	
-	bme_measures_c measures;
+	
 	if(utl::exists(notif_map,"BME280"))
 	{
 		measures.update_text(notif_map["BME280"]);
