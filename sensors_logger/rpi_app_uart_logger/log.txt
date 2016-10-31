@@ -1,0 +1,25 @@
+pi@ioserv:~/IoT_Frameworks/sensors_logger/rpi_app_uart_logger $ ./ser
+configfile = ./configfile.txt
+Loading calib file(/home/pi/IoT_Frameworks/sensors_logger/rpi_app_uart_logger/calib_data.txt)
+port = /dev/ttyUSB0
+2016.10.31      13h50mn16s      port /dev/ttyUSB0 is open @B115200
+2016.10.31      13h50mn21s      NodeId:7;BME280: 0x55 0D 00 80 0E 00 71 C5
+Temperature:    23.83 °C
+Humidity:       43.507 %RH
+Pressure:       989.456 hPa
+2016.10.31      13h50mn27s      NodeId:4,is:Alive
+2016.10.31      13h50mn31s      NodeId:7;BME280: 0x55 0D 00 80 0F 00 71 B6
+Temperature:    23.84 °C
+Humidity:       43.420 %RH
+Pressure:       989.465 hPa
+2016.10.31      13h50mn41s      NodeId:6,is:Alive
+2016.10.31      13h50mn41s      NodeId:6,Light: 655
+2016.10.31      13h50mn41s      NodeId:7;BME280: 0x55 0C 00 80 0F 00 71 85
+Temperature:    23.84 °C
+Humidity:       43.156 %RH
+Pressure:       989.492 hPa
+2016.10.31      13h50mn51s      NodeId:7;BME280: 0x55 0D 00 80 0F 00 71 57
+Temperature:    23.84 °C
+Humidity:       42.904 %RH
+Pressure:       989.465 hPa
+2016.10.31      13h50mn53s      NodeId:4,is:Alive

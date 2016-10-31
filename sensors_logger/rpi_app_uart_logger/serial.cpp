@@ -208,16 +208,11 @@ void Serial::processLine()
 	
 	if(utl::exists(notif_map,"BME280"))
 	{
-		measures.update_text(notif_map["BME280"]);
-		std::cout << "Temperature: " << measures.get_temperature() << std::endl;
-		std::cout << "Humidity: " << measures.get_humidity() << std::endl;
-		std::cout << "Pressure: " << measures.get_pressure() << std::endl;
+		measures.set_all_measures_Text(notif_map["BME280"]);
+		std::cout << "Temperature:\t" << measures.get_temperature() << std::endl;
+		std::cout << "Humidity:\t" << measures.get_humidity() << std::endl;
+		std::cout << "Pressure:\t" << measures.get_pressure() << std::endl;
 
-		/*uint8_t data_vals[8];
-		std::string text_vals = notif_map["BME280"];
-		utl::hextext2data(text_vals,data_vals);
-		std::string check_str = utl::data2hextext(data_vals,8);
-		std::cout << "BME280 here !!!! with value: " << check_str << std::endl;*/
 		
 	}
 }
