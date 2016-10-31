@@ -294,7 +294,7 @@ int main( void )
 		printf("rf_send---------------\n");
 		rf_send_bme280_measures();
 
-		delay_1ms_Count(10000);
+		delay_1ms_Count(60000);//down to one minute
 
 	}
 }
