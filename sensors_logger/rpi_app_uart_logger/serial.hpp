@@ -42,6 +42,7 @@ public:
 private:
 	int fd;
 	LogBuffer_c logbuf;
+public:
 	bme_measures_c measures;
 public:
 	std::string 	Name;
@@ -56,6 +57,7 @@ public:
 	void logBuffer();
 	void send(char* buffer,int size);
 	void processLine();
-	
+public:
+	std::string exepath;
 };
 

@@ -77,3 +77,4 @@ sensors_logger/firmware_rf_dongle/settings/
 ws01_WeatherLogger/settings/
 sensors_logger/firmware_rf_sensors_node/settings/
 sensors_logger/firmware_rf_dongle/rf_receiver_logger/settings/
+sensors_logger/rpi_app_uart_logger/ser

@@ -186,7 +186,7 @@ void utl::str2map(const std::string &str ,strmap &params)
 	//DBG_CMT std::cout << "DONE with : " << vstr << std::endl;
 }
 
-void utl::args2map( int argc, char** argv ,strmap &params)
+std::string utl::args2map( int argc, char** argv ,strmap &params)
 {
 	std::string exepath(*argv);//placed here before pointer is shifted
 	while(argc--)
@@ -227,7 +227,7 @@ void utl::args2map( int argc, char** argv ,strmap &params)
 	{
 		std::cout << "No Config file in cmd line and not found in exe dir: " <<  params["configfile"] << endl;
 	}
-	
+		return exepath;
 }
 
 bool utl::exists(const strmap &params,const std::string param)

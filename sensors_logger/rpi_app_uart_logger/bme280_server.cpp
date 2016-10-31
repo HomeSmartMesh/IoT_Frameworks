@@ -267,7 +267,7 @@ void bme_measures_c::load_calib_data(std::string filename)
 	}
 	else
 	{
-		std::cout << "No Calib file found " << std::endl;
+		std::cout << "No Calib file found(" << filename << ")" << std::endl;
 	}
 	
 }
