@@ -244,7 +244,7 @@ std::string	utl::getTime()
 	time (&rawtime);
 	timeinfo = localtime(&rawtime);
 
-	strftime(buffer,80,"%Hh%Mmn%Ss",timeinfo);
+	strftime(buffer,80,"%H:%M:%S",timeinfo);
 	std::string str(buffer);
 	return str;	
 }
@@ -257,7 +257,7 @@ std::string	utl::getDay()
 	time (&rawtime);
 	timeinfo = localtime(&rawtime);
 
-	strftime(buffer,80,"%Y.%m.%d",timeinfo);
+	strftime(buffer,80,"%Y-%m-%d",timeinfo);
 	std::string str(buffer);
 	return str;	
 }

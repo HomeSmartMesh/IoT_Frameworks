@@ -192,28 +192,53 @@ void Serial::processLine()
 	//reset the line buffer pointer to the beginning of the line
 	logbuf.plinebuf = logbuf.linebuf;
 	
-	if(isLogOut)
-	{
-		std::cout << logbuf.day << "\t" << logbuf.time << "\t" << logline;
-	}
-	if(isLogFile && logfile.is_open())
-	{
-		logfile << logbuf.day << "\t" << logbuf.time << "\t" << logline;
-		logfile.flush();
-	}
 	
 	strmap notif_map;
 	utl::str2map( logline, notif_map);
 	
 	
-	if(utl::exists(notif_map,"BME280"))
+	if(utl::exists(notif_map,"BME280") && utl::exists(notif_map,"NodeId") )
 	{
 		measures.set_all_measures_Text(notif_map["BME280"]);
-		std::cout << "Temperature:\t" << measures.get_temperature() << std::endl;
-		std::cout << "Humidity:\t" << measures.get_humidity() << std::endl;
-		std::cout << "Pressure:\t" << measures.get_pressure() << std::endl;
+		if(isLogOut)
+		{
+			std::cout 	<< logbuf.day << "\t" << logbuf.time << "\t" 
+						<< "NodeId:" << notif_map["NodeId"]
+						<< ";Temperature:" << measures.get_temperature() << std::endl;
+			std::cout 	<< logbuf.day << "\t" << logbuf.time << "\t" 
+						<< "NodeId:" << notif_map["NodeId"]
+						<< ";Humidity:" << measures.get_humidity()  << std::endl;
+			std::cout 	<< logbuf.day << "\t" << logbuf.time << "\t" 
+						<< "NodeId:" << notif_map["NodeId"]
+						<< ";Pressure:" << measures.get_pressure()  << std::endl;
+		}
+		if(isLogFile && logfile.is_open())
+		{
+			logfile 	<< logbuf.day << "\t" << logbuf.time << "\t" 
+						<< "NodeId:" << notif_map["NodeId"]
+						<< ";Temperature:" << measures.get_temperature() << std::endl;
+			logfile 	<< logbuf.day << "\t" << logbuf.time << "\t" 
+						<< "NodeId:" << notif_map["NodeId"]
+						<< ";Humidity:" << measures.get_humidity()  << std::endl;
+			logfile 	<< logbuf.day << "\t" << logbuf.time << "\t" 
+						<< "NodeId:" << notif_map["NodeId"]
+						<< ";Pressure:" << measures.get_pressure()  << std::endl;
+			logfile.flush();
+		}
 
 		
+	}
+	else//other logs that do not need pre-formatting
+	{
+		if(isLogOut)
+		{
+			std::cout << logbuf.day << "\t" << logbuf.time << "\t" << logline;
+		}
+		if(isLogFile && logfile.is_open())
+		{
+			logfile << logbuf.day << "\t" << logbuf.time << "\t" << logline;
+			logfile.flush();
+		}
 	}
 }
 
