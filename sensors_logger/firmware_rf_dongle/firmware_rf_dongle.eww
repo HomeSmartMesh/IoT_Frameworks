@@ -2,6 +2,9 @@
 
 <workspace>
   <project>
+    <path>$WS_DIR$\rf_bridge\rf_bridge.ewp</path>
+  </project>
+  <project>
     <path>$WS_DIR$\rf_receiver_logger\rf_receiver_logger.ewp</path>
   </project>
   <batchBuild/>

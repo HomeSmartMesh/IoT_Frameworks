@@ -79,3 +79,10 @@ sensors_logger/firmware_rf_sensors_node/settings/
 sensors_logger/firmware_rf_dongle/rf_receiver_logger/settings/
 sensors_logger/rpi_app_uart_logger/ser
 sensors_logger/rpi_app_uart_logger/logs/
+sensors_logger/firmware_rf_dongle/rf_bridge/Debug/
+sensors_logger/rpi_app_uart_logger/logDays.txt
+ws03_RF_Sync/pr03_RF_Alive/Debug/
+ws03_RF_Sync/pr03_RF_Alive/settings/
+ws03_RF_Sync/settings/
+ws01_WeatherLogger/pr02_RF_ReceiveLogger/settings/
+sensors_logger/firmware_rf_dongle/rf_bridge/settings/
