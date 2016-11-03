@@ -7,6 +7,9 @@
   <project>
     <path>$WS_DIR$\pr02_RF_Server\pr02_RF_Server.ewp</path>
   </project>
+  <project>
+    <path>$WS_DIR$\pr03_RF_Alive\pr03_RF_Alive.ewp</path>
+  </project>
   <batchBuild/>
 </workspace>
 
