@@ -37,11 +37,11 @@ int main( void )
     printf("\r\n__________________________________________________\n\r");
     printf("IoT_Frameworks\\light_dimmer\\simple_monitor\\\n\r");
 
-	dimmer_set_level(0,1500);//60us is the Sync shift + 10 to be in the positive section
-	dimmer_set_level(1,1800);//60us is the Sync shift
-	dimmer_set_level(2,2000);//60us is the Sync shift
+	dimmer_set_level(0,1800);//60us is the Sync shift + 10 to be in the positive section
+	dimmer_set_level(1,2200);//60us is the Sync shift
+	dimmer_set_level(2,2600);//60us is the Sync shift
 	dimmer_set_level(3,3000);//60us is the Sync shift
-	
+
     __enable_interrupt();
 	U16_t last_count = get_int_count();
     while (1)
