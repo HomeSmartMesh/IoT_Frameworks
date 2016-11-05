@@ -86,3 +86,7 @@ ws03_RF_Sync/pr03_RF_Alive/settings/
 ws03_RF_Sync/settings/
 ws01_WeatherLogger/pr02_RF_ReceiveLogger/settings/
 sensors_logger/firmware_rf_dongle/rf_bridge/settings/
+light_dimmer/firmware/simple_monitor/Debug/
+light_dimmer/firmware/dimmer_solo/Debug/
+light_dimmer/firmware/settings/
+light_dimmer/firmware/simple_monitor/settings/
