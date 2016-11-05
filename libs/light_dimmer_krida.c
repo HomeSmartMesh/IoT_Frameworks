@@ -36,7 +36,9 @@ BYTE delay_L[4];
 BYTE autoreload_H[4];
 BYTE autoreload_L[4];
 
-const U16_t PULSE_WIDTH_US = 100;
+const U16_t MINIMAL_TRIGGER = 185;//181 switches Full on - 180 keeps off as too early
+const U16_t TIMER_PERIOD = 9900;//9910 pulse disappears sometimes - 9905 always there
+
 
 /*
 #define DIMMER_SYNC_IN	PC_IDR_IDR3
@@ -222,6 +224,7 @@ __interrupt void tim1_overflow(void)
 {
 	if(TIM1_SR1_UIF)//overflow
 	{
+		
 		TIM1_CR1_CEN = 0;//Stop thw Timer 1 Counter Enable to avoid unnecessary further pulses
 		TIM1_SR1_UIF = 0;
 	}
@@ -263,7 +266,7 @@ __interrupt void tim1_occ(void)
 #pragma vector = EXTI2_vector
 __interrupt void irq_sync(void)
 {
-	//This interrupt is bringing ~ 3 us of delay, with the minimal default 1us delay
+	//This interrupt is bringing ~ 11 us of delay to the start of pulses
 	int_count++;
 
 	//dim channel 1 - pin C4
@@ -283,8 +286,14 @@ __interrupt void irq_sync(void)
 	TIM1_CCR4H = delay_H[3];
 
 	//Auto Reload Register - 10 ms
-	TIM1_ARRL = 16;
-	TIM1_ARRH = 39;
+	//TIM1_ARRL = 16;
+	//TIM1_ARRH = 39;
+
+	TIM1_CR1_CEN = 0;//Timer 1 Counter Enable
+	//restart from the beginning
+	TIM1_CNTRH = 0;
+	TIM1_CNTRL = 0;
+	//Go
 	TIM1_CR1_CEN = 1;//Timer 1 Counter Enable
 
 }
@@ -298,15 +307,25 @@ int get_int_count()
 
 void dimmer_set_level(BYTE channel, U16_t level)
 {
+	if(level < MINIMAL_TRIGGER)
+	{
+		level = MINIMAL_TRIGGER;
+	}
+	if(level > TIMER_PERIOD)//should not shift to next cycle
+	{
+		level = TIMER_PERIOD;
+	}
+	//delay of 0 => min_trig ; MAX is TimePer-Min;
+	U16_t delay = TIMER_PERIOD - (level - MINIMAL_TRIGGER);
 	if(channel <= 3)//positive so already >= 0
 	{
-			delay_L[channel] = level & 0x00FF;
-			delay_H[channel] = level >> 8;
+			delay_L[channel] = delay & 0x00FF;
+			delay_H[channel] = delay >> 8;
 			printf("channel: ");
 			printf_uint(channel);
-			printf(" has 0x");
+			printf(" has ");
 			printf_uint(delay_H[channel]);
-			printf(":");
+			printf(" x256+ ");
 			printf_uint(delay_L[channel]);
 			printf_ln();
 	}

@@ -91,3 +91,4 @@ light_dimmer/firmware/dimmer_solo/Debug/
 light_dimmer/firmware/settings/
 light_dimmer/firmware/simple_monitor/settings/
 light_dimmer/firmware/dimmer_solo/settings/
+*.CSV
