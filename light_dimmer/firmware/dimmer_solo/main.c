@@ -21,7 +21,7 @@
 
 int main( void )
 {
-	
+
 	dimmer_init();//fast config - enables the PB4 interrupt
 
     BYTE AliveActiveCounter = 0;
@@ -37,16 +37,25 @@ int main( void )
     printf("\r\n__________________________________________________\n\r");
     printf("IoT_Frameworks\\light_dimmer\\simple_monitor\\\n\r");
 
+	/*dimmer_set_level(0,70);//60us is the Sync shift + 10 to be in the positive section
+	dimmer_set_level(1,5000);//60us is the Sync shift
+	dimmer_set_level(2,9990);//60us is the Sync shift
+	dimmer_set_level(3,10010);//60us is the Sync shift
+	*/
 	dimmer_set_level(0,70);//60us is the Sync shift + 10 to be in the positive section
-	dimmer_set_level(1,90);//60us is the Sync shift
+	dimmer_set_level(1,180);//60us is the Sync shift
+	dimmer_set_level(2,300);//60us is the Sync shift
+	dimmer_set_level(3,500);//60us is the Sync shift
 	
     __enable_interrupt();
-
+	U16_t last_count = get_int_count();
     while (1)
     {
 
 		printf("int count: ");
-		printf_uint(get_int_count());
+		U16_t count = get_int_count();
+		printf_uint(count - last_count);
+		last_count = count;
 		printf_ln();
 
 		AliveActiveCounter++;//Why are you counting ?
