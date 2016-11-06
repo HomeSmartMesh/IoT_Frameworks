@@ -22,12 +22,13 @@
 int main( void )
 {
 	
-	dimmer_init();//fast config - enables the PB4 interrupt
+	dimmer_init();//fast config to keep triggers low - enables the PB4 interrupt
 
     BYTE AliveActiveCounter = 0;
 
     InitialiseSystemClock();
 
+    adc_inti(ADC_Channel_t::AIN3_PD2);
 
     Initialise_TestLed_GPIO_B5();
     Test_Led_Off();

@@ -25,6 +25,9 @@
       <name>$PROJ_DIR$\..\..\..\libs\clock_led.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\libs\commonTypes.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\libs\light_dimmer_krida.c</name>
     </file>
     <file>
