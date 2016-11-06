@@ -1,4 +1,4 @@
-/** @file clock_led.h
+/** @file clock_led.c
  *
  * @author Wassim FILALI  STM8 X
  *

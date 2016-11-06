@@ -1,6 +1,6 @@
-/** @file ClockUartLed.h
+/** @file clock_led.h
  *
- * @author Wassim FILALI taken over from http://blog.mark-stevens.co.uk/
+ * @author Wassim FILALI
  *
  * @compiler IAR STM8
  *

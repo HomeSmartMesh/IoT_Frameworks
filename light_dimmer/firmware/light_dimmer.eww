@@ -2,10 +2,13 @@
 
 <workspace>
   <project>
+    <path>$WS_DIR$\current_watch\current_watch.ewp</path>
+  </project>
+  <project>
     <path>$WS_DIR$\dimmer_solo\dimmer_solo.ewp</path>
   </project>
   <project>
-    <path>$WS_DIR$\simple_monitor\simple_monitor.ewp</path>
+    <path>$WS_DIR$\sync_counter\sync_counter.ewp</path>
   </project>
   <batchBuild/>
 </workspace>

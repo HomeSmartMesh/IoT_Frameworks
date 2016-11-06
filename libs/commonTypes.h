@@ -26,6 +26,13 @@ typedef signed int      S16_t;
 typedef unsigned long   U32_t;
 typedef signed long     S32_t;
 
+typedef unsigned char   uint8_t;
+typedef signed char     int8_t;
+typedef unsigned short  uint16_t;
+typedef signed int      int16_t;
+typedef unsigned long   uint32_t;
+typedef signed long     int32_t;
+
 
 #define E_OK 				0x00
 

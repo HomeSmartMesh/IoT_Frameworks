@@ -1,4 +1,4 @@
-/** @file ClockUartLed.h
+/** @file uart.h
  *
  * @author Wassim FILALI
  *
