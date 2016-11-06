@@ -1,0 +1,106 @@
+__________________________________________________
+
+IoT_Frameworks\light_dimmer\simple_monitor\
+
+channel: 0 has 32 x256+ 93
+channel: 1 has 30 x256+ 205
+channel: 2 has 29 x256+ 61
+channel: 3 has 27 x256+ 173
+int count: 0
+adc_min = 1024 ; adc_avg = 0 ; adc_max = 0
+min_c = -65024 ; max_c = 65024 ; 37u => 1A
+int count: 0
+adc_min = 496 ; adc_avg = 509 ; adc_max = 524
+min_c = -16 ; max_c = 12 ; 37u => 1A
+int count: 0
+adc_min = 495 ; adc_avg = 509 ; adc_max = 526
+min_c = -17 ; max_c = 14 ; 37u => 1A
+int count: 0
+adc_min = 497 ; adc_avg = 509 ; adc_max = 524
+min_c = -15 ; max_c = 12 ; 37u => 1A
+int count: 0
+adc_min = 497 ; adc_avg = 509 ; adc_max = 525
+min_c = -15 ; max_c = 13 ; 37u => 1A
+int count: 0
+adc_min = 498 ; adc_avg = 509 ; adc_max = 524
+min_c = -14 ; max_c = 12 ; 37u => 1A
+int count: 158
+adc_min = 469 ; adc_avg = 509 ; adc_max = 548
+min_c = -43 ; max_c = 36 ; 37u => 1A
+int count: 458
+adc_min = 471 ; adc_avg = 510 ; adc_max = 551
+min_c = -41 ; max_c = 39 ; 37u => 1A
+int count: 459
+adc_min = 470 ; adc_avg = 510 ; adc_max = 554
+min_c = -42 ; max_c = 42 ; 37u => 1A
+int count: 459
+adc_min = 470 ; adc_avg = 509 ; adc_max = 553
+min_c = -42 ; max_c = 41 ; 37u => 1A
+int count: 458
+adc_min = 471 ; adc_avg = 509 ; adc_max = 547
+min_c = -41 ; max_c = 35 ; 37u => 1A
+int count: 459
+adc_min = 475 ; adc_avg = 509 ; adc_max = 548
+min_c = -37 ; max_c = 36 ; 37u => 1A
+int count: 459
+adc_min = 468 ; adc_avg = 509 ; adc_max = 550
+min_c = -44 ; max_c = 38 ; 37u => 1A
+int count: 458
+adc_min = 468 ; adc_avg = 509 ; adc_max = 547
+min_c = -44 ; max_c = 35 ; 37u => 1A
+int count: 458
+adc_min = 471 ; adc_avg = 509 ; adc_max = 556
+min_c = -41 ; max_c = 44 ; 37u => 1A
+int count: 459
+adc_min = 472 ; adc_avg = 509 ; adc_max = 549
+min_c = -40 ; max_c = 37 ; 37u => 1A
+int count: 458
+adc_min = 474 ; adc_avg = 509 ; adc_max = 555
+min_c = -38 ; max_c = 43 ; 37u => 1A
+int count: 459
+adc_min = 474 ; adc_avg = 510 ; adc_max = 549
+min_c = -38 ; max_c = 37 ; 37u => 1A
+int count: 458
+adc_min = 472 ; adc_avg = 509 ; adc_max = 547
+min_c = -40 ; max_c = 35 ; 37u => 1A
+int count: 459
+adc_min = 472 ; adc_avg = 509 ; adc_max = 551
+min_c = -40 ; max_c = 39 ; 37u => 1A
+int count: 458
+adc_min = 468 ; adc_avg = 509 ; adc_max = 554
+min_c = -44 ; max_c = 42 ; 37u => 1A
+int count: 459
+adc_min = 469 ; adc_avg = 509 ; adc_max = 550
+min_c = -43 ; max_c = 38 ; 37u => 1A
+int count: 354
+adc_min = 478 ; adc_avg = 509 ; adc_max = 560
+min_c = -34 ; max_c = 48 ; 37u => 1A
+int count: 0
+adc_min = 496 ; adc_avg = 509 ; adc_max = 524
+min_c = -16 ; max_c = 12 ; 37u => 1A
+int count: 0
+adc_min = 495 ; adc_avg = 509 ; adc_max = 526
+min_c = -17 ; max_c = 14 ; 37u => 1A
+int count: 0
+adc_min = 495 ; adc_avg = 509 ; adc_max = 525
+min_c = -17 ; max_c = 13 ; 37u => 1A
+int count: 0
+adc_min = 494 ; adc_avg = 510 ; adc_max = 524
+min_c = -18 ; max_c = 12 ; 37u => 1A
+int count: 0
+adc_min = 493 ; adc_avg = 509 ; adc_max = 524
+min_c = -19 ; max_c = 12 ; 37u => 1A
+int count: 0
+adc_min = 496 ; adc_avg = 509 ; adc_max = 523
+min_c = -16 ; max_c = 11 ; 37u => 1A
+int count: 0
+adc_min = 498 ; adc_avg = 510 ; adc_max = 525
+min_c = -14 ; max_c = 13 ; 37u => 1A
+int count: 0
+adc_min = 498 ; adc_avg = 509 ; adc_max = 528
+min_c = -14 ; max_c = 16 ; 37u => 1A
+int count: 0
+adc_min = 495 ; adc_avg = 509 ; adc_max = 526
+min_c = -17 ; max_c = 14 ; 37u => 1A
+int count: 0
+adc_min =

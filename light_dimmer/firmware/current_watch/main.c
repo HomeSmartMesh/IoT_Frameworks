@@ -59,13 +59,21 @@ int main( void )
 	dimmer_set_level(2,2600);//60us is the Sync shift
 	dimmer_set_level(3,3000);//60us is the Sync shift
 
-        
+	//adc
+#define DEF_ADC_TIMER2
+#ifdef DEF_ADC_TIMER2
+	adc_init(AIN3_PD2,ADC_TIMER2);
+#else
+	adc_init(AIN3_PD2,ADC_SINGLE_SHOT);
+#endif
+
 	__enable_interrupt();
 	
-	//adc
-	adc_init(AIN3_PD2,ADC_TIMER2);
 	
+#ifdef DEF_ADC_TIMER2
 	adc_start();
+#endif
+	
 	
 	
 	U16_t last_count = get_int_count();
@@ -78,9 +86,15 @@ int main( void )
 		last_count = count;
 		printf_ln();
 		
-		printf("adc_chin3_pd2 = ");
-		printf_uint(adc_read());
+#ifdef DEF_ADC_TIMER2
+		adc_print_vals();
+		adc_acs712_print_current();
+#else
+		printf("adc_read() = ");
+                uint16_t val = adc_read();
+		printf_uint(val);
 		printf_ln();
+#endif
 
 		AliveActiveCounter++;//Why are you counting ?
 		

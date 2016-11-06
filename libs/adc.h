@@ -37,10 +37,12 @@ typedef struct
 	uint16_t	c1s_avg;
 }adv_user_vals_t;
 
-extern adv_vals_t g_ADC_USER_VALS;
-
 //channel is the Analog input AIN3
 void adc_init(ADC_Channel_t channel, ADC_Mode_t mode);
+void adc_start();
+adv_user_vals_t adc_get_vals();
+void adc_print_vals();
 uint16_t adc_read();
+void adc_acs712_print_current();
 
 #endif /*__ADC__*/

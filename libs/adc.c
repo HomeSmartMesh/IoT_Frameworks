@@ -13,6 +13,11 @@
 #include "adc.h"
 
 #include <iostm8s103f3.h>
+#include <intrinsics.h>
+
+#include "clock_led.h"
+
+#include "uart.h"
 
 typedef struct
 {
@@ -38,7 +43,7 @@ const ADC_Mode_t ADC_TIMER2 = 2;
 ADC_Mode_t g_ADC_MODE;
 
 adv_vals_t g_ADC_VALS;
-adv_vals_t g_ADC_USER_VALS;
+adv_user_vals_t g_ADC_USER_VALS;
 
 void adc_1s_buffer()
 {
@@ -49,14 +54,14 @@ void adc_1s_buffer()
 
 void adc_1s_process()
 {
-	g_ADC_VALS.c1s_avg + = adc_val;
-	if(adc_val < g_ADC_VALS.c1s_min)
+	g_ADC_VALS.c1s_avg += g_ADC_VALS.c20ms_avg;
+	if(g_ADC_VALS.c20ms_min < g_ADC_VALS.c1s_min)
 	{
-		g_ADC_VALS.c1s_min = adc_val;
+		g_ADC_VALS.c1s_min = g_ADC_VALS.c20ms_min;
 	}
-	else if(adc_val > g_ADC_VALS.c1s_max)
+	if(g_ADC_VALS.c20ms_max > g_ADC_VALS.c1s_max)
 	{
-		g_ADC_VALS.c1s_max = adc_val;
+		g_ADC_VALS.c1s_max = g_ADC_VALS.c20ms_max;
 	}
 
 	if(g_ADC_VALS.c1s_count == 50)
@@ -75,7 +80,7 @@ void adc_1s_process()
 void adc_20ms_process(uint16_t adc_val)
 {
 
-	g_ADC_VALS.c20ms_avg + = adc_val;
+	g_ADC_VALS.c20ms_avg += adc_val;
 	if(adc_val < g_ADC_VALS.c20ms_min)
 	{
 		g_ADC_VALS.c20ms_min = adc_val;
@@ -123,13 +128,15 @@ void timer2_start()
 	TIM2_CR1_CEN = 1;
 }
 
-uint16_t adc_conversion_start()
+void adc_conversion_start()
 {
 	//ADC_CR1 : Control Register 1 - AD on 0 -> 1  :Power On ; 1 -> 1 :Start Conversion
 	if(ADC_CR1_ADON == 0)
 	{
 		//then first power on
 		ADC_CR1_ADON = 1;
+		//stabilisation delay of 14 ADC clocks
+		delay_10us();
 	}
 
 	//Now start conversion
@@ -163,9 +170,6 @@ uint16_t adc_get()
 #pragma vector = ADC1_EOC_vector
 __interrupt void adc_end_of_conversion_irq()
 {
-	//ADC_CR1 : Control Register 1 - AD on 0 -> 1  :Power On ; 1 -> 1 :Start Conversion
-	ADC_CR1_ADON = 0;
-
 	//ADC_CSR : Control / Status Register - End Of Conversion, cleared by SW
 	ADC_CSR_EOC = 0;
 
@@ -187,25 +191,39 @@ __interrupt void irq_timer2_1ms(void)
 void adc_init(ADC_Channel_t channel, ADC_Mode_t mode)
 {
 
-	//ADC_CR1 - Control Register 1 - AD on 0 -> 1  :Power On ; 1 -> 1 :Start Conversion
+	//ADC_CR1 - Control Register 1 : Prescaler Selection
+	//ADC_CR1_SPSEL = 0x00;//000 fADC = fMASTER/2 => 125 ns : one conversion x14 = 1.75us
+	//as the following instructions will be more than 14 before adc_start() no need to add delay here
+
+	ADC_CR1_SPSEL = 0x05;//101 fADC = fMASTER/10 => 625 ns : once conversion x14 = 8.75us
+	//ADC_CR1 : AD on 0 -> 1  :Power On ; 1 -> 1 :Start Conversion
 	ADC_CR1_ADON = 1;
+	delay_10us();
+	
 	//ADC - CR2 - Control Register 2 - Right Allignment, read LSB first --------------------------
 	ADC_CR2_ALIGN = 1;
-	//ADC - CSR - Channel selection --------------------------
+	//ADC_CSR - Config / Status Register - Channel selection --------------------------
 	ADC_CSR_CH = channel;
 
 	g_ADC_MODE = mode;
 	if(mode == ADC_TIMER2)
 	{
+		//ADC_CSR - Config / Status Register - End Of Conversion Iterrupt Enable ---------------
+		ADC_CSR_EOCIE = 1;		
+		
 		timer2_init();
-		g_VALS.c20ms_min    = 1024;
-		g_VALS.c20ms_max    = 0;
-		g_VALS.c20ms_avg    = 0;
-		g_VALS.c1s_min      = 0;
-		g_VALS.c1s_max      = 0;
-		g_VALS.c1s_avg      = 0;
-		g_VALS.c20ms_count  = 0;
-		g_VALS.c1s_count    = 0;
+		g_ADC_VALS.c20ms_min    = 1024;
+		g_ADC_VALS.c20ms_max    = 0;
+		g_ADC_VALS.c20ms_avg    = 0;
+		g_ADC_VALS.c1s_min      = 1024;
+		g_ADC_VALS.c1s_max      = 0;
+		g_ADC_VALS.c1s_avg      = 0;
+		g_ADC_VALS.c20ms_count  = 0;
+		g_ADC_VALS.c1s_count    = 0;
+		
+		g_ADC_USER_VALS.c1s_min = 1024;
+		g_ADC_USER_VALS.c1s_max = 0;
+		g_ADC_USER_VALS.c1s_avg = 0;
 	}
 }
 
@@ -252,3 +270,42 @@ uint16_t adc_read()
 	return result;
 }
 
+adv_user_vals_t adc_get_vals()
+{
+	adv_user_vals_t result;
+	__disable_interrupt();
+	result = g_ADC_USER_VALS;
+	__enable_interrupt();
+	return result;
+}
+
+void adc_print_vals()
+{
+	adv_user_vals_t adc_vals;
+	adc_vals = adc_get_vals();
+	printf("adc_min = ");
+	printf_uint(adc_vals.c1s_min);
+	printf(" ; adc_avg = ");
+	printf_uint(adc_vals.c1s_avg);
+	printf(" ; adc_max = ");
+	printf_uint(adc_vals.c1s_max);
+	printf_ln();
+}
+
+void adc_acs712_print_current()
+{
+	//0A => 2.51 V
+	//VRef => 5.02 V
+	//ACS712ELCTR-05B-T => 185 mv/A
+	//4.9 mV / unit
+	adv_user_vals_t adc_vals;
+	adc_vals = adc_get_vals();
+	
+	printf("min_c = -");
+	printf_uint(512 - adc_vals.c1s_min);
+	printf(" ; max_c = ");
+	printf_uint(adc_vals.c1s_max - 512);
+	printf(" ; 37u => 1A");
+	printf_ln();
+	
+}
