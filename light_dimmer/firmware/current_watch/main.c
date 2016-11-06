@@ -63,8 +63,9 @@ int main( void )
 	__enable_interrupt();
 	
 	//adc
-	adc_init(AIN3_PD2,ADC_SINGLE_SHOT);
+	adc_init(AIN3_PD2,ADC_TIMER2);
 	
+	adc_start();
 	
 	
 	U16_t last_count = get_int_count();

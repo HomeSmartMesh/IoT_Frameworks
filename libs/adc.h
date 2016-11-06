@@ -30,6 +30,14 @@ typedef BYTE ADC_Mode_t;
 extern const ADC_Mode_t ADC_SINGLE_SHOT;
 extern const ADC_Mode_t ADC_TIMER2;
 
+typedef struct
+{
+	uint16_t	c1s_min;
+	uint16_t	c1s_max;
+	uint16_t	c1s_avg;
+}adv_user_vals_t;
+
+extern adv_vals_t g_ADC_USER_VALS;
 
 //channel is the Analog input AIN3
 void adc_init(ADC_Channel_t channel, ADC_Mode_t mode);
