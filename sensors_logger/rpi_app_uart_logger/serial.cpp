@@ -137,11 +137,7 @@ void Serial::start(std::string port_name,bool s_500)
 	}
 	else
 	{
-		//https://github.com/wassfila/STM8_IoT_Base/issues/3
-		char buferr[20];
-		sprintf(buferr,"%d",errno);
-		std::string err_str(buferr);
-		strlog+="error "+err_str+" opening "+port_name+" : "+strerror(errno);
+		strlog+="error "+std::to_string(errno)+" opening "+port_name+" : "+strerror(errno);
 	}
 	log(strlog);
 }
