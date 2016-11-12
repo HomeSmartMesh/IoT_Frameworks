@@ -172,8 +172,6 @@ void printf(char const *ch)
 }
 
 #if UART_USE_RX_INETRRUPT == 1
-#define UART_FRAME_SIZE 32
-#define UART_EOF_C	13
 BYTE uart_BUFFER[UART_FRAME_SIZE];
 BYTE uart_index = 0;
 BYTE uart_ovefloaw = 0;
@@ -201,14 +199,23 @@ __interrupt void uart_irq(void)
 			//reflect typed characters
 			while (UART1_SR_TXE == 0);          //  Wait for transmission to complete.
 			UART1_DR = rx;
-			uart_BUFFER[uart_index] = rx;
-			//after the next line increment, the index reflexts the data size for this cycle
-			uart_index++;
+			//manage control characters
+			if(rx == 0x7F)//DEL
+			{
+				uart_index--;
+			}
+			else
+			{
+				uart_BUFFER[uart_index] = rx;
+				//after the next line increment, the index reflexts the data size for this cycle
+				uart_index++;
+			}
 		}
 
 		//Frame complete condition
 		if(rx == UART_EOF_C)
 		{
+			uart_index--;//remove the last char of end of line from the Frame size
 			uart_rx_user_callback(uart_BUFFER,uart_index);
 			uart_index = 0;
 		}

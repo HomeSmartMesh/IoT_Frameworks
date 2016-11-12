@@ -13,6 +13,7 @@
 
 
 #include "uart.h"
+#include "uart_config.h"
 #include "clock_led.h"
 
 //for nRF_Config() nRF_SetMode_RX() 
@@ -25,6 +26,12 @@
 
 BYTE NodeId;
 
+BYTE RFMASTER_RX_Enabled = 0;
+BYTE G;
+BYTE B;
+
+
+
 void prompt()
 {
 	printf("Node");
@@ -32,10 +39,49 @@ void prompt()
 	printf(">");
 }
 
+void help()
+{
+      printf("available commands:\r");
+      printf("rxon\r");
+      printf("Enable Reception\r");
+      printf("rxoff\r");
+      printf("Disable Reception\r");
+}
+
+BYTE strcmp (BYTE * s1, const char * s2)
+{
+    for(; *s1 == *s2; ++s1, ++s2)
+        if(*s1 == 0)
+            return 0;
+    return *(unsigned char *)s1 < *(unsigned char *)s2 ? -1 : 1;
+}
+
 //UART Rx Callback
 void uart_rx_user_callback(BYTE *buffer,BYTE size)
 {
 	//Node0x00>
+	if(size < UART_FRAME_SIZE)
+	{
+          buffer[size] = '\0';
+	}
+	if(strcmp(buffer,"rxon") == 0)
+	{
+		RFMASTER_RX_Enabled = 1;
+		printf("RFMASTER_RX_Enabled = 1;\r");
+	}
+	else if(strcmp(buffer,"rxoff") == 0)
+	{
+		RFMASTER_RX_Enabled = 0;
+		printf("RFMASTER_RX_Enabled = 0;\r");
+	}
+	else if(strcmp(buffer,"help") == 0)
+	{
+          help();
+	}
+	else
+	{
+		printf("Unknown Command, type 'help' for info\r");
+	}
 	prompt();
 	//printf_tab(buffer,size);
 }
@@ -43,10 +89,12 @@ void uart_rx_user_callback(BYTE *buffer,BYTE size)
 //RF User Rx CallBack
 void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 {
-	
-	/*printf("Rx: ");
-	printf_tab(rxData,rx_DataSize);
-	printf_ln();*/
+	if(RFMASTER_RX_Enabled)
+	{
+		printf("Rx: ");
+		printf_tab(rxData,rx_DataSize);
+		printf_ln();
+	}
 }
 
 int main( void )
@@ -64,6 +112,8 @@ int main( void )
 	
     printf("\n__________________________________________________\n");
     printf("IoTFrameworks\\rfuart\\rfmaster\\\n");
+    help();
+    prompt();
 
     //Applies the compile time configured parameters from nRF_Configuration.h
     BYTE status = nRF_Config();
