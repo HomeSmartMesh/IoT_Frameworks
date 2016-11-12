@@ -19,4 +19,4 @@
 
 #define UART_FRAME_SIZE 32
 
-#define UART_EOF_C	13
+#define UART_EOL_C	13

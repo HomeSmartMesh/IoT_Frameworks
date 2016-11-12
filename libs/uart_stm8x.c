@@ -213,7 +213,7 @@ __interrupt void uart_irq(void)
 		}
 
 		//Frame complete condition
-		if(rx == UART_EOF_C)
+		if(rx == UART_EOL_C)
 		{
 			uart_index--;//remove the last char of end of line from the Frame size
 			uart_rx_user_callback(uart_BUFFER,uart_index);

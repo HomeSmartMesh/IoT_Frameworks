@@ -14,12 +14,12 @@
 
 #include "uart.h"
 
+#include "uart_config.h"
 
 void UARTPrintfLn(char const *ch)
 {
   printf(ch);
-  putc('\r');
-  putc('\n');
+  putc(UART_EOL_C);
 }
 
 void UARTPrintf4Bits(unsigned char val4bits)
@@ -64,6 +64,13 @@ void UARTPrintfHexTable(unsigned char *pval,unsigned char length)
   
 }
 
+void print_data_tab(unsigned char *pval,unsigned char length)
+{
+  for(int i=0;i<length;i++)
+  {
+    putc(pval[i]);
+  }
+}
 
 void UARTPrintf_uint(U16_t num)
 {
@@ -108,7 +115,7 @@ void UARTPrintfHexLn(unsigned char val)
 	MSB = (val>>4) & 0x0F;
 	UARTPrintf4Bits(MSB);
 	UARTPrintf4Bits(LSB);
-	putc('\n');
+	putc(UART_EOL_C);
 }
 
 

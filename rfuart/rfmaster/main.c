@@ -19,6 +19,9 @@
 //for nRF_Config() nRF_SetMode_RX() 
 #include "nRF.h"
 
+//direct usage of registers
+#include "nRF_SPI.h"
+
 //to parse the RF response with rx_temperature_ds18b20()
 #include "temp_ds18b20.h"
 
@@ -26,10 +29,15 @@
 
 BYTE NodeId;
 
-BYTE RFMASTER_RX_Enabled = 0;
-BYTE G;
-BYTE B;
+BYTE rfmaster_LOG = 0;
+BYTE rfmaster_DATA = 0;
 
+char help_logon[] = "logon\r\tTurn the log on\r";
+char help_logoff[] = "logoff\r\tTurn the log off\r";
+char help_logtext[] = "logtext\r\tLog in Text hex mode\r";
+char help_logdata[] = "logdata\r\tLog in binary data mode\r";
+char help_rfreadreg[] = "rfreadreg\r\t'rfreadreg 0x35' reads register adress: one space then 0x\r";
+char help_rfwritereg[] = "rfwritereg\r\t'rfwritereg 0x00 0x33' writes vale 0x33 at address 0x00\r";
 
 
 void prompt()
@@ -42,10 +50,12 @@ void prompt()
 void help()
 {
       printf("available commands:\r");
-      printf("rxon\r");
-      printf("Enable Reception\r");
-      printf("rxoff\r");
-      printf("Disable Reception\r");
+      printf(help_logon);
+      printf(help_logoff);
+      printf(help_logtext);
+      printf(help_logdata);
+      printf(help_rfreadreg);
+      printf(help_rfwritereg);
 }
 
 BYTE strcmp (BYTE * s1, const char * s2)
@@ -56,6 +66,42 @@ BYTE strcmp (BYTE * s1, const char * s2)
     return *(unsigned char *)s1 < *(unsigned char *)s2 ? -1 : 1;
 }
 
+BYTE strbegins (BYTE * s1, const char * s2)
+{
+    for(; *s1 == *s2; ++s1, ++s2)
+        if(*s2 == 0)
+            return 0;
+    return (*s2 == 0)?0:1;
+}
+
+BYTE get_hex_char(BYTE c)
+{
+	BYTE res = 0;
+	if(c <= '9')
+	{
+		res = c - '0';
+	}
+	else if(c <= 'F')
+	{
+		res = c - 'A';
+	}
+	else if(c <= 'f')
+	{
+		res = c - 'a';
+	}
+	return res;
+}
+
+BYTE get_hex(BYTE* buffer,BYTE pos)
+{
+	BYTE hex_val;
+	pos+=2;//skip "0x"
+	hex_val = get_hex_char(buffer[pos++]);
+	hex_val <<= 4;
+	hex_val |= get_hex_char(buffer[pos]);
+	return hex_val;
+}
+
 //UART Rx Callback
 void uart_rx_user_callback(BYTE *buffer,BYTE size)
 {
@@ -64,15 +110,53 @@ void uart_rx_user_callback(BYTE *buffer,BYTE size)
 	{
           buffer[size] = '\0';
 	}
-	if(strcmp(buffer,"rxon") == 0)
+	
+	if(strcmp(buffer,"logon") == 0)
 	{
-		RFMASTER_RX_Enabled = 1;
-		printf("RFMASTER_RX_Enabled = 1;\r");
+		rfmaster_LOG = 1;
+		printf(help_logon);
 	}
-	else if(strcmp(buffer,"rxoff") == 0)
+	else if(strcmp(buffer,"logoff") == 0)
 	{
-		RFMASTER_RX_Enabled = 0;
-		printf("RFMASTER_RX_Enabled = 0;\r");
+		rfmaster_LOG = 0;
+		printf(help_logoff);
+	}
+	else if(strcmp(buffer,"logtext") == 0)
+	{
+		rfmaster_DATA = 0;
+		printf(help_logtext);
+	}
+	else if(strcmp(buffer,"logdata") == 0)
+	{
+		rfmaster_DATA = 1;
+		printf(help_logdata);
+	}
+	else if(strbegins(buffer,"rfreadreg") == 0)
+	{
+		BYTE regAddress = get_hex(buffer,10);
+		printf("nRF reg ");
+		printf_hex(regAddress);
+		BYTE reg_val = SPI_Read_Register(regAddress);
+		printf(" = ");
+		printf_hex(reg_val);
+		printf_ln();
+	}
+	else if(strbegins(buffer,"rfwritereg") == 0)
+	{
+		BYTE regAddress = get_hex(buffer,11);
+		BYTE regValue = get_hex(buffer,16);
+		printf("nRF reg ");
+		printf_hex(regAddress);
+		printf(" <= ");
+		printf_hex(regValue);
+		printf_ln();
+		SPI_Write_Register(regAddress,regValue);
+		printf("nRF reg ");
+		printf_hex(regAddress);
+		BYTE reg_val = SPI_Read_Register(regAddress);
+		printf(" = ");
+		printf_hex(reg_val);
+		printf_ln();
 	}
 	else if(strcmp(buffer,"help") == 0)
 	{
@@ -89,11 +173,18 @@ void uart_rx_user_callback(BYTE *buffer,BYTE size)
 //RF User Rx CallBack
 void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 {
-	if(RFMASTER_RX_Enabled)
+	if(rfmaster_LOG)
 	{
-		printf("Rx: ");
-		printf_tab(rxData,rx_DataSize);
-		printf_ln();
+		if(rfmaster_DATA)
+		{
+			print_data_tab(rxData,rx_DataSize);
+		}
+		else
+		{
+			printf("Rx: ");
+			printf_tab(rxData,rx_DataSize);
+			printf_ln();
+		}
 	}
 }
 

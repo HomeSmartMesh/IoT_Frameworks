@@ -32,3 +32,5 @@ void UARTPrintfHexLn(unsigned char val);
 void UARTPrintf_sint(signed int num);
 
 void UARTPrintf_uint(U16_t num);
+
+void print_data_tab(unsigned char *pval,unsigned char length);
