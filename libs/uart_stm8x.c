@@ -107,6 +107,8 @@ void printf(char const *ch)
 #elif DEVICE_STM8S == 1
 void uart_init()
 {
+	//Enable UART Clock Peripheral
+	CLK_PCKENR1 |= 0x20;// USART1
 	//
 	//  Clear the Idle Line Detected bit in the status register by a read
 	//  to the UART1_SR register followed by a Read to the UART1_DR register.
@@ -139,21 +141,30 @@ void uart_init()
 	//
 	//  Set the clock polarity, lock phase and last bit clock pulse.
 	//
-	UART1_CR3_CPOL = 1;
-	UART1_CR3_CPHA = 1;
-	UART1_CR3_LBCL = 1;
+	UART1_CR3_CPOL = 0;
+	UART1_CR3_CPHA = 0;
+	UART1_CR3_LBCL = 0;
+
+	//add a guard time to ease the PC reception without control
+	//not proven efficiency
+	UART1_GTR = 5;
 	//
 	//  Turn on the UART transmit, receive and the UART clock.
 	//
 	UART1_CR2_TEN = 1;
 	UART1_CR2_REN = 1;
-	UART1_CR3_CKEN = 1;
+	UART1_CR3_CKEN = 0;//Clock Pin Disabled (UART not USART)
+	
+	#if UART_USE_RX_INETRRUPT == 1
+    UART1_CR2_RIEN = 1;     // Enable UART Rx Interrupts
+    __enable_interrupt();
+	#endif
 }
 
 void putc(char c)
 {
-	UART1_DR = c;
 	while (UART1_SR_TXE == 0);          //  Wait for transmission to complete.
+	UART1_DR = c;
 }
 
 //
@@ -171,7 +182,7 @@ void printf(char const *ch)
 
 #if UART_USE_RX_INETRRUPT == 1
 #define UART_FRAME_SIZE 32
-#define UART_EOF_C	10
+#define UART_EOF_C	13
 BYTE uart_BUFFER[UART_FRAME_SIZE];
 BYTE uart_index = 0;
 BYTE uart_ovefloaw = 0;
@@ -179,32 +190,39 @@ BYTE uart_ovefloaw = 0;
 #pragma vector = UART1_R_RXNE_vector
 __interrupt void uart_irq(void)
 {
-	BYTE rx = UART1_DR;
-	while(UART1_SR_RXNE)
-	{
-		//keep overwriting last Byte on overflow
-		if(uart_index>=UART_FRAME_SIZE)
-		{
-			uart_ovefloaw = 1;//cleared by the user
-			uart_index--;
-		}
-		uart_BUFFER[uart_index] = rx;
-	}
-	//after the next line increment, the index reflexts the data size for this cycle
-	uart_index++;
-
-	//Frame complete condition
-	if(rx == UART_EOF_C)
-	{
-		uart_rx_user_callback(uart_BUFFER,uart_index);
-		uart_index = 0;
-	}
-
+	BYTE rx;
 	if((UART1_SR&0x0F) != 0x00)//Any of the errors
 	{
 		UART1_SR = 0;
 		rx = UART1_DR;//read DR to clear the errors
 	}
+	else
+	{
+		while(UART1_SR_RXNE)
+		{
+			//keep overwriting last Byte on overflow
+			if(uart_index>=UART_FRAME_SIZE)
+			{
+				uart_ovefloaw = 1;//cleared by the user
+				uart_index--;
+			}
+			rx = UART1_DR;
+			//reflect typed characters
+			while (UART1_SR_TXE == 0);          //  Wait for transmission to complete.
+			UART1_DR = rx;
+			uart_BUFFER[uart_index] = rx;
+			//after the next line increment, the index reflexts the data size for this cycle
+			uart_index++;
+		}
+
+		//Frame complete condition
+		if(rx == UART_EOF_C)
+		{
+			uart_rx_user_callback(uart_BUFFER,uart_index);
+			uart_index = 0;
+		}
+	}
+
 }
 
 #endif

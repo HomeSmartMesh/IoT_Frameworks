@@ -72,8 +72,8 @@ void InitialiseSystemClock()
 	CLK_ECKR = 0;                       //  Disable the external clock.
 	while (CLK_ICKR_HSIRDY == 0);       //  Wait for the HSI to be ready for use.
 	CLK_CKDIVR = 0;                     //  Ensure the clocks are running at full speed.
-	CLK_PCKENR1 = 0xff;                 //  Enable all peripheral clocks.
-	CLK_PCKENR2 = 0xff;                 //  Ditto.
+	//CLK_PCKENR1 = 0x00;               //  Do not change 
+	//CLK_PCKENR2 = 0x00;               //  BootROM only enabled
 	CLK_CCOR = 0;                       //  Turn off CCO.
 	CLK_HSITRIMR = 0;                   //  Turn off any HSIU trimming.
 	CLK_SWIMCCR = 0;                    //  Set SWIM to run at clock / 2.

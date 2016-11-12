@@ -21,23 +21,27 @@
 //to parse the RF response with rx_temperature_ds18b20()
 #include "temp_ds18b20.h"
 
-//for parsing rf bme280 data
-#include "bme280.h"
+#define EEPROM_Offset 0x1000
+#define NODE_ID       (char *) EEPROM_Offset;
 
 //UART Rx Callback
 void uart_rx_user_callback(BYTE *buffer,BYTE size)
 {
+	BYTE NodeId = *NODE_ID;
 	//simple echo
-	printf_tab(buffer,size);
+	printf("Node");
+	printf_hex(NodeId);
+	printf(">");
+	//printf_tab(buffer,size);
 }
 
 //RF User Rx CallBack
 void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 {
 	
-	printf("Rx: ");
+	/*printf("Rx: ");
 	printf_tab(rxData,rx_DataSize);
-	printf_ln();
+	printf_ln();*/
 }
 
 int main( void )
@@ -53,8 +57,8 @@ int main( void )
 
     uart_init();
 	
-    printf("\r\n__________________________________________________\n\r");
-    printf("sensors_logger\\firmware_rf_dongle\\rf_receiver_logger\\\n\r");
+    printf("\n__________________________________________________\n");
+    printf("IoTFrameworks\\rfuart\\rfmaster\\\n");
 
     //Applies the compile time configured parameters from nRF_Configuration.h
     BYTE status = nRF_Config();
