@@ -1,0 +1,50 @@
+logon
+logoff
+logtext
+logdata
+rfwritereg 0x05 0x04
+rfreadreg 0x05
+connectrf
+
+//Enable RX Addresses
+rfreadreg 0x02
+
+//select channel 0x04
+rfwritereg 0x05 0x04
+
+//RF_SETUP
+rfreadreg 0x06
+
+//STATUS
+rfreadreg 0x07
+
+//RX_ADD_P0
+rfreadreg 0x0A
+
+//RX_PW_P0 : Number of Bytes in RX payload in data pipe 0 (1 to 32 bytes)
+rfreadreg 0x11
+
+//FIFO_STATUS 0x11 : Tx Empty, Rx Empty
+rfreadreg 0x17
+
+//DYNPD
+rfreadreg 0x1C
+
+//nRF_SetMode_Standby_I();
+rfstandby
+
+//nRF_SetMode_RX();
+rflisten
+
+
+>>>>Node1
+rfstandby
+rfwritereg 0x05 0x04
+connectrf
+
+>>>>Node2
+rfstandby
+rfwritereg 0x05 0x04
+logon
+logdata
+rflisten

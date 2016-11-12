@@ -21,6 +21,7 @@
 
 //direct usage of registers
 #include "nRF_SPI.h"
+#include "nRF_Tx.h"
 
 //to parse the RF response with rx_temperature_ds18b20()
 #include "temp_ds18b20.h"
@@ -31,13 +32,18 @@ BYTE NodeId;
 
 BYTE rfmaster_LOG = 0;
 BYTE rfmaster_DATA = 0;
+BYTE rfmaster_Connected = 0;
 
 char help_logon[] = "logon\r\tTurn the log on\r";
 char help_logoff[] = "logoff\r\tTurn the log off\r";
 char help_logtext[] = "logtext\r\tLog in Text hex mode\r";
 char help_logdata[] = "logdata\r\tLog in binary data mode\r";
-char help_rfreadreg[] = "rfreadreg\r\t'rfreadreg 0x35' reads register adress: one space then 0x\r";
-char help_rfwritereg[] = "rfwritereg\r\t'rfwritereg 0x00 0x33' writes vale 0x33 at address 0x00\r";
+char help_rfreadreg[] = "rfreadreg hADD\r\t'rfreadreg 0x35' reads register adress: one space then 0x\r";
+char help_rfwritereg[] = "rfwritereg hADD hVAL\r\t'rfwritereg 0x00 0x33' writes vale 0x33 at address 0x00\r";
+char help_connectrf[] = "connectrf\r\t'Connects all UART receptions to RF transmissions\r";
+char help_disconnectrf[] = "disconnectrf\r\t'Disconnects UART receptions from RF transmissions\r";
+char help_rfstandby[] = "help_rfstandby\r\t'Sets the nRF into Standby Mode I\r";
+char help_rflisten[] = "help_rflisten\r\t'Sets the nRF into Reception Mode I\r";
 
 
 void prompt()
@@ -56,6 +62,9 @@ void help()
       printf(help_logdata);
       printf(help_rfreadreg);
       printf(help_rfwritereg);
+      printf(help_connectrf);
+      printf(help_rfstandby);
+	  printf(help_rflisten);
 }
 
 BYTE strcmp (BYTE * s1, const char * s2)
@@ -83,11 +92,11 @@ BYTE get_hex_char(BYTE c)
 	}
 	else if(c <= 'F')
 	{
-		res = c - 'A';
+		res = c - 'A' + 10;
 	}
 	else if(c <= 'f')
 	{
-		res = c - 'a';
+		res = c - 'a' + 10;
 	}
 	return res;
 }
@@ -108,63 +117,93 @@ void uart_rx_user_callback(BYTE *buffer,BYTE size)
 	//Node0x00>
 	if(size < UART_FRAME_SIZE)
 	{
-          buffer[size] = '\0';
+		  buffer[size] = '\0';
 	}
-	
-	if(strcmp(buffer,"logon") == 0)
+	if(rfmaster_Connected)
 	{
-		rfmaster_LOG = 1;
-		printf(help_logon);
+		nRF_Transmit(buffer,size+1);
+		delay_1ms_Count(10);
+		nRF_SetMode_RX();
 	}
-	else if(strcmp(buffer,"logoff") == 0)
+
+	if(1)
 	{
-		rfmaster_LOG = 0;
-		printf(help_logoff);
-	}
-	else if(strcmp(buffer,"logtext") == 0)
-	{
-		rfmaster_DATA = 0;
-		printf(help_logtext);
-	}
-	else if(strcmp(buffer,"logdata") == 0)
-	{
-		rfmaster_DATA = 1;
-		printf(help_logdata);
-	}
-	else if(strbegins(buffer,"rfreadreg") == 0)
-	{
-		BYTE regAddress = get_hex(buffer,10);
-		printf("nRF reg ");
-		printf_hex(regAddress);
-		BYTE reg_val = SPI_Read_Register(regAddress);
-		printf(" = ");
-		printf_hex(reg_val);
-		printf_ln();
-	}
-	else if(strbegins(buffer,"rfwritereg") == 0)
-	{
-		BYTE regAddress = get_hex(buffer,11);
-		BYTE regValue = get_hex(buffer,16);
-		printf("nRF reg ");
-		printf_hex(regAddress);
-		printf(" <= ");
-		printf_hex(regValue);
-		printf_ln();
-		SPI_Write_Register(regAddress,regValue);
-		printf("nRF reg ");
-		printf_hex(regAddress);
-		BYTE reg_val = SPI_Read_Register(regAddress);
-		printf(" = ");
-		printf_hex(reg_val);
-		printf_ln();
-	}
-	else if(strcmp(buffer,"help") == 0)
-	{
-          help();
-	}
-	else
-	{
-		printf("Unknown Command, type 'help' for info\r");
+		if(strcmp(buffer,"logon") == 0)
+		{
+			rfmaster_LOG = 1;
+			printf(help_logon);
+		}
+		else if(strcmp(buffer,"logoff") == 0)
+		{
+			rfmaster_LOG = 0;
+			printf(help_logoff);
+		}
+		else if(strcmp(buffer,"logtext") == 0)
+		{
+			rfmaster_DATA = 0;
+			printf(help_logtext);
+		}
+		else if(strcmp(buffer,"logdata") == 0)
+		{
+			rfmaster_DATA = 1;
+			printf(help_logdata);
+		}
+		else if(strbegins(buffer,"rfstandby") == 0)
+		{
+			nRF_SetMode_Standby_I();
+			printf(help_rfstandby);
+		}
+		else if(strbegins(buffer,"rflisten") == 0)
+		{
+			nRF_SetMode_RX();
+			printf(help_rflisten);
+		}
+		
+		else if(strbegins(buffer,"rfreadreg") == 0)
+		{
+			BYTE regAddress = get_hex(buffer,10);
+			printf("nRF reg ");
+			printf_hex(regAddress);
+			BYTE reg_val = SPI_Read_Register(regAddress);
+			printf(" = ");
+			printf_hex(reg_val);
+			printf_ln();
+		}
+		else if(strbegins(buffer,"rfwritereg") == 0)
+		{
+			BYTE regAddress = get_hex(buffer,11);
+			BYTE regValue = get_hex(buffer,16);
+			printf("nRF reg ");
+			printf_hex(regAddress);
+			printf(" <= ");
+			printf_hex(regValue);
+			printf_ln();
+			SPI_Write_Register(regAddress,regValue);
+			printf("nRF reg ");
+			printf_hex(regAddress);
+			BYTE reg_val = SPI_Read_Register(regAddress);
+			printf(" = ");
+			printf_hex(reg_val);
+			printf_ln();
+		}
+		else if(strbegins(buffer,"connectrf") == 0)
+		{
+			rfmaster_Connected = 1;
+			printf(help_connectrf);
+		}
+		else if(strbegins(buffer,"disconnectrf") == 0)
+		{
+			rfmaster_Connected = 0;
+			printf(help_disconnectrf);
+		}
+		else if(strcmp(buffer,"help") == 0)
+		{
+			  help();
+		}
+		else if(!rfmaster_Connected)
+		{
+			printf("Unknown Command, type 'help' for info\r");
+		}
 	}
 	prompt();
 	//printf_tab(buffer,size);
