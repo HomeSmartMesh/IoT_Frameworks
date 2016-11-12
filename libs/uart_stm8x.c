@@ -12,8 +12,14 @@
 
 #include "uart_stm8x.h"
 
+//for BYTE
+#include "commonTypes.h"
+
 //to know which DEVICE_STM8 we have
 #include "deviceType.h"
+
+//to configure the UART RX
+#include "uart_config.h"
 
 #if DEVICE_STM8L == 1
 	#include <iostm8l151f3.h>
@@ -23,6 +29,13 @@
   #error needs a file deviceType.h with DEVICE_STM8L 1  or S 1 defined
 #endif
 
+//this file is valid for both deviceTypes
+#if UART_USE_RX_INETRRUPT == 1
+#include <intrinsics.h>
+
+void uart_rx_user_callback(BYTE *buffer,BYTE size);
+
+#endif
 
 
 #if DEVICE_STM8L == 1
@@ -155,6 +168,47 @@ void printf(char const *ch)
 	ch++;                               //  Grab the next character.
 	}
 }
+
+#if UART_USE_RX_INETRRUPT == 1
+#define UART_FRAME_SIZE 32
+#define UART_EOF_C	10
+BYTE uart_BUFFER[UART_FRAME_SIZE];
+BYTE uart_index = 0;
+BYTE uart_ovefloaw = 0;
+
+#pragma vector = UART1_R_RXNE_vector
+__interrupt void uart_irq(void)
+{
+	BYTE rx = UART1_DR;
+	while(UART1_SR_RXNE)
+	{
+		//keep overwriting last Byte on overflow
+		if(uart_index>=UART_FRAME_SIZE)
+		{
+			uart_ovefloaw = 1;//cleared by the user
+			uart_index--;
+		}
+		uart_BUFFER[uart_index] = rx;
+	}
+	//after the next line increment, the index reflexts the data size for this cycle
+	uart_index++;
+
+	//Frame complete condition
+	if(rx == UART_EOF_C)
+	{
+		uart_rx_user_callback(uart_BUFFER,uart_index);
+		uart_index = 0;
+	}
+
+	if((UART1_SR&0x0F) != 0x00)//Any of the errors
+	{
+		UART1_SR = 0;
+		rx = UART1_DR;//read DR to clear the errors
+	}
+}
+
+#endif
+
 
 #else  
 	#error needs a file deviceType.h with DEVICE_STM8L 1  or S 1 defined
