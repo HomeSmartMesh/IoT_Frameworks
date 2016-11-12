@@ -21,17 +21,22 @@
 //to parse the RF response with rx_temperature_ds18b20()
 #include "temp_ds18b20.h"
 
-#define EEPROM_Offset 0x1000
-#define NODE_ID       (char *) EEPROM_Offset;
+#include "eeprom.h"
+
+BYTE NodeId;
+
+void prompt()
+{
+	printf("Node");
+	printf_hex(NodeId);
+	printf(">");
+}
 
 //UART Rx Callback
 void uart_rx_user_callback(BYTE *buffer,BYTE size)
 {
-	BYTE NodeId = *NODE_ID;
-	//simple echo
-	printf("Node");
-	printf_hex(NodeId);
-	printf(">");
+	//Node0x00>
+	prompt();
 	//printf_tab(buffer,size);
 }
 
@@ -46,8 +51,8 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 
 int main( void )
 {
-	
     BYTE AliveActiveCounter = 0;
+	NodeId = *NODE_ID;
 
     InitialiseSystemClock();
 

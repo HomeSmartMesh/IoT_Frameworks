@@ -64,7 +64,7 @@ void uart_init()
         //0x008a => 138       
         //  Set the baud rate registers to 115200 baud 
         //  based upon a 16 MHz system clock.
-	USART1_BRR2 = 0x0a;      //  Set the baud rate registers to 115200 baud
+	USART1_BRR2 = 0x0B;      //  0xB from Datasheet - Set the baud rate registers to 115200 baud
 	USART1_BRR1 = 0x08;      //  based upon a 16 MHz system clock.
 	//
 	//  Disable the transmitter and receiver.
@@ -131,23 +131,14 @@ void uart_init()
 	UART1_CR1_M = 0;        //  8 Data bits.
 	UART1_CR1_PCEN = 0;     //  Disable parity.
 	UART1_CR3_STOP = 0;     //  1 stop bit.
-	UART1_BRR2 = 0x0a;      //  Set the baud rate registers to 115200 baud
+	UART1_BRR2 = 0x0B;      //  0xB from Datasheet - Set the baud rate registers to 115200 baud
 	UART1_BRR1 = 0x08;      //  based upon a 16 MHz system clock.
 	//
 	//  Disable the transmitter and receiver.
 	//
 	UART1_CR2_TEN = 0;      //  Disable transmit.
 	UART1_CR2_REN = 0;      //  Disable receive.
-	//
-	//  Set the clock polarity, lock phase and last bit clock pulse.
-	//
-	UART1_CR3_CPOL = 0;
-	UART1_CR3_CPHA = 0;
-	UART1_CR3_LBCL = 0;
 
-	//add a guard time to ease the PC reception without control
-	//not proven efficiency
-	UART1_GTR = 5;
 	//
 	//  Turn on the UART transmit, receive and the UART clock.
 	//
@@ -174,8 +165,8 @@ void printf(char const *ch)
 {
 	while (*ch)
 	{
-	UART1_DR = (unsigned char) *ch;     //  Put the next character into the data transmission register.
 	while (UART1_SR_TXE == 0);          //  Wait for transmission to complete.
+	UART1_DR = (unsigned char) *ch;     //  Put the next character into the data transmission register.
 	ch++;                               //  Grab the next character.
 	}
 }
