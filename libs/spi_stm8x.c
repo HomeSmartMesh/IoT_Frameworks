@@ -89,6 +89,11 @@ void SPI_Init_SCK_MOSI_MISO_Pins()
 }
 
 
+BYTE CE_Pin_getstate()
+{
+	return PB_IDR_IDR4;
+}
+
 void CSN_Pin_LowSelect()
 {
 	PB_ODR_ODR4 = 0;
@@ -173,6 +178,7 @@ void SPI_Init_ChipEnable_Pin()
     //   0: Output speed up to  2 MHz   1: Output speed up to 10 MHz
     PC_CR2_C23 = 1;
 }
+
 void CE_Pin_LowDisable()
 {
 	PC_ODR_ODR3 = 0;
@@ -193,6 +199,11 @@ void SPI_Init_ChipSelect_Pin()
     PC_CR1_C14 = 1;
     //   0: Output speed up to  2 MHz   1: Output speed up to 10 MHz
     PC_CR2_C24 = 1;
+}
+
+BYTE CE_Pin_getstate()
+{
+	return PC_IDR_IDR3;
 }
 
 void CSN_Pin_LowSelect()

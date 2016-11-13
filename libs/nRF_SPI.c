@@ -104,11 +104,18 @@ void SPI_Cmd_FlushRx()
 BYTE SPI_Write_Register(BYTE reg, BYTE value)
 {
 	BYTE status;
+	BYTE last_state = CE_Pin_getstate();
+	CE_Pin_LowDisable();
 
 	CSN_Pin_LowSelect();	
 	status = SPI_RW(WRITE_REG | reg);
 	SPI_RW(value);        
 	CSN_Pin_HighDisable();
+
+	if(last_state)
+	{
+		CE_Pin_HighEnable();
+	}
 
 	return(status);       
 }
@@ -116,28 +123,41 @@ BYTE SPI_Write_Register(BYTE reg, BYTE value)
 BYTE SPI_Command(BYTE reg, BYTE value)
 {
 	BYTE status;
+	BYTE last_state = CE_Pin_getstate();
+	CE_Pin_LowDisable();
 
 	CSN_Pin_LowSelect();
 	status = SPI_RW( reg);
 	SPI_RW(value);        
 	CSN_Pin_HighDisable();
 
+	if(last_state)
+	{
+		CE_Pin_HighEnable();
+	}
+
 	return(status);       
 }
 
 BYTE SPI_Write_Buf(BYTE reg, BYTE *pBuf, BYTE bytes)
 {
-BYTE status,byte_ctr;
+	BYTE status,byte_ctr;
+	BYTE last_state = CE_Pin_getstate();
+	CE_Pin_LowDisable();
 
-  CSN_Pin_LowSelect();                           
-  status = SPI_RW(reg);                          
+	CSN_Pin_LowSelect();                           
+	status = SPI_RW(reg);                          
 
-  for(byte_ctr=0; byte_ctr<bytes; byte_ctr++)    
-    SPI_RW(*pBuf++);
+	for(byte_ctr=0; byte_ctr<bytes; byte_ctr++)    
+		SPI_RW(*pBuf++);
 
-  CSN_Pin_HighDisable();                         
+	CSN_Pin_HighDisable();
+	if(last_state)
+	{
+		CE_Pin_HighEnable();
+	}
 
-  return(status);                                
+	return(status);                                
 }
 
 
@@ -145,6 +165,8 @@ BYTE SPI_Read_Buf(BYTE reg, BYTE *pBuf, BYTE bytes)
 {
 BYTE status,byte_ctr;
 
+	//Reading in Standby Mode, why ?
+	BYTE last_state = CE_Pin_getstate();
 	CE_Pin_LowDisable();
 
 	CSN_Pin_LowSelect();                         
@@ -155,7 +177,10 @@ BYTE status,byte_ctr;
 
 	CSN_Pin_HighDisable();                       
 
-	CE_Pin_HighEnable();
+	if(last_state)
+	{
+		CE_Pin_HighEnable();
+	}
 	
 	return(status);                              
 }

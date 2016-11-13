@@ -75,14 +75,16 @@
 //--------------registers bits definition
 //CONFIG bits
 #define bit_Mask_Reserved	0x7F
+#define bit_MASK_RX_DR		0x40
+#define bit_MASK_TX_DS		0x20
+#define bit_MASK_MAX_RT		0x10
+#define bit_EN_CRC			0x08
+#define bit_CRCO			0x04
+#define bit_neg_EN_CRC		(~0x08)
 #define	bit_PWR_UP			0x02
 #define	bit_neg_PWR_UP		(~0x02)
 #define	bit_PRIM_RX			0x01
 #define	bit_neg_PRIM_RX		(~0x01)
-#define bit_MASK_RX_DR		0x40
-#define bit_MASK_TX_DS		0x20
-#define bit_MASK_MAX_RT		0x10
-#define bit_neg_EN_CRC		(~0x08)
 //STATUS bits	
 #define bit_RX_DR			0x40
 #define bit_TX_DS			0x20

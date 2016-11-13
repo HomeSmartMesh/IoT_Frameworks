@@ -22,6 +22,9 @@
 //direct usage of registers
 #include "nRF_SPI.h"
 #include "nRF_Tx.h"
+#include "nRF_RegText.h"
+//for CE pin get state
+#include "spi_stm8x.h"
 
 //to parse the RF response with rx_temperature_ds18b20()
 #include "temp_ds18b20.h"
@@ -42,8 +45,9 @@ char help_rfreadreg[] = "rfreadreg hADD\r\t'rfreadreg 0x35' reads register adres
 char help_rfwritereg[] = "rfwritereg hADD hVAL\r\t'rfwritereg 0x00 0x33' writes vale 0x33 at address 0x00\r";
 char help_connectrf[] = "connectrf\r\t'Connects all UART receptions to RF transmissions\r";
 char help_disconnectrf[] = "disconnectrf\r\t'Disconnects UART receptions from RF transmissions\r";
-char help_rfstandby[] = "help_rfstandby\r\t'Sets the nRF into Standby Mode I\r";
-char help_rflisten[] = "help_rflisten\r\t'Sets the nRF into Reception Mode I\r";
+char help_rfstandby[] = "rfstandby\r\tSets the nRF into Standby Mode I\r";
+char help_rflisten[] = "rflisten\r\tSets the nRF into Reception Mode\r";
+char help_rfregs[] = "rfregs\r\tPrints bit fields of the Status and Config registers\r";
 
 
 void prompt()
@@ -65,6 +69,7 @@ void help()
       printf(help_connectrf);
       printf(help_rfstandby);
 	  printf(help_rflisten);
+	  printf(help_rfregs);
 }
 
 BYTE strcmp (BYTE * s1, const char * s2)
@@ -148,6 +153,13 @@ void uart_rx_user_callback(BYTE *buffer,BYTE size)
 			rfmaster_DATA = 1;
 			printf(help_logdata);
 		}
+		
+		else if(strbegins(buffer,"rfregs") == 0)
+		{
+			nRF_PrintStatus(SPI_Read_Register(STATUS));
+			nRF_PrintConfig(SPI_Read_Register(CONFIG));
+			printf((CE_Pin_getstate() == 1)?"CE High\n":"CE Low\n");
+		}
 		else if(strbegins(buffer,"rfstandby") == 0)
 		{
 			nRF_SetMode_Standby_I();
@@ -200,7 +212,7 @@ void uart_rx_user_callback(BYTE *buffer,BYTE size)
 		{
 			  help();
 		}
-		else if(!rfmaster_Connected)
+		else if((!rfmaster_Connected)&&(size > 1))
 		{
 			printf("Unknown Command, type 'help' for info\r");
 		}

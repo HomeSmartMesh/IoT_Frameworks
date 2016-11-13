@@ -12,4 +12,4 @@
  #include "commonTypes.h"
 
 void nRF_PrintStatus(BYTE status);
-void nRF_PrintConfig();
+void nRF_PrintConfig(BYTE config);

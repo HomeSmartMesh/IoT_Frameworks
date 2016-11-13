@@ -19,6 +19,8 @@
 
 void SPI_Init_ChipEnable_Pin();
 
+BYTE CE_Pin_getstate();
+
 void CE_Pin_LowDisable();
 
 void CE_Pin_HighEnable();
