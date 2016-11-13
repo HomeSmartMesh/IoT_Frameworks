@@ -25,6 +25,11 @@ BYTE nRF_Transmit(BYTE* payload, BYTE size)
 {
 	BYTE status;
 	status = SPI_Command(FLUSH_TX,0x00);
+
+	//Assert Data Sent before new transmission to poll TX status
+	status |= bit_TX_DS;
+	SPI_Write_Register(STATUS,status);
+	
 	//unused result status
 	
 	if(nRF_Mode != nRF_Mode_Tx)
@@ -39,4 +44,18 @@ BYTE nRF_Transmit(BYTE* payload, BYTE size)
 	CE_Pin_LowDisable();
 
 	return status;
+}
+
+//waits for Tx by polling STATUS bit TX_DS, counts till 255 then comes back
+BYTE nRF_Wait_Transmit()
+{
+	BYTE cycles = 0;
+	BYTE status;
+	do
+	{
+		status = SPI_Read_Register(STATUS);
+		cycles++;
+	}while(((status &bit_TX_DS) == 0)| (cycles==255));
+	
+	return cycles;
 }

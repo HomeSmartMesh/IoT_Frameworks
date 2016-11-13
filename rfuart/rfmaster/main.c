@@ -120,15 +120,18 @@ BYTE get_hex(BYTE* buffer,BYTE pos)
 void uart_rx_user_callback(BYTE *buffer,BYTE size)
 {
 	//Node0x00>
+	if(rfmaster_Connected)
+	{
+		//use new line for RF transmission
+		buffer[size] = '\n';
+		nRF_Transmit(buffer,size+1);
+		nRF_Wait_Transmit();
+		nRF_SetMode_RX();
+	}
+	//for commands parsing
 	if(size < UART_FRAME_SIZE)
 	{
 		  buffer[size] = '\0';
-	}
-	if(rfmaster_Connected)
-	{
-		nRF_Transmit(buffer,size+1);
-		delay_1ms_Count(10);
-		nRF_SetMode_RX();
 	}
 
 	if(1)
