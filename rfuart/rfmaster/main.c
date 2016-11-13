@@ -41,13 +41,14 @@ char help_logon[] = "logon\r\tTurn the log on\r";
 char help_logoff[] = "logoff\r\tTurn the log off\r";
 char help_logtext[] = "logtext\r\tLog in Text hex mode\r";
 char help_logdata[] = "logdata\r\tLog in binary data mode\r";
-char help_rfreadreg[] = "rfreadreg hADD\r\t'rfreadreg 0x35' reads register adress: one space then 0x\r";
-char help_rfwritereg[] = "rfwritereg hADD hVAL\r\t'rfwritereg 0x00 0x33' writes vale 0x33 at address 0x00\r";
+char help_rfreadreg[] = "readreg hADD\r\t'readreg 0x35' reads register adress: one space then 0x\r";
+char help_rfwritereg[] = "writereg hADD hVAL\r\t'writereg 0x00 0x33' writes vale 0x33 at address 0x00\r";
 char help_connectrf[] = "connectrf\r\t'Connects all UART receptions to RF transmissions\r";
 char help_disconnectrf[] = "disconnectrf\r\t'Disconnects UART receptions from RF transmissions\r";
-char help_rfstandby[] = "rfstandby\r\tSets the nRF into Standby Mode I\r";
-char help_rflisten[] = "rflisten\r\tSets the nRF into Reception Mode\r";
-char help_rfregs[] = "rfregs\r\tPrints bit fields of the Status and Config registers\r";
+char help_rfstandby[] = "standby\r\tSets the nRF into Standby Mode I\r";
+char help_rflisten[] = "listen\r\tSets the nRF into Reception Mode\r";
+char help_rfregs[] = "regs\r\tPrints bit fields of the Status and Config registers\r";
+char help_channel[] = "channel RF_CH\r\t'channel 0x02' = 2400 + RF_CH[x1MHz] 2.400 GHz - 2.525 GHz\r";
 
 
 void prompt()
@@ -59,17 +60,18 @@ void prompt()
 
 void help()
 {
-      printf("available commands:\r");
-      printf(help_logon);
-      printf(help_logoff);
-      printf(help_logtext);
-      printf(help_logdata);
-      printf(help_rfreadreg);
-      printf(help_rfwritereg);
-      printf(help_connectrf);
-      printf(help_rfstandby);
-	  printf(help_rflisten);
-	  printf(help_rfregs);
+	printf("available commands:\r");
+	printf(help_logon);
+	printf(help_logoff);
+	printf(help_logtext);
+	printf(help_logdata);
+	printf(help_rfreadreg);
+	printf(help_rfwritereg);
+	printf(help_connectrf);
+	printf(help_rfstandby);
+	printf(help_rflisten);
+	printf(help_rfregs);
+	printf(help_channel);
 }
 
 BYTE strcmp (BYTE * s1, const char * s2)
@@ -116,6 +118,106 @@ BYTE get_hex(BYTE* buffer,BYTE pos)
 	return hex_val;
 }
 
+void handle_command(BYTE *buffer,BYTE size)
+{
+	if(strcmp(buffer,"logon") == 0)
+	{
+		rfmaster_LOG = 1;
+		printf(help_logon);
+	}
+	else if(strcmp(buffer,"logoff") == 0)
+	{
+		rfmaster_LOG = 0;
+		printf(help_logoff);
+	}
+	else if(strcmp(buffer,"logtext") == 0)
+	{
+		rfmaster_DATA = 0;
+		printf(help_logtext);
+	}
+	else if(strcmp(buffer,"logdata") == 0)
+	{
+		rfmaster_DATA = 1;
+		printf(help_logdata);
+	}
+	else if(strbegins(buffer,"regs") == 0)
+	{
+		nRF_PrintStatus(SPI_Read_Register(STATUS));
+		nRF_PrintConfig(SPI_Read_Register(CONFIG));
+		printf((CE_Pin_getstate() == 1)?"CE High\n":"CE Low\n");
+	}
+	else if(strbegins(buffer,"standby") == 0)
+	{
+		nRF_SetMode_Standby_I();
+		printf(help_rfstandby);
+	}
+	else if(strbegins(buffer,"listen") == 0)
+	{
+		nRF_SetMode_RX();
+		printf(help_rflisten);
+	}
+	else if(strbegins(buffer,"channel") == 0)
+	{
+		BYTE channel = get_hex(buffer,8);
+		if(channel > 125 )
+		{
+			channel = 125;//Max Freq is 2.525GHz
+		}
+		nRF_SelectChannel(channel);
+		printf("Channel ");
+		printf_uint(channel);
+		printf(" selected : ");
+		uint16_t freq = 2400 + channel;
+		printf_uint(freq);
+		printf(" MHz\n");
+	}
+	else if(strbegins(buffer,"readreg") == 0)
+	{
+		BYTE regAddress = get_hex(buffer,8);
+		printf("nRF reg ");
+		printf_hex(regAddress);
+		BYTE reg_val = SPI_Read_Register(regAddress);
+		printf(" = ");
+		printf_hex(reg_val);
+		printf_ln();
+	}
+	else if(strbegins(buffer,"writereg") == 0)
+	{
+		BYTE regAddress = get_hex(buffer,9);
+		BYTE regValue = get_hex(buffer,14);
+		printf("nRF reg ");
+		printf_hex(regAddress);
+		printf(" <= ");
+		printf_hex(regValue);
+		printf_ln();
+		SPI_Write_Register(regAddress,regValue);
+		printf("nRF reg ");
+		printf_hex(regAddress);
+		BYTE reg_val = SPI_Read_Register(regAddress);
+		printf(" = ");
+		printf_hex(reg_val);
+		printf_ln();
+	}
+	else if(strbegins(buffer,"connectrf") == 0)
+	{
+		rfmaster_Connected = 1;
+		printf(help_connectrf);
+	}
+	else if(strbegins(buffer,"disconnectrf") == 0)
+	{
+		rfmaster_Connected = 0;
+		printf(help_disconnectrf);
+	}
+	else if(strcmp(buffer,"help") == 0)
+	{
+		  help();
+	}
+	else if((!rfmaster_Connected)&&(size > 1))
+	{
+		printf("Unknown Command, type 'help' for info\r");
+	}
+}
+
 //UART Rx Callback
 void uart_rx_user_callback(BYTE *buffer,BYTE size)
 {
@@ -133,95 +235,25 @@ void uart_rx_user_callback(BYTE *buffer,BYTE size)
 	{
 		  buffer[size] = '\0';
 	}
-
+	
 	if(1)
 	{
-		if(strcmp(buffer,"logon") == 0)
-		{
-			rfmaster_LOG = 1;
-			printf(help_logon);
-		}
-		else if(strcmp(buffer,"logoff") == 0)
-		{
-			rfmaster_LOG = 0;
-			printf(help_logoff);
-		}
-		else if(strcmp(buffer,"logtext") == 0)
-		{
-			rfmaster_DATA = 0;
-			printf(help_logtext);
-		}
-		else if(strcmp(buffer,"logdata") == 0)
-		{
-			rfmaster_DATA = 1;
-			printf(help_logdata);
-		}
-		
-		else if(strbegins(buffer,"rfregs") == 0)
-		{
-			nRF_PrintStatus(SPI_Read_Register(STATUS));
-			nRF_PrintConfig(SPI_Read_Register(CONFIG));
-			printf((CE_Pin_getstate() == 1)?"CE High\n":"CE Low\n");
-		}
-		else if(strbegins(buffer,"rfstandby") == 0)
-		{
-			nRF_SetMode_Standby_I();
-			printf(help_rfstandby);
-		}
-		else if(strbegins(buffer,"rflisten") == 0)
-		{
-			nRF_SetMode_RX();
-			printf(help_rflisten);
-		}
-		
-		else if(strbegins(buffer,"rfreadreg") == 0)
-		{
-			BYTE regAddress = get_hex(buffer,10);
-			printf("nRF reg ");
-			printf_hex(regAddress);
-			BYTE reg_val = SPI_Read_Register(regAddress);
-			printf(" = ");
-			printf_hex(reg_val);
-			printf_ln();
-		}
-		else if(strbegins(buffer,"rfwritereg") == 0)
-		{
-			BYTE regAddress = get_hex(buffer,11);
-			BYTE regValue = get_hex(buffer,16);
-			printf("nRF reg ");
-			printf_hex(regAddress);
-			printf(" <= ");
-			printf_hex(regValue);
-			printf_ln();
-			SPI_Write_Register(regAddress,regValue);
-			printf("nRF reg ");
-			printf_hex(regAddress);
-			BYTE reg_val = SPI_Read_Register(regAddress);
-			printf(" = ");
-			printf_hex(reg_val);
-			printf_ln();
-		}
-		else if(strbegins(buffer,"connectrf") == 0)
-		{
-			rfmaster_Connected = 1;
-			printf(help_connectrf);
-		}
-		else if(strbegins(buffer,"disconnectrf") == 0)
-		{
-			rfmaster_Connected = 0;
-			printf(help_disconnectrf);
-		}
-		else if(strcmp(buffer,"help") == 0)
-		{
-			  help();
-		}
-		else if((!rfmaster_Connected)&&(size > 1))
-		{
-			printf("Unknown Command, type 'help' for info\r");
-		}
+		handle_command(buffer,size);
 	}
 	prompt();
 	//printf_tab(buffer,size);
+}
+
+BYTE line_length(BYTE*rxData,BYTE max_size)
+{
+	for(BYTE i=0;i<max_size;i++)
+	{
+		if(*rxData++ == '\n')
+		{
+			return i+1;//+1 is to keep the '\n'
+		}
+	}
+	return max_size;
 }
 
 //RF User Rx CallBack
@@ -231,6 +263,8 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 	{
 		if(rfmaster_DATA)
 		{
+			//is special case of converting bin to text with EOL
+			rx_DataSize = line_length(rxData,rx_DataSize);
 			print_data_tab(rxData,rx_DataSize);
 		}
 		else

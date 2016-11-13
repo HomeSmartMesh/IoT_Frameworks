@@ -40,6 +40,7 @@ BYTE nRF_SetMode_TX();
 
 BYTE nRF_ClearStatus();
 
+BYTE nRF_SelectChannel(BYTE channel);
 
 
 //Global variable to manage the current mode

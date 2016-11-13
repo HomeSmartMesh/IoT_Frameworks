@@ -259,3 +259,8 @@ BYTE nRF_ClearStatus()
 	return SPI_Write_Register(STATUS,(bit_RX_DR | bit_TX_DS | bit_MAX_RT) );
 }
 
+BYTE nRF_SelectChannel(BYTE channel)
+{
+	BYTE status = SPI_Write_Register(RF_CH,channel & bit_Mask_RF_CH);
+	return status;
+}

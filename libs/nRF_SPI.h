@@ -73,6 +73,8 @@
 #define DYNPD		    0x1C  // Enable Dynamic Payload Length
 #define FEATURE		    0x1D  // Feature Register
 //--------------registers bits definition
+//RF_CH bits
+#define bit_Mask_RF_CH		0x7F
 //CONFIG bits
 #define bit_Mask_Reserved	0x7F
 #define bit_MASK_RX_DR		0x40
@@ -108,10 +110,10 @@ extern const char* nRF24L01pRegNames[];
 void SPI_Init();                                       // Init HW SPI
 BYTE SPI_RW(BYTE byte);                              // Single SPI read/write
 
-//SPI commands
 BYTE SPI_Read_Register(BYTE reg);                      // Uses the command READ_REG
 BYTE SPI_Write_Register(BYTE reg, BYTE value);         // Uses the command WRITE_REG
 
+//can be used for commands or registers when many bytes have to be used as parameters
 BYTE SPI_Write_Buf(BYTE reg, BYTE *pBuf, BYTE bytes);  // Writes multiply bytes to one register
 BYTE SPI_Read_Buf(BYTE reg, BYTE *pBuf, BYTE bytes);   // Read multiply bytes from one register
 
@@ -119,6 +121,10 @@ BYTE SPI_Read_Buf(BYTE reg, BYTE *pBuf, BYTE bytes);   // Read multiply bytes fr
 BYTE SPI_Cmd_ReadRxPayloadWidth();
 void SPI_Cmd_FlushRx();
 
-BYTE SPI_Command(BYTE reg, BYTE value);					//generic command out of nRF24L01P Page 51 revision 1.0
+//generic command out of nRF24L01P Page 51 revision 1.0
+//Although Registers are a subset of commands with 5 bits, this
+//command is used to make the difference in the code that a command is beeing used
+//the commands with a data 1 or many is used with write registers (1) or write buffers (many)
+BYTE SPI_Command(BYTE reg);
 
 //********************************************************************************************************************//

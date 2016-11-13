@@ -120,7 +120,7 @@ BYTE SPI_Write_Register(BYTE reg, BYTE value)
 	return(status);       
 }
 
-BYTE SPI_Command(BYTE reg, BYTE value)
+BYTE SPI_Command(BYTE reg)
 {
 	BYTE status;
 	BYTE last_state = CE_Pin_getstate();
@@ -128,7 +128,6 @@ BYTE SPI_Command(BYTE reg, BYTE value)
 
 	CSN_Pin_LowSelect();
 	status = SPI_RW( reg);
-	SPI_RW(value);        
 	CSN_Pin_HighDisable();
 
 	if(last_state)

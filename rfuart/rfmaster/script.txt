@@ -34,17 +34,26 @@ rfreadreg 0x1C
 rfstandby
 
 //nRF_SetMode_RX();
-rflisten
+listen
 
+//Dynamic payload enable in Feature
+writereg 0x1d 0x04
+
+//Enable AutoAchnowledge in pipe0
+writereg 0x01 0x01
+
+//Payload Length is in Pipe0
+readreg 0x11
 
 >>>>Node1
-rfstandby
-rfwritereg 0x05 0x04
+channel 0x04
 connectrf
 
 >>>>Node2
-rfstandby
-rfwritereg 0x05 0x04
+channel 0x04
 logon
 logdata
-rflisten
+listen
+
+//max received length 31 chars
+0123456789012345678901234567890

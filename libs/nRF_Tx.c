@@ -24,13 +24,14 @@
 BYTE nRF_Transmit(BYTE* payload, BYTE size)
 {
 	BYTE status;
-	status = SPI_Command(FLUSH_TX,0x00);
+	//this will intrrupt any previously on going or blocked Tx (lost link)
+	//This Flush is dubtfull, not necessary
+	//and breaking quick successive transmissions
+	status = SPI_Command(FLUSH_TX);
 
 	//Assert Data Sent before new transmission to poll TX status
 	status |= bit_TX_DS;
 	SPI_Write_Register(STATUS,status);
-	
-	//unused result status
 	
 	if(nRF_Mode != nRF_Mode_Tx)
 	{
@@ -38,6 +39,12 @@ BYTE nRF_Transmit(BYTE* payload, BYTE size)
 	}
 	status = SPI_Write_Buf(WR_TX_PLOAD,payload,size);
 	
+	//This pin setting do not support multiple successive transmissions
+	//that fill tx data in multiple buffers
+	//because once first buffer is sent, a check is made on CE
+	//to see if second continues
+	//the bad case is write two buffers and give two pulses while
+	//the first tx is still ongoing, then it stops as CE is low
 	CE_Pin_HighEnable();//pulse for more than 10 us
 	delay_10us();
 	delay_10us();
