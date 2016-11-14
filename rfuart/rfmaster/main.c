@@ -36,7 +36,11 @@ BYTE NodeId;
 BYTE rfmaster_LOG = 0;
 BYTE rfmaster_DATA = 0;
 BYTE rfmaster_Connected = 0;
+BYTE rfmaster_HandleRFasCommands = 0;
 
+//#define HELP_CMD_DOESNOTFIT
+#ifdef HELP_CMD_DOESNOTFIT
+char help_cmd[] = "rfcmdon rfcmdoff\r\tEnables disable handling RF as commands\r";
 char help_logon[] = "logon\r\tTurn the log on\r";
 char help_logoff[] = "logoff\r\tTurn the log off\r";
 char help_logtext[] = "logtext\r\tLog in Text hex mode\r";
@@ -49,7 +53,24 @@ char help_rfstandby[] = "standby\r\tSets the nRF into Standby Mode I\r";
 char help_rflisten[] = "listen\r\tSets the nRF into Reception Mode\r";
 char help_rfregs[] = "regs\r\tPrints bit fields of the Status and Config registers\r";
 char help_channel[] = "channel RF_CH\r\t'channel 0x02' = 2400 + RF_CH[x1MHz] 2.400 GHz - 2.525 GHz\r";
-
+char help_rxaddress[] = "rxaddress ADD\r\t'rxaddress 0xE7' sets the LSB of the Rx Address\r";
+char help_txaddress[] = "txaddress ADD\r\t'txaddress 0xE7' sets the LSB of the Tx Address\r";
+#else
+char help_logon[] = "rfcmdon rfcmdoff\r\tEnables disable handling RF as commands\r";
+char help_logoff[] = "";
+char help_logtext[] = "";
+char help_logdata[] = "";
+char help_rfreadreg[] = "";
+char help_rfwritereg[] = "";
+char help_connectrf[] = "";
+char help_disconnectrf[] = "";
+char help_rfstandby[] = "";
+char help_rflisten[] = "";
+char help_rfregs[] = "";
+char help_channel[] = "";
+char help_rxaddress[] = "";
+char help_txaddress[] = "";
+#endif
 
 void prompt()
 {
@@ -61,6 +82,7 @@ void prompt()
 void help()
 {
 	printf("available commands:\r");
+//	printf(help_cmd);
 	printf(help_logon);
 	printf(help_logoff);
 	printf(help_logtext);
@@ -72,6 +94,8 @@ void help()
 	printf(help_rflisten);
 	printf(help_rfregs);
 	printf(help_channel);
+	printf(help_rxaddress);
+	printf(help_txaddress);
 }
 
 BYTE strcmp (BYTE * s1, const char * s2)
@@ -120,7 +144,17 @@ BYTE get_hex(BYTE* buffer,BYTE pos)
 
 void handle_command(BYTE *buffer,BYTE size)
 {
-	if(strcmp(buffer,"logon") == 0)
+	if(strcmp(buffer,"rfcmdon") == 0)
+	{
+		rfmaster_HandleRFasCommands = 1;
+		printf("RF is treated as commands\n");
+	}
+	else if(strcmp(buffer,"rfcmdoff") == 0)
+	{
+		rfmaster_HandleRFasCommands = 0;
+		printf("RF not treated as commands\n");
+	}
+	else if(strcmp(buffer,"logon") == 0)
 	{
 		rfmaster_LOG = 1;
 		printf(help_logon);
@@ -170,6 +204,22 @@ void handle_command(BYTE *buffer,BYTE size)
 		uint16_t freq = 2400 + channel;
 		printf_uint(freq);
 		printf(" MHz\n");
+	}
+	else if(strbegins(buffer,"txaddress") == 0)
+	{
+		BYTE address = get_hex(buffer,10);
+		nRF_SetTxAddress(address);
+		printf("TX_ADDR LSB set to ");
+		printf_hex(address);
+		printf_ln();
+	}
+	else if(strbegins(buffer,"rxaddress") == 0)
+	{
+		BYTE address = get_hex(buffer,10);
+		nRF_SetTxAddress(address);
+		printf("RX_ADDR_P0 LSB set to ");
+		printf_hex(address);
+		printf_ln();
 	}
 	else if(strbegins(buffer,"readreg") == 0)
 	{
@@ -259,6 +309,11 @@ BYTE line_length(BYTE*rxData,BYTE max_size)
 //RF User Rx CallBack
 void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 {
+	if(rfmaster_HandleRFasCommands)
+	{
+		rx_DataSize = line_length(rxData,rx_DataSize);
+		handle_command(rxData,rx_DataSize);
+	}
 	if(rfmaster_LOG)
 	{
 		if(rfmaster_DATA)

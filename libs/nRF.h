@@ -42,6 +42,12 @@ BYTE nRF_ClearStatus();
 
 BYTE nRF_SelectChannel(BYTE channel);
 
+//only LSByte set, others are default
+BYTE nRF_SetTxAddress(BYTE address);
+
+//only LSByte set, others are default
+BYTE nRF_SetRxAddress(BYTE Pipe, BYTE address);
+
 
 //Global variable to manage the current mode
 

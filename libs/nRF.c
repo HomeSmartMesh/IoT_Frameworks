@@ -264,3 +264,18 @@ BYTE nRF_SelectChannel(BYTE channel)
 	BYTE status = SPI_Write_Register(RF_CH,channel & bit_Mask_RF_CH);
 	return status;
 }
+
+//only LSByte updated with this function
+BYTE nRF_SetTxAddress(BYTE address)
+{
+	BYTE status = SPI_Write_Register(TX_ADDR,address);
+	return status;
+}
+
+//only LSByte set, others are default
+BYTE nRF_SetRxAddress(BYTE Pipe, BYTE address)
+{
+	BYTE PipeAddress = RX_ADDR_P0 + Pipe;//All pipes addersses successive
+	BYTE status = SPI_Write_Register(PipeAddress,address);
+	return status;
+}

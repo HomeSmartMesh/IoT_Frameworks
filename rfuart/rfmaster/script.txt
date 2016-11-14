@@ -1,3 +1,5 @@
+rfcmdon
+rfcmdoff
 logon
 logoff
 logtext
