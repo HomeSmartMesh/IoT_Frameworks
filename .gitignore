@@ -98,3 +98,4 @@ light_dimmer/firmware/current_watch/settings/
 light_dimmer/firmware/sync_counter/settings/
 rfuart/rfmaster/Debug/
 rfuart/rfmaster/settings/
+rfuart/lnkstm8s103f3.icf

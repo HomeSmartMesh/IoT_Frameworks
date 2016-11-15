@@ -157,22 +157,22 @@ void handle_command(BYTE *buffer,BYTE size)
 	else if(strcmp(buffer,"logon") == 0)
 	{
 		rfmaster_LOG = 1;
-		printf(help_logon);
+		printf("log is on\n");
 	}
 	else if(strcmp(buffer,"logoff") == 0)
 	{
 		rfmaster_LOG = 0;
-		printf(help_logoff);
+		printf("log is off\n");
 	}
 	else if(strcmp(buffer,"logtext") == 0)
 	{
 		rfmaster_DATA = 0;
-		printf(help_logtext);
+		printf("Log is in Text Mode\n");
 	}
 	else if(strcmp(buffer,"logdata") == 0)
 	{
 		rfmaster_DATA = 1;
-		printf(help_logdata);
+		printf("log is in Data Mode\n");
 	}
 	else if(strbegins(buffer,"regs") == 0)
 	{
@@ -183,12 +183,12 @@ void handle_command(BYTE *buffer,BYTE size)
 	else if(strbegins(buffer,"standby") == 0)
 	{
 		nRF_SetMode_Standby_I();
-		printf(help_rfstandby);
+		printf("Standby Mode Set\n");
 	}
 	else if(strbegins(buffer,"listen") == 0)
 	{
 		nRF_SetMode_RX();
-		printf(help_rflisten);
+		printf("Listening\n");
 	}
 	else if(strbegins(buffer,"channel") == 0)
 	{
@@ -251,16 +251,16 @@ void handle_command(BYTE *buffer,BYTE size)
 	else if(strbegins(buffer,"connectrf") == 0)
 	{
 		rfmaster_Connected = 1;
-		printf(help_connectrf);
+		printf("connected\n");
 	}
 	else if(strbegins(buffer,"disconnectrf") == 0)
 	{
 		rfmaster_Connected = 0;
-		printf(help_disconnectrf);
+		printf("disconnected\n");
 	}
 	else if(strcmp(buffer,"help") == 0)
 	{
-		  help();
+		  printf("https://github.com/wassfila/IoT_Frameworks\n");
 	}
 	else if((!rfmaster_Connected)&&(size > 1))
 	{
@@ -309,17 +309,15 @@ BYTE line_length(BYTE*rxData,BYTE max_size)
 //RF User Rx CallBack
 void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 {
-	if(rfmaster_HandleRFasCommands)
+	if((rfmaster_LOG && rfmaster_DATA)||rfmaster_HandleRFasCommands)
 	{
 		rx_DataSize = line_length(rxData,rx_DataSize);
-		handle_command(rxData,rx_DataSize);
 	}
 	if(rfmaster_LOG)
 	{
 		if(rfmaster_DATA)
 		{
 			//is special case of converting bin to text with EOL
-			rx_DataSize = line_length(rxData,rx_DataSize);
 			print_data_tab(rxData,rx_DataSize);
 		}
 		else
@@ -328,6 +326,12 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 			printf_tab(rxData,rx_DataSize);
 			printf_ln();
 		}
+	}
+	if(rfmaster_HandleRFasCommands)
+	{
+		//to handle it as a command the line should end with '\0' not '\n'
+		rxData[rx_DataSize-1] = '\0';
+		handle_command(rxData,rx_DataSize);
 	}
 }
 

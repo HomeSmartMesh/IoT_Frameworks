@@ -57,5 +57,11 @@ logon
 logdata
 listen
 
+>>>>>Node2 take orders
+channel 0x04
+listen
+rfcmdon
+
+
 //max received length 31 chars
 0123456789012345678901234567890
