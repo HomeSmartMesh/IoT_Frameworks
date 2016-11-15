@@ -144,7 +144,23 @@ BYTE get_hex(BYTE* buffer,BYTE pos)
 
 void handle_command(BYTE *buffer,BYTE size)
 {
-	if(strcmp(buffer,"rfcmdon") == 0)
+	if(strbegins(buffer,"node") == 0)
+	{
+		BYTE node_id = get_hex(buffer,5);
+		if(NodeId == node_id)
+		{
+			buffer+=10;
+			printf("[node ");
+			printf_hex(node_id);
+			printf("]");
+			handle_command(buffer,size-10);
+		}
+		else
+		{
+			printf("[not id]\n");
+		}
+	}
+	else if(strcmp(buffer,"rfcmdon") == 0)
 	{
 		rfmaster_HandleRFasCommands = 1;
 		printf("RF is treated as commands\n");
