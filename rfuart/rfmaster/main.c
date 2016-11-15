@@ -38,38 +38,39 @@ BYTE rfmaster_DATA = 0;
 BYTE rfmaster_Connected = 0;
 BYTE rfmaster_HandleRFasCommands = 0;
 
-//#define HELP_CMD_DOESNOTFIT
-#ifdef HELP_CMD_DOESNOTFIT
-char help_cmd[] = "rfcmdon rfcmdoff\r\tEnables disable handling RF as commands\r";
-char help_logon[] = "logon\r\tTurn the log on\r";
-char help_logoff[] = "logoff\r\tTurn the log off\r";
-char help_logtext[] = "logtext\r\tLog in Text hex mode\r";
-char help_logdata[] = "logdata\r\tLog in binary data mode\r";
-char help_rfreadreg[] = "readreg hADD\r\t'readreg 0x35' reads register adress: one space then 0x\r";
-char help_rfwritereg[] = "writereg hADD hVAL\r\t'writereg 0x00 0x33' writes vale 0x33 at address 0x00\r";
-char help_connectrf[] = "connectrf\r\t'Connects all UART receptions to RF transmissions\r";
-char help_disconnectrf[] = "disconnectrf\r\t'Disconnects UART receptions from RF transmissions\r";
-char help_rfstandby[] = "standby\r\tSets the nRF into Standby Mode I\r";
-char help_rflisten[] = "listen\r\tSets the nRF into Reception Mode\r";
-char help_rfregs[] = "regs\r\tPrints bit fields of the Status and Config registers\r";
-char help_channel[] = "channel RF_CH\r\t'channel 0x02' = 2400 + RF_CH[x1MHz] 2.400 GHz - 2.525 GHz\r";
-char help_rxaddress[] = "rxaddress ADD\r\t'rxaddress 0xE7' sets the LSB of the Rx Address\r";
-char help_txaddress[] = "txaddress ADD\r\t'txaddress 0xE7' sets the LSB of the Tx Address\r";
+#define HELP_CMD_TEXT
+#ifdef HELP_CMD_TEXT
+const char help_cmd[] = "rfcmdon rfcmdoff\r\tEnables disable handling RF as commands\r";
+const char help_logon[] = "logon\r\tTurn the log on\r";
+const char help_logoff[] = "logoff\r\tTurn the log off\r";
+const char help_logtext[] = "logtext\r\tLog in Text hex mode\r";
+const char help_logdata[] = "logdata\r\tLog in binary data mode\r";
+const char help_rfreadreg[] = "readreg hADD\r\t'readreg 0x35' reads register adress: one space then 0x\r";
+const char help_rfwritereg[] = "writereg hADD hVAL\r\t'writereg 0x00 0x33' writes vale 0x33 at address 0x00\r";
+const char help_connectrf[] = "connectrf\r\t'Connects all UART receptions to RF transmissions\r";
+const char help_disconnectrf[] = "disconnectrf\r\t'Disconnects UART receptions from RF transmissions\r";
+const char help_rfstandby[] = "standby\r\tSets the nRF into Standby Mode I\r";
+const char help_rflisten[] = "listen\r\tSets the nRF into Reception Mode\r";
+const char help_rfregs[] = "regs\r\tPrints bit fields of the Status and Config registers\r";
+const char help_channel[] = "channel RF_CH\r\t'channel 0x02' = 2400 + RF_CH[x1MHz] 2.400 GHz - 2.525 GHz\r";
+const char help_rxaddress[] = "rxaddress ADD\r\t'rxaddress 0xE7' sets the LSB of the Rx Address\r";
+const char help_txaddress[] = "txaddress ADD\r\t'txaddress 0xE7' sets the LSB of the Tx Address\r";
 #else
-char help_logon[] = "rfcmdon rfcmdoff\r\tEnables disable handling RF as commands\r";
-char help_logoff[] = "";
-char help_logtext[] = "";
-char help_logdata[] = "";
-char help_rfreadreg[] = "";
-char help_rfwritereg[] = "";
-char help_connectrf[] = "";
-char help_disconnectrf[] = "";
-char help_rfstandby[] = "";
-char help_rflisten[] = "";
-char help_rfregs[] = "";
-char help_channel[] = "";
-char help_rxaddress[] = "";
-char help_txaddress[] = "";
+const char help_cmd[] = "";
+const char help_logon[] = "";
+const char help_logoff[] = "";
+const char help_logtext[] = "";
+const char help_logdata[] = "";
+const char help_rfreadreg[] = "";
+const char help_rfwritereg[] = "";
+const char help_connectrf[] = "";
+const char help_disconnectrf[] = "";
+const char help_rfstandby[] = "";
+const char help_rflisten[] = "";
+const char help_rfregs[] = "";
+const char help_channel[] = "";
+const char help_rxaddress[] = "";
+const char help_txaddress[] = "";
 #endif
 
 void prompt()
@@ -82,7 +83,7 @@ void prompt()
 void help()
 {
 	printf("available commands:\r");
-//	printf(help_cmd);
+	printf(help_cmd);
 	printf(help_logon);
 	printf(help_logoff);
 	printf(help_logtext);
@@ -276,7 +277,8 @@ void handle_command(BYTE *buffer,BYTE size)
 	}
 	else if(strcmp(buffer,"help") == 0)
 	{
-		  printf("https://github.com/wassfila/IoT_Frameworks\n");
+		printf("https://github.com/wassfila/IoT_Frameworks\n");
+		help();
 	}
 	else if((!rfmaster_Connected)&&(size > 1))
 	{
