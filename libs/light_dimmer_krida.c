@@ -31,13 +31,22 @@
 	#error only DEVICE_STM8S supported with deviceType.h
 #endif
 
+//#include "timers_config.h" to get the flag TIMER2_USER_CALLBACK
+#include "timers_config.h"
+
+//forward declaration in case the callback is used
+#if TIMER2_USER_CALLBACK == 1
+void timer2_user_callback();
+#endif
+
+
 BYTE delay_H[4];
 BYTE delay_L[4];
 BYTE autoreload_H[4];
 BYTE autoreload_L[4];
 
-const U16_t MINIMAL_TRIGGER = 185;//181 switches Full on - 180 keeps off as too early
-const U16_t TIMER_PERIOD = 9900;//9910 pulse disappears sometimes - 9905 always there
+const uint16_t MINIMAL_TRIGGER = 185;//181 switches Full on - 180 keeps off as too early
+const uint16_t TIMER_PERIOD = 9900;//9910 pulse disappears sometimes - 9905 always there
 
 
 /*
@@ -232,31 +241,44 @@ __interrupt void tim1_overflow(void)
 #pragma vector = TIM1_CAPCOM_CC1IF_vector
 __interrupt void tim1_occ(void)
 {
+	//switch on the relevant channels
 	if(TIM1_SR1_CC1IF)
 	{
 		DIMMER_CH1_OUT = 1;
-		delay_10us();
+	}
+	if(TIM1_SR1_CC2IF)
+	{
+		DIMMER_CH2_OUT = 1;
+	}
+	if(TIM1_SR1_CC3IF)
+	{
+		DIMMER_CH3_OUT = 1;
+	}
+	if(TIM1_SR1_CC4IF)
+	{
+		DIMMER_CH4_OUT = 1;
+	}
+	
+	delay_10us();
+
+	//switch off the relevant channels
+	if(TIM1_SR1_CC1IF)
+	{
 		DIMMER_CH1_OUT = 0;
 		TIM1_SR1_CC1IF = 0;
 	}
 	if(TIM1_SR1_CC2IF)
 	{
-		DIMMER_CH2_OUT = 1;
-		delay_10us();
 		DIMMER_CH2_OUT = 0;
 		TIM1_SR1_CC2IF = 0;
 	}
 	if(TIM1_SR1_CC3IF)
 	{
-		DIMMER_CH3_OUT = 1;
-		delay_10us();
 		DIMMER_CH3_OUT = 0;
 		TIM1_SR1_CC3IF = 0;
 	}
 	if(TIM1_SR1_CC4IF)
 	{
-		DIMMER_CH4_OUT = 1;
-		delay_10us();
 		DIMMER_CH4_OUT = 0;
 		TIM1_SR1_CC4IF = 0;
 	}
@@ -295,6 +317,10 @@ __interrupt void irq_sync(void)
 	TIM1_CNTRL = 0;
 	//Go
 	TIM1_CR1_CEN = 1;//Timer 1 Counter Enable
+	
+	#if TIMER2_USER_CALLBACK == 1
+	timer2_user_callback();
+	#endif
 
 }
 
@@ -305,7 +331,7 @@ int get_int_count()
 
 //level is from 1 to 10.000
 
-void dimmer_set_level(BYTE channel, U16_t level)
+uint16_t dimmer_set_level(BYTE channel, uint16_t level)
 {
 	if(level < MINIMAL_TRIGGER)
 	{
@@ -316,18 +342,11 @@ void dimmer_set_level(BYTE channel, U16_t level)
 		level = TIMER_PERIOD;
 	}
 	//delay of 0 => min_trig ; MAX is TimePer-Min;
-	U16_t delay = TIMER_PERIOD - (level - MINIMAL_TRIGGER);
+	uint16_t delay = TIMER_PERIOD - (level - MINIMAL_TRIGGER);
 	if(channel <= 3)//positive so already >= 0
 	{
 			delay_L[channel] = delay & 0x00FF;
 			delay_H[channel] = delay >> 8;
-			printf("channel: ");
-			printf_uint(channel);
-			printf(" has ");
-			printf_uint(delay_H[channel]);
-			printf(" x256+ ");
-			printf_uint(delay_L[channel]);
-			printf_ln();
 	}
-		
+	return delay;
 }

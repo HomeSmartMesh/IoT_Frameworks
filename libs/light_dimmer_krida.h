@@ -36,5 +36,7 @@
 
 void dimmer_init();
 int get_int_count();
-void dimmer_set_level(BYTE channel, U16_t level);
+
+//the level is suggested, a 0 starting level, the returned delay is calculated with the Timer calibration period
+uint16_t dimmer_set_level(BYTE channel, uint16_t level);
 

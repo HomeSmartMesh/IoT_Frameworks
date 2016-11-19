@@ -10,11 +10,13 @@
  *
  */
 
+//---------------------------- CONFIG ----------------------------
 #include "deviceType.h"
 
-#include "uart.h"
-
 #include "uart_config.h"
+
+//---------------------------- rest of includes ----------------------------
+#include "uart.h"
 
 void UARTPrintfLn(char const *ch)
 {

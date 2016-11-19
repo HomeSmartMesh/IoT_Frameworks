@@ -75,6 +75,7 @@ rfcmdon
 connectrf
 channel 0x04
 node 0x0B logon
+node 0x0B logdata
 _______________________________________________________________
 //forward, retransmits and decrements time to live, with a random delay jitter
 //the node 0x0A is targeted to switch the log on

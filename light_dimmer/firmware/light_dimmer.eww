@@ -8,6 +8,9 @@
     <path>$WS_DIR$\dimmer_solo\dimmer_solo.ewp</path>
   </project>
   <project>
+    <path>$WS_DIR$\light_server\light_server.ewp</path>
+  </project>
+  <project>
     <path>$WS_DIR$\sync_counter\sync_counter.ewp</path>
   </project>
   <batchBuild/>

@@ -10,16 +10,22 @@
  *
  */
 
-#include "uart_stm8x.h"
-
+//---------------------------- TYPES ----------------------------
+//Important include dependency should be the independent files first, and the file that use them after !!!
 //for BYTE
 #include "commonTypes.h"
 
+//---------------------------- CONFIG ----------------------------
+//important include configuration before including files using this configuration
+//to configure the UART RX
+#include "uart_config.h"
 //to know which DEVICE_STM8 we have
 #include "deviceType.h"
 
-//to configure the UART RX
-#include "uart_config.h"
+//---------------------------- rest of includes ----------------------------
+#include "uart_stm8x.h"
+
+
 
 #if DEVICE_STM8L == 1
 	#include <iostm8l151f3.h>
@@ -176,10 +182,24 @@ BYTE uart_BUFFER[UART_FRAME_SIZE];
 BYTE uart_index = 0;
 BYTE uart_ovefloaw = 0;
 
+	#if UART_CALLBACK_POLLING == 1
+	BYTE uart_rx_user_callback_pending = 0;
+	BYTE uart_rx_user_callback_performed = 0;
+	#endif
+
 #pragma vector = UART1_R_RXNE_vector
 __interrupt void uart_irq(void)
 {
 	BYTE rx;
+	#if UART_CALLBACK_POLLING == 1
+	if(uart_rx_user_callback_performed)
+	{
+		uart_rx_user_callback_performed = 0;
+		uart_index = 0;
+	}
+	#endif
+	
+	
 	if((UART1_SR&0x0F) != 0x00)//Any of the errors
 	{
 		UART1_SR = 0;
@@ -216,8 +236,13 @@ __interrupt void uart_irq(void)
 		if(rx == UART_EOL_C)
 		{
 			uart_index--;//remove the last char of end of line from the Frame size
+			//as this must be quite time consuming, it is left to the user the responsibility to call it from another context
+			#if UART_CALLBACK_POLLING == 1
+			uart_rx_user_callback_pending = 1;
+			#else
 			uart_rx_user_callback(uart_BUFFER,uart_index);
 			uart_index = 0;
+			#endif
 		}
 	}
 

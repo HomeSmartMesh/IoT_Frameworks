@@ -13,7 +13,7 @@
 
 
 #include "uart.h"
-#include "uart_config.h"
+
 #include "clock_led.h"
 
 //for nRF_Config() nRF_SetMode_RX() 

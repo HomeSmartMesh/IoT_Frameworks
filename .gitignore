@@ -99,3 +99,5 @@ light_dimmer/firmware/sync_counter/settings/
 rfuart/rfmaster/Debug/
 rfuart/rfmaster/settings/
 rfuart/lnkstm8s103f3.icf
+light_dimmer/firmware/light_server/Debug/
+light_dimmer/firmware/light_server/settings/

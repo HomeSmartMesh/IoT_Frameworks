@@ -12,6 +12,11 @@
 
 #include "commonTypes.h"
 
+//First configure, important that this file is included before the other headers that will conditionally declare the extern variables
+//#include "uart_config.h" for flags,...,UART_CALLBACK_POLLING
+#include "uart_config.h"
+
+
 //for InitialiseUART(); putc(char c);  printf(char const *message);
 #include "uart_stm8x.h"
 
