@@ -89,6 +89,23 @@ void handle_command(BYTE *buffer,BYTE size)
 		printf_uint(delay);
 		printf(")\n");
 	}
+	else if(strbegins(buffer,"alldimm") == 0)
+	{
+		//alldimm 0x08 0x98
+		BYTE level_msb = get_hex(buffer,8);
+		BYTE level_lsb = get_hex(buffer,13);
+		uint16_t level = (uint16_t) (level_msb<<8) | level_lsb;
+		uint16_t delay;
+		delay = dimmer_set_level(0,level);
+		delay = dimmer_set_level(1,level);
+		delay = dimmer_set_level(2,level);
+		delay = dimmer_set_level(3,level);
+		printf("dimming all channels [0,1,2,3] to level (");
+		printf_uint(level);
+		printf(") => delay(");
+		printf_uint(delay);
+		printf(")\n");
+	}
 	else if(strcmp(buffer,"help") == 0)
 	{
 		printf("https://github.com/wassfila/IoT_Frameworks\n");
@@ -147,8 +164,8 @@ int main( void )
 
 	uart_init();
 
-	printf("\r\n__________________________________________________\n\r");
-	printf("IoT_Frameworks\\light_dimmer\\simple_monitor\\\n\r");
+	printf("\r\n__________________________________________________\n");
+	printf("IoT_Frameworks\\light_dimmer\\simple_monitor\\\n");
 
 	dimmer_set_level(0,1800);//60us is the Sync shift + 10 to be in the positive section
 	dimmer_set_level(1,2200);//60us is the Sync shift
@@ -172,15 +189,19 @@ int main( void )
 	
 	prompt();
 	
-	U16_t last_count = get_int_count();
+	uint16_t last_count = get_int_count();
+	uint16_t sync_count;
+	uint8_t cycle_count = 0;
 	while (1)
 	{
+		cycle_count++;
+		timer2_user_callback();
+		sync_count = get_int_count();
 		if(Dimmer_logon)
 		{
-			printf("int count: ");
-			U16_t count = get_int_count();
-			printf_uint(count - last_count);
-			last_count = count;
+			printf("int sync_count: ");
+			printf_uint(sync_count - last_count);
+			last_count = sync_count;
 			printf_ln();
 			#ifdef DEF_ADC_TIMER2
 					adc_print_vals();
@@ -194,9 +215,13 @@ int main( void )
 		}
 
 		Test_Led_Off();
-		delay_1ms_Count(4900);
-		
-		Test_Led_On();
-		delay_1ms_Count(100);
+		delay_1ms_Count(10);
+
+		if(cycle_count == 100)
+		{
+			Test_Led_On();
+			delay_1ms_Count(20);
+			cycle_count = 0;
+		}
 	}
 }

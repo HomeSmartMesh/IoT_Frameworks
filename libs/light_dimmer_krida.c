@@ -319,7 +319,7 @@ __interrupt void irq_sync(void)
 	TIM1_CR1_CEN = 1;//Timer 1 Counter Enable
 	
 	#if TIMER2_USER_CALLBACK == 1
-	timer2_user_callback();
+	//timer2_user_callback();
 	#endif
 
 }
