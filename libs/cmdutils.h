@@ -26,4 +26,8 @@ BYTE get_hex(BYTE* buffer,BYTE pos);
 
 BYTE line_length(BYTE*rxData,BYTE max_size);
 
+
+//for this handle_command() must be instanciated
+void run_eeprom_script();
+
 #endif /*__CMDUTILS__*/

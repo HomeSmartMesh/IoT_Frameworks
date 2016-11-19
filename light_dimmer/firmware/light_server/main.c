@@ -164,7 +164,7 @@ int main( void )
 
 	uart_init();
 
-	printf("\r\n__________________________________________________\n");
+	printf("\n__________________________________________________\n");
 	printf("IoT_Frameworks\\light_dimmer\\simple_monitor\\\n");
 
 	dimmer_set_level(0,1800);//60us is the Sync shift + 10 to be in the positive section

@@ -41,6 +41,7 @@ BYTE nRF_SetMode_TX();
 BYTE nRF_ClearStatus();
 
 BYTE nRF_SelectChannel(BYTE channel);
+void nRF_PrintChannel();
 
 //only LSByte set, others are default
 BYTE nRF_SetTxAddress(BYTE address);

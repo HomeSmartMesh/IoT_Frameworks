@@ -265,6 +265,17 @@ BYTE nRF_SelectChannel(BYTE channel)
 	return status;
 }
 
+void nRF_PrintChannel()
+{
+	BYTE channel = SPI_Read_Register(RF_CH);
+	printf("Channel ");
+	printf_uint(channel);
+	printf(" selected : ");
+	uint16_t freq = 2400 + channel;
+	printf_uint(freq);
+	printf(" MHz\n");
+}
+
 //only LSByte updated with this function
 BYTE nRF_SetTxAddress(BYTE address)
 {

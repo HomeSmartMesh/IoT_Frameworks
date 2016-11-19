@@ -12,6 +12,12 @@
 
 #include "cmdutils.h"
 
+#include "eeprom.h"
+
+#include "uart.h"
+
+void handle_command(BYTE *buffer,BYTE size);
+
 BYTE strcmp (BYTE * s1, const char * s2)
 {
     for(; *s1 == *s2; ++s1, ++s2)
@@ -60,10 +66,37 @@ BYTE line_length(BYTE*rxData,BYTE max_size)
 {
 	for(BYTE i=0;i<max_size;i++)
 	{
-		if(*rxData++ == '\n')
+		if(*rxData++ == UART_EOL_C)
 		{
 			return i+1;//+1 is to keep the '\n'
 		}
 	}
 	return max_size;
+}
+
+//	NodeId
+//	Command Lines Script 0x02
+void run_eeprom_script()
+{
+	//as line 1 has the node id, start from the second
+	BYTE *pCmd = (BYTE*)EEPROM_Offset + EEPROM_Line;
+	if(strbegins(pCmd,"Command Lines Script") == 0)
+	{
+		BYTE NbCommands = get_hex(pCmd,21);
+		printf("Running found EEProm Script with ");
+		printf_uint(NbCommands);
+		printf(" Commands :\n");
+		//Jump to the next line
+		pCmd += EEPROM_Line;
+		for(BYTE i=0;i<NbCommands;i++)
+		{
+			handle_command(pCmd,EEPROM_Line);
+			pCmd += EEPROM_Line;
+		}
+	}
+	else
+	{
+		printf("No EEProm Script found\n");
+	}
+	
 }

@@ -19,4 +19,5 @@
 
 #define UART_FRAME_SIZE 32
 
+//the terminal sends 13
 #define UART_EOL_C	13
