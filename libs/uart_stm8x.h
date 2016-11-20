@@ -18,6 +18,7 @@ void printf(char const *message);
 
 //if interrupt mode, otherwise not declared
 #if UART_USE_RX_INETRRUPT == 1
+		extern	BYTE uart_echo;
 	//published externally only if the user needs to be polling himself
 		//#include "uart_config.h" for UART_CALLBACK_POLLING and then conditionally for UART_FRAME_SIZE
 	#include "uart_config.h"

@@ -50,22 +50,23 @@ void prompt()
 
 void help()
 {
-	printf("available commands:\n");
-	printf("rfcmdon rfcmdoff\n\tEnables disable handling RF as commands\n");
-	printf("logon\n\tTurn the log on\n");
-	printf("logoff\n\tTurn the log off\n");
-	printf("logtext\n\tLog in Text hex mode\n");
-	printf("logdata\n\tLog in binary data mode\n");
-	printf("readreg hADD\n\t'readreg 0x35' reads register adress: one space then 0x\n");
-	printf("writereg hADD hVAL\n\t'writereg 0x00 0x33' writes vale 0x33 at address 0x00\n");
-	printf("connectrf\n\t'Connects all UART receptions to RF transmissions\n");
-	printf("disconnectrf\n\t'Disconnects UART receptions from RF transmissions\n");
-	printf("standby\n\tSets the nRF into Standby Mode I\n");
-	printf("listen\n\tSets the nRF into Reception Mode\n");
-	printf("status\n\tPrints bit fields of the Status and Config registers\n");
-	printf("channel RF_CH\n\t'channel 0x02' = 2400 + RF_CH[x1MHz] 2.400 GHz - 2.525 GHz\n");
-	printf("rxaddress ADD\n\t'rxaddress 0xE7' sets the LSB of the Rx Address\n");
-	printf("txaddress ADD\n\t'txaddress 0xE7' sets the LSB of the Tx Address\n");
+	printf_ln("available commands:\n");
+	printf_ln("rfcmdon rfcmdoff\tEnables disable handling RF as commands");
+	printf_ln("uartechoon\tuartechooff\tEcho Typed Characters");
+	printf_ln("logon\tTurn the log on");
+	printf_ln("logoff\tTurn the log off");
+	printf_ln("logtext\tLog in Text hex mode");
+	printf_ln("logdata\tLog in binary data mode");
+	printf_ln("readreg hADD\t'readreg 0x35' reads register adress: one space then 0x");
+	printf_ln("writereg hADD hVAL\t'writereg 0x00 0x33' writes vale 0x33 at address 0x00");
+	printf_ln("connectrf\t'Connects all UART receptions to RF transmissions");
+	printf_ln("disconnectrf\t'Disconnects UART receptions from RF transmissions");
+	printf_ln("standby\tSets the nRF into Standby Mode I");
+	printf_ln("listen\tSets the nRF into Reception Mode");
+	printf_ln("status\tPrints bit fields of the Status and Config registers");
+	printf_ln("channel RF_CH\t'channel 0x02' = 2400 + RF_CH[x1MHz] 2.400 GHz - 2.525 GHz");
+	printf_ln("rxaddress ADD\t'rxaddress 0xE7' sets the LSB of the Rx Address");
+	printf_ln("txaddress ADD\t'txaddress 0xE7' sets the LSB of the Tx Address");
 }
 
 void handle_command(BYTE *buffer,BYTE size)
@@ -83,71 +84,82 @@ void handle_command(BYTE *buffer,BYTE size)
 		}
 		else
 		{
-			printf("[not id]\n");
+			printf_ln("[not id]");
 		}
 	}
 	else if(strcmp(buffer,"rfcmdon") == 0)
 	{
 		rfmaster_HandleRFasCommands = 1;
-		printf("RF is treated as commands\n");
+		printf_ln("RF is treated as commands");
 	}
 	else if(strcmp(buffer,"rfcmdoff") == 0)
 	{
 		rfmaster_HandleRFasCommands = 0;
-		printf("RF not treated as commands\n");
+		printf_ln("RF not treated as commands");
+	}
+	else if(strcmp(buffer,"uartechoon") == 0)
+	{
+		uart_echo = 1;
+		printf_ln("UART Echo On");
+	}
+	else if(strcmp(buffer,"uartechooff") == 0)
+	{
+		uart_echo = 0;
+		printf_ln("UART Echo Off");
 	}
 	else if(strcmp(buffer,"uartcmdon") == 0)
 	{
 		rfmaster_HandleUARTasCommands = 1;
-		printf("UART is treated as commands\n");
+		printf_ln("UART is treated as commands");
 	}
 	else if(strcmp(buffer,"uartcmdoff") == 0)
 	{
 		rfmaster_HandleUARTasCommands = 0;
-		printf("UART not treated as commands\n");
+		printf_ln("UART not treated as commands");
 	}
 	else if(strcmp(buffer,"logon") == 0)
 	{
 		rfmaster_LOG = 1;
-		printf("log is on\n");
+		printf_ln("log is on");
 	}
 	else if(strcmp(buffer,"logoff") == 0)
 	{
 		rfmaster_LOG = 0;
-		printf("log is off\n");
+		printf_ln("log is off");
 	}
 	else if(strcmp(buffer,"logtext") == 0)
 	{
 		rfmaster_DATA = 0;
-		printf("Log is in Text Mode\n");
+		printf_ln("Log is in Text Mode");
 	}
 	else if(strcmp(buffer,"logdata") == 0)
 	{
 		rfmaster_DATA = 1;
-		printf("log is in Data Mode\n");
+		printf_ln("log is in Data Mode");
 	}
 	else if(strbegins(buffer,"status") == 0)
 	{
 		nRF_PrintStatus(SPI_Read_Register(STATUS));
 		nRF_PrintConfig(SPI_Read_Register(CONFIG));
-		printf((CE_Pin_getstate() == 1)?"CE High\n":"CE Low\n");
+		printf_ln((CE_Pin_getstate() == 1)?"CE High":"CE Low");
 		nRF_PrintChannel();
-		printf(rfmaster_HandleUARTasCommands?"UART to commands\n":"UART not commands\n");
-		printf(rfmaster_LOG?"RF to UART Log Enabled\n":"RF to UART Log Disabled\n");
-		printf(rfmaster_DATA?"Log Data\n":"Log Text\n");
-		printf(rfmaster_Connected?"UART send RF\n":"UART do not send RF\n");
-		printf(rfmaster_HandleRFasCommands?"RF to commands\n":"RF not commands\n");
+		printf_ln(uart_echo?"UART Echo On":"UART Echo Off");
+		printf_ln(rfmaster_DATA?"UART Tx Data":"UART Tx Text");
+		printf_ln(rfmaster_HandleUARTasCommands?"UART Rx commands":"UART Rx not commands");
+		printf_ln(rfmaster_Connected?"UART Rx to RF":"UART Rx not to RF");
+		printf_ln(rfmaster_LOG?"RF to UART Tx":"RF not to UART Tx");
+		printf_ln(rfmaster_HandleRFasCommands?"RF to commands":"RF not commands");
 
 	}
 	else if(strbegins(buffer,"standby") == 0)
 	{
 		nRF_SetMode_Standby_I();
-		printf("Standby Mode Set\n");
+		printf_ln("Standby Mode Set");
 	}
 	else if(strbegins(buffer,"listen") == 0)
 	{
 		nRF_SetMode_RX();
-		printf("Listening\n");
+		printf_ln("Listening");
 	}
 	else if(strbegins(buffer,"channel") == 0)
 	{
@@ -163,9 +175,9 @@ void handle_command(BYTE *buffer,BYTE size)
 	{
 		BYTE address = get_hex(buffer,10);
 		nRF_SetTxAddress(address);
-		printf("TX_ADDR LSB set to ");
+		printf_ln("TX_ADDR LSB set to ");
 		printf_hex(address);
-		printf_ln();
+		printf_eol();
 	}
 	else if(strbegins(buffer,"rxaddress") == 0)
 	{
@@ -173,7 +185,7 @@ void handle_command(BYTE *buffer,BYTE size)
 		nRF_SetTxAddress(address);
 		printf("RX_ADDR_P0 LSB set to ");
 		printf_hex(address);
-		printf_ln();
+		printf_eol();
 	}
 	else if(strbegins(buffer,"readreg") == 0)
 	{
@@ -183,7 +195,7 @@ void handle_command(BYTE *buffer,BYTE size)
 		BYTE reg_val = SPI_Read_Register(regAddress);
 		printf(" = ");
 		printf_hex(reg_val);
-		printf_ln();
+		printf_eol();
 	}
 	else if(strbegins(buffer,"writereg") == 0)
 	{
@@ -193,54 +205,45 @@ void handle_command(BYTE *buffer,BYTE size)
 		printf_hex(regAddress);
 		printf(" <= ");
 		printf_hex(regValue);
-		printf_ln();
+		printf_eol();
 		SPI_Write_Register(regAddress,regValue);
 		printf("nRF reg ");
 		printf_hex(regAddress);
 		BYTE reg_val = SPI_Read_Register(regAddress);
 		printf(" = ");
 		printf_hex(reg_val);
-		printf_ln();
+		printf_eol();
 	}
 	else if(strbegins(buffer,"connectrf") == 0)
 	{
 		rfmaster_Connected = 1;
-		printf("connected\n");
+		printf_ln("connected");
 	}
 	else if(strbegins(buffer,"disconnectrf") == 0)
 	{
 		rfmaster_Connected = 0;
-		printf("disconnected\n");
+		printf_ln("disconnected");
 	}
 	else if(strcmp(buffer,"help") == 0)
 	{
-		printf("https://github.com/wassfila/IoT_Frameworks\n");
+		printf_ln("https://github.com/wassfila/IoT_Frameworks");
 		help();
 	}
 	else if((!rfmaster_Connected)&&(size > 1))
 	{
-		printf("Unknown Command, type 'help' for info\n");
+		printf_ln("Unknown Command,type 'help'");
 	}
 }
 
 //UART Rx Callback
 void uart_rx_user_callback(BYTE *buffer,BYTE size)
 {
-	//for commands parsing
-	if(size < UART_FRAME_SIZE)
-	{
-		buffer[size] = '\0';
-		size++;
-	}
+
 	//Node0x00>
 	if(rfmaster_Connected)
 	{
-		//use UART_EOL_C for RF transmission
-		if(size < UART_FRAME_SIZE)
-		{
-			buffer[size] = UART_EOL_C;
-			size++;
-		}
+		//convert UART Text to RF Fixed size format done inside nRF_Transmit()
+		//if size >= RF_RX_DATASIZE, will return without doing anything
 		nRF_Transmit(buffer,size);
 		nRF_Wait_Transmit();
 		nRF_SetMode_RX();
@@ -248,6 +251,8 @@ void uart_rx_user_callback(BYTE *buffer,BYTE size)
 	
 	if(rfmaster_HandleUARTasCommands)
 	{
+		//convert UART Text Terminal Format to String commands
+		buffer[size-1] = '\0';//replace UART_EOL_C with string EoL
 		handle_command(buffer,size);
 		prompt();
 	}
@@ -274,7 +279,7 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 		{
 			printf("Rx: ");
 			printf_tab(rxData,rx_DataSize);
-			printf_ln();
+			printf_eol();
 		}
 	}
 	if(rfmaster_HandleRFasCommands)
@@ -298,8 +303,9 @@ int main( void )
 
     uart_init();
 	
-    printf("\n__________________________________________________\n");
-    printf("IoTFrameworks\\rfuart\\rfmaster\\\n");
+    printf_ln("_______________________");
+    printf_ln("IoTFrameworks/rfuart/");
+	printf_ln("rfmaster/");
     //no need for help every start up
 	//help();
 
@@ -312,12 +318,13 @@ int main( void )
 	//initialize the nRF before running its script
 	run_eeprom_script();
 	
-	printf("________\nRunning 'status' :\n");
+	printf_ln("________");
+	printf_ln("Running 'status' :");
 	handle_command("status",7);
 	
 	if(rfmaster_HandleUARTasCommands)
 	{
-		prompt();
+		//DEBUG prompt();
 	}
 	
     while (1)
@@ -326,9 +333,9 @@ int main( void )
 		AliveActiveCounter++;//Why are you counting ?
 		
 		Test_Led_Off();
-		delay_1ms_Count(4900);
+		delay_ms(4900);
 		
 		Test_Led_On();
-		delay_1ms_Count(100);
+		delay_ms(100);
     }
 }

@@ -18,10 +18,17 @@
 //---------------------------- rest of includes ----------------------------
 #include "uart.h"
 
+#include "clock_led.h"
+
 void UARTPrintfLn(char const *ch)
 {
-  printf(ch);
-  putc(UART_EOL_C);
+	printf(ch);
+	putc(UART_EOL_C);
+	#if UART_Through_RF_Delay == 1
+	//require at least 7 ms to process the reception from the end side
+	//expect longer delay for longer commands
+	delay_ms(50);
+	#endif
 }
 
 void UARTPrintf4Bits(unsigned char val4bits)

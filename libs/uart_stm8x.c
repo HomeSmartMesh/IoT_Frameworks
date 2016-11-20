@@ -180,7 +180,8 @@ void printf(char const *ch)
 #if UART_USE_RX_INETRRUPT == 1
 BYTE uart_BUFFER[UART_FRAME_SIZE];
 BYTE uart_index = 0;
-BYTE uart_ovefloaw = 0;
+BYTE uart_oveflow = 0;
+BYTE uart_echo = 1;
 
 	#if UART_CALLBACK_POLLING == 1
 	BYTE uart_rx_user_callback_pending = 0;
@@ -212,13 +213,16 @@ __interrupt void uart_irq(void)
 			//keep overwriting last Byte on overflow
 			if(uart_index>=UART_FRAME_SIZE)
 			{
-				uart_ovefloaw = 1;//cleared by the user
+				uart_oveflow = 1;
 				uart_index--;
 			}
 			rx = UART1_DR;
-			//reflect typed characters
-			while (UART1_SR_TXE == 0);          //  Wait for transmission to complete.
-			UART1_DR = rx;
+			if(uart_echo == 1)
+			{
+				//reflect typed characters
+				while (UART1_SR_TXE == 0);          //  Wait for transmission to complete.
+				UART1_DR = rx;
+			}
 			//manage control characters
 			if(rx == 0x7F)//DEL
 			{
@@ -235,14 +239,21 @@ __interrupt void uart_irq(void)
 		//Frame complete condition
 		if(rx == UART_EOL_C)
 		{
-			uart_index--;//remove the last char of end of line from the Frame size
-			//as this must be quite time consuming, it is left to the user the responsibility to call it from another context
-			#if UART_CALLBACK_POLLING == 1
-			uart_rx_user_callback_pending = 1;
-			#else
-			uart_rx_user_callback(uart_BUFFER,uart_index);
-			uart_index = 0;
-			#endif
+			if(uart_oveflow)
+			{
+				uart_oveflow = 0;//discards all data as it is a useless corrupted format
+				uart_index = 0;//restart from the beginning
+			}
+			else
+			{
+				//as this must be quite time consuming, it is left to the user the responsibility to call it from another context
+				#if UART_CALLBACK_POLLING == 1
+				uart_rx_user_callback_pending = 1;
+				#else
+				uart_rx_user_callback(uart_BUFFER,uart_index);
+				uart_index = 0;
+				#endif
+			}
 		}
 	}
 

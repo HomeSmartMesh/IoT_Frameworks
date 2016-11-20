@@ -12,6 +12,9 @@
  *
  */
 
+//----------------------- config includes -----------------------
+#include "nRF_Configuration.h"
+//-------------------------- includes ---------------------------
 #include "nRF_Tx.h"
 //for nRF_Mode
 #include "nRF.h"
@@ -24,6 +27,16 @@
 BYTE nRF_Transmit(BYTE* payload, BYTE size)
 {
 	BYTE status;
+	//as per definition in http://www.technolab.ddns.net/display/SSN/RF-UART
+	//as long as the length cannot be explicitely retreived
+	//it will be available at the 32nd and last location
+	if(size>=RF_RX_DATASIZE)
+	{
+		//non supported size, do nothing
+		return 0;
+	}
+	payload[RF_RX_DATASIZE-1] = size;//at the 32nd location wich is index 0 to 31
+	
 	//this will intrrupt any previously on going or blocked Tx (lost link)
 	//This Flush is dubtfull, not necessary
 	//and breaking quick successive transmissions

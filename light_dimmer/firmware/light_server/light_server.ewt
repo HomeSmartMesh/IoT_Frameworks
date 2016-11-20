@@ -64,6 +64,9 @@
   <file>
     <name>$PROJ_DIR$\main.c</name>
   </file>
+  <file>
+    <name>$PROJ_DIR$\uart_config.h</name>
+  </file>
 </project>
 
 

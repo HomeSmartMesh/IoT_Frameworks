@@ -24,7 +24,8 @@
 #define printf_hex	UARTPrintfHex
 #define printf_uint	UARTPrintf_uint
 #define printf_tab	UARTPrintfHexTable
-#define printf_ln();	UARTPrintfLn("");
+#define printf_eol();	UARTPrintfLn("");
+#define printf_ln(X);	UARTPrintfLn(X);
 
 void UARTPrintfLn(char const *message);
 
