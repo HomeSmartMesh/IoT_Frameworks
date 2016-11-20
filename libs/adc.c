@@ -285,9 +285,11 @@ void adc_print_vals()
 	adc_vals = adc_get_vals();
 	printf("adc_min = ");
 	printf_uint(adc_vals.c1s_min);
-	printf(" ; adc_avg = ");
+	printf_eol();
+	printf("adc_avg = ");
 	printf_uint(adc_vals.c1s_avg);
-	printf(" ; adc_max = ");
+	printf_eol();
+	printf("adc_max = ");
 	printf_uint(adc_vals.c1s_max);
 	printf_eol();
 }
@@ -303,7 +305,8 @@ void adc_acs712_print_current()
 	
 	printf("min_c = -");
 	printf_uint(512 - adc_vals.c1s_min);
-	printf(" ; max_c = ");
+	printf_eol();
+	printf("max_c = ");
 	printf_uint(adc_vals.c1s_max - 512);
 	printf(" ; 37u => 1A");
 	printf_eol();
