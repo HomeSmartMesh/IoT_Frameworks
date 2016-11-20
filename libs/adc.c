@@ -289,7 +289,7 @@ void adc_print_vals()
 	printf_uint(adc_vals.c1s_avg);
 	printf(" ; adc_max = ");
 	printf_uint(adc_vals.c1s_max);
-	printf_ln();
+	printf_eol();
 }
 
 void adc_acs712_print_current()
@@ -306,6 +306,6 @@ void adc_acs712_print_current()
 	printf(" ; max_c = ");
 	printf_uint(adc_vals.c1s_max - 512);
 	printf(" ; 37u => 1A");
-	printf_ln();
+	printf_eol();
 	
 }

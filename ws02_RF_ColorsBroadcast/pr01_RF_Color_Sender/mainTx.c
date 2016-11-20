@@ -80,6 +80,6 @@ int main( void )
         UARTPrintfHexTable(Tx_Data,3);
         UARTPrintf("\n\r");
         
-        delay_1ms_Count(2000);
+        delay_ms(2000);
     }
 }

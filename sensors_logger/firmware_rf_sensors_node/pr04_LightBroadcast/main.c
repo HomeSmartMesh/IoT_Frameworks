@@ -326,7 +326,7 @@ __interrupt void IRQHandler_RTC(void)
 {
   if(RTC_ISR2_WUTF)
   {
-	delay_1ms_Count(10);//some time is needed to recover the right clock
+	delay_ms(10);//some time is needed to recover the right clock
 	printf("RTC IRQ\n\r");
     RTC_ISR2_WUTF = 0;
     
@@ -336,18 +336,18 @@ __interrupt void IRQHandler_RTC(void)
 	/*printf("Now Log Magnet\r\n");
     LogMagnets();
 	
-	delay_1ms_Count(1000);
+	delay_ms(1000);
 
 	printf("Initialise_STM8L_Clock\r\n");
 	Initialise_STM8L_Clock();
 	printf("I2C Init\r\n");
 	I2C_Init();
 
-	delay_1ms_Count(1000);	
+	delay_ms(1000);	
 	printf("Now Read Light\r\n");
-	delay_1ms_Count(1);
+	delay_ms(1);
     ReadLight_sm();
-	delay_1ms_Count(1);*/
+	delay_ms(1);*/
     
   }
   
@@ -364,7 +364,7 @@ int main( void )
     uart_init();//Tx only
     
     printf("ws04_Node_LowSimple\\pr02_AmbientLight\n\r");
-    delay_1ms_Count(1000);
+    delay_ms(1000);
 
     I2C_Init();
     __enable_interrupt();
@@ -392,7 +392,7 @@ int main( void )
 		ReadLight_sm();
 		printf("RF_Light\n\r");
 		Rf_Light();
-		delay_1ms_Count(10);
+		delay_ms(10);
 		printf("Back to __halt()\n\r");
 		__halt();
       

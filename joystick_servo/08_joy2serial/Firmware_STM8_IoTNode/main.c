@@ -186,6 +186,6 @@ int main( void )
     {
         check_UART_State();
         counter++;
-        delay_1ms_Count(100);
+        delay_ms(100);
     }
 }

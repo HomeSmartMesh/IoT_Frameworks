@@ -223,7 +223,7 @@ void bme280_rx_measures(BYTE* rx_data, BYTE rx_DataSize)
 	{
 		printf("rfId:0xE2;Error:dataSize not 11 but ");
 		printf_uint(rx_DataSize);
-		printf_ln();
+		printf_eol();
 	}
 	for(i=0;i<11;i++)
 	{
@@ -235,7 +235,7 @@ void bme280_rx_measures(BYTE* rx_data, BYTE rx_DataSize)
 		printf_uint(rx_data[1]);// Byte 1 is Node Id
 		printf(";BME280: ");
 		printf_tab(&(rx_data[2]),rx_DataSize-3);//do not print pId nor NodeId nor CRC
-		printf_ln();
+		printf_eol();
 	}
 	else
 	{

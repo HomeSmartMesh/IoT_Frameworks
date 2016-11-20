@@ -137,9 +137,9 @@ int main( void )
 		AliveActiveCounter++;//Why are you counting ?
 		
 		Test_Led_Off();
-		delay_1ms_Count(4900);
+		delay_ms(4900);
 		
 		Test_Led_On();
-		delay_1ms_Count(100);
+		delay_ms(100);
     }
 }

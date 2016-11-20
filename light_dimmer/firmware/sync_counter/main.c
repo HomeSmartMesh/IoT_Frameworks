@@ -35,8 +35,9 @@ int main( void )
 
     uart_init();
 	
-    printf("\r\n__________________________________________________\n\r");
-    printf("IoT_Frameworks\\light_dimmer\\simple_monitor\\\n\r");
+	printf_eol();
+    printf_ln("__________________________________________________");
+    printf_ln("IoT_Frameworks\\light_dimmer\\simple_monitor\\");
 
     __enable_interrupt();
 
@@ -45,14 +46,14 @@ int main( void )
 
 		printf("int count: ");
 		printf_uint(get_int_count());
-		printf_ln();
+		printf_eol();
 
 		AliveActiveCounter++;//Why are you counting ?
 		
 		Test_Led_Off();
-		delay_1ms_Count(4900);
+		delay_ms(4900);
 		
 		Test_Led_On();
-		delay_1ms_Count(100);
+		delay_ms(100);
     }
 }

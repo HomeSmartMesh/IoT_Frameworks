@@ -63,7 +63,7 @@ int main( void )
     UARTPrintf("\r\nRF Protocol:\n");
     UARTPrintf("Protocol Id = 0x35, Node Id, Temperature Byte1, Temperature Byte2, CRC\n\r");
 
-     delay_1ms_Count(500);//debug sensor unreadable
+     delay_ms(500);//debug sensor unreadable
 
     if(DS18B20_Single_ReadRom(DS18B20_ROM))
     {
@@ -86,7 +86,7 @@ int main( void )
     while (1)
     {
         Test_Led_On();
-        delay_1ms_Count(100);
+        delay_ms(100);
 
       //Loop counter
         UARTPrintf("Loop Counter");
@@ -134,7 +134,7 @@ int main( void )
         Print_ConfigAndStatus_Registers();
         
         Test_Led_Off();
-        delay_1ms_Count(4900);
+        delay_ms(4900);
         
         counter++;
     }

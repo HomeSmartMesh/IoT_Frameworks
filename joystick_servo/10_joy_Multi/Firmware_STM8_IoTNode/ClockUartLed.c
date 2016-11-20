@@ -213,7 +213,7 @@ void delay(unsigned int n)
     while (n-- > 0);
 }
 
-void delay_1ms_Count(unsigned int n)
+void delay_ms(unsigned int n)
 {
     while (n-- > 0)
 	{

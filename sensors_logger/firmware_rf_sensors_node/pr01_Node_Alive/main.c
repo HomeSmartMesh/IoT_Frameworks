@@ -252,7 +252,7 @@ int main( void )
     uart_init();//Tx only
     
     printf("ws04_Node_LowSimple\\pr01_Node_Alive\n\r");
-    delay_1ms_Count(1000);
+    delay_ms(1000);
 
     
     //Applies the compile time configured parameters from nRF_Configuration.h

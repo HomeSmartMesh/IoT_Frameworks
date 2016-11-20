@@ -40,20 +40,21 @@
 
 void userRxCallBack(BYTE *rxData,BYTE rx_DataSize);
 
-BYTE RxData[RX_DataSize];
+BYTE RxData[RF_RX_DATASIZE];
 
 
 //---------------------------------------------------------------------------------------------
 #if(Enable_RX_IRQ == 1)
 void ProcessUserData_inIRQ()
 {
-  userRxCallBack(RxData,RX_DataSize);
-  #if (Enable_Debug_IRQHandler_PortD_nRF == 1)
-          IRQ_Printf("  Received Packet: ");
-          UARTPrintfHexTable(RxData,RX_DataSize);
-          IRQ_Printf("\n\r");
-  #endif
-	
+	BYTE rx_size = RxData[31];
+	userRxCallBack(RxData,rx_size);
+	#if (Enable_Debug_IRQHandler_PortD_nRF == 1)
+		  IRQ_Printf("  Received Packet: ");
+		  UARTPrintfHexTable(RxData,rx_size);
+		  IRQ_Printf("");
+	#endif
+
 }
 #endif
 //---------------------------------------------------------------------------------------------
@@ -107,7 +108,7 @@ __interrupt void IRQHandler_PortD_nRF(void)
 		do
 		{
                         //TODO check the size before reading the Hard coded value
-			SPI_Read_Buf(RD_RX_PLOAD,RxData,RX_DataSize);
+			SPI_Read_Buf(RD_RX_PLOAD,RxData,RF_RX_DATASIZE);
 			ProcessUserData_inIRQ();
 			
 			nRF_ClearStatus( bit_RX_DR );
@@ -115,7 +116,7 @@ __interrupt void IRQHandler_PortD_nRF(void)
 			fifo_Status = SPI_Read_Register(FIFO_STATUS);
 			IRQ_Printf("  FifoStatus: ");
 			IRQ_PrintfHex(fifo_Status);
-			IRQ_Printf("\n\r");
+			IRQ_Printf("");
 		}while((fifo_Status & 0x01) == 0 );
 	}
 	#endif
@@ -179,7 +180,7 @@ __interrupt void IRQHandler_PortD_nRF(void)
             BYTE fifo_Status;
             do
             {
-                    SPI_Read_Buf(RD_RX_PLOAD,RxData,RX_DataSize);
+                    SPI_Read_Buf(RD_RX_PLOAD,RxData,RF_RX_DATASIZE);
                     ProcessUserData_inIRQ();
                     
                     nRF_ClearStatus( bit_RX_DR );
@@ -187,7 +188,7 @@ __interrupt void IRQHandler_PortD_nRF(void)
                     fifo_Status = SPI_Read_Register(FIFO_STATUS);
                     IRQ_Printf("  FifoStatus: ");
                     IRQ_PrintfHex(fifo_Status);
-                    IRQ_Printf("\n\r");
+                    IRQ_Printf("");
             }while((fifo_Status & 0x01) == 0 );
             //done reading, flush Rx to reset size
             SPI_Cmd_FlushRx();

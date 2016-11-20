@@ -31,7 +31,7 @@ BYTE RF_Cycle;
 void SendSyncPulse()
 {
     PulsePIO = 1;
-    delay_1ms_Count(4);//wait till Transmision completes
+    delay_ms(4);//wait till Transmision completes
     nRF_Transmit(Tx_Data,4);
     PulsePIO = 0;
     nRF_SetMode_RX();//Back to Reception
@@ -63,7 +63,7 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
     if(rxData[0] == 0x49)
     {
       PulsePIO = 1;
-      delay_1ms_Count(1);
+      delay_ms(1);
       PulsePIO = 0;
     }
     else
@@ -137,6 +137,6 @@ int main( void )
     while (1)
     {
         counter++;
-        delay_1ms_Count(1000);
+        delay_ms(1000);
     }
 }

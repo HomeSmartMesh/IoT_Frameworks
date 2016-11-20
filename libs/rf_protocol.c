@@ -31,11 +31,11 @@ void rx_alive(BYTE *rxData,BYTE rx_DataSize)
 	{
 		printf("NodeId:");
 		UARTPrintf_uint(rxData[1]);
-		printf(",is:Alive\r\n");
+		printf_ln(",is:Alive");
 	}
 	else
 	{
-		printf("Protocol Id: 0x75, CRC Fail\n");
+		printf_ln("Protocol Id: 0x75, CRC Fail");
 	}
 }
 
@@ -70,15 +70,15 @@ void rx_magnet(BYTE *rxData,BYTE rx_DataSize)
 		printf(",is:");
 		if(rxData[2] == 0)
 		{
-			printf("Low\r\n");
+			printf_ln("Low");
 		}
 		else
 		{
-			printf("High\r\n");
+			printf_ln("High");
 		}
 	}
     else
     {
-      printf("Protocol Id: 0xC5, CRC Fail\r\n");
+      printf_ln("Protocol Id: 0xC5, CRC Fail");
     }
 }

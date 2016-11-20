@@ -92,13 +92,13 @@ void I2C_Init()
     while(I2C1_SR3_BUSY)//first recovery level - clock the i2c
     {
       PC_ODR_ODR1 = 0;
-      delay_1ms_Count(1);
+      delay_ms(1);
       PC_ODR_ODR1 = 1;
-      delay_1ms_Count(1);
+      delay_ms(1);
       count++;
       if(count == 10)//doesnt help righ away, take some time to have effect
       {
-        delay_1ms_Count(1000);  
+        delay_ms(1000);  
         count = 0;
       }
     }
@@ -162,7 +162,7 @@ void I2C_Transaction(BYTE read,BYTE slaveAddress, BYTE* buffer,BYTE count)
 	//wait for the Bus to get Free to avoid collisions
 	if(I2C1_SR3_BUSY)//recovery
         {
-          delay_1ms_Count(100);
+          delay_ms(100);
           I2C_Init();
           i2c.Stop = 0;//stop event still not received, re-entrancy protection
           
@@ -236,7 +236,7 @@ __interrupt void I2C_IRQ()
 			else//this is the end of the Transmit procedure
 			{
                                 
-				//I2C_IRQ_Printf("TRA, no TXE and not Stop !\n\r");
+				//I2C_IRQ_Printf("TRA, no TXE and not Stop !");
 				i2c.Stop = 1;
 			}
 		}
@@ -274,7 +274,7 @@ __interrupt void I2C_IRQ()
 			}
 			else 
 			{
-				//I2C_IRQ_Printf("Not TRA, no RXNE and not StopF !\n\r");
+				//I2C_IRQ_Printf("Not TRA, no RXNE and not StopF !");
 				i2c.Stop = 1;
 			}
 		}
@@ -334,7 +334,7 @@ __interrupt void I2C_IRQ()
 			I2C1_SR2_AF = 0;//This is not an error, it is the end of the slave transmission
                         if(i2c.Step == 1)//but if this happens at the beginning then it is an error
                         {
-                          I2C_IRQ_Printf("Slave Address - Acknowledge failure !\n\r");
+                          I2C_IRQ_Printf("Slave Address - Acknowledge failure !");
                         }
 		}
 		if(I2C1_SR2_OVR)
@@ -508,7 +508,7 @@ __interrupt void I2C_IRQ()
 			}
 			else if(!I2C_SR1_STOPF)//could only be a Stop Event then...
 			{
-				I2C_IRQ_Printf("TRA, no TXE and not Stop !\n\r");
+				I2C_IRQ_Printf("TRA, no TXE and not Stop !");
 			}
 		}
 		else					//we should read from the slave
@@ -540,7 +540,7 @@ __interrupt void I2C_IRQ()
 			}
 			else if(!I2C_SR1_STOPF)//could only be a Stop Event then...
 			{
-				I2C_IRQ_Printf("Not TRA, no RXNE and not StopF !\n\r");
+				I2C_IRQ_Printf("Not TRA, no RXNE and not StopF !");
 			}
 		}
 	}
@@ -599,7 +599,7 @@ __interrupt void I2C_IRQ()
 			I2C_SR2_AF = 0;//This is not an error, it is the end of the slave transmission
                         if(i2c.Step == 1)//but if this happens at the beginning then it is an error
                         {
-                          I2C_IRQ_Printf("Slave Address - Acknowledge failure !\n\r");
+                          I2C_IRQ_Printf("Slave Address - Acknowledge failure !");
                         }
 		}
 		if(I2C_SR2_OVR)

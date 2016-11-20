@@ -48,7 +48,7 @@ __interrupt void IRQHandler_Timer2(void)
   {
     PulsePIO = 1;
     nRF_Transmit(Tx_Data,4);
-    delay_1ms_Count(1);//do not cut the transmission in progress
+    delay_ms(1);//do not cut the transmission in progress
     PulsePIO = 0;
     nRF_SetMode_RX();
   }
@@ -70,7 +70,7 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
       PulsePIO = 1;
       RF_Cycle = 0;
       TIM2_EGR_UG = 1;//Generate an Update of the timer 2 to sync with other clients
-      delay_1ms_Count(4);
+      delay_ms(4);
       PulsePIO = 0;
     }
     else
@@ -145,6 +145,6 @@ int main( void )
     while (1)
     {
         counter++;
-        delay_1ms_Count(1000);
+        delay_ms(1000);
     }
 }

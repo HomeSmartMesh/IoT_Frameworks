@@ -67,7 +67,7 @@ void nRF_PrintStatus(BYTE status)
 	{
 		printf("Available TX Fifo Locations;");
 	}
-	printf_ln();
+	printf_eol();
 }
 
 void nRF_PrintConfig(BYTE config)
@@ -133,6 +133,6 @@ void nRF_PrintConfig(BYTE config)
 	{
 		printf("P TX Mode; ");
 	}
-	printf_ln();
+	printf_eol();
 }
 

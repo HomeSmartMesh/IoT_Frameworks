@@ -97,7 +97,7 @@ int main( void )
     Initialise_TestLed_GPIO_B5();
 
     Test_Led_On();
-    delay_1ms_Count(500);
+    delay_ms(500);
     Test_Led_Off();
 
     InitialiseUART();
@@ -160,10 +160,10 @@ int main( void )
         Print_ConfigAndStatus_Registers();
         
         Test_Led_Off();
-        delay_1ms_Count(4900);
+        delay_ms(4900);
         
         Test_Led_On();
-        delay_1ms_Count(100);
+        delay_ms(100);
 		*/
     }
 }

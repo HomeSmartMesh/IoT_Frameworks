@@ -247,9 +247,9 @@ BYTE ReadReg(BYTE address)
     BYTE result;
 
     I2C_Write(0x4A, &address,1);
-    delay_1ms_Count(10);
+    delay_ms(10);
     I2C_Read(0x4A, &result,1); 
-    delay_1ms_Count(100);//wait to complete before writing into unallocated variable
+    delay_ms(100);//wait to complete before writing into unallocated variable
     
     return result;
 }
@@ -279,7 +279,7 @@ int main( void )
     uart_init();//Tx only
     
     printf("ws04_Node_LowSimple\\pr02_AmbientLight\n\r");
-    delay_1ms_Count(1000);
+    delay_ms(1000);
 
     I2C_Init();
     __enable_interrupt();
@@ -303,7 +303,7 @@ int main( void )
     while (1)
     {
       ReadLight();
-      delay_1ms_Count(2000);
+      delay_ms(2000);
       //__halt();
       
     }

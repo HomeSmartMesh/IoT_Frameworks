@@ -51,8 +51,9 @@ int main( void )
 
 	uart_init();
 
-	printf("\r\n__________________________________________________\n\r");
-	printf("IoT_Frameworks\\light_dimmer\\simple_monitor\\\n\r");
+	printf_eol();
+	printf_ln("__________________________________________________");
+	printf_ln("IoT_Frameworks\\light_dimmer\\simple_monitor\\");
 
 	dimmer_set_level(0,1800);//60us is the Sync shift + 10 to be in the positive section
 	dimmer_set_level(1,2200);//60us is the Sync shift
@@ -84,7 +85,7 @@ int main( void )
 		U16_t count = get_int_count();
 		printf_uint(count - last_count);
 		last_count = count;
-		printf_ln();
+		printf_eol();
 		
 #ifdef DEF_ADC_TIMER2
 		adc_print_vals();
@@ -93,15 +94,15 @@ int main( void )
 		printf("adc_read() = ");
                 uint16_t val = adc_read();
 		printf_uint(val);
-		printf_ln();
+		printf_eol();
 #endif
 
 		AliveActiveCounter++;//Why are you counting ?
 		
 		Test_Led_Off();
-		delay_1ms_Count(4900);
+		delay_ms(4900);
 		
 		Test_Led_On();
-		delay_1ms_Count(100);
+		delay_ms(100);
 	}
 }

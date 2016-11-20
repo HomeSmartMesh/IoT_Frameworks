@@ -498,7 +498,7 @@ void RampColors(BYTE delay,BYTE RUp,BYTE GUp,BYTE BUp,BYTE R,BYTE G,BYTE B)
           {
             B--;
           }
-          delay_1ms_Count(delay);
+          delay_ms(delay);
 	}
   
 }
@@ -559,13 +559,13 @@ void FlashColors(BYTE delay, RGBColor_t Color)
   {
     RGBColor_t Ci = ColorScale(iCount,255,BLACK,Color);
     SendLedColors(Ci);
-    delay_1ms_Count(delay);
+    delay_ms(delay);
   }
   for(int iCount=0;iCount<255;iCount++)//0-10
   {
     RGBColor_t Ci = ColorScale(iCount,255,Color,BLACK);
     SendLedColors(Ci);
-    delay_1ms_Count(delay);
+    delay_ms(delay);
   }
   SwitchOffLed();
 }

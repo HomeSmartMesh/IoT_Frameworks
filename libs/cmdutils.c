@@ -83,9 +83,9 @@ void run_eeprom_script()
 	if(strbegins(pCmd,"Command Lines Script") == 0)
 	{
 		BYTE NbCommands = get_hex(pCmd,21);
-		printf("Running found EEProm Script with ");
+		printf_ln("=>Running EEProm Script");
 		printf_uint(NbCommands);
-		printf(" Commands :\n");
+		printf_ln(" Commands :");
 		//Jump to the next line
 		pCmd += EEPROM_Line;
 		for(BYTE i=0;i<NbCommands;i++)
@@ -96,7 +96,7 @@ void run_eeprom_script()
 	}
 	else
 	{
-		printf("No EEProm Script found\n");
+		printf_ln("No EEProm Script found");
 	}
 	
 }

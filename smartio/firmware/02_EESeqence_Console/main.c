@@ -252,14 +252,14 @@ int main( void )
       if (isCommand)
       {
         unsigned int delay = ProcessEE(index++);
-        delay_1ms_Count(delay);
+        delay_ms(delay);
       }
       if(index == 5)
       {
         index = 1;
       }
       Test_Led_On();
-      delay_1ms_Count(100);
+      delay_ms(100);
       Test_Led_Off();
     }
 }

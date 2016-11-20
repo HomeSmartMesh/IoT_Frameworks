@@ -261,7 +261,7 @@ int main( void )
 	printf("Node id ");
 	UARTPrintfHex(NodeId);
 	printf("\n");
-	delay_1ms_Count(1000);
+	delay_ms(1000);
 
 	I2C_Init();
 	__enable_interrupt();
@@ -294,7 +294,7 @@ int main( void )
 		printf("rf_send---------------\n");
 		rf_send_bme280_measures();
 
-		delay_1ms_Count(60000);//down to one minute
+		delay_ms(60000);//down to one minute
 
 	}
 }

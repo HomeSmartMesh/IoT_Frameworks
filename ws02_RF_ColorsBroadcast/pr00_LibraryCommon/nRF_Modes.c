@@ -84,7 +84,7 @@ BYTE nRF_Init()
 	if(nRF_Mode == nRF_Mode_Uninitialised)
 	{
 		//After Power on reset wait 100ms (nRF24L01P Product Specification 1.0 page22)
-		delay_1ms_Count(100);
+		delay_ms(100);
 		SPI_Init();
 		
 		nRF_Mode = nRF_Mode_PowerDown;//mode in which SPI is active
@@ -153,7 +153,7 @@ BYTE nRF_SetMode_Standby_I()
 	status = SPI_Write_Register(CONFIG,ConfigVal);
 
 	//max delay is 4.5ms for Ls = 90mH (ToDo what is Ls value of nRF24L01P module ?)
-	delay_1ms_Count(5);
+	delay_ms(5);
 	
 	nRF_Mode = nRF_Mode_Standby;
 
