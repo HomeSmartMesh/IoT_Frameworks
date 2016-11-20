@@ -13,7 +13,7 @@ Here have firmware for the Mobile Node which is the base for the sensors:
  - *BME280* Temperature Humidity Pressure
  - *MAX44009* Ambient Light
  
-More details on [Home Smart Mesh](https://www.homesmartmesh.com)
+More details on [Home Smart Mesh](http://www.homesmartmesh.com)
 
 <img src="https://github.com/wassfila/IoT_Frameworks/blob/master/sensors_logger/IoT_Node_Mobile_v2.JPG" height=300>
 ## Raspberry Pi Serial logger
