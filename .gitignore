@@ -104,3 +104,8 @@ light_dimmer/firmware/light_server/settings/
 rfuart/settings/
 rfuart/uarttester/Debug/
 rfuart/uarttester/settings/
+mesh_controller_interface/rfmaster/Debug/
+mesh_controller_interface/rfmaster/settings/
+mesh_controller_interface/uarttester/Debug/
+mesh_controller_interface/uarttester/settings/
+mesh_controller_interface/settings/
