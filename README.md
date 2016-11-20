@@ -20,6 +20,14 @@ More details on the [githubio](https://wassfila.github.io/#P2)
  - C++ Linux based serial port application
  - While at this stage using any serial port logger would do, it is planned to have combined Data/Text connection for which these provided components will be usefull.
 
+# Mesh Controller Interface
+## Configuration Steps
+<img src="https://github.com/wassfila/IoT_Frameworks/blob/master/mesh_controller_interface/configuration_steps.png" height=300>
+
+## Configuration Options
+<img src="https://github.com/wassfila/IoT_Frameworks/blob/master/mesh_controller_interface/configuration_options.png" height=300>
+
+
 # Smartio
 Control any thing (up to 48V 500mA) with a smartphone. Both offline, with Raspberry Pi as a wifi access point, or even easier when from internet (Beyond scopes of Router Ports and Security aspects).
 More under the [smartio directory](https://github.com/wassfila/IoT_Frameworks/tree/master/smartio).
