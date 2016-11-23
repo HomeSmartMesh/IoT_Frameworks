@@ -21,4 +21,4 @@
 
 BYTE max44009_read_reg(BYTE address);
 
-void max44009_read_light();
+uint16_t max44009_read_light();

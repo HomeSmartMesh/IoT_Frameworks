@@ -75,7 +75,7 @@ BYTE nRF_Wait_Transmit()
 	{
 		status = SPI_Read_Register(STATUS);
 		cycles++;
-	}while(((status &bit_TX_DS) == 0)| (cycles==255));
+	}while(((status &bit_TX_DS) == 0)&(cycles!=255));
 	
 	return cycles;
 }

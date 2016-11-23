@@ -13,6 +13,7 @@
 #include "i2c_stm8x.h"
 #include "commonTypes.h"
 
+#include "max44009.h"
 
 #define EEPROM_Offset 0x1000
 #define NODE_ID       (char *) EEPROM_Offset;
@@ -21,8 +22,6 @@ unsigned char NodeId;
 //---------------------- Active Halt Mode :
 // - CPU and Peripheral clocks stopped, RTC running
 // - wakeup from RTC, or external/Reset
-
-BYTE sensorData[2];
 
 void RfAlive()
 {
@@ -33,13 +32,13 @@ void RfAlive()
       nRF_Transmit(Tx_Data,3);
 }
 
-void Rf_Light()
+void Rf_Light(uint16_t light)
 {
       unsigned char Tx_Data[5];
       Tx_Data[0]=0x3B;//Light is 0x3B
       Tx_Data[1]=NodeId;
-      Tx_Data[2]=sensorData[0];
-      Tx_Data[3]=sensorData[1];
+      Tx_Data[2]=light>>4;
+      Tx_Data[3]=light&0x0F;
       Tx_Data[4]= Tx_Data[0] ^ NodeId;
       nRF_Transmit(Tx_Data,5);
 }
@@ -130,13 +129,23 @@ void Initialise_STM8L_RTC_LowPower()
     // N.A RTC_CR1_BYPSHAD = 0;//shadow used no direct read from counters
     
     RTC_CR2_WUTE = 0;//Wakeup timer Disable to update the timer
-    while(RTC_ISR1_WUTWF==0);//
+	uint16_t count = 65535;
+    while((RTC_ISR1_WUTWF==0)&&(count!=0) )
+	{
+		count--;
+	}//
+	if(count== 0)
+	{
+		printf_ln(">>>Error : RTC_ISR1_WUTWF does not get to 0");
+	}
     
+	
     RTC_CR1_WUCKSEL = 0;//-b00 RTCCCLK/16 ; -b011 RTCCCLK/2 
     
     //with 38KHz has about 61us resolution
     //225-0 with RTC_CR1_WUCKSEL = 3
-    RTC_WUTRH_WUT = 255;// to match a bit less than 10s
+	//255 255 => 28 sec
+    RTC_WUTRH_WUT = 80;// to match a bit less than 10s
     RTC_WUTRL_WUT = 255;//
     
     RTC_CR2_WUTE = 1;//Wakeup timer enable - starts downcounting
@@ -149,7 +158,15 @@ void Initialise_STM8L_RTC_LowPower()
     RTC_WPR = 0x00;
     
     //wait that the internal VRef is stabilized before changing the WU options (Reference Manual)
-    while(PWR_CSR2_VREFINTF == 0);
+	count = 65535;
+    while((PWR_CSR2_VREFINTF==0)&&(count!=0) )
+	{
+		count--;
+	}//
+	if(count== 0)
+	{
+		printf_ln(">>>Error : PWR_CSR2_VREFINTF does not get to 0");
+	}
     PWR_CSR2_ULP = 1;//Internal Voltage Reference Stopped in Halt Active Halt
     PWR_CSR2_FWU = 1;//Fast wakeup time
     
@@ -208,77 +225,6 @@ void PingUart(unsigned char index)
 }
 
 
-BYTE iRL_count;
-BYTE iRL_result;
-BYTE iRL_address;
-unsigned int SensorVal;
-
-void i2c_ReadLight_StateMachine()
-{
-  //    sensorData[0] = ReadReg(0x03);
-  //    sensorData[1] = ReadReg(0x04);
-
-  /*printf("rsm: ");
-  UARTPrintf_uint(iRL_count);
-  printf("\n");*/
-
-  switch(iRL_count)
-  {
-	case 0:                                       //set reg to 0x03
-		{
-			iRL_address = 0x03;
-			I2C_Write(0x4A, &iRL_address,1);
-		}
-	break;
-	case 1:                                       //read reg 0x03
-		{
-			I2C_Read(0x4A, &iRL_result,1); 
-		}
-	break;
-	case 2:
-		{
-			sensorData[0] = iRL_result;             //result of reg[0x03]
-			iRL_address = 0x04;                     //set reg to 0x04
-			I2C_Write(0x4A, &iRL_address,1);
-		}
-	break;
-	case 3:                                       //read reg 0x04
-		{
-			I2C_Read(0x4A, &iRL_result,1); 
-		}
-	break;
-	case 4:                                       //read reg 0x04
-		{
-			sensorData[1] = iRL_result;             //result of reg[0x04]
-			printf("Light: ");
-			SensorVal = sensorData[0];
-			SensorVal <<= 4;//shift to make place for the 4 LSB
-			SensorVal = SensorVal + (0x0F & sensorData[1]);
-			UARTPrintf_uint(SensorVal);
-			printf("\n");
-		}
-	break;
-	default:
-		printf("Unexpected default case\n");
-	break;
-  }
-  iRL_count++;
-}
-
-void ReadLight_sm()
-{
-  iRL_count = 0;
-  i2c_ReadLight_StateMachine();
-  delay_100us();
-  i2c_ReadLight_StateMachine();
-  delay_100us();
-  i2c_ReadLight_StateMachine();
-  delay_100us();
-  i2c_ReadLight_StateMachine();
-  delay_100us();
-  i2c_ReadLight_StateMachine();
-}
-
 void i2c_user_Rx_Callback(BYTE *userdata,BYTE size)
 {
 	/*printf("I2C Transaction complete, received:\n\r");
@@ -326,12 +272,13 @@ __interrupt void IRQHandler_RTC(void)
 {
   if(RTC_ISR2_WUTF)
   {
-	delay_ms(10);//some time is needed to recover the right clock
-	printf("RTC IRQ\n\r");
     RTC_ISR2_WUTF = 0;
+    RfAlive();
+
+	delay_ms(10);//some time is needed to recover the right clock
+	printf("...\nRTC IRQ\n");
     
 	
-    RfAlive();
     
 	/*printf("Now Log Magnet\r\n");
     LogMagnets();
@@ -380,19 +327,25 @@ int main( void )
     //Init_Magnet_PB0();
     //Init_Magnet_PD0();
     
+    printf("Initialise_STM8L_RTC_LowPower()\n");
     Initialise_STM8L_RTC_LowPower();
 
+    printf("main loop()\n");
     //
     // Main loop
     //
     while (1)
     {
 		//RfAlive();
-		printf("main() ReadLight_sm\n\r");
-		ReadLight_sm();
-		printf("RF_Light\n\r");
-		Rf_Light();
-		delay_ms(10);
+		printf_ln("main() max44009_read_light()");
+		uint16_t light = max44009_read_light();
+		//send through UART
+		printf("Light: ");
+		printf_uint(light);
+		printf_eol();
+		//send through RF
+		nRF_Wait_Transmit();
+		Rf_Light(light);//no wait transmit here let it finish and go to sleep
 		printf("Back to __halt()\n\r");
 		__halt();
       

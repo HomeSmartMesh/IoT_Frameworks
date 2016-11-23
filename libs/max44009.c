@@ -28,17 +28,14 @@ BYTE max44009_read_reg(BYTE address)
     return result;
 }
 
-void max44009_read_light()
+uint16_t max44009_read_light()
 {
     BYTE sensorData[2];
     sensorData[0] = max44009_read_reg(0x03);
     sensorData[1] = max44009_read_reg(0x04);
-    printf("Light: ");
-    unsigned int Val = sensorData[0];
+    uint16_t Val = sensorData[0];
     Val <<= 4;//shift to make place for the 4 LSB
     Val = Val + (0x0F & sensorData[1]);
-    UARTPrintf_uint(Val);
-    printf("\n");
-  
+	return Val;
 }
 

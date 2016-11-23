@@ -109,3 +109,4 @@ mesh_controller_interface/rfmaster/settings/
 mesh_controller_interface/uarttester/Debug/
 mesh_controller_interface/uarttester/settings/
 mesh_controller_interface/settings/
+sensors_logger/firmware_rf_sensors_node/pr04_LightBroadcast/settings/

@@ -34,6 +34,15 @@
       <name>$PROJ_DIR$\..\..\..\libs\i2c_stm8x.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\libs\irq_debug.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\max44009.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\max44009.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\libs\nRF.c</name>
     </file>
     <file>
