@@ -136,7 +136,7 @@ void Initialise_STM8L_RTC_LowPower()
 	}//
 	if(count== 0)
 	{
-		printf_ln(">>>Error : RTC_ISR1_WUTWF does not get to 0");
+		printf_ln(">>>Error : RTC_ISR1_WUTWF does not get to 1");
 	}
     
 	
@@ -165,7 +165,7 @@ void Initialise_STM8L_RTC_LowPower()
 	}//
 	if(count== 0)
 	{
-		printf_ln(">>>Error : PWR_CSR2_VREFINTF does not get to 0");
+		printf_ln(">>>Error : PWR_CSR2_VREFINTF does not get to 1");
 	}
     PWR_CSR2_ULP = 1;//Internal Voltage Reference Stopped in Halt Active Halt
     PWR_CSR2_FWU = 1;//Fast wakeup time
@@ -266,17 +266,17 @@ void i2c_user_Error_Callback(BYTE l_sr2)
 	}
 }
 
-
 #pragma vector = RTC_WAKEUP_vector
 __interrupt void IRQHandler_RTC(void)
 {
+	putc('Q');
   if(RTC_ISR2_WUTF)
   {
     RTC_ISR2_WUTF = 0;
     RfAlive();
 
-	delay_ms(10);//some time is needed to recover the right clock
-	printf("...\nRTC IRQ\n");
+	//delay_ms(10);//some time is needed to recover the right clock
+	//printf("...\nRTC IRQ\n");
     
 	
     
@@ -336,17 +336,18 @@ int main( void )
     //
     while (1)
     {
+		putc('M');
 		//RfAlive();
-		printf_ln("main() max44009_read_light()");
+		//printf_ln("main() max44009_read_light()");
 		uint16_t light = max44009_read_light();
 		//send through UART
-		printf("Light: ");
-		printf_uint(light);
-		printf_eol();
+		//printf("Light: ");		printf_uint(light);		printf_eol();
 		//send through RF
 		nRF_Wait_Transmit();
 		Rf_Light(light);//no wait transmit here let it finish and go to sleep
-		printf("Back to __halt()\n\r");
+		//printf("Back to __halt()\n\r");
+		putc('H');
+		delay_10us();
 		__halt();
       
     }
