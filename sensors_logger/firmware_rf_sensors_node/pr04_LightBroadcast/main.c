@@ -269,11 +269,10 @@ void i2c_user_Error_Callback(BYTE l_sr2)
 #pragma vector = RTC_WAKEUP_vector
 __interrupt void IRQHandler_RTC(void)
 {
-	putc('Q');
   if(RTC_ISR2_WUTF)
   {
     RTC_ISR2_WUTF = 0;
-    RfAlive();
+    //RfAlive();
 
 	//delay_ms(10);//some time is needed to recover the right clock
 	//printf("...\nRTC IRQ\n");
@@ -337,19 +336,18 @@ int main( void )
     while (1)
     {
 		putc('M');
+		RfAlive();
 		//RfAlive();
 		//printf_ln("main() max44009_read_light()");
 		uint16_t light = max44009_read_light();
-		putc('T');
 		//send through UART
 		//printf("Light: ");		printf_uint(light);		printf_eol();
 		//send through RF
-		putc('F');
-                RfAlive();
 		nRF_Wait_Transmit();
-                delay_ms(10);
+                delay_100us();
+		delay_100us();//200us ok//100 us fail
 		Rf_Light(light);//no wait transmit here let it finish and go to sleep
-                nRF_Wait_Transmit();
+		nRF_Wait_Transmit();
 		//printf("Back to __halt()\n\r");
 		putc('H');
 		delay_100us();
