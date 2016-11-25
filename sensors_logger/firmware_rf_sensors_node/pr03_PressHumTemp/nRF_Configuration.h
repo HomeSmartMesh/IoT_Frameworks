@@ -15,6 +15,7 @@
 
 //----------------------------------- Interruptions ---------------------------------------
 //whether to use the Reception IRQ 1, if not then 0
+//if the following flag is enabled then the user must instanciate the call back userRxCallBack(BYTE *rxData,BYTE rx_DataSize);
 #define	Enable_RX_IRQ	0
 //Transmission IRQ
 #define	Enable_TX_IRQ	0
@@ -23,7 +24,7 @@
 
 //----------------------------- nRF Communication Configuration ---------------------------------
 //data size, from 1 till 32 bytes payload
-#define RX_DataSize	1
+#define RF_RX_DATASIZE	32
 //disable auto acknowledgement for all pipes
 #define SPI_Write_Register_EN_AA		0x00
 //disable retransmission
@@ -41,7 +42,7 @@
 
 //--------Configuration inherited from previous parameters not to be edited -----------------
 //Sets the Pipe 0 width
-#define SPI_Write_Register_RX_PW_P0		RX_DataSize
+#define SPI_Write_Register_RX_PW_P0		RF_RX_DATASIZE
 //add the mask to the or bits to disable it. Masks are : bit_MASK_RX_DR | bit_MASK_TX_DS | bit_MASK_MAX_RT
 #if(Enable_RX_IRQ == 1)
 #define Enable_RX_IRQ_Config	0x00
@@ -95,7 +96,7 @@
 //configuration application section, not to be edited
 //---------------------------------------------------------------------------------------------
 #if (Enable_Debug_IRQHandler_PortD_nRF == 1)
-#define IRQ_Printf(x) 					UARTPrintf(x)
+#define IRQ_Printf(x) 					printf(x)
 #define IRQ_PrintfHex(x)				UARTPrintfHex(x)
 #define IRQ_PrintStatus(x)				nRF_PrintStatus(x)
 #else

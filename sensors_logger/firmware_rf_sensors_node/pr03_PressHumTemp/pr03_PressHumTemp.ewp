@@ -1686,6 +1686,9 @@
   <file>
     <name>$PROJ_DIR$\nRF_Configuration.h</name>
   </file>
+  <file>
+    <name>$PROJ_DIR$\uart_config.h</name>
+  </file>
 </project>
 
 

@@ -134,7 +134,7 @@ void bme280_force_OneMeasure(BYTE Press,BYTE Temp,BYTE Hum)
 //--------------------------------------------------------------------
 //polls the status registers to check when the read is done
 //
-void bme280_wait_measures()
+BYTE bme280_wait_measures()
 {
     BYTE status;
     BYTE count = 0;
@@ -144,9 +144,8 @@ void bme280_wait_measures()
      count++;
    }while(((status & 0x08) != 0) && (count<200));
     
-    printf("Measure done ");
-    UARTPrintf_uint(count);
-    printf(" poll\n");
+    //printf("Measure done ");    UARTPrintf_uint(count);    printf(" poll\n");
+	return count;
 }
 
 //--------------------------------------------------------------------

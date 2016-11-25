@@ -86,7 +86,7 @@ __interrupt void IRQHandler_RTC(void)
   {
     RTC_ISR2_WUTF = 0;
     
-    rf_send_alive();
+    //rf_send_alive();
     
     //LogMagnets();
   }
@@ -145,7 +145,7 @@ void Initialise_STM8L_RTC_LowPower()
     
     //with 38KHz has about 61us resolution
     //225-0 with RTC_CR1_WUCKSEL = 3
-    RTC_WUTRH_WUT = 255;// to match a bit less than 10s
+    RTC_WUTRH_WUT = 200;// 80 ~ 20s ; 160 : 
     RTC_WUTRL_WUT = 255;//
     
     RTC_CR2_WUTE = 1;//Wakeup timer enable - starts downcounting
@@ -247,54 +247,60 @@ void i2c_user_Error_Callback(BYTE l_sr2)
 	}
 }
 
-int main( void )
+void startup_info()
 {
-	BYTE counter = 0;
-	NodeId = *NODE_ID;
-	Initialise_STM8L_Clock();
-
-	SYSCFG_RMPCR1_USART1TR_REMAP = 1; // Remap 01: USART1_TX on PA2 and USART1_RX on PA3
-	uart_init();//Tx only
-
-	printf("\n_________________________________\n");
-	printf("sensors_logger\\firmware_rf_sensors_node\n");
+	printf_eol();
+	printf_ln("_________________________________");
+	printf_ln("sensors_logger/firmware_rf_sensors_node/");
 	printf("Node id ");
-	UARTPrintfHex(NodeId);
-	printf("\n");
-	delay_ms(1000);
-
-	I2C_Init();
-	__enable_interrupt();
-
-
-	//Applies the compile time configured parameters from nRF_Configuration.h
-	nRF_Config();
+	printf_hex(NodeId);
+	printf_eol();
 
 	//this is only for verification, if this fails, the error will be printed and no matter what happens next
 	bme280_check_id();
 
 	bme280_print_CalibData();
+		
+}
+
+int main( void )
+{
+	BYTE counter = 0;
+	NodeId = *NODE_ID;
+
+	Initialise_STM8L_Clock();
+	SYSCFG_RMPCR1_USART1TR_REMAP = 1; // Remap 01: USART1_TX on PA2 and USART1_RX on PA3
+	uart_init();//Tx only
+	I2C_Init();
+	__enable_interrupt();
+
+	//Applies the compile time configured parameters from nRF_Configuration.h
+	nRF_Config();
+
 
 	//
 	// Main loop
 	//
 	while (1)
 	{
-		printf("\n");
-		printf("counter :");
-		UARTPrintfHexLn(counter++);
-
-		printf("Measure---------------\n");
+		//printf("Measure---------------\n");
+		if(counter == 1)
+		{
+			//startup info are only sent once after a sleep cycle to avoid continuous restarts
+			//that kill the battery with a lot of uart that drops again and loops in another restart cycle
+			startup_info();
+		}
 		bme280_force_OneMeasure(1,1,1);//Pressure, Temperature, Humidity
-
 		bme280_wait_measures();
-
-		bme280_print_measures();
-		
-		printf("rf_send---------------\n");
+		//bme280_print_measures();
+		//printf("rf_send---------------\n");
 		rf_send_bme280_measures();
-
-		delay_ms(60000);//down to one minute
-
+		//delay_ms(60000);//down to one minute
+		if(counter == 200)
+		{
+			counter = 2;
+		}
+		counter++;
+		__halt();
 	}
 }

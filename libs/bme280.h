@@ -23,7 +23,7 @@ void bme280_check_id();
 
 void bme280_force_OneMeasure(BYTE Press,BYTE Temp,BYTE Hum);
 
-void bme280_wait_measures();
+BYTE bme280_wait_measures();
 
 void bme280_print_status();
 
