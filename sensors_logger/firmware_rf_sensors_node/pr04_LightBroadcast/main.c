@@ -145,7 +145,7 @@ void Initialise_STM8L_RTC_LowPower()
     //with 38KHz has about 61us resolution
     //225-0 with RTC_CR1_WUCKSEL = 3
 	//255 255 => 28 sec
-    RTC_WUTRH_WUT = 80;// to match a bit less than 10s
+    RTC_WUTRH_WUT = 40;// to match a bit less than 10s
     RTC_WUTRL_WUT = 255;//
     
     RTC_CR2_WUTE = 1;//Wakeup timer enable - starts downcounting
@@ -340,14 +340,19 @@ int main( void )
 		//RfAlive();
 		//printf_ln("main() max44009_read_light()");
 		uint16_t light = max44009_read_light();
+		putc('T');
 		//send through UART
 		//printf("Light: ");		printf_uint(light);		printf_eol();
 		//send through RF
+		putc('F');
+                RfAlive();
 		nRF_Wait_Transmit();
+                delay_ms(10);
 		Rf_Light(light);//no wait transmit here let it finish and go to sleep
+                nRF_Wait_Transmit();
 		//printf("Back to __halt()\n\r");
 		putc('H');
-		delay_10us();
+		delay_100us();
 		__halt();
       
     }
