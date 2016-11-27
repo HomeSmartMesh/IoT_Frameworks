@@ -141,11 +141,12 @@ void Initialise_STM8L_RTC_LowPower()
     RTC_CR2_WUTE = 0;//Wakeup timer Disable to update the timer
     while(RTC_ISR1_WUTWF==0);//
     
-    RTC_CR1_WUCKSEL = 0;//-b00 RTCCCLK/16 ; -b011 RTCCCLK/2 
+	//CLK_CRTCR_RTCSEL)2 in clck cfg has set source to 38KHz
+    RTC_CR1_WUCKSEL = 0;//-b00 RTCCCLK/16 => 2375 Hz; -b011 RTCCCLK/2 
     
-    //with 38KHz has about 61us resolution
+    //with 2375 Hz has about 421 us resolution
     //225-0 with RTC_CR1_WUCKSEL = 3
-    RTC_WUTRH_WUT = 200;// 80 ~ 20s ; 160 : 
+    RTC_WUTRH_WUT = 92;// 92 ~ 10s ; 
     RTC_WUTRL_WUT = 255;//
     
     RTC_CR2_WUTE = 1;//Wakeup timer enable - starts downcounting
@@ -268,7 +269,9 @@ int main( void )
 	BYTE counter = 0;
 	NodeId = *NODE_ID;
 
-	Initialise_STM8L_Clock();
+	Initialise_STM8L_Clock();			//here the RTC clock source is set to LSI
+	Initialise_STM8L_RTC_LowPower();
+	
 	SYSCFG_RMPCR1_USART1TR_REMAP = 1; // Remap 01: USART1_TX on PA2 and USART1_RX on PA3
 	uart_init();//Tx only
 	I2C_Init();
@@ -301,6 +304,7 @@ int main( void )
 			counter = 2;
 		}
 		counter++;
+                
 		__halt();
 	}
 }
