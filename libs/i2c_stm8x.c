@@ -89,18 +89,13 @@ void I2C_Init()
     PC_CR1_C11 = 0;// Input mode: 0: Floating input - 1: Input with pull-up // Output mode: 0: Pseudo open drain 1: Push-pull
    
     BYTE count = 0;
-    while(I2C1_SR3_BUSY)//first recovery level - clock the i2c
+    while((I2C1_SR3_BUSY)&&(count <= 10) )//first recovery level - clock the i2c
     {
       PC_ODR_ODR1 = 0;
       delay_ms(1);
       PC_ODR_ODR1 = 1;
       delay_ms(1);
       count++;
-      if(count == 10)//doesnt help righ away, take some time to have effect
-      {
-        delay_ms(1000);  
-        count = 0;
-      }
     }
     
     PC_DDR_DDR0 = 0;// 0: Input - 1: Output
@@ -149,7 +144,10 @@ void I2C_Init()
 
 void I2C_Transaction(BYTE read,BYTE slaveAddress, BYTE* buffer,BYTE count)
 {
+	#ifdef I2C_REENTRENCY_CHECK
 	while(	i2c.Stop == 0);//re-entrancy protection
+	#endif
+	
 	i2c.Stop = 0;
 	i2c.readwrite = read;
 	i2c.SlaveAddress = slaveAddress;

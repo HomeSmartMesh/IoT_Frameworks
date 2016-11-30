@@ -2,7 +2,8 @@
 #include <iostm8l151f3.h>
 #include <intrinsics.h>
 
-
+//should be before other files that use it such as clock_led.h
+#include "deviceType.h"
 //for config
 #include "nRF.h"
 //for transmit
@@ -99,71 +100,6 @@ void SMT8L_Switch_ToHSI()
   CLK_SWCR_SWEN = 1;                  //  Enable switching.
   CLK_SWR = 0x01;                     //  Use HSI as the clock source.
   while (CLK_SWCR_SWBSY != 0);        //  Pause while the clock switch is busy.
-}
-
-void Initialise_STM8L_Clock()
-{
-  //Set Clock to full speed
-  CLK_CKDIVR_CKM = 0; // Set to 0x00 => /1 ; Reset is 0x03 => /8
-  //unsigned char cal = CLK_HSICALR-45;//default is 0x66 lowered by 45
-  //Unlock the trimming
-  /*CLK_HSIUNLCKR = 0xAC;
-  CLK_HSIUNLCKR = 0x35;
-  CLK_HSITRIMR = cal;
-  */
-  
-  
-  //Enable RTC Peripheral Clock
-  CLK_PCKENR2_PCKEN22 = 1;
-  
-  CLK_CRTCR_RTCDIV = 0;//reset value : RTC Clock source /1
-  CLK_CRTCR_RTCSEL = 2;// 2:LSI; reset value 0
-  while (CLK_CRTCR_RTCSWBSY != 0);        //  Pause while the RTC clock changes.
-    
-}
-
-void Initialise_STM8L_RTC_LowPower()
-{
-    //unlock the write protection for RTC
-    RTC_WPR = 0xCA;
-    RTC_WPR = 0x53;
-    
-    RTC_ISR1_INIT = 1;//Initialisation mode
-    
-    //RTC_SPRERH_PREDIV_S = 0;// 7bits 0x00 Sychronous prescaler factor MSB
-    //RTC_SPRERL_PREDIV_S = 0;// 8bits 0xFF Sychronous prescaler factor MSB
-    //RTC_APRER_PREDIV_A = 0;// 7bits 0x7F Asynchronous prescaler factor
-
-    RTC_CR1_FMT = 0;//24h format
-    RTC_CR1_RATIO = 0;//fsysclk >= 2x fRTCclk
-    // N.A RTC_CR1_BYPSHAD = 0;//shadow used no direct read from counters
-    
-    RTC_CR2_WUTE = 0;//Wakeup timer Disable to update the timer
-    while(RTC_ISR1_WUTWF==0);//
-    
-	//CLK_CRTCR_RTCSEL)2 in clck cfg has set source to 38KHz
-    RTC_CR1_WUCKSEL = 0;//-b00 RTCCCLK/16 => 2375 Hz; -b011 RTCCCLK/2 
-    
-    //with 2375 Hz has about 421 us resolution
-    //225-0 with RTC_CR1_WUCKSEL = 3
-    RTC_WUTRH_WUT = 92;// 92 ~ 10s ; 
-    RTC_WUTRL_WUT = 255;//
-    
-    RTC_CR2_WUTE = 1;//Wakeup timer enable - starts downcounting
-    RTC_CR2_WUTIE = 1;//Wakeup timer interrupt enable
-    
-    RTC_ISR1_INIT = 0;//Running mode
-
-    //locking the write protection for RTC
-    RTC_WPR = 0x00;
-    RTC_WPR = 0x00;
-    
-    //wait that the internal VRef is stabilized before changing the WU options (Reference Manual)
-    while(PWR_CSR2_VREFINTF == 0);
-    PWR_CSR2_ULP = 1;//Internal Voltage Reference Stopped in Halt Active Halt
-    PWR_CSR2_FWU = 1;//Fast wakeup time
-    
-    
 }
 
 
@@ -264,18 +200,67 @@ void startup_info()
 		
 }
 
+void clear_unused_PIO()
+{
+	//C5
+	PC_DDR_bit.DDR5 = 1;//output
+	PC_ODR_bit.ODR5 = 0;//Low
+	//C6
+	PC_DDR_bit.DDR6 = 1;//output
+	PC_ODR_bit.ODR6 = 0;//Low
+	//A3
+	PA_DDR_bit.DDR3 = 1;//output
+	PA_ODR_bit.ODR3 = 0;//Low
+	//B2
+	PB_DDR_bit.DDR2 = 1;//output
+	PB_ODR_bit.ODR2 = 0;//Low
+	//A0
+	/*PA_DDR_bit.DDR3 = 1;//output
+	PA_ODR_bit.ODR3 = 0;//Low
+	//A1
+	PA_DDR_bit.DDR3 = 1;//output
+	PA_ODR_bit.ODR3 = 0;//Low
+	*/
+}
+
+void clear_all_PIO()
+{
+	//All out Low
+	PA_DDR = 0xFF;
+	PA_ODR = 0x00;
+	PB_DDR = 0xFF;
+	PB_ODR = 0x00;
+	PC_DDR = 0xFF;
+	PC_ODR = 0x00;
+	PD_DDR = 0xFF;
+	PD_ODR = 0x00;
+}
+
 int main( void )
 {
 	BYTE counter = 0;
 	NodeId = *NODE_ID;
 
+	//clear_unused_PIO();//no noticable effect
+	
 	Initialise_STM8L_Clock();			//here the RTC clock source is set to LSI
 	Initialise_STM8L_RTC_LowPower();
+	__enable_interrupt();
+
 	
+	
+#ifdef CheckMinimalPower
+	clear_all_PIO();					//with all pio cleared goes down from 6 uA down to 1 uA !!!
+	while (1)
+	{
+		__halt();
+	}
+#endif
+
 	SYSCFG_RMPCR1_USART1TR_REMAP = 1; // Remap 01: USART1_TX on PA2 and USART1_RX on PA3
 	uart_init();//Tx only
 	I2C_Init();
-	__enable_interrupt();
+        
 
 	//Applies the compile time configured parameters from nRF_Configuration.h
 	nRF_Config();
@@ -299,6 +284,10 @@ int main( void )
 		//printf("rf_send---------------\n");
 		rf_send_bme280_measures();
 		//delay_ms(60000);//down to one minute
+		nRF_Wait_Transmit();
+		//delay_ms(10);
+		nRF_SetMode_PowerDown();
+		
 		if(counter == 200)
 		{
 			counter = 2;

@@ -142,7 +142,7 @@ BYTE bme280_wait_measures()
    {
      status = bme280_read_reg(0xF2);//status : 0xF3
      count++;
-   }while(((status & 0x08) != 0) && (count<200));
+   }while(((status & 0x08) != 0) && (count<20));
     
     //printf("Measure done ");    UARTPrintf_uint(count);    printf(" poll\n");
 	return count;

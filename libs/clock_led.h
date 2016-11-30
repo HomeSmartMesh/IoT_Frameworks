@@ -35,3 +35,9 @@ void Initialise_TestLed_GPIO_B5();
 void Test_Led_On();
 void Test_Led_Off();
 
+
+#if DEVICE_STM8L == 1
+void Initialise_STM8L_Clock();
+BYTE Initialise_STM8L_RTC_LowPower();
+#endif
+
