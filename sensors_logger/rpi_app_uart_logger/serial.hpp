@@ -43,7 +43,7 @@ private:
 	int fd;
 	LogBuffer_c logbuf;
 public:
-	bme_measures_c measures;
+	std::vector<bme_measures_c> NodesMeasures;
 public:
 	std::string 	Name;
 	std::ofstream 	logfile;

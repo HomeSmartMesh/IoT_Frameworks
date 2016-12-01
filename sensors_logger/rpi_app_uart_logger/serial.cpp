@@ -194,30 +194,31 @@ void Serial::processLine()
 	
 	if(utl::exists(notif_map,"BME280") && utl::exists(notif_map,"NodeId") )
 	{
-		measures.set_all_measures_Text(notif_map["BME280"]);
+		int l_Id = notif_map["NodeId"];
+		NodesMeasures[l_Id].set_all_measures_Text(notif_map["BME280"]);
 		if(isLogOut)
 		{
 			std::cout 	<< logbuf.day << "\t" << logbuf.time << "\t" 
-						<< "NodeId:" << notif_map["NodeId"]
-						<< ";Temperature:" << measures.get_temperature() << std::endl;
+						<< "NodeId:" << l_Id
+						<< ";Temperature:" << NodesMeasures[l_Id].get_temperature() << std::endl;
 			std::cout 	<< logbuf.day << "\t" << logbuf.time << "\t" 
-						<< "NodeId:" << notif_map["NodeId"]
-						<< ";Humidity:" << measures.get_humidity()  << std::endl;
+						<< "NodeId:" << l_Id
+						<< ";Humidity:" << NodesMeasures[l_Id].get_humidity()  << std::endl;
 			std::cout 	<< logbuf.day << "\t" << logbuf.time << "\t" 
-						<< "NodeId:" << notif_map["NodeId"]
-						<< ";Pressure:" << measures.get_pressure()  << std::endl;
+						<< "NodeId:" << l_Id
+						<< ";Pressure:" << NodesMeasures[l_Id].get_pressure()  << std::endl;
 		}
 		if(isLogFile && logfile.is_open())
 		{
 			logfile 	<< logbuf.day << "\t" << logbuf.time << "\t" 
-						<< "NodeId:" << notif_map["NodeId"]
-						<< ";Temperature:" << measures.get_temperature() << std::endl;
+						<< "NodeId:" << l_Id
+						<< ";Temperature:" << NodesMeasures[l_Id].get_temperature() << std::endl;
 			logfile 	<< logbuf.day << "\t" << logbuf.time << "\t" 
-						<< "NodeId:" << notif_map["NodeId"]
-						<< ";Humidity:" << measures.get_humidity()  << std::endl;
+						<< "NodeId:" << l_Id
+						<< ";Humidity:" << NodesMeasures[l_Id].get_humidity()  << std::endl;
 			logfile 	<< logbuf.day << "\t" << logbuf.time << "\t" 
-						<< "NodeId:" << notif_map["NodeId"]
-						<< ";Pressure:" << measures.get_pressure()  << std::endl;
+						<< "NodeId:" << l_Id
+						<< ";Pressure:" << NodesMeasures[l_Id].get_pressure()  << std::endl;
 			logfile.flush();
 		}
 

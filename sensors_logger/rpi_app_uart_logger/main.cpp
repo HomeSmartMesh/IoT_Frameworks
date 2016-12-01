@@ -69,8 +69,11 @@ int main( int argc, char** argv )
 		exit(1);
 	}
 	
-	std::string fullfilepath = ser.exepath + "/calib_data.txt";
-	ser.measures.load_calib_data(fullfilepath);
+	ser.NodesMeasures.resize(8);
+	std::string fullfilepath = ser.exepath + "/calib_data_node_6.txt";
+	ser.NodesMeasures[6].load_calib_data(fullfilepath);
+	fullfilepath = ser.exepath + "/calib_data_node_7.txt";
+	ser.NodesMeasures[7].load_calib_data(fullfilepath);
 	
 
 	//#2 issue, it is likely that someone else is using the port in parallel
