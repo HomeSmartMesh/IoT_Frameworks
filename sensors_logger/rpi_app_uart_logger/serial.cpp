@@ -194,7 +194,8 @@ void Serial::processLine()
 	
 	if(utl::exists(notif_map,"BME280") && utl::exists(notif_map,"NodeId") )
 	{
-		int l_Id = notif_map["NodeId"];
+		std::string t_Id = notif_map["NodeId"];
+		int l_Id = std::stoi(t_Id);
 		NodesMeasures[l_Id].set_all_measures_Text(notif_map["BME280"]);
 		if(isLogOut)
 		{

@@ -16,6 +16,8 @@ serial port cpp wrapper
 //for stringstream
 #include <sstream>
 
+#include <vector>
+
 #define buf_size 2000
 
 class LogBuffer_c
