@@ -50,7 +50,7 @@ BYTE nRF_Transmit(BYTE* payload, BYTE size)
 	{
 		nRF_SetMode_TX();
 	}
-	status = SPI_Write_Buf(WR_TX_PLOAD,payload,size);
+	status = SPI_Write_Buf(WR_TX_PLOAD,payload,RF_RX_DATASIZE);
 	
 	//This pin setting do not support multiple successive transmissions
 	//that fill tx data in multiple buffers

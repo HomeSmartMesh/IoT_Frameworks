@@ -223,6 +223,7 @@ void bme280_rx_measures(BYTE* rx_data, BYTE rx_DataSize)
 		printf("rfId:0xE2;Error:dataSize not 11 but ");
 		printf_uint(rx_DataSize);
 		printf_eol();
+		return;
 	}
 	for(i=0;i<11;i++)
 	{

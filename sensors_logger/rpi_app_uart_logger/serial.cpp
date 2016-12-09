@@ -148,6 +148,7 @@ bool LogBuffer_c::update(int fd)
 	n = read (fd, buf, sizeof buf);  // read up to 100 characters if ready to read
 	if(n > 0)
 	{
+		//std::cout << "n " << n << std::endl;
 		res = true;
 		//as we want to print it here, we make sure it is null terminated
 		if(n < sizeof buf)
@@ -159,6 +160,10 @@ bool LogBuffer_c::update(int fd)
 			buf[(sizeof buf)-1] = '\0';//must insert a null terminated string, otherwise not safe to print nor search,...
 			printf("Warning : Slow app Max Buffer reached, loss of data !!!\r\n");
 		}
+	}
+	else
+	{
+		//std::cout << "Nothing" << std::endl;
 	}
 	return res;
 }
@@ -182,8 +187,10 @@ void Serial::log(const std::string &str)
 
 void Serial::processLine()
 {
+	//replace end of line by end of string
 	(*logbuf.plinebuf) = '\0';
 	std::string logline(logbuf.linebuf);
+	//std::cout << "DEBUG:" << logline << "|||" << std::endl;
 	//reset the line buffer pointer to the beginning of the line
 	logbuf.plinebuf = logbuf.linebuf;
 	
@@ -229,11 +236,11 @@ void Serial::processLine()
 	{
 		if(isLogOut)
 		{
-			std::cout << logbuf.day << "\t" << logbuf.time << "\t" << logline;
+			std::cout << logbuf.day << "\t" << logbuf.time << "\t" << logline  << std::endl;
 		}
 		if(isLogFile && logfile.is_open())
 		{
-			logfile << logbuf.day << "\t" << logbuf.time << "\t" << logline;
+			logfile << logbuf.day << "\t" << logbuf.time << "\t" << logline  << std::endl;
 			logfile.flush();
 		}
 	}
@@ -242,6 +249,7 @@ void Serial::processLine()
 //we use Serial::buf for data and Serial::n for data size
 void Serial::logBuffer()
 {
+	//std::cout << "DBG" << std::endl;
 	if(logbuf.n>0)
 	{
 		char * buf_w = logbuf.buf;
@@ -260,10 +268,10 @@ void Serial::logBuffer()
 			}
 
 			//Process characters
-			if((*buf_w) == '\n')//only allowed printable character
+			if( ((*buf_w) == '\n') || ((*buf_w) == 10) || ((*buf_w) == 13))//only allowed printable character
 			{
 				logbuf.newLine = true;
-				(*logbuf.plinebuf++) = (*buf_w);
+				(*logbuf.plinebuf) = (*buf_w);
 				processLine();
 			}
 			else if(isp)//skip the CR and any other control

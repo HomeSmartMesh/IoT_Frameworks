@@ -85,10 +85,11 @@ int main( int argc, char** argv )
 	{
 		if(ser.update())
 		{
+			//std::cout << "updated" << std::endl;
 			ser.logBuffer();
 		}
-		sleep(1);
-		
+		usleep(100000);//100 ms
+		//std::cout << "sleep" << std::endl;
 	}
 
 	return 0;

@@ -78,13 +78,13 @@ void Initialise_STM8L_Clock()
   //Enable RTC Peripheral Clock
   CLK_PCKENR2_PCKEN22 = 1;
   
-  CLK_CRTCR_RTCDIV = 0;//reset value : RTC Clock source /1
+  CLK_CRTCR_RTCDIV = 0x5;//reset value : RTC Clock source /32
   CLK_CRTCR_RTCSEL = 2;// 2:LSI; reset value 0
   while (CLK_CRTCR_RTCSWBSY != 0);        //  Pause while the RTC clock changes.
     
 }
 
-BYTE Initialise_STM8L_RTC_LowPower()
+BYTE Initialise_STM8L_RTC_LowPower(uint16_t times_sec)
 {
 	BYTE result = 0;
     //unlock the write protection for RTC
@@ -112,15 +112,17 @@ BYTE Initialise_STM8L_RTC_LowPower()
 		//printf_ln(">>>Error : RTC_ISR1_WUTWF does not get to 1");
 		result = 1;
 	}
-    
 	
-    RTC_CR1_WUCKSEL = 0;//-b00 RTCCCLK/16 ; -b011 RTCCCLK/2 
-    
-    //with 38KHz has about 61us resolution
-    //225-0 with RTC_CR1_WUCKSEL = 3
-	//255 255 => 28 sec
-    RTC_WUTRH_WUT = 40;// to match a bit less than 10s
-    RTC_WUTRL_WUT = 255;//
+	//RTCCCLK = LSI/32 => 38KHz / 32 = 1187,5 Hz
+    RTC_CR1_WUCKSEL = 0;//-b00 RTCCCLK/16 ;
+    //(1/38KHz) / (32 * 16) => 13.474 ms
+
+    //max time sec is 883 sec
+	uint32_t time_us = times_sec * 1000000;
+	uint16_t ticks = time_us / 13474;
+	
+    RTC_WUTRH_WUT = ticks / 256;
+    RTC_WUTRL_WUT = ticks % 256;
     
     RTC_CR2_WUTE = 1;//Wakeup timer enable - starts downcounting
     RTC_CR2_WUTIE = 1;//Wakeup timer interrupt enable

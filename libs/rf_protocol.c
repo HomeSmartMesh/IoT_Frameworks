@@ -46,13 +46,13 @@ void rx_light(BYTE *rxData,BYTE rx_DataSize)
 	if(crc == rxData[4])
 	{
 	  printf("NodeId:");
-	  UARTPrintf_uint(rxData[1]);
+	  printf_uint(rxData[1]);
 	  printf(",Light: ");
 	  SensorVal = rxData[2];
 	  SensorVal <<= 4;//shift to make place for the 4 LSB
 	  SensorVal = SensorVal + (0x0F & rxData[3]);
-	  UARTPrintf_uint(SensorVal);
-	  printf("\n");
+	  printf_uint(SensorVal);
+	  printf_eol();
 	}
 	else
 	{
@@ -66,7 +66,7 @@ void rx_magnet(BYTE *rxData,BYTE rx_DataSize)
 	if(crc == rxData[3])
 	{
 		printf("NodeId:");
-		UARTPrintf_uint(rxData[1]);
+		printf_uint(rxData[1]);
 		printf(",is:");
 		if(rxData[2] == 0)
 		{

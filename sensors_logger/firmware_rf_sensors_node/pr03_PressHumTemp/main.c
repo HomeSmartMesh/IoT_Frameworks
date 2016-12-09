@@ -4,6 +4,8 @@
 
 //should be before other files that use it such as clock_led.h
 #include "deviceType.h"
+#include "nRF_Configuration.h"
+
 //for config
 #include "nRF.h"
 //for transmit
@@ -16,6 +18,7 @@
 #include "commonTypes.h"
 
 #include "bme280.h"
+#include "max44009.h"
 
 //to format the tx data
 #include "rf_protocol.h"
@@ -28,28 +31,40 @@ unsigned char NodeId;
 // - CPU and Peripheral clocks stopped, RTC running
 // - wakeup from RTC, or external/Reset
 
+
+//RF_RX_DATASIZE must be used as the nRF_Transmit rely on it for a zero copy frame update
+BYTE tx_data[RF_RX_DATASIZE];
+
 void rf_send_alive()
 {
-	BYTE tx_data[3];
 	rf_get_tx_alive_3B(NodeId, tx_data);
 	nRF_Transmit(tx_data,3);
 }
 
 void RfSwitch(unsigned char state)
 {
-	unsigned char Tx_Data[4];
-	Tx_Data[0]=0xC5;
-	Tx_Data[1]=NodeId;
-	Tx_Data[2]=state;
-	Tx_Data[3]= Tx_Data[0] ^ NodeId ^ state;
-	nRF_Transmit(Tx_Data,4);
+	tx_data[0]=0xC5;
+	tx_data[1]=NodeId;
+	tx_data[2]=state;
+	tx_data[3]= tx_data[0] ^ NodeId ^ state;
+	nRF_Transmit(tx_data,4);
 }
 
 void rf_send_bme280_measures()
 {
-	BYTE tx_data[11];
+	bme280_force_OneMeasure(1,1,1);//Pressure, Temperature, Humidity
+	bme280_wait_measures();
+	//bme280_print_measures();
+	//printf("rf_send---------------\n");
 	bme280_get_tx_measures_11B(NodeId, tx_data);
 	nRF_Transmit(tx_data,11);
+}
+
+void rf_send_light()
+{
+	uint16_t light = max44009_read_light();
+	max44009_get_rf_5B(NodeId, light, tx_data);
+	nRF_Transmit(tx_data,5);
 }
 
 void LogMagnets()
@@ -139,12 +154,11 @@ void GPIO_B3_Low()
 
 void PingColor()
 {
-      unsigned char Tx_Data[5];
-      Tx_Data[0]=128;
-      Tx_Data[1]=255;
-      Tx_Data[2]=100;
-      Tx_Data[3]=0x59;
-      nRF_Transmit(Tx_Data,4);
+      tx_data[0]=128;
+      tx_data[1]=255;
+      tx_data[2]=100;
+      tx_data[3]=0x59;
+      nRF_Transmit(tx_data,4);
 }
 
 void i2c_user_Rx_Callback(BYTE *userdata,BYTE size)
@@ -244,10 +258,8 @@ int main( void )
 	//clear_unused_PIO();//no noticable effect
 	
 	Initialise_STM8L_Clock();			//here the RTC clock source is set to LSI
-	Initialise_STM8L_RTC_LowPower();
+	Initialise_STM8L_RTC_LowPower(30);//sleep period 30 sec
 	__enable_interrupt();
-
-	
 	
 #ifdef CheckMinimalPower
 	clear_all_PIO();					//with all pio cleared goes down from 6 uA down to 1 uA !!!
@@ -260,11 +272,9 @@ int main( void )
 	SYSCFG_RMPCR1_USART1TR_REMAP = 1; // Remap 01: USART1_TX on PA2 and USART1_RX on PA3
 	uart_init();//Tx only
 	I2C_Init();
-        
 
 	//Applies the compile time configured parameters from nRF_Configuration.h
 	nRF_Config();
-
 
 	//
 	// Main loop
@@ -278,17 +288,21 @@ int main( void )
 			//that kill the battery with a lot of uart that drops again and loops in another restart cycle
 			startup_info();
 		}
-		bme280_force_OneMeasure(1,1,1);//Pressure, Temperature, Humidity
-		bme280_wait_measures();
-		//bme280_print_measures();
-		//printf("rf_send---------------\n");
-		rf_send_bme280_measures();
-		//delay_ms(60000);//down to one minute
+		
+		if(counter % 2 == 0)
+		{
+			rf_send_bme280_measures();
+		}
+		else
+		{
+			rf_send_light();
+		}
+		
 		nRF_Wait_Transmit();
 		//delay_ms(10);
 		nRF_SetMode_PowerDown();
 		
-		if(counter == 200)
+		if(counter == 201)
 		{
 			counter = 2;
 		}

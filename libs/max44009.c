@@ -16,6 +16,9 @@
 #include "clock_led.h"
 #include "uart.h"
 
+//to construct the tx frame
+#include "rf_protocol.h"
+
 BYTE max44009_read_reg(BYTE address)
 {
     BYTE result;
@@ -39,3 +42,11 @@ uint16_t max44009_read_light()
 	return Val;
 }
 
+void max44009_get_rf_5B(BYTE NodeId, uint16_t light, BYTE *tx_data)
+{
+	tx_data[0]= rf_pid_0x3B_light;//Light is 0x3B
+	tx_data[1]= NodeId;
+	tx_data[2]= light>>4;
+	tx_data[3]= light&0x0F;
+	tx_data[4]= tx_data[0] ^ NodeId;
+}

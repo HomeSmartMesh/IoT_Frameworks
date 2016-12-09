@@ -38,6 +38,6 @@ void Test_Led_Off();
 
 #if DEVICE_STM8L == 1
 void Initialise_STM8L_Clock();
-BYTE Initialise_STM8L_RTC_LowPower();
+BYTE Initialise_STM8L_RTC_LowPower(uint16_t times_sec);
 #endif
 

@@ -98,7 +98,7 @@
     <name>$PROJ_DIR$\deviceType.h</name>
   </file>
   <file>
-    <name>$PROJ_DIR$\main.c</name>
+    <name>$PROJ_DIR$\main_rflog.c</name>
   </file>
   <file>
     <name>$PROJ_DIR$\nRF_Configuration.h</name>

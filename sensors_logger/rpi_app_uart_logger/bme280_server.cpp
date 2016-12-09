@@ -234,7 +234,7 @@ void bme_measures_c::load_calib_data(std::string filename)
 				utl::remove_spaces(line);
 				utl::remove_0x(line);
 				uint8_t data_vals[10];
-				//std::cout << "T1:" << line << std::endl;
+				std::cout << "T1:" << line << std::endl;
 				utl::hextext2data(line,data_vals);
 				set_calib_part1_10(data_vals);
 				//line 2 : Reg 0x92
@@ -242,7 +242,7 @@ void bme_measures_c::load_calib_data(std::string filename)
 				utl::TakeParseTo(line,':');
 				utl::remove_spaces(line);
 				utl::remove_0x(line);
-				//std::cout << "T2:" << line << std::endl;
+				std::cout << "T2:" << line << std::endl;
 				utl::hextext2data(line,data_vals);
 				set_calib_part2_10(data_vals);
 				//line 3 : Reg 0x9C
@@ -250,7 +250,7 @@ void bme_measures_c::load_calib_data(std::string filename)
 				utl::TakeParseTo(line,':');
 				utl::remove_spaces(line);
 				utl::remove_0x(line);
-				//std::cout << "T3:" << line << std::endl;
+				std::cout << "T3:" << line << std::endl;
 				utl::hextext2data(line,data_vals);
 				set_calib_part3_6(data_vals);
 				//line 4 : Reg 0xE1
@@ -258,7 +258,7 @@ void bme_measures_c::load_calib_data(std::string filename)
 				utl::TakeParseTo(line,':');
 				utl::remove_spaces(line);
 				utl::remove_0x(line);
-				//std::cout << "T4:" << line << std::endl;
+				std::cout << "T4:" << line << std::endl;
 				utl::hextext2data(line,data_vals);
 				set_calib_part4_8(data_vals);
 			}

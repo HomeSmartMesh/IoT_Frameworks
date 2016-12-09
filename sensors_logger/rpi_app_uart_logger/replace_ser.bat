@@ -3,4 +3,5 @@ pscp -pw raspberry D:\Projects\IoT_Framworks\sensors_logger\rpi_app_uart_logger\
 ::don't forget to give the execution writs chmod a+x ser
 
 ::also good to copy the calib data file
-pscp -pw raspberry D:\Projects\IoT_Framworks\sensors_logger\rpi_app_uart_logger\calib_data.txt pi@rfserv:/home/pi/serrun
+pscp -pw raspberry D:\Projects\IoT_Framworks\sensors_logger\rpi_app_uart_logger\calib_data_node_6.txt pi@rfserv:/home/pi/serrun
+pscp -pw raspberry D:\Projects\IoT_Framworks\sensors_logger\rpi_app_uart_logger\calib_data_node_7.txt pi@rfserv:/home/pi/serrun
