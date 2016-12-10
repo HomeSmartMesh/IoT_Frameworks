@@ -16,6 +16,12 @@
 #include "serial.hpp"
 #include "utils.hpp"
 
+#include "easywsclient.hpp"
+#include <assert.h>
+#include <string>
+#include <memory>
+
+
 using namespace std;
 
 void help_arguments()
@@ -40,6 +46,15 @@ void help_arguments()
 
 int main( int argc, char** argv )
 {
+    using easywsclient::WebSocket;
+
+    std::unique_ptr<WebSocket> ws(WebSocket::from_url("ws://192.168.1.9:8126/foo"));
+    assert(ws);
+    ws->send("goodbye");
+    ws->send("hello");
+	
+	
+	
 	strmap conf;
 	Serial 		ser;
 	ser.exepath = utl::args2map(argc,argv,conf);
@@ -86,10 +101,25 @@ int main( int argc, char** argv )
 		if(ser.update())
 		{
 			//std::cout << "updated" << std::endl;
+			ser.processBuffer();
 			ser.logBuffer();
+			for(std::string cl : ser.logbuf.currentlines)
+			{
+				ws->send(cl);
+			}
+			ser.clearBuffer();
 		}
 		usleep(100000);//100 ms
 		//std::cout << "sleep" << std::endl;
+		if(ws->getReadyState() != WebSocket::CLOSED) 
+		{
+			WebSocket::pointer wsp = &*ws; // <-- because a unique_ptr cannot be copied into a lambda
+			ws->poll();
+			ws->dispatch([wsp](const std::string & message) {
+				printf(">>> %s\n", message.c_str());
+				//if (message == "world") { wsp->close(); }
+			});
+		}
 	}
 
 	return 0;

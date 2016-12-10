@@ -185,6 +185,31 @@ void Serial::log(const std::string &str)
 
 }
 
+void Serial::logBuffer()
+{
+	std::cout << "[nb lines]" << logbuf.currentlines.size() << std::endl;
+	for(std::string cl : logbuf.currentlines)
+	{
+		if(isLogOut)
+		{
+			std::cout 	<< cl << std::endl;
+		}
+		if(isLogFile && logfile.is_open())
+		{
+			logfile 	<< cl << std::endl;
+		}
+	}
+	if(isLogFile && logfile.is_open())
+	{
+		logfile.flush();
+	}
+}
+
+void Serial::clearBuffer()
+{
+	logbuf.currentlines.clear();
+}
+
 void Serial::processLine()
 {
 	//replace end of line by end of string
@@ -204,8 +229,14 @@ void Serial::processLine()
 		std::string t_Id = notif_map["NodeId"];
 		int l_Id = std::stoi(t_Id);
 		NodesMeasures[l_Id].set_all_measures_Text(notif_map["BME280"]);
-		if(isLogOut)
+		
+		logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" 
+								+ "NodeId:" + std::to_string(l_Id)
+								+ ";Temperature:" + NodesMeasures[l_Id].get_temperature());
+
+		/*if(isLogOut)
 		{
+						
 			std::cout 	<< logbuf.day << "\t" << logbuf.time << "\t" 
 						<< "NodeId:" << l_Id
 						<< ";Temperature:" << NodesMeasures[l_Id].get_temperature() << std::endl;
@@ -228,13 +259,15 @@ void Serial::processLine()
 						<< "NodeId:" << l_Id
 						<< ";Pressure:" << NodesMeasures[l_Id].get_pressure()  << std::endl;
 			logfile.flush();
-		}
+		}*/
 
 		
 	}
 	else//other logs that do not need pre-formatting
 	{
-		if(isLogOut)
+		logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" + logline);
+		
+		/*if(isLogOut)
 		{
 			std::cout << logbuf.day << "\t" << logbuf.time << "\t" << logline  << std::endl;
 		}
@@ -242,12 +275,12 @@ void Serial::processLine()
 		{
 			logfile << logbuf.day << "\t" << logbuf.time << "\t" << logline  << std::endl;
 			logfile.flush();
-		}
+		}*/
 	}
 }
 
 //we use Serial::buf for data and Serial::n for data size
-void Serial::logBuffer()
+void Serial::processBuffer()
 {
 	//std::cout << "DBG" << std::endl;
 	if(logbuf.n>0)

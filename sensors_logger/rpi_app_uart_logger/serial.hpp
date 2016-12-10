@@ -33,6 +33,7 @@ public:
 	std::string day;
 	std::string time;
 	std::string line;
+	std::vector<std::string> currentlines;
 public:
 	bool update(int fd);
 };
@@ -41,7 +42,7 @@ class Serial
 {
 public:
 	Serial();//constructor
-private:
+public:
 	int fd;
 	LogBuffer_c logbuf;
 public:
@@ -56,9 +57,12 @@ public:
 	void start_logfile(std::string fileName);
 	bool update();
 	void log(const std::string &str);//append timestamp and output to file and cout
+	void processBuffer();
 	void logBuffer();
+	void clearBuffer();
 	void send(char* buffer,int size);
 	void processLine();
+	void logOneLine(std::string line);
 public:
 	std::string exepath;
 };
