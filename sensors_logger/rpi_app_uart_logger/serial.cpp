@@ -187,7 +187,7 @@ void Serial::log(const std::string &str)
 
 void Serial::logBuffer()
 {
-	std::cout << "[nb lines]" << logbuf.currentlines.size() << std::endl;
+	//std::cout << "[nb lines]" << logbuf.currentlines.size() << std::endl;
 	for(std::string cl : logbuf.currentlines)
 	{
 		if(isLogOut)
@@ -233,49 +233,16 @@ void Serial::processLine()
 		logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" 
 								+ "NodeId:" + std::to_string(l_Id)
 								+ ";Temperature:" + NodesMeasures[l_Id].get_temperature());
-
-		/*if(isLogOut)
-		{
-						
-			std::cout 	<< logbuf.day << "\t" << logbuf.time << "\t" 
-						<< "NodeId:" << l_Id
-						<< ";Temperature:" << NodesMeasures[l_Id].get_temperature() << std::endl;
-			std::cout 	<< logbuf.day << "\t" << logbuf.time << "\t" 
-						<< "NodeId:" << l_Id
-						<< ";Humidity:" << NodesMeasures[l_Id].get_humidity()  << std::endl;
-			std::cout 	<< logbuf.day << "\t" << logbuf.time << "\t" 
-						<< "NodeId:" << l_Id
-						<< ";Pressure:" << NodesMeasures[l_Id].get_pressure()  << std::endl;
-		}
-		if(isLogFile && logfile.is_open())
-		{
-			logfile 	<< logbuf.day << "\t" << logbuf.time << "\t" 
-						<< "NodeId:" << l_Id
-						<< ";Temperature:" << NodesMeasures[l_Id].get_temperature() << std::endl;
-			logfile 	<< logbuf.day << "\t" << logbuf.time << "\t" 
-						<< "NodeId:" << l_Id
-						<< ";Humidity:" << NodesMeasures[l_Id].get_humidity()  << std::endl;
-			logfile 	<< logbuf.day << "\t" << logbuf.time << "\t" 
-						<< "NodeId:" << l_Id
-						<< ";Pressure:" << NodesMeasures[l_Id].get_pressure()  << std::endl;
-			logfile.flush();
-		}*/
-
-		
+		logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" 
+								+ "NodeId:" + std::to_string(l_Id)
+								+ ";Humidity:" + NodesMeasures[l_Id].get_humidity());
+		logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" 
+								+ "NodeId:" + std::to_string(l_Id)
+								+ ";Pressure:" + NodesMeasures[l_Id].get_pressure());
 	}
 	else//other logs that do not need pre-formatting
 	{
 		logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" + logline);
-		
-		/*if(isLogOut)
-		{
-			std::cout << logbuf.day << "\t" << logbuf.time << "\t" << logline  << std::endl;
-		}
-		if(isLogFile && logfile.is_open())
-		{
-			logfile << logbuf.day << "\t" << logbuf.time << "\t" << logline  << std::endl;
-			logfile.flush();
-		}*/
 	}
 }
 

@@ -1,0 +1,18 @@
+{
+  "name": "sensors_server",
+  "version": "0.0.0",
+  "description": "",
+  "main": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wassfila/IoT_Frameworks.git"
+  },
+  "author": "Wassim Filali <wassim.filali@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wassfila/IoT_Frameworks/issues"
+  },
+  "dependencies": {
+    "ws": "~0.4.31"
+  }
+}

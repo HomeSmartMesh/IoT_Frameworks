@@ -47,23 +47,23 @@ void help_arguments()
 int main( int argc, char** argv )
 {
     using easywsclient::WebSocket;
-
-    std::unique_ptr<WebSocket> ws(WebSocket::from_url("ws://192.168.1.9:8126/foo"));
-    assert(ws);
-    ws->send("goodbye");
-    ws->send("hello");
+	
+	WebSocket::pointer wsp = NULL;
 	
 	
 	
 	strmap conf;
 	Serial 		ser;
-	ser.exepath = utl::args2map(argc,argv,conf);
+	ser.exepath = utl::args2map(argc,argv,conf);//here is checked './configfile.txt'
 
+	//logfile : log into a file------------------------------------------------------
 	if(utl::exists(conf,"logfile"))
 	{
 		std::cout << "logfile = " << conf["logfile"] << std::endl;
 		ser.start_logfile(conf["logfile"]);
 	}
+
+	//logout is on by default, only a 0 stops it------------------------------------
 	if(utl::exists(conf,"logout"))
 	{
 		std::cout << "logout = " << conf["logout"] << std::endl;
@@ -73,6 +73,8 @@ int main( int argc, char** argv )
 			ser.isLogOut = false;
 		}
 	}
+	
+	//serial port config------------------------------------------------------------
 	if(utl::exists(conf,"port"))
 	{
 		std::cout << "port = " << conf["port"] << std::endl;
@@ -83,6 +85,22 @@ int main( int argc, char** argv )
 		help_arguments();
 		exit(1);
 	}
+	
+	//websocket config---------------------------------------------------------------
+	if(utl::exists(conf,"websocket_url"))
+	{
+		std::cout << "websocket_url = " << conf["websocket_url"] << std::endl;
+		wsp = WebSocket::from_url(conf["websocket_url"]);
+		if(!wsp)
+		{
+			std::cout << "could not open websocket url" << std::endl;
+			help_arguments();
+			exit(2);
+		}
+	}
+	
+	
+	
 	
 	ser.NodesMeasures.resize(8);
 	std::string fullfilepath = ser.exepath + "/calib_data_node_6.txt";
@@ -103,22 +121,29 @@ int main( int argc, char** argv )
 			//std::cout << "updated" << std::endl;
 			ser.processBuffer();
 			ser.logBuffer();
-			for(std::string cl : ser.logbuf.currentlines)
+			//send all log lines through the websocket
+			if(wsp)
+			if(wsp->getReadyState() != WebSocket::CLOSED) 
 			{
-				ws->send(cl);
+				for(std::string cl : ser.logbuf.currentlines)
+				{
+					wsp->send(cl);
+				}
 			}
 			ser.clearBuffer();
 		}
 		usleep(100000);//100 ms
-		//std::cout << "sleep" << std::endl;
-		if(ws->getReadyState() != WebSocket::CLOSED) 
+		
+		//handle the websocket received messages
+		if(wsp)
+		if(wsp->getReadyState() != WebSocket::CLOSED) 
 		{
-			WebSocket::pointer wsp = &*ws; // <-- because a unique_ptr cannot be copied into a lambda
-			ws->poll();
-			ws->dispatch([wsp](const std::string & message) {
-				printf(">>> %s\n", message.c_str());
-				//if (message == "world") { wsp->close(); }
-			});
+			//WebSocket::pointer wsp = &*ws; // <-- because a unique_ptr cannot be copied into a lambda
+			wsp->poll();
+			wsp->dispatch([wsp](const std::string & message) 
+			{
+				std::cout << "ws_server>" << message << std::endl;
+			}			);
 		}
 	}
 
