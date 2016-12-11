@@ -19,3 +19,7 @@ Parameters:
 - configfile:
   Optional if not provided, an attempt is made to read config from 'configfile.txt' if available.
   e.g 'configfile=conf2.txt'
+
+- websocket_url:
+  Optional to send data through websocket
+  e.g 'websocket_url=ws://192.168.1.14:8126/rf_logger'

@@ -1,2 +1,2 @@
 port=/dev/ttyUSB0
-websocket_url=ws://192.168.1.9:8126/rf_logger
+websocket_url=ws://192.168.1.14:8126/rf_logger

@@ -26,7 +26,7 @@ $(function () {
     }
 
     // open connection
-    var connection = new WebSocket('ws://192.168.1.9:4348/measures');
+    var connection = new WebSocket('ws://192.168.1.14:4348/measures');
 
     connection.onopen = 
 	function()

@@ -95,7 +95,7 @@ int main( int argc, char** argv )
 		{
 			std::cout << "could not open websocket url" << std::endl;
 			help_arguments();
-			exit(2);
+			std::cout << "Starting without websocket, will be checked later..." << std::endl;
 		}
 	}
 	
@@ -114,6 +114,7 @@ int main( int argc, char** argv )
 	//this discard measure is not enough as ibberish appears still
 	ser.update();
 	
+	int ws_monitor_count = 0;
 	while (1) 
 	{
 		if(ser.update())
@@ -136,14 +137,38 @@ int main( int argc, char** argv )
 		
 		//handle the websocket received messages
 		if(wsp)
-		if(wsp->getReadyState() != WebSocket::CLOSED) 
 		{
-			//WebSocket::pointer wsp = &*ws; // <-- because a unique_ptr cannot be copied into a lambda
-			wsp->poll();
-			wsp->dispatch([wsp](const std::string & message) 
+			if(wsp->getReadyState() != WebSocket::CLOSED)
 			{
-				std::cout << "ws_server>" << message << std::endl;
-			}			);
+				//WebSocket::pointer wsp = &*ws; // <-- because a unique_ptr cannot be copied into a lambda
+				wsp->poll();
+				wsp->dispatch([wsp](const std::string & message) 
+				{
+					std::cout << "ws_server>" << message << std::endl;
+				}			);
+			}
+			else
+			{
+				wsp = 0;//kill the websocket so that it's checked later for reconnections
+			}
+		}
+		else
+		{
+			ws_monitor_count++;
+			if(ws_monitor_count == 100)// check every 10 s
+			{
+				ws_monitor_count = 0;
+				if(utl::exists(conf,"websocket_url"))
+				{
+					std::cout << "websocket_url = " << conf["websocket_url"] << std::endl;
+					wsp = WebSocket::from_url(conf["websocket_url"]);
+					if(!wsp)
+					{
+						std::cout << "could not open websocket url" << std::endl;
+						std::cout << "Continuing without websocket, will be checked later..." << std::endl;
+					}
+				}
+			}
 		}
 	}
 
