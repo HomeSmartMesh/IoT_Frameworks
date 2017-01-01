@@ -110,3 +110,4 @@ mesh_controller_interface/uarttester/Debug/
 mesh_controller_interface/uarttester/settings/
 mesh_controller_interface/settings/
 sensors_logger/firmware_rf_sensors_node/pr04_LightBroadcast/settings/
+sensors_logger/nodejs_server/instant_db.js
