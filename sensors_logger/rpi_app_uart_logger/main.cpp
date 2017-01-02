@@ -16,7 +16,6 @@
 #include "serial.hpp"
 #include "utils.hpp"
 
-#include "easywsclient.hpp"
 #include <assert.h>
 #include <string>
 #include <memory>
@@ -46,15 +45,11 @@ void help_arguments()
 
 int main( int argc, char** argv )
 {
-    using easywsclient::WebSocket;
-	
-	WebSocket::pointer wsp = NULL;
-	
-	
 	
 	strmap conf;
 	Serial 		ser;
 	ser.exepath = utl::args2map(argc,argv,conf);//here is checked './configfile.txt'
+	websocket_manager_c wsm;
 
 	//logfile : log into a file------------------------------------------------------
 	if(utl::exists(conf,"logfile"))
@@ -87,21 +82,17 @@ int main( int argc, char** argv )
 	}
 	
 	//websocket config---------------------------------------------------------------
-	if(utl::exists(conf,"websocket_url"))
+	//TODO websocket_mgr.config(conf);
+	
+	if(!wsm.config(conf))
 	{
-		std::cout << "websocket_url = " << conf["websocket_url"] << std::endl;
-		wsp = WebSocket::from_url(conf["websocket_url"]);
-		if(!wsp)
-		{
-			std::cout << "could not open websocket url" << std::endl;
-			help_arguments();
-			std::cout << "Starting without websocket, will be checked later..." << std::endl;
-		}
+		std::cout << "could not open websocket url, will retry later..." << std::endl;
+		help_arguments();
 	}
 	
 	
 	
-	
+	//TODO redo with map usage of all available nodes (not array)
 	ser.NodesMeasures.resize(8);
 	std::string fullfilepath = ser.exepath + "/calib_data_node_6.txt";
 	ser.NodesMeasures[6].load_calib_data(fullfilepath);
@@ -119,57 +110,17 @@ int main( int argc, char** argv )
 	{
 		if(ser.update())
 		{
-			//std::cout << "updated" << std::endl;
 			ser.processBuffer();
+
 			ser.logBuffer();
-			//send all log lines through the websocket
-			if(wsp)
-			if(wsp->getReadyState() != WebSocket::CLOSED) 
-			{
-				for(std::string cl : ser.logbuf.currentlines)
-				{
-					wsp->send(cl);
-				}
-			}
+
+			wsm.sendLines(ser.logbuf.currentlines);
+			
 			ser.clearBuffer();
 		}
 		usleep(100000);//100 ms
 		
-		//handle the websocket received messages
-		if(wsp)
-		{
-			if(wsp->getReadyState() != WebSocket::CLOSED)
-			{
-				//WebSocket::pointer wsp = &*ws; // <-- because a unique_ptr cannot be copied into a lambda
-				wsp->poll();
-				wsp->dispatch([wsp](const std::string & message) 
-				{
-					std::cout << "ws_server>" << message << std::endl;
-				}			);
-			}
-			else
-			{
-				wsp = 0;//kill the websocket so that it's checked later for reconnections
-			}
-		}
-		else
-		{
-			ws_monitor_count++;
-			if(ws_monitor_count == 100)// check every 10 s
-			{
-				ws_monitor_count = 0;
-				if(utl::exists(conf,"websocket_url"))
-				{
-					std::cout << "websocket_url = " << conf["websocket_url"] << std::endl;
-					wsp = WebSocket::from_url(conf["websocket_url"]);
-					if(!wsp)
-					{
-						std::cout << "could not open websocket url" << std::endl;
-						std::cout << "Continuing without websocket, will be checked later..." << std::endl;
-					}
-				}
-			}
-		}
+		wsm.handle_messages();
 	}
 
 	return 0;

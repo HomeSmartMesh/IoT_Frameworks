@@ -15,9 +15,9 @@ var http = require('http');
 var server_rf = http.createServer();
 var server_measures = http.createServer();
 
-var ws_rf = new WebSocketServer({server: server_rf, path: '/rf_logger'});
+var ws_sensors = new WebSocketServer({server: server_rf, path: '/rf_logger'});
 
-var ws_measures = new WebSocketServer({server: server_measures, path: '/measures'});
+var ws_browser = new WebSocketServer({server: server_measures, path: '/measures'});
 
 var js = JSON.stringify;
 var db = {};
@@ -27,7 +27,7 @@ var lastVals = {};
 //Temperature[0].Time = date
 //Temperature[0].Value = 23.5
 
-ws_rf.on(
+ws_sensors.on(
 	'connection', 
 	function(ws) 
 	{
@@ -69,7 +69,7 @@ ws_rf.on(
 			}
 			
 			ws.send('got it');
-			ws_measures.clients.forEach(
+			ws_browser.clients.forEach(
 			function each(client)
 			{
 				var client_message = JSON.stringify(lastVals);
@@ -92,7 +92,7 @@ ws_rf.on(
 		}	);
 	}	);
 //------------------------------------------------------------------------
-ws_measures.on(	
+ws_browser.on(	
 	'connection', 
 	function(ws) 
 	{
