@@ -18,17 +18,15 @@ websocket manager
 class websocket_manager_c
 {
 public:
-	websocket_manager_c
-	{
-		wsp = NULL;
-	};
+	websocket_manager_c();
 public:
-	void config(strmap &v_conf);
+	bool config(strmap &v_conf);
 	void sendLines(std::vector<std::string> &lines);
 	void handle_messages();
 private:
-	WebSocket::pointer wsp;
+	
 	strmap conf;
+	int ws_monitor_count;
 
 };
 

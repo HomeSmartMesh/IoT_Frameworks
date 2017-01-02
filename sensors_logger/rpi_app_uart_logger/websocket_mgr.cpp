@@ -7,6 +7,14 @@
 
 using easywsclient::WebSocket;
 
+easywsclient::WebSocket::pointer wsp;
+
+websocket_manager_c::websocket_manager_c()
+{
+	wsp = NULL;
+	ws_monitor_count = 0;
+}
+
 bool websocket_manager_c::config(strmap &v_conf)
 {
 	conf = v_conf;
@@ -15,7 +23,7 @@ bool websocket_manager_c::config(strmap &v_conf)
 		std::cout << "websocket_url = " << conf["websocket_url"] << std::endl;
 		wsp = WebSocket::from_url(conf["websocket_url"]);
 	}
-	return wsp;
+	return (wsp!=NULL);
 }
 
 void websocket_manager_c::sendLines(std::vector<std::string> &lines)

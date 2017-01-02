@@ -1,2 +1,4 @@
 port=/dev/ttyUSB0
-websocket_url=ws://192.168.1.14:8126/rf_logger
+logfile=/home/pi/share/logDays.txt
+logout=1
+websocket_url=ws://10.0.0.12:8126/rf_logger

@@ -16,6 +16,8 @@
 #include "serial.hpp"
 #include "utils.hpp"
 
+#include "websocket_mgr.hpp"
+
 #include <assert.h>
 #include <string>
 #include <memory>
@@ -105,7 +107,7 @@ int main( int argc, char** argv )
 	//this discard measure is not enough as ibberish appears still
 	ser.update();
 	
-	int ws_monitor_count = 0;
+	
 	while (1) 
 	{
 		if(ser.update())
