@@ -4,9 +4,11 @@
 
 #include <string>
 #include <map>
-
+#include <vector>
 
 typedef std::map<std::string,std::string> strmap;
+
+typedef std::vector<std::string> strvect;
 
 namespace utl
 {
@@ -15,6 +17,7 @@ namespace utl
 	bool exists(const strmap &params,const std::string param);
 	std::string ParseRemTill(std::string &str,char sep,bool &found);
 	std::string TakeParseTo(std::string &str,char sep);
+	strvect split(std::string NodesList,char sep);
 	std::string	getTime();
 	std::string	getDay();
 	

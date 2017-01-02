@@ -40,6 +40,16 @@ std::string utl::TakeParseTo(std::string &str,char sep)
 	return Parsed;
 }
 
+strvect utl::split(std::string NodesList,char sep)
+{
+	strvect strlist;
+	while(NodesList != "")
+	{
+		strlist.push_back(utl::TakeParseTo(NodesList,sep));
+	}
+	return strlist;
+}
+
 int char2int(char input)
 {
 	if(input >= '0' && input <= '9')
@@ -202,6 +212,7 @@ std::string utl::args2map( int argc, char** argv ,strmap &params)
 	if(!utl::exists(params,"configfile"))//the parameter 'configfile' was not passed, so check the default one
 	{
 		exepath = TakeParseToLast(exepath,'/');
+		params["exepath"] = exepath;
 		params["configfile"] = exepath + "/configfile.txt";
 	}
 	configfile.open(params["configfile"].c_str());

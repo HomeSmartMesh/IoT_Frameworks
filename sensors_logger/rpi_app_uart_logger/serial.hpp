@@ -17,6 +17,9 @@ serial port cpp wrapper
 #include <sstream>
 
 #include <vector>
+#include <map>
+
+#include "utils.hpp"
 
 #define buf_size 2000
 
@@ -46,13 +49,14 @@ public:
 	int fd;
 	LogBuffer_c logbuf;
 public:
-	std::vector<bme_measures_c> NodesMeasures;
+	std::map<int,bme_measures_c> NodesMeasures;
 public:
 	std::string 	Name;
 	std::ofstream 	logfile;
 	bool			isLogFile;
 	bool			isLogOut;
 public:
+	bool config(strmap &conf);
 	void start(std::string port_name,bool s_500 = false);
 	void start_logfile(std::string fileName);
 	bool update();

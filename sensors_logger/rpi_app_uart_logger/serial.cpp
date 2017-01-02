@@ -104,6 +104,60 @@ Serial::Serial()
 {
 }
 
+
+bool Serial::config(strmap &conf)
+{
+	bool res = true;
+	
+	//conf = v_conf;
+	
+	exepath = conf["exepath"];
+	
+	//logfile : log into a file------------------------------------------------------
+	if(utl::exists(conf,"logfile"))
+	{
+		std::cout << "logfile = " << conf["logfile"] << std::endl;
+		start_logfile(conf["logfile"]);
+	}
+
+	//logout is on by default, only a 0 stops it------------------------------------
+	if(utl::exists(conf,"logout"))
+	{
+		std::cout << "logout = " << conf["logout"] << std::endl;
+		isLogOut = true;//by default
+		if(conf["logout"] == "0")
+		{
+			isLogOut = false;
+		}
+	}
+	
+	//serial port config------------------------------------------------------------
+	if(utl::exists(conf,"port"))
+	{
+		std::cout << "port = " << conf["port"] << std::endl;
+		start(conf["port"]);
+	}
+	else
+	{
+		res = false;
+	}
+	
+	
+	std::string NodesList = conf["SensorNodes"];
+	strvect NodesIds = utl::split(NodesList,';');
+	
+	
+	for(std::string str : NodesIds)
+	{
+		std::cout << "Line: " << str << std::endl;
+		std::string fullfilepath = exepath + "/NodeId" + str + ".txt";
+		int l_Id = std::stoi(str);
+		NodesMeasures[l_Id].load_calib_data(fullfilepath);
+	}
+	
+	return res;
+}
+
 void Serial::start_logfile(std::string fileName)
 {
 	logfile.open(fileName.c_str(), (std::ios::out|std::ios::app) );

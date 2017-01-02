@@ -1,4 +1,5 @@
 
+
 //for usleep() sleep()
 #include <unistd.h>
 //for printf
@@ -13,7 +14,9 @@
 //for exit()
 #include <cstdlib>
 
+
 #include "serial.hpp"
+
 #include "utils.hpp"
 
 #include "websocket_mgr.hpp"
@@ -22,6 +25,7 @@
 #include <string>
 #include <memory>
 
+#include "db_mgr.hpp"
 
 using namespace std;
 
@@ -49,42 +53,18 @@ int main( int argc, char** argv )
 {
 	
 	strmap conf;
+	utl::args2map(argc,argv,conf);//here is checked './configfile.txt'
+
 	Serial 		ser;
-	ser.exepath = utl::args2map(argc,argv,conf);//here is checked './configfile.txt'
 	websocket_manager_c wsm;
+	db_manager_c		dbm;
 
-	//logfile : log into a file------------------------------------------------------
-	if(utl::exists(conf,"logfile"))
-	{
-		std::cout << "logfile = " << conf["logfile"] << std::endl;
-		ser.start_logfile(conf["logfile"]);
-	}
-
-	//logout is on by default, only a 0 stops it------------------------------------
-	if(utl::exists(conf,"logout"))
-	{
-		std::cout << "logout = " << conf["logout"] << std::endl;
-		ser.isLogOut = true;//by default
-		if(conf["logout"] == "0")
-		{
-			ser.isLogOut = false;
-		}
-	}
 	
-	//serial port config------------------------------------------------------------
-	if(utl::exists(conf,"port"))
-	{
-		std::cout << "port = " << conf["port"] << std::endl;
-		ser.start(conf["port"]);
-	}
-	else
+	if(!ser.config(conf))
 	{
 		help_arguments();
 		exit(1);
 	}
-	
-	//websocket config---------------------------------------------------------------
-	//TODO websocket_mgr.config(conf);
 	
 	if(!wsm.config(conf))
 	{
@@ -92,16 +72,10 @@ int main( int argc, char** argv )
 		help_arguments();
 	}
 	
+	dbm.config(conf);
 	
 	
-	//TODO redo with map usage of all available nodes (not array)
-	ser.NodesMeasures.resize(8);
-	std::string fullfilepath = ser.exepath + "/calib_data_node_6.txt";
-	ser.NodesMeasures[6].load_calib_data(fullfilepath);
-	fullfilepath = ser.exepath + "/calib_data_node_7.txt";
-	ser.NodesMeasures[7].load_calib_data(fullfilepath);
 	
-
 	//#2 issue, it is likely that someone else is using the port in parallel
 	//discard first trash buffer if available right after opening the port
 	//this discard measure is not enough as ibberish appears still
