@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <ctime>
 
 typedef std::map<std::string,std::string> strmap;
 
@@ -35,12 +36,13 @@ namespace utl
 	std::string ParseRemTill(std::string &str,char sep,bool &found);
 	std::string TakeParseTo(std::string &str,char sep);
 	strvect split(std::string NodesList,char sep);
-	std::string	utl::getTime(time_t rawtime);
+	std::string	getTime(std::time_t rawtime);
 	std::string	getTime();
-	std::string	getDay(time_t rawtime);
+	std::string	getDay(std::time_t rawtime);
 	std::string	getDay();
 	
 	std::string remove_spaces(std::string &str);
+	void replace(std::string &str,char what,char withwhat);
 	std::string remove_0x(std::string &str);
 	void remove(const std::string &substr, std::string &str);
 	

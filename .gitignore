@@ -113,3 +113,4 @@ sensors_logger/firmware_rf_sensors_node/pr04_LightBroadcast/settings/
 sensors_logger/nodejs_server/instant_db.js
 *.o
 sensors_logger/rpi_app_uart_logger/.sconsign.dblite
+sensors_logger/rpi_app_uart_logger/node_modules/

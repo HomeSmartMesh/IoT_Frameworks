@@ -29,6 +29,8 @@ public:
 
 typedef std::vector<proc_day_entrie_c> sensor_proc_days_c;
 
+typedef std::vector<sensors_tables_t> db_years_c;
+
 class Node_class_c
 {
 public:
@@ -49,6 +51,7 @@ public:
 public:
 	bool config(strmap &conf);
 	void addMeasures(sensors_tables_t &measures);
+	void addMeasures(NodeMap_t &NodesSensorsVals);
 	void parseLines(std::vector<std::string> &lines);
 public:
 	std::map<int,Node_t> Nodes;

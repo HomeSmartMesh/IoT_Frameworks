@@ -33,6 +33,7 @@ public:
 	char * plinebuf;//has to be global to keep half lines position
 	int n;
 	bool newLine;
+	std::time_t	time_now;
 	std::string day;
 	std::string time;
 	std::string line;
@@ -55,7 +56,6 @@ public:
 	std::ofstream 	logfile;
 	bool			isLogFile;
 	bool			isLogOut;
-	std::time_t		time_now;
 public:
 	bool 		config(strmap &conf);
 	void 		start(std::string port_name,bool s_500 = false);
@@ -66,7 +66,7 @@ public:
 	void 		logBuffer();
 	void 		clearBuffer();
 	void 		send(char* buffer,int size);
-	void 		processLine();
+	void 		processLine(NodeMap_t &nodes);
 	void 		logOneLine(std::string line);
 	
 public:

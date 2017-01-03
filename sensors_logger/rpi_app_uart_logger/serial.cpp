@@ -269,6 +269,7 @@ void Serial::processLine(NodeMap_t &nodes)
 	//replace end of line by end of string
 	(*logbuf.plinebuf) = '\0';
 	std::string logline(logbuf.linebuf);
+	utl::replace(logline,',',';');
 	//std::cout << "DEBUG:" << logline << "|||" << std::endl;
 	//reset the line buffer pointer to the beginning of the line
 	logbuf.plinebuf = logbuf.linebuf;
@@ -277,45 +278,61 @@ void Serial::processLine(NodeMap_t &nodes)
 	strmap notif_map;
 	utl::str2map( logline, notif_map);
 	
-	
-	if(utl::exists(notif_map,"BME280") && utl::exists(notif_map,"NodeId") )
+	if(utl::exists(notif_map,"NodeId"))
 	{
 		std::string t_Id = notif_map["NodeId"];
 		int l_Id = std::stoi(t_Id);
-		NodesMeasures[l_Id].set_all_measures_Text(notif_map["BME280"]);
-		
-		sensor_measure_t temperature,humidity,pressure;
-		temperature.time = logbuf.time_now;
-		humidity.time = logbuf.time_now;
-		pressure.time = logbuf.time_now;
+		if(utl::exists(notif_map,"BME280"))
+		{
+			NodesMeasures[l_Id].set_all_measures_Text(notif_map["BME280"]);
+			
+			sensor_measure_t temperature,humidity,pressure;
+			temperature.time = logbuf.time_now;
+			humidity.time = logbuf.time_now;
+			pressure.time = logbuf.time_now;
 
-		temperature.value = NodesMeasures[l_Id].get_float_temperature();
-		humidity.value = NodesMeasures[l_Id].get_float_humidity();
-		pressure.value = NodesMeasures[l_Id].get_float_pressure();
-		
-		nodes[l_Id]["Temperature"].push_back(temperature);
-		nodes[l_Id]["Humidity"].push_back(humidity);
-		nodes[l_Id]["Pressure"].push_back(pressure);
-		
-		logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" 
-								+ "NodeId:" + std::to_string(l_Id)
-								+ ";Temperature:" + NodesMeasures[l_Id].get_temperature());
-								
-		logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" 
-								+ "NodeId:" + std::to_string(l_Id)
-								+ ";Humidity:" + NodesMeasures[l_Id].get_humidity());
-		logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" 
-								+ "NodeId:" + std::to_string(l_Id)
-								+ ";Pressure:" + NodesMeasures[l_Id].get_pressure());
-	}
-	else//other logs that do not need pre-formatting
-	{
-		logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" + logline);
+			temperature.value = NodesMeasures[l_Id].get_float_temperature();
+			humidity.value = NodesMeasures[l_Id].get_float_humidity();
+			pressure.value = NodesMeasures[l_Id].get_float_pressure();
+			
+			nodes[l_Id]["Temperature"].push_back(temperature);
+			nodes[l_Id]["Humidity"].push_back(humidity);
+			nodes[l_Id]["Pressure"].push_back(pressure);
+			
+			logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" 
+									+ "NodeId:" + std::to_string(l_Id)
+									+ ";Temperature:" + NodesMeasures[l_Id].get_temperature());
+									
+			logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" 
+									+ "NodeId:" + std::to_string(l_Id)
+									+ ";Humidity:" + NodesMeasures[l_Id].get_humidity());
+			logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" 
+									+ "NodeId:" + std::to_string(l_Id)
+									+ ";Pressure:" + NodesMeasures[l_Id].get_pressure());
+		}
+		else if(utl::exists(notif_map,"Light"))
+		{
+			sensor_measure_t light;
+			light.time = logbuf.time_now;
+
+			std::string t_light = notif_map["Light"];
+			int l_light = std::stoi(t_light);
+			light.value = l_light;
+			
+			nodes[l_Id]["Light"].push_back(light);
+
+			//yes it is a generic log
+			logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" + logline);
+		}
+		else//other logs that do not need pre-formatting
+		{
+			logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" + logline);
+		}
 	}
 }
 
 //we use Serial::buf for data and Serial::n for data size
-void Serial::processBuffer()
+NodeMap_t Serial::processBuffer()
 {
 	NodeMap_t nodes;
 	//std::cout << "DBG" << std::endl;

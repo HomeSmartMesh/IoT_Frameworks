@@ -107,6 +107,17 @@ std::string utl::data2hextext(const uint8_t *data,int data_size)
 	return s_text;
 }
 
+void utl::replace(std::string &str,char what,char withwhat)
+{
+    for(char& c : str)
+	{
+		if(c == what)
+		{
+			c = withwhat;
+		}
+	}
+}
+
 std::string utl::remove_spaces(std::string &str)
 {
 	//remove_if not found

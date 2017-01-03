@@ -47,7 +47,7 @@ void websocket_manager_c::handle_messages()
 		{
 			//WebSocket::pointer wsp = &*ws; // <-- because a unique_ptr cannot be copied into a lambda
 			wsp->poll();
-			wsp->dispatch([wsp](const std::string & message) 
+			wsp->dispatch([](const std::string & message) 
 			{
 				std::cout << "ws_server>" << message << std::endl;
 			}			);
