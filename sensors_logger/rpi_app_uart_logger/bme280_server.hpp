@@ -70,6 +70,9 @@ class bme_measures_c
 		int32_t	compensate_T_int32();//adc_T provided with m.set_all_measures_8()
 		int32_t	compensate_P_int64();
 		int32_t	compensate_H_int32();
+		float 		get_float_temperature();
+		float 		get_float_humidity();
+		float 		get_float_pressure();
 		std::string get_temperature();
 		std::string get_humidity();
 		std::string get_pressure();

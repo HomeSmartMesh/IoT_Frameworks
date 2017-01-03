@@ -55,18 +55,20 @@ public:
 	std::ofstream 	logfile;
 	bool			isLogFile;
 	bool			isLogOut;
+	std::time_t		time_now;
 public:
-	bool config(strmap &conf);
-	void start(std::string port_name,bool s_500 = false);
-	void start_logfile(std::string fileName);
-	bool update();
-	void log(const std::string &str);//append timestamp and output to file and cout
-	void processBuffer();
-	void logBuffer();
-	void clearBuffer();
-	void send(char* buffer,int size);
-	void processLine();
-	void logOneLine(std::string line);
+	bool 		config(strmap &conf);
+	void 		start(std::string port_name,bool s_500 = false);
+	void 		start_logfile(std::string fileName);
+	bool 		update();
+	void 		log(const std::string &str);//append timestamp and output to file and cout
+	NodeMap_t 	processBuffer();
+	void 		logBuffer();
+	void 		clearBuffer();
+	void 		send(char* buffer,int size);
+	void 		processLine();
+	void 		logOneLine(std::string line);
+	
 public:
 	std::string exepath;
 };

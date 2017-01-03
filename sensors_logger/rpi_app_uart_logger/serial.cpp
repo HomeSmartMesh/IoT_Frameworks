@@ -264,7 +264,7 @@ void Serial::clearBuffer()
 	logbuf.currentlines.clear();
 }
 
-void Serial::processLine()
+void Serial::processLine(NodeMap_t &nodes)
 {
 	//replace end of line by end of string
 	(*logbuf.plinebuf) = '\0';
@@ -284,9 +284,23 @@ void Serial::processLine()
 		int l_Id = std::stoi(t_Id);
 		NodesMeasures[l_Id].set_all_measures_Text(notif_map["BME280"]);
 		
+		sensor_measure_t temperature,humidity,pressure;
+		temperature.time = logbuf.time_now;
+		humidity.time = logbuf.time_now;
+		pressure.time = logbuf.time_now;
+
+		temperature.value = NodesMeasures[l_Id].get_float_temperature();
+		humidity.value = NodesMeasures[l_Id].get_float_humidity();
+		pressure.value = NodesMeasures[l_Id].get_float_pressure();
+		
+		nodes[l_Id]["Temperature"].push_back(temperature);
+		nodes[l_Id]["Humidity"].push_back(humidity);
+		nodes[l_Id]["Pressure"].push_back(pressure);
+		
 		logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" 
 								+ "NodeId:" + std::to_string(l_Id)
 								+ ";Temperature:" + NodesMeasures[l_Id].get_temperature());
+								
 		logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" 
 								+ "NodeId:" + std::to_string(l_Id)
 								+ ";Humidity:" + NodesMeasures[l_Id].get_humidity());
@@ -303,6 +317,7 @@ void Serial::processLine()
 //we use Serial::buf for data and Serial::n for data size
 void Serial::processBuffer()
 {
+	NodeMap_t nodes;
 	//std::cout << "DBG" << std::endl;
 	if(logbuf.n>0)
 	{
@@ -316,8 +331,9 @@ void Serial::processBuffer()
 			//Timestamping : avoid empty lines do not create a new timestamp if the char is a line ending
 			if(logbuf.newLine && isp)
 			{
-				logbuf.day = utl::getDay();
-				logbuf.time = utl::getTime();
+				time(&logbuf.time_now);//take a timestamp
+				logbuf.day = utl::getDay(logbuf.time_now);
+				logbuf.time = utl::getTime(logbuf.time_now);
 				logbuf.newLine = false;
 			}
 
@@ -326,7 +342,7 @@ void Serial::processBuffer()
 			{
 				logbuf.newLine = true;
 				(*logbuf.plinebuf) = (*buf_w);
-				processLine();
+				processLine(nodes);
 			}
 			else if(isp)//skip the CR and any other control
 			{
@@ -336,6 +352,7 @@ void Serial::processBuffer()
 			buf_w++;
 		}
 	}
+	return nodes;
 }
 
 void Serial::send(char* buffer,int size)

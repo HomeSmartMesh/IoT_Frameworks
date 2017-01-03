@@ -10,6 +10,23 @@ typedef std::map<std::string,std::string> strmap;
 
 typedef std::vector<std::string> strvect;
 
+// temperature in DegC, resolution is 0.01 DegC. Output value of “5123” equals 51.23 DegC.
+// humidity in %RH as unsigned 32 bit integer in Q22.10 format (22 integer and 10 fractional bits).
+// Output value of “47445” represents 47445/1024 = 46.333 %RH
+
+struct sensor_measure_t
+{
+	std::time_t time;
+	float		value;
+};
+
+typedef std::vector<sensor_measure_t> sensor_measures_table_t;
+
+typedef std::map<std::string,sensor_measures_table_t> sensors_tables_t;
+
+typedef std::map<int,sensors_tables_t> NodeMap_t;
+
+
 namespace utl
 {
 	std::string args2map( int argc, char** argv ,strmap &params);
@@ -18,7 +35,9 @@ namespace utl
 	std::string ParseRemTill(std::string &str,char sep,bool &found);
 	std::string TakeParseTo(std::string &str,char sep);
 	strvect split(std::string NodesList,char sep);
+	std::string	utl::getTime(time_t rawtime);
 	std::string	getTime();
+	std::string	getDay(time_t rawtime);
 	std::string	getDay();
 	
 	std::string remove_spaces(std::string &str);

@@ -246,29 +246,41 @@ bool utl::exists(const strmap &params,const std::string param)
 	return (params.find(param) != params.end());
 }
 
-std::string	utl::getTime()
+std::string	utl::getTime(time_t rawtime)
 {
-	time_t rawtime;
 	struct tm * timeinfo;
 	char buffer[80];
 
-	time (&rawtime);
 	timeinfo = localtime(&rawtime);
 
 	strftime(buffer,80,"%H:%M:%S",timeinfo);
 	std::string str(buffer);
 	return str;	
 }
-std::string	utl::getDay()
+
+std::string	utl::getTime()
 {
 	time_t rawtime;
+	time(&rawtime);
+	
+	return utl::getTime(rawtime);
+}
+
+std::string	utl::getDay(time_t rawtime)
+{
 	struct tm * timeinfo;
 	char buffer[80];
 
-	time (&rawtime);
 	timeinfo = localtime(&rawtime);
 
 	strftime(buffer,80,"%Y-%m-%d",timeinfo);
 	std::string str(buffer);
 	return str;	
+}
+
+std::string	utl::getDay()
+{
+	time_t rawtime;
+	time (&rawtime);
+	return utl::getDay(rawtime);
 }

@@ -86,7 +86,11 @@ int main( int argc, char** argv )
 	{
 		if(ser.update())
 		{
-			ser.processBuffer();
+			NodeMap_t NodesSensorsVals;
+			
+			NodesSensorsVals = ser.processBuffer();
+
+			dbm.addMeasures(NodesSensorsVals);
 
 			ser.logBuffer();
 

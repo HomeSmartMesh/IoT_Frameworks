@@ -117,13 +117,16 @@ int32_t	bme_measures_c::compensate_H_int32()
 	return (uint32_t)(v_x1_u32r>>12);
 }
 
-
 // comp_T : temperature in DegC, resolution is 0.01 DegC. Output value of “5123” equals 51.23 DegC.
-std::string bme_measures_c::get_temperature()
+float bme_measures_c::get_float_temperature()
 {
-	//DEBUG std::cout << "get_temperature(" << comp_T<< ")"<<std::endl;
 	float t_f = comp_T;
 	t_f = t_f / 100;
+	return t_f;
+}
+std::string bme_measures_c::get_temperature()
+{
+	float t_f = bme_measures_c::get_float_temperature();
 	char result[10];
 	//DEBUG std::cout << "sprintf()" << std::endl;
 	sprintf(result,"%2.2f °C",t_f);
@@ -136,10 +139,16 @@ std::string bme_measures_c::get_temperature()
 
 // Returns humidity in %RH as unsigned 32 bit integer in Q22.10 format (22 integer and 10 fractional bits).
 // Output value of “47445” represents 47445/1024 = 46.333 %RH
-std::string bme_measures_c::get_humidity()
+float bme_measures_c::get_float_humidity()
 {
 	float h_f = comp_H;
 	h_f = h_f / 1024;
+
+	return h_f;
+}
+std::string bme_measures_c::get_humidity()
+{
+	float h_f = bme_measures_c::get_float_humidity();
 
 	char result[16];
 	sprintf(result,"%2.3f %%RH",h_f);
@@ -150,10 +159,16 @@ std::string bme_measures_c::get_humidity()
 
 // Returns pressure in Pa as unsigned 32 bit integer in Q24.8 format (24 integer bits and 8 fractional bits).
 // Output value of “24674867” represents 24674867/256 = 96386.2 Pa = 963.862 hPa
-std::string bme_measures_c::get_pressure()
+float bme_measures_c::get_float_pressure()
 {
 	float h_p = comp_P;
 	h_p = h_p / 25600;
+
+	return h_p;
+}
+std::string bme_measures_c::get_pressure()
+{
+	float h_p = bme_measures_c::get_float_pressure();
 
 	char result[16];
 	sprintf(result,"%3.3f hPa",h_p);

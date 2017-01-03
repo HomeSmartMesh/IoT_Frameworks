@@ -19,3 +19,11 @@ bool db_manager_c::config(strmap &conf)
 	}
 	return true;
 }
+
+void parseLines(std::vector<std::string> &lines)
+{
+	for(std::string line : lines)
+	{
+		
+	}	
+}
