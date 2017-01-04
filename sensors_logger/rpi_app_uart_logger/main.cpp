@@ -76,6 +76,9 @@ int main( int argc, char** argv )
 	
 	dbm.load();
 	
+	//dbm.print();
+	
+	exit(0);
 	
 	
 	//#2 issue, it is likely that someone else is using the port in parallel

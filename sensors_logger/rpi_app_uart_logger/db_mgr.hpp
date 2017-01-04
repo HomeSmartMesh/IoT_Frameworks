@@ -56,18 +56,20 @@ class db_manager_c
 public:
 	db_manager_c();
 public:
-	bool config(strmap &conf);
+	bool config(strmap &v_conf);
 	void load();
 	void addMeasures(sensors_tables_t &measures);
 	void addMeasures(NodeMap_t &NodesSensorsVals);
 	void parseLines(std::vector<std::string> &lines);
+	bool splitPath2Names(std::string path,int &year,int &month,int &NodeName,std::string &SensorName);
+	void print();
 public:
-	std::map<int,Node_t> 	Nodes;
-	std::string 			dbpath;
-	db_files_list_t			Files;
-//private:
+	NodeMap_t 		Nodes;
+	std::string 	dbpath;
+	db_files_list_t	Files;
+private:
 	
-	//strmap conf;
+	strmap conf;
 
 };
 

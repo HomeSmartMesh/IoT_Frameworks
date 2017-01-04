@@ -4,3 +4,4 @@ logout=1
 websocket_url=ws://10.0.0.12:8126/rf_logger
 SensorNodes=06;07;
 dbpath=/home/pi/share/
+dbloadpaths=/home/pi/share/2017/

@@ -41,11 +41,12 @@ namespace utl
 	std::string	getDay(std::time_t rawtime);
 	std::string	getDay();
 	void 		getYearMonthDay(std::time_t rawtime,std::string &text_year,std::string &text_month,std::string &text_day);
+	void printTime(std::time_t rawtime);
 	
 	std::string remove_spaces(std::string &str);
 	void replace(std::string &str,char what,char withwhat);
 	std::string remove_0x(std::string &str);
-	void remove(const std::string &substr, std::string &str);
+	void remove(std::string substr, std::string &str);
 	
 	void hextext2data(const std::string &str, uint8_t *data);
 	std::string data2hextext(const uint8_t *data,int data_size);

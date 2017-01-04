@@ -8,14 +8,20 @@
 //Linux dependency
 #include <sys/stat.h>
 
+#include <ctime>
+
+#include <boost/filesystem.hpp>
+using namespace boost::filesystem;
+using std::cout;
+
 db_manager_c::db_manager_c()
 {
 
 }
 
-bool db_manager_c::config(strmap &conf)
+bool db_manager_c::config(strmap &v_conf)
 {
-	//conf = v_conf;
+	conf = v_conf;
 	if(utl::exists(conf,"dbpath"))
 	{
 		dbpath = conf["dbpath"];
@@ -23,9 +29,169 @@ bool db_manager_c::config(strmap &conf)
 	return true;
 }
 
+bool db_manager_c::splitPath2Names(std::string path,int &year,int &month,int &NodeId,std::string &SensorName)
+{
+	bool res = false;
+	strvect texts = utl::split(path,'/');
+	int length = texts.size();
+	if(length > 3)
+	{
+		year = std::stoi(texts[length-3]);
+		month = std::stoi(texts[length-2]);
+		if((month >= 1) || (month <= 12))
+		{
+			strvect node_sensor = utl::split(texts[length-1],'_');
+			if(node_sensor.size() == 2)
+			{
+				std::string NodeName = node_sensor[0];
+				if(NodeName.find("NodeId") == 0)
+				{
+					std::string name = "NodeId";
+					utl::remove(name,NodeName);
+					NodeId = std::stoi(NodeName);
+
+					strvect file_ext = utl::split(node_sensor[1],'.');
+					if(file_ext.size() == 2)
+					{
+						if(file_ext[1].find("txt") == 0)
+						{
+							SensorName = file_ext[0];
+							res = true;
+						}
+					}
+				}
+			}
+		}
+		
+	}
+	return res;
+}
+
 void db_manager_c::load()
 {
-	
+	//setenv("TZ", "/usr/share/zoneinfo/America/New_York", 1); // POSIX-specific
+	setenv("TZ", "", 1);	
+	tzset();
+	if(utl::exists(conf,"dbloadpaths"))
+	{
+		cout << "loading files from dbloadpaths" << std::endl;
+		path p(conf["dbloadpaths"]);
+		
+		try
+		{
+			if (exists(p) && is_directory(p))
+			{
+				for (directory_entry& x : directory_iterator(p))
+				{
+					cout << "    " << x.path() << '\n'; 
+					if(is_directory(x.path()))
+						for (directory_entry& f : directory_iterator(x.path()))
+						{
+							std::string filename = f.path().string();
+							cout << "        " << filename << std::endl;
+							//get Node Id and params
+							int year,month;
+							std::string SensorName;
+							int NodeId;
+							if (splitPath2Names(filename,year,month,NodeId,SensorName))
+							{
+								cout << "          " << year << " ; " << month << " ; " << "NodeId" << NodeId << " ; " << SensorName << std::endl;
+
+								
+								std::time_t t = std::time(NULL);
+								std::tm timeinfo = *std::localtime(&t);
+								//time_t rawtime,ftime;
+								//struct tm * timeinfo;
+								/* get current timeinfo and modify it to the user's choice */
+								//time ( &rawtime );
+								//timeinfo = localtime ( &rawtime );
+								
+								//std::istringstream ss("16:35:12");
+								//ss >> std::get_time(&tm, "%H:%M:%S"); // or just %T in this case
+								
+
+								
+								std::ifstream ifile;
+								ifile.open(filename.c_str(), std::ios::in );
+								std::string line;
+								while (std::getline(ifile, line))
+								{
+									strvect cells = utl::split(line,'\t');
+									if(cells.size() == 3)//3 columns expected
+									{
+										std::string &day_txt = cells[0];
+										std::string &time_txt = cells[1];
+										std::string &value_txt = cells[2];
+										sensor_measure_t Measure;
+										//TODO time conversion from text to time
+										timeinfo.tm_year = year;
+										timeinfo.tm_mon = month;
+										timeinfo.tm_isdst = 1;//true time saving applies
+										timeinfo.tm_mday = std::stoi(day_txt);
+										strvect timevals = utl::split(time_txt,':');
+										if(timevals.size() == 3)
+										{
+											timeinfo.tm_hour = std::stoi(timevals[0]);
+											timeinfo.tm_min = std::stoi(timevals[1]);
+											timeinfo.tm_sec = std::stoi(timevals[2]);
+										}
+										else
+										{
+											std::cout << "Error: unexpected time format" << std::endl;
+										}
+										
+										Measure.value = std::stof(value_txt);
+										std::cout << "timeinfo[" << timeinfo.tm_year << "," << timeinfo.tm_mon <<  "," << timeinfo.tm_mday << " - ";
+										std::cout << timeinfo.tm_hour << "," << timeinfo.tm_min <<  "," << timeinfo.tm_sec << "]  ";
+										
+										//ftime = timelocal(timeinfo);
+										
+										//ftime = timegm(timeinfo);
+										Measure.time = std::mktime(&timeinfo);
+										std::cout << "print time: " << Measure.time << " : ";
+										utl::printTime(Measure.time);
+
+										Nodes[NodeId][SensorName].push_back(Measure);
+									}
+									else
+									{
+										std::cout << "Error: 3 columns expected" << std::endl;
+									}
+								}
+							}
+							
+						}
+				}
+			}
+			else
+			  cout << p << " does not exist\n";
+		}
+
+		catch (const filesystem_error& ex)
+		{
+			cout << ex.what() << '\n';
+		}
+	}
+}
+
+void db_manager_c::print()
+{
+	for(auto const& sensorsTables : Nodes)
+	{
+		int NodeId = sensorsTables.first;
+		std::string NodeName = "NodeId" + std::to_string(NodeId);
+		std::cout << NodeName << std::endl;
+		for(auto const& Table : sensorsTables.second) 
+		{
+			std::string SensorName = Table.first;
+			std::cout << "\tSensor: " << SensorName << std::endl;
+			for(auto const& Measure : Table.second) 
+			{
+				std::cout << "\t\ttime: " << utl::getTime(Measure.time) << std::endl;
+				std::cout << "\t\tval: " << Measure.value << std::endl;
+			}
+		}
+	}
 }
 
 //The year folder should be manually created !!!!
@@ -38,7 +204,8 @@ void db_manager_c::addMeasures(NodeMap_t &NodesSensorsVals)
 	}
 	for(auto const& sensorsTables : NodesSensorsVals) 
 	{
-		std::string NodeName = "NodeId" + std::to_string(sensorsTables.first);
+		int NodeId = sensorsTables.first;
+		std::string NodeName = "NodeId" + std::to_string(NodeId);
 		std::cout << NodeName << std::endl;
 		for(auto const& Table : sensorsTables.second) 
 		{
@@ -46,8 +213,12 @@ void db_manager_c::addMeasures(NodeMap_t &NodesSensorsVals)
 			std::cout << "\tSensor: " << SensorName << std::endl;
 			for(auto const& Measure : Table.second) 
 			{
+				//--------------------------first add it to the memory DB--------------------------
+				Nodes[NodeId][SensorName].push_back(Measure);
+				//--------------------------then to cout--------------------------
 				std::cout << "\t\ttime: " << utl::getTime(Measure.time) << std::endl;
 				std::cout << "\t\tval: " << Measure.value << std::endl;
+				//--------------------------then save it to the db files--------------------------
 				//TODO this year month setting could be triggered on event to update it once.
 				std::string text_year,text_month,text_day;
 				utl::getYearMonthDay(Measure.time,text_year,text_month,text_day);

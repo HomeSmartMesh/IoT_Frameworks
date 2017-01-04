@@ -45,7 +45,8 @@ strvect utl::split(std::string NodesList,char sep)
 	strvect strlist;
 	while(NodesList != "")
 	{
-		strlist.push_back(utl::TakeParseTo(NodesList,sep));
+		std::string part = utl::TakeParseTo(NodesList,sep);
+		strlist.push_back(part);
 	}
 	return strlist;
 }
@@ -157,20 +158,12 @@ std::string utl::remove_0x(std::string &str)
     return res;	
 }
 
-void utl::remove(const std::string &substr, std::string &str)
+void utl::remove(std::string substr, std::string &str)
 {
-	/*
-	std::string resstr;
-	size_t l = substr.length();
+	std::string::size_type i = str.find(substr);
 
-	size_t pos = str.find_first_of(substr);
-	while(pos != string::npos)
-	{
-		resstr += str.substr(0 , first);
-		resstr += str.substr(first+substr.length() ,str.length());
-		pos = str.find_first_of(substr,pos+1);
-	}
-	*/
+	if (i != std::string::npos)
+	   str.erase(i, substr.length());
 }
 
 std::string utl::ParseRemTill(std::string &str,char sep,bool &found)
@@ -310,3 +303,7 @@ void utl::getYearMonthDay(std::time_t rawtime,std::string &text_year,std::string
 	text_day = std::string(buffer);
 }
 
+void utl::printTime(std::time_t rawtime)
+{
+	std::cout << getDay(rawtime) << "\t" << getTime(rawtime) << std::endl;
+}
