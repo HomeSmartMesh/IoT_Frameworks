@@ -40,6 +40,7 @@ namespace utl
 	std::string	getTime();
 	std::string	getDay(std::time_t rawtime);
 	std::string	getDay();
+	void 		getYearMonthDay(std::time_t rawtime,std::string &text_year,std::string &text_month,std::string &text_day);
 	
 	std::string remove_spaces(std::string &str);
 	void replace(std::string &str,char what,char withwhat);

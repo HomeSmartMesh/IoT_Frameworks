@@ -55,12 +55,12 @@ int main( int argc, char** argv )
 	strmap conf;
 	utl::args2map(argc,argv,conf);//here is checked './configfile.txt'
 
-	Serial 		ser;
+	Serial 		stream;
 	websocket_manager_c wsm;
 	db_manager_c		dbm;
 
 	
-	if(!ser.config(conf))
+	if(!stream.config(conf))
 	{
 		help_arguments();
 		exit(1);
@@ -74,29 +74,31 @@ int main( int argc, char** argv )
 	
 	dbm.config(conf);
 	
+	dbm.load();
+	
 	
 	
 	//#2 issue, it is likely that someone else is using the port in parallel
 	//discard first trash buffer if available right after opening the port
 	//this discard measure is not enough as ibberish appears still
-	ser.update();
+	stream.update();
 	
 	
 	while (1) 
 	{
-		if(ser.update())
+		if(stream.update())
 		{
 			NodeMap_t NodesSensorsVals;
 			
-			NodesSensorsVals = ser.processBuffer();
+			NodesSensorsVals = stream.processBuffer();
 
 			dbm.addMeasures(NodesSensorsVals);
 
-			ser.logBuffer();
+			stream.logBuffer();
 
-			wsm.sendLines(ser.logbuf.currentlines);
+			wsm.sendLines(stream.logbuf.currentlines);
 			
-			ser.clearBuffer();
+			stream.clearBuffer();
 		}
 		usleep(100000);//100 ms
 		

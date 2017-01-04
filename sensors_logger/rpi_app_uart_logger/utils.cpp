@@ -295,3 +295,18 @@ std::string	utl::getDay()
 	time (&rawtime);
 	return utl::getDay(rawtime);
 }
+
+void utl::getYearMonthDay(std::time_t rawtime,std::string &text_year,std::string &text_month,std::string &text_day)
+{
+	struct tm * timeinfo;
+	timeinfo = localtime(&rawtime);
+
+	char buffer[10];
+	strftime(buffer,10,"%Y",timeinfo);
+	text_year = std::string(buffer);
+	strftime(buffer,10,"%m",timeinfo);
+	text_month = std::string(buffer);
+	strftime(buffer,10,"%d",timeinfo);
+	text_day = std::string(buffer);
+}
+
