@@ -20,9 +20,11 @@ class websocket_manager_c
 public:
 	websocket_manager_c();
 public:
-	bool config(strmap &v_conf);
-	void sendLines(std::vector<std::string> &lines);
-	void run();//handles requests and reconnection
+	bool 		config(strmap &v_conf);
+	void 		sendLines(std::vector<std::string> &lines);
+	void 		send(std::string &response);
+	std::string poll();
+	void 		check_connection();
 private:
 	
 	strmap conf;

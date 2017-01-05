@@ -58,11 +58,12 @@ public:
 public:
 	bool config(strmap &v_conf);
 	void load();
+	void handle_request(const std::string &request,std::string &response);
 	void addMeasures(sensors_tables_t &measures);
 	void addMeasures(NodeMap_t &NodesSensorsVals);
-	void parseLines(std::vector<std::string> &lines);
-	bool splitPath2Names(std::string path,int &year,int &month,int &NodeName,std::string &SensorName);
 	void print();
+private:
+	bool splitPath2Names(std::string path,int &year,int &month,int &NodeName,std::string &SensorName);
 public:
 	NodeMap_t 		Nodes;
 	std::string 	dbpath;

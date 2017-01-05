@@ -120,9 +120,17 @@ int main( int argc, char** argv )
 			
 			stream.clearBuffer();
 		}
-		usleep(100000);//100 ms
 		
-		wsm.run();//Handle requests and reconnection : carefull !! loop count depend on time 100 ms
+		usleep(100000);//100 ms : this is an unnneccessary load if the processing grows up
+		
+		std::string request = wsm.poll();
+		
+		std::string response;
+		dbm.handle_request(request,response);
+		
+		wsm.send(response);
+		
+		wsm.check_connection();//carefull !! loop count depend on time 100 ms
 	}
 
 	return 0;

@@ -253,10 +253,7 @@ void db_manager_c::addMeasures(NodeMap_t &NodesSensorsVals)
 	}
 }
 
-void db_manager_c::parseLines(std::vector<std::string> &lines)
+void db_manager_c::handle_request(const std::string &request,std::string &response)
 {
-	for(std::string line : lines)
-	{
-		
-	}	
+	
 }

@@ -39,20 +39,40 @@ void websocket_manager_c::sendLines(std::vector<std::string> &lines)
 	
 }
 
-void websocket_manager_c::run()
+void websocket_manager_c::send(std::string &response)
 {
+	if(wsp)
+	if(wsp->getReadyState() != WebSocket::CLOSED) 
+	{
+		wsp->send(response);
+	}
+	
+}
+
+std::string websocket_manager_c::poll()
+{
+	std::string request;
 	if(wsp)
 	{
 		if(wsp->getReadyState() != WebSocket::CLOSED)
 		{
 			//WebSocket::pointer wsp = &*ws; // <-- because a unique_ptr cannot be copied into a lambda
 			wsp->poll();
-			wsp->dispatch([](const std::string & message) 
+			wsp->dispatch([&request](const std::string & message) 
 			{
-				std::cout << "wsm>" << message << std::endl;
+				//std::cout << "wsm>" << message << std::endl;
+				request = message;
 			}			);
 		}
-		else
+	}
+	return request;
+}
+
+void websocket_manager_c::check_connection()
+{
+	if(wsp)
+	{
+		if(wsp->getReadyState() == WebSocket::CLOSED)
 		{
 			//TODO, WARNING, scalability, check memory leaks
 			wsp = 0;//kill the websocket so that it's checked later for reconnections
