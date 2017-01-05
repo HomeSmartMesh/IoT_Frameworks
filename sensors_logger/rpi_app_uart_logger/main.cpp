@@ -27,6 +27,10 @@
 
 #include "db_mgr.hpp"
 
+#include "json.hpp"
+using json = nlohmann::json;
+
+
 using namespace std;
 
 void help_arguments()
@@ -48,27 +52,45 @@ void help_arguments()
 	
 }
 
+void json_test()
+{
+	json Nodes;
+	sensor_measure_t m;
+	time(&m.time);
+	m.value = 19.5;
+	//when using numbers Nodes[5], it converts it into an array with 4 times null,null,...
+	Nodes["5"]["Temperature"]["Time"].push_back(m.time);
+	Nodes["5"]["Temperature"]["Value"].push_back(m.value);
+	m.value = 20.5;
+	Nodes["5"]["Temperature"]["Time"].push_back(m.time);
+	Nodes["5"]["Temperature"]["Value"].push_back(m.value);
+	m.value = 980.5;
+	Nodes["6"]["Pressure"]["Time"].push_back(m.time);
+	Nodes["6"]["Pressure"]["Value"].push_back(m.value);
+	
+	std::cout << Nodes.dump(4) << std::endl;
+	
+}
 
 int main( int argc, char** argv )
 {
-	
 	strmap conf;
 	utl::args2map(argc,argv,conf);//here is checked './configfile.txt'
 
-	Serial 		stream;
-	websocket_manager_c wsm;
-	db_manager_c		dbm;
+	Serial 					stream;	//process serial port stream : calibrate sensor values
+	websocket_manager_c 	wsm;	//websocket manager : send, receive, reconnections
+	db_manager_c			dbm;	//adds values to files and memory db, answers requests
 
 	
-	if(!stream.config(conf))
+	if(!stream.config(conf))//if the configuration failes to get what is needed (serial port number)
 	{
-		help_arguments();
-		exit(1);
+		help_arguments();	//then remind of the command line helps
+		exit(1);			//and exit this application
 	}
 	
 	if(!wsm.config(conf))
 	{
-		std::cout << "could not open websocket url, will retry later..." << std::endl;
+		std::cout << "wsm>" << "could not open websocket url, will retry later..." << std::endl;
 		help_arguments();
 	}
 	
@@ -76,10 +98,7 @@ int main( int argc, char** argv )
 	
 	dbm.load();
 	
-	//dbm.print();
-	
-	exit(0);
-	
+	//DEBUG: dbm.print();
 	
 	//#2 issue, it is likely that someone else is using the port in parallel
 	//discard first trash buffer if available right after opening the port
@@ -91,13 +110,11 @@ int main( int argc, char** argv )
 	{
 		if(stream.update())
 		{
-			NodeMap_t NodesSensorsVals;
-			
-			NodesSensorsVals = stream.processBuffer();
+			NodeMap_t measures = stream.processBuffer();
 
-			dbm.addMeasures(NodesSensorsVals);
+			dbm.addMeasures(measures);	//save into the data base (memory db & files db)
 
-			stream.logBuffer();
+			stream.logBuffer();			//goes to console and log file
 
 			wsm.sendLines(stream.logbuf.currentlines);
 			
@@ -105,7 +122,7 @@ int main( int argc, char** argv )
 		}
 		usleep(100000);//100 ms
 		
-		wsm.handle_messages();
+		wsm.run();//Handle requests and reconnection : carefull !! loop count depend on time 100 ms
 	}
 
 	return 0;

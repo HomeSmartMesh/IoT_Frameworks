@@ -69,9 +69,6 @@ bool db_manager_c::splitPath2Names(std::string path,int &year,int &month,int &No
 
 void db_manager_c::load()
 {
-	//setenv("TZ", "/usr/share/zoneinfo/America/New_York", 1); // POSIX-specific
-	setenv("TZ", "", 1);	
-	tzset();
 	if(utl::exists(conf,"dbloadpaths"))
 	{
 		cout << "loading files from dbloadpaths" << std::endl;
@@ -95,21 +92,12 @@ void db_manager_c::load()
 							int NodeId;
 							if (splitPath2Names(filename,year,month,NodeId,SensorName))
 							{
-								cout << "          " << year << " ; " << month << " ; " << "NodeId" << NodeId << " ; " << SensorName << std::endl;
+								//cout << "          " << year << " ; " << month << " ; " << "NodeId" << NodeId << " ; " << SensorName << std::endl;
 
-								
-								std::time_t t = std::time(NULL);
-								std::tm timeinfo = *std::localtime(&t);
-								//time_t rawtime,ftime;
-								//struct tm * timeinfo;
-								/* get current timeinfo and modify it to the user's choice */
-								//time ( &rawtime );
-								//timeinfo = localtime ( &rawtime );
-								
-								//std::istringstream ss("16:35:12");
-								//ss >> std::get_time(&tm, "%H:%M:%S"); // or just %T in this case
-								
-
+								std::tm timeinfo;
+								timeinfo.tm_year = year - 1900;//standard say so
+								timeinfo.tm_mon = month - 1;//as mon start from 0
+								timeinfo.tm_isdst = 1;//true time saving applies
 								
 								std::ifstream ifile;
 								ifile.open(filename.c_str(), std::ios::in );
@@ -122,11 +110,10 @@ void db_manager_c::load()
 										std::string &day_txt = cells[0];
 										std::string &time_txt = cells[1];
 										std::string &value_txt = cells[2];
+
 										sensor_measure_t Measure;
-										//TODO time conversion from text to time
-										timeinfo.tm_year = year;
-										timeinfo.tm_mon = month;
-										timeinfo.tm_isdst = 1;//true time saving applies
+										Measure.value = std::stof(value_txt);
+
 										timeinfo.tm_mday = std::stoi(day_txt);
 										strvect timevals = utl::split(time_txt,':');
 										if(timevals.size() == 3)
@@ -139,19 +126,15 @@ void db_manager_c::load()
 										{
 											std::cout << "Error: unexpected time format" << std::endl;
 										}
-										
-										Measure.value = std::stof(value_txt);
-										std::cout << "timeinfo[" << timeinfo.tm_year << "," << timeinfo.tm_mon <<  "," << timeinfo.tm_mday << " - ";
-										std::cout << timeinfo.tm_hour << "," << timeinfo.tm_min <<  "," << timeinfo.tm_sec << "]  ";
-										
-										//ftime = timelocal(timeinfo);
-										
-										//ftime = timegm(timeinfo);
 										Measure.time = std::mktime(&timeinfo);
-										std::cout << "print time: " << Measure.time << " : ";
-										utl::printTime(Measure.time);
 
 										Nodes[NodeId][SensorName].push_back(Measure);
+										
+										//std::cout << "timeinfo[" << timeinfo.tm_year << "," << timeinfo.tm_mon <<  "," << timeinfo.tm_mday << " - ";
+										//std::cout << timeinfo.tm_hour << "," << timeinfo.tm_min <<  "," << timeinfo.tm_sec << "]  ";
+										//std::cout << "print time: " << Measure.time << " : ";
+										//utl::printTime(Measure.time);
+
 									}
 									else
 									{
@@ -206,18 +189,18 @@ void db_manager_c::addMeasures(NodeMap_t &NodesSensorsVals)
 	{
 		int NodeId = sensorsTables.first;
 		std::string NodeName = "NodeId" + std::to_string(NodeId);
-		std::cout << NodeName << std::endl;
+		std::cout << "dbm>" << NodeName << std::endl;
 		for(auto const& Table : sensorsTables.second) 
 		{
 			std::string SensorName = Table.first;
-			std::cout << "\tSensor: " << SensorName << std::endl;
+			std::cout << "dbm>" << "\tSensor: " << SensorName << std::endl;
 			for(auto const& Measure : Table.second) 
 			{
 				//--------------------------first add it to the memory DB--------------------------
 				Nodes[NodeId][SensorName].push_back(Measure);
 				//--------------------------then to cout--------------------------
-				std::cout << "\t\ttime: " << utl::getTime(Measure.time) << std::endl;
-				std::cout << "\t\tval: " << Measure.value << std::endl;
+				std::cout << "dbm>" << "\t\ttime: " << utl::getTime(Measure.time) << std::endl;
+				std::cout << "dbm>" << "\t\tval: " << Measure.value << std::endl;
 				//--------------------------then save it to the db files--------------------------
 				//TODO this year month setting could be triggered on event to update it once.
 				std::string text_year,text_month,text_day;
@@ -233,19 +216,19 @@ void db_manager_c::addMeasures(NodeMap_t &NodesSensorsVals)
 				}
 				else//come here only on exceptions for first time call
 				{
-					std::cout << ">>> Opening file: " << filename << std::endl;
+					std::cout << "dbm>" << ">>> Opening file: " << filename << std::endl;
 					ofile.open(filename.c_str(), (std::ios::out|std::ios::app) );
 					if(!ofile.is_open())
 					{
-						std::cout << "could not open sensor file: " << filename << std::endl;
+						std::cout << "dbm>" << "could not open sensor file: " << filename << std::endl;
 						struct stat buffer;
 						if(stat(filepath.c_str(), &buffer) != 0)//then Month directory does not exist
 						{
-							std::cout << ">>> Directory does not exist: " << filepath << std::endl;
+							std::cout << "dbm>" << ">>> Directory does not exist: " << filepath << std::endl;
 							mkdir(filepath.c_str(),ACCESSPERMS);
 							if(stat(filepath.c_str(), &buffer) == 0)
 							{
-								std::cout << ">>> Directory created,retry open file" << std::endl;
+								std::cout << "dbm>" << ">>> Directory created,retry open file" << std::endl;
 								ofile.open(filename.c_str(), (std::ios::out|std::ios::app) );
 								if(ofile.is_open())
 								{
@@ -254,13 +237,13 @@ void db_manager_c::addMeasures(NodeMap_t &NodesSensorsVals)
 								}
 								else
 								{
-									std::cout << ">>> Still could not open sensor file !!!: " << filename << std::endl;
+									std::cout << "dbm>" << ">>> Still could not open sensor file !!!: " << filename << std::endl;
 									//=> Error don't know what's goig on ?
 								}
 							}
 							else
 							{
-								std::cout << ">>> Directory still does not exist !!!! : " << filepath << std::endl;
+								std::cout << "dbm>" << ">>> Directory still does not exist !!!! : " << filepath << std::endl;
 							}
 						}
 					}

@@ -22,7 +22,7 @@ public:
 public:
 	bool config(strmap &v_conf);
 	void sendLines(std::vector<std::string> &lines);
-	void handle_messages();
+	void run();//handles requests and reconnection
 private:
 	
 	strmap conf;
