@@ -8,6 +8,7 @@ Complete working samples for specific use cases including
 These projects are of intermediate level, for a beginning [STM8 IoT Hello World Samples](https://github.com/wassfila/STM8_IoT_HelloWorld) are available on a separate repository.
 
 # Sensors Logger
+<img src="https://github.com/wassfila/IoT_Frameworks/blob/master/sensors_logger/IoT_Infrastructure.png" height=400>
 ## Firmware for the Mobile Node
 Here have firmware for the Mobile Node which is the base for the sensors:
  - *BME280* Temperature Humidity Pressure
@@ -16,10 +17,31 @@ Here have firmware for the Mobile Node which is the base for the sensors:
 More details on [Home Smart Mesh](http://www.homesmartmesh.com)
 
 <img src="https://github.com/wassfila/IoT_Frameworks/blob/master/sensors_logger/IoT_Node_Mobile_v2.JPG" height=300>
-## Raspberry Pi Serial logger
- - C++ Linux based serial port application
- - While at this stage using any serial port logger would do, it is planned to have combined Data/Text connection for which these provided components will be usefull.
 
+## Raspberry Pi C++ Sensors Streamer
+- Serial port reader
+- Conversion of sensors registers to values through calibration parameters for BME280
+- Database manager : files and memory management of binary data, text std::string request and response
+- websocket manager : interface to the nodejs server
+
+### Environment and Dependencies
+- Scons : a single line for the whole compilation, linker stuf,...
+- C++11 : Modern c++ is easier than javascript (the luxury of having a compiler)
+- Boost 1.60 (filesystem) : A warm welcome to Boost on RPI (see install instructions)
+- json for modern c++ : yes, json as easy to use as in javascript https://github.com/nlohmann/json
+- C++ websocket client : https://github.com/dhbaird/easywsclient
+
+### Boost installation on the Raspberry pi
+Minimal install for filesystem support:
+```
+mkdir boost
+cd boost
+wget http://sourceforge.net/projects/boost/files/boost/1.60.0/boost_1_60_0.tar.bz2
+tar xvfo boost_1_60_0.tar.bz2
+cd boost_1_60_0
+./bootstrap.sh --with-libraries=filesystem,system
+sudo ./b2 install
+```
 # Mesh Controller Interface
 ## Commands help and Protocol details
 [Technolab/Mesh Controller Interface wiki](http://www.technolab.ddns.net/display/SSN/Mesh+Controller+Interface)
