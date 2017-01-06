@@ -26,7 +26,7 @@ $(function () {
     }
 
     // open connection
-    var connection = new WebSocket('ws://10.0.0.2:4348/measures');
+    var connection = new WebSocket('ws://10.0.0.12:4348/measures');
 
     connection.onopen = 
 	function()
@@ -47,31 +47,39 @@ $(function () {
     connection.onmessage = 
 	function(message)
 	{
-		addMessage(message.data);
-		console.log('received ', message.data);
-		/*
-        // try to parse JSON message. Because we know that the server always returns
-        // JSON this should work without any problem but we should make sure that
-        // the massage is not chunked or otherwise damaged.
-        try {
+        try 
+		{
             var json = JSON.parse(message.data);
-        } catch (e) {
+        } catch (e) 
+		{
             console.log('This doesn\'t look like a valid JSON: ', message.data);
             return;
         }
-
-        // NOTE: if you're not sure about the JSON structure
-        // check the server source code above
-        if (json.type === 'color') { // first response from the server with user's color
-            myColor = json.data;
-            status.text(myName + ': ').css('color', myColor);
-            // from now user can start sending messages
-        } else if (json.type === 'message') { // it's a single message
-            addMessage(json.data.author, json.data.text,
-                       json.data.color, new Date(json.data.time));
-        } else {
-            console.log('Hmm..., I\'ve never seen JSON like this: ', json);
-        }*/
+		
+		var message_text = '';
+		for (var key in json) 
+		{
+			message_text += key + " : <br>";
+			for(var sk in json[key])
+			{
+				message_text += sk + '(' + json[key][sk].Value + ' : ' + json[key][sk].Time + ')<br>';
+				if(sk == "Pressure")
+				{
+					var value = Math.round(json[key]["Pressure"].Value);
+					ChartSetPressureValue(key,value);
+				}
+				if(sk == "Temperature")
+				{
+					var value = Math.round(100*json[key]["Temperature"].Value)/100;
+					console.log("Temperature",key,value);
+					ChartSetTemperatureValue(key,value);
+				}
+			}
+			//message_text += '<br>';
+		}
+		
+		addMessage(message_text);
+		console.log('received ', json);
     };
 
     /**
@@ -93,6 +101,7 @@ $(function () {
      * Add message to the chat window
      */
     function addMessage(message) {
-        content.prepend('<p>' + message + '</p>');
+        //content.prepend('<p>' + message + '</p>');
+		content.html('<p>' + message + '</p>');
     }
 });
