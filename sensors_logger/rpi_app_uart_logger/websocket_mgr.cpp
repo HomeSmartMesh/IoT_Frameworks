@@ -60,8 +60,15 @@ std::string websocket_manager_c::poll()
 			wsp->poll();
 			wsp->dispatch([&request](const std::string & message) 
 			{
-				//std::cout << "wsm>" << message << std::endl;
-				request = message;
+				std::cout << "wsm>" << message << std::endl;
+				if(message.find("got it") == 0)
+				{
+					//this is an acknowledge
+				}
+				else//this is a new request
+				{
+					request = message;
+				}
 			}			);
 		}
 	}

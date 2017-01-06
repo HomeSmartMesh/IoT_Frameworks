@@ -92,8 +92,6 @@ void db_manager_c::load()
 							int NodeId;
 							if (splitPath2Names(filename,year,month,NodeId,SensorName))
 							{
-								//cout << "          " << year << " ; " << month << " ; " << "NodeId" << NodeId << " ; " << SensorName << std::endl;
-
 								std::tm timeinfo;
 								timeinfo.tm_year = year - 1900;//standard say so
 								timeinfo.tm_mon = month - 1;//as mon start from 0
@@ -129,12 +127,6 @@ void db_manager_c::load()
 										Measure.time = std::mktime(&timeinfo);
 
 										Nodes[NodeId][SensorName].push_back(Measure);
-										
-										//std::cout << "timeinfo[" << timeinfo.tm_year << "," << timeinfo.tm_mon <<  "," << timeinfo.tm_mday << " - ";
-										//std::cout << timeinfo.tm_hour << "," << timeinfo.tm_min <<  "," << timeinfo.tm_sec << "]  ";
-										//std::cout << "print time: " << Measure.time << " : ";
-										//utl::printTime(Measure.time);
-
 									}
 									else
 									{
@@ -255,5 +247,9 @@ void db_manager_c::addMeasures(NodeMap_t &NodesSensorsVals)
 
 void db_manager_c::handle_request(const std::string &request,std::string &response)
 {
-	
+	if(!request.empty())
+	{
+		std::cout << "dbm> request>" << request << std::endl;
+		std::cout << "dbm> response>" << response << std::endl;
+	}
 }

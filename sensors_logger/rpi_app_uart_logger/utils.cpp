@@ -11,6 +11,9 @@
 //for setfill
 #include <iomanip>
 
+#include "json.hpp"
+using json = nlohmann::json;
+
 using namespace std;
 
 std::string TakeParseToLast(std::string &str,char sep)
@@ -306,4 +309,25 @@ void utl::getYearMonthDay(std::time_t rawtime,std::string &text_year,std::string
 void utl::printTime(std::time_t rawtime)
 {
 	std::cout << getDay(rawtime) << "\t" << getTime(rawtime) << std::endl;
+}
+
+std::string utl::stringify(NodeMap_t &measures,const std::string &type)
+{
+	json jsonMeasures;
+	
+	for(auto const& sensorsTables : measures)
+	{
+		std::string NodeId = std::to_string(sensorsTables.first);
+		for(auto const& Table : sensorsTables.second) 
+		{
+			std::string SensorName = Table.first;
+			for(auto const& Measure : Table.second) 
+			{
+				jsonMeasures[type][NodeId][SensorName]["Time"].push_back(utl::getTime(Measure.time));
+				jsonMeasures[type][NodeId][SensorName]["Value"].push_back(Measure.value);
+			}
+		}
+	}
+	
+	return jsonMeasures.dump();
 }

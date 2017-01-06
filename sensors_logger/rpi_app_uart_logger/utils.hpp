@@ -50,6 +50,9 @@ namespace utl
 	
 	void hextext2data(const std::string &str, uint8_t *data);
 	std::string data2hextext(const uint8_t *data,int data_size);
+	
+	//json routines
+	std::string stringify(NodeMap_t &measures,const std::string &type);
 }
 
 #endif /*__UTILS__*/

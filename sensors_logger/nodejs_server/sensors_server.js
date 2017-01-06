@@ -61,43 +61,35 @@ ws_sensors.on(
 		function(data, flags)
 		{
 			if (flags.binary) { return; }
-			logger.verbose('rf_logger> ' + data);
 			
-			var str = data.toString();
-			str = str.replace(',',';');//Light should use ';'
-			var LineTabs = str.split('\t');
-			//console.log('kv split : ', kv);
-			if(LineTabs.length == 3) 
+			var json = JSON.parse(data);
+			if(json && ("update" in json) )
 			{
-				var NodeLine = LineTabs[2].split(';');
-				//console.log('sv split : ', NodeLine);
-				if(NodeLine.length == 2)
+				var message = json["update"];
+				console.log('rf_logger:update> ',message);
+				logger.verbose('rf_logger:update> ',message);
+				for (var key in message) 
 				{
-					var nid = NodeLine[0].split(':');
-					if(nid[0] == 'NodeId')
+					if(!(key in lastVals))
+						lastVals[key] = {};
+					for(var sk in message[key])
 					{
-						var NodeId = nid[1];
-						var sval = NodeLine[1].split(':');
-						if(lastVals[NodeId] === undefined)
-						{
-							lastVals[NodeId] = {};
-						}
-						lastVals[NodeId][sval[0]] = sval[1];
+						lastVals[key][sk] = message[key][sk];
 					}
 				}
-				logger.verbose(lastVals);
-			  //read  : JSON.stringify(db[kv]);
-			  //write : 
-			  //db[kv[0]] = kv.splice(0, 1);
+				
+				ws_browser.clients.forEach(
+				function each(client)
+				{
+					var client_message = JSON.stringify(lastVals);
+					client.send(client_message);
+				}	);
 			}
-			
-			ws.send('got it');
-			ws_browser.clients.forEach(
-			function each(client)
+			else
 			{
-				var client_message = JSON.stringify(lastVals);
-				client.send(client_message);
-			}	);
+				console.log('rf_logger:data> ',data);
+				logger.verbose('rf_logger:data> ',data);
+			}
 		}	);
 
 		ws.on	(
@@ -129,8 +121,25 @@ ws_browser.on(
 		function(data, flags)
 		{
 			if (flags.binary) { return; }
-			logger.info('rf_logger> ' + data);
-			ws.send('got it');
+			var json = JSON.parse(data);
+			if(json && ("request" in json) )
+			{
+				var message = json["request"];
+				console.log('browser:request> ',message);
+				logger.verbose('browser:request> ',message);
+				ws_browser.clients.forEach(
+				function each(client)
+				{
+					var client_message = JSON.stringify(message);
+					client.send(client_message);
+				}	);
+			}
+			else
+			{
+				console.log('browser:data> ',data);
+				logger.verbose('browser:data> ',data);
+			}
+			
 		}	);
 
 		ws.on	(

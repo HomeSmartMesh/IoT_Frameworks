@@ -335,6 +335,9 @@ void Serial::processLine(NodeMap_t &nodes)
 NodeMap_t Serial::processBuffer()
 {
 	NodeMap_t nodes;
+	
+	clearBuffer();//return only the last gathered data
+	
 	//std::cout << "DBG" << std::endl;
 	if(logbuf.n>0)
 	{
