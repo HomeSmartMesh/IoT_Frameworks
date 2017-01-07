@@ -14,42 +14,12 @@
                  margin-top:10px; padding:5px; width:400px;  }
         #status { width:88px; display:block; float:left; margin-top:15px; }
         </style>
-
-		<script type="text/javascript" src="./libs/amcharts.js"></script>
-		<script type="text/javascript" src="./libs/gauge.js"></script>
-		<script type="text/javascript" src="./libs/dark.js"></script>
-
-		<script src="https://www.amcharts.com/lib/3/serial.js"></script>
-		<script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
-		<link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
-		<script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
-
-		<!-- amCharts javascript code -->
-		<script type="text/javascript" src="charts_pressure.js"></script>
-		<script type="text/javascript" src="charts_temperature.js"></script>
-
+		<!-- d3js as selected graph library -->
+		<script src="//d3js.org/d3.v3.min.js"></script>
+		
 	</head>
     <body>
-	<table width="100%">
-		<tr>
-			<td>	
-				<div id="chartdivRoom" style="width: 100%; height: 300px; background-color: #282828;" ></div>
-			</td>
-			<td>	
-				<div id="chartdivBath" style="width: 100%; height: 300px; background-color: #282828;" ></div>
-			</td>
-		</tr>
-		<tr>
-			<td width="50%">	
-				<div id="chartserRoom" style="maxWidth=400px; width: 100%; height: 300px; background-color: #282828;" ></div>
-			</td>
-			<td width="50%">	
-				<div id="chartserBath" style="width: 100%; height: 300px; background-color: #282828;" ></div>
-			</td>
-		</tr>
-	</table>
-		
-		
+		<script src="d3.temperature.js"></script>
         <div id="content"></div>
         <div>
             <span id="status">Connecting...</span>

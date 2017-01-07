@@ -66,13 +66,13 @@ $(function () {
 				if(sk == "Pressure")
 				{
 					var value = Math.round(json[key]["Pressure"].Value);
-					ChartSetPressureValue(key,value);
+					//d3_SetPressureValue(key,value);
 				}
 				if(sk == "Temperature")
 				{
 					var value = Math.round(100*json[key]["Temperature"].Value)/100;
 					console.log("Temperature",key,value);
-					ChartSetTemperatureValue(key,value);
+					d3_SetTemperatureValue(key,value);
 				}
 			}
 			//message_text += '<br>';
