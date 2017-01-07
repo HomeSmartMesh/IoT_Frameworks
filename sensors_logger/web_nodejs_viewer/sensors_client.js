@@ -57,22 +57,30 @@ $(function () {
         }
 		
 		var message_text = '';
-		for (var key in json) 
+		for (var nodeid in json) 
 		{
-			message_text += key + " : <br>";
-			for(var sk in json[key])
+			message_text += nodeid + " : <br>";
+			for(var sk in json[nodeid])
 			{
-				message_text += sk + '(' + json[key][sk].Value + ' : ' + json[key][sk].Time + ')<br>';
+				message_text += sk + '(' + json[nodeid][sk].Value + ' : ' + json[nodeid][sk].Time + ')<br>';
 				if(sk == "Pressure")
 				{
-					var value = Math.round(json[key]["Pressure"].Value);
-					//d3_SetPressureValue(key,value);
+					var value = Math.round(json[nodeid]["Pressure"].Value);
+					//d3_SetPressureValue(nodeid,value);
 				}
 				if(sk == "Temperature")
 				{
-					var value = Math.round(100*json[key]["Temperature"].Value)/100;
-					console.log("Temperature",key,value);
-					d3_SetTemperatureValue(key,value);
+					var value = Math.round(100*json[nodeid]["Temperature"].Value)/100;
+					d3_SetTemperatureValue(nodeid,value);
+				}
+				if(sk == "Humidity")
+				{
+					var value = Math.round(json[nodeid]["Humidity"].Value);
+					d3_SetHumidityValue(nodeid,value);
+				}
+				if(sk == "Light")
+				{
+					d3_SetLightValue(nodeid,json[nodeid]["Light"].Value);
 				}
 			}
 			//message_text += '<br>';
