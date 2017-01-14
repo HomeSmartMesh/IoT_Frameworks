@@ -55,6 +55,9 @@ ws_sensors.on(
 	function(ws) 
 	{
 		logger.info('rf_logger is connected');
+		/*var jReq = {request : {id : 362}};
+		var Req = JSON.stringify(jReq);
+		ws.send(Req);*/
 
 		ws.on(
 		'message',
@@ -63,6 +66,7 @@ ws_sensors.on(
 			if (flags.binary) { return; }
 			
 			var json = JSON.parse(data);
+			//------------------------------- update -------------------------------
 			if(json && ("update" in json) )
 			{
 				var message = json["update"];
@@ -85,6 +89,27 @@ ws_sensors.on(
 					client.send(client_message);
 				}	);
 			}
+			//------------------------------- response -------------------------------
+			else if(json && ("response" in json) )
+			{
+				var message = json.response;
+				console.log('rf_logger:response> ',message);
+				logger.verbose('rf_logger:response> ',message);
+				if("id" in json.response)
+				{
+					var clients = 
+					ws_browser.clients.filter(
+						function( obj )
+						{
+							return ("lastRequestId" in obj && obj.lastRequestId == json.response.id);
+						}					);
+					if(clients.length >= 1)
+					{
+						clients[0].send(data);
+					}
+				}
+			}
+			//------------------------------- others -------------------------------
 			else
 			{
 				console.log('rf_logger:data> ',data);
@@ -122,18 +147,23 @@ ws_browser.on(
 		{
 			if (flags.binary) { return; }
 			var json = JSON.parse(data);
+			//------------------------------- request -------------------------------
 			if(json && ("request" in json) )
 			{
-				var message = json["request"];
-				console.log('browser:request> ',message);
-				logger.verbose('browser:request> ',message);
-				ws_browser.clients.forEach(
-				function each(client)
+				if("id" in json.request)
 				{
-					var client_message = JSON.stringify(message);
-					client.send(client_message);
-				}	);
+					ws.lastRequestId = json.request.id;
+					var message = json.request;
+					console.log('browser:request> ',message);
+					logger.verbose('browser:request> ',message);
+					//only one client expected for the DE_Sensors - simple forward
+					if(ws_sensors.clients.length >= 0)
+					{
+						ws_sensors.clients[0].send(data);
+					}
+				}
 			}
+			//------------------------------- others -------------------------------
 			else
 			{
 				console.log('browser:data> ',data);

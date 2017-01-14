@@ -33,6 +33,15 @@ $(function () {
 	{
         // first we want users to enter their names
         status.text('Connected');
+		
+		var jReq = {
+						request : 
+						{
+							id : 375
+						}
+					};
+		var Req = JSON.stringify(jReq);
+		connection.send(Req);
     };
 
     connection.onerror = 
@@ -55,39 +64,47 @@ $(function () {
             console.log('This doesn\'t look like a valid JSON: ', message.data);
             return;
         }
-		
-		var message_text = '';
-		for (var nodeid in json) 
+		//------------------------------------------ response ------------------------------------------
+		if("response" in json)
 		{
-			message_text += nodeid + " : <br>";
-			for(var sk in json[nodeid])
-			{
-				message_text += sk + '(' + json[nodeid][sk].Value + ' : ' + json[nodeid][sk].Time + ')<br>';
-				if(sk == "Pressure")
-				{
-					var value = Math.round(json[nodeid]["Pressure"].Value);
-					//d3_SetPressureValue(nodeid,value);
-				}
-				if(sk == "Temperature")
-				{
-					var value = Math.round(100*json[nodeid]["Temperature"].Value)/100;
-					d3_SetTemperatureValue(nodeid,value);
-				}
-				if(sk == "Humidity")
-				{
-					var value = Math.round(json[nodeid]["Humidity"].Value);
-					d3_SetHumidityValue(nodeid,value);
-				}
-				if(sk == "Light")
-				{
-					d3_SetLightValue(nodeid,json[nodeid]["Light"].Value);
-				}
-			}
-			//message_text += '<br>';
+			console.log("response>",json.response);
 		}
-		
-		addMessage(message_text);
-		console.log('received ', json);
+		//------------------------------------------ update ------------------------------------------
+		else // must be update but without type
+		{
+			var message_text = '';
+			for (var nodeid in json) 
+			{
+				message_text += nodeid + " : <br>";
+				for(var sk in json[nodeid])
+				{
+					message_text += sk + '(' + json[nodeid][sk].Value + ' : ' + json[nodeid][sk].Time + ')<br>';
+					if(sk == "Pressure")
+					{
+						var value = Math.round(json[nodeid]["Pressure"].Value);
+						//d3_SetPressureValue(nodeid,value);
+					}
+					if(sk == "Temperature")
+					{
+						var value = Math.round(100*json[nodeid]["Temperature"].Value)/100;
+						d3_SetTemperatureValue(nodeid,value);
+					}
+					if(sk == "Humidity")
+					{
+						var value = Math.round(json[nodeid]["Humidity"].Value);
+						d3_SetHumidityValue(nodeid,value);
+					}
+					if(sk == "Light")
+					{
+						d3_SetLightValue(nodeid,json[nodeid]["Light"].Value);
+					}
+				}
+				//message_text += '<br>';
+			}
+			
+			addMessage(message_text);
+			console.log('received ', json);
+		}
     };
 
     /**

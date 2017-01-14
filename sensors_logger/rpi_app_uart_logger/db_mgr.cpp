@@ -14,6 +14,9 @@
 using namespace boost::filesystem;
 using std::cout;
 
+#include "json.hpp"
+using json = nlohmann::json;
+
 db_manager_c::db_manager_c()
 {
 
@@ -250,6 +253,13 @@ void db_manager_c::handle_request(const std::string &request,std::string &respon
 	if(!request.empty())
 	{
 		std::cout << "dbm> request>" << request << std::endl;
+		json jReq = json::parse(request);
+		std::cout << "dbm> json req>" << jReq << std::endl;
+		json jResp;
+		jResp["response"]["id"] = jReq["request"]["id"];
+		std::cout << "dbm> json resp>" << jResp << std::endl;
+		
+		response = jResp.dump();
 		std::cout << "dbm> response>" << response << std::endl;
 	}
 }
