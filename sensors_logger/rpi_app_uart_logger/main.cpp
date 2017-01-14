@@ -127,7 +127,10 @@ int main( int argc, char** argv )
 		{
 			std::string response;
 			dbm.handle_request(request,response);
-			wsm.send(response);
+			if(!response.empty())
+			{
+				wsm.send(response);
+			}
 		}
 		
 		wsm.check_connection();//carefull !! loop count depend on time 100 ms

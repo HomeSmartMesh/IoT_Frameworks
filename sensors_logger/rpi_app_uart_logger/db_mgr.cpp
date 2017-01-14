@@ -250,26 +250,37 @@ void db_manager_c::addMeasures(NodeMap_t &NodesSensorsVals)
 
 void db_manager_c::getMeasures(int NodeId,std::string SensorName, time_t start, time_t stop,NodeMap_t &ResVals)
 {
+	std::cout << "dbm> get> " << NodeId << " " <<SensorName<<" " << start << "  " << stop << std::endl;
 	sensor_measures_table_t &db_measures 	= Nodes[NodeId][SensorName];
 	sensor_measures_table_t &resp_measures 	= ResVals[NodeId][SensorName];
+	int count = 0;
+	int found = 0;
 	for(auto const& Measure : db_measures)
 	{
+		count++;
 		if((Measure.time >= start) && (Measure.time <= stop) )
 		{
+			found++;
 			resp_measures.push_back(Measure);
+			//std::cout << "M:" << Measure.time << std::endl;
 		}
 	}
-	
+	std::cout << std::endl;
+	std::cout << "dbm> counts/found : " << count << "/" << found << std::endl;
 }
 
 void db_manager_c::handle_request(const std::string &request,std::string &response)
 {
 	if(!request.empty())
 	{
+		
 		std::cout << "dbm> request>" << request << std::endl;
 		json jReq = json::parse(request);
-		if(jReq["request"]["type"].dump().find("Duration") == 0)
+		std::string reqType = jReq["request"]["type"];
+		std::cout << "dbm> req Type>" << reqType << std::endl;
+		if(reqType.find("Duration") == 0)
 		{
+			std::cout << "dbm> find>" << std::endl;
 			time_t start = std::stoll(jReq["request"]["start"].dump())/1000;
 			time_t stop = std::stoll(jReq["request"]["stop"].dump())/1000;
 
@@ -286,5 +297,6 @@ void db_manager_c::handle_request(const std::string &request,std::string &respon
 			response = jResp.dump();
 		}
 		std::cout << "dbm> response>" << response << std::endl;
+		//std::cout << "dbm> response.length()>" << response.length() << std::endl;
 	}
 }

@@ -93,19 +93,24 @@ ws_sensors.on(
 			else if(json && ("response" in json) )
 			{
 				var message = json.response;
-				console.log('rf_logger:response> ',message);
-				logger.verbose('rf_logger:response> ',message);
+				if("Values" in json.response)
+					console.log('rf_logger:response Nb Values> ',json.response.Values.length);
+				//logger.verbose('rf_logger:response> ',message);
 				if("id" in json.response)
 				{
+					//console.log("--- looking for clients to give response>>>>");
 					var clients = 
 					ws_browser.clients.filter(
 						function( obj )
 						{
 							return ("lastRequestId" in obj && obj.lastRequestId == json.response.id);
 						}					);
+					//console.log("--- found", clients.length, "clients");
+	
 					if(clients.length >= 1)
 					{
 						clients[0].send(data);
+						console.log('rf_logger:send to client');
 					}
 				}
 			}

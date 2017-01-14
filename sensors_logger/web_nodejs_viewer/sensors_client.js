@@ -36,18 +36,18 @@ $(function () {
 		
 		//var UniqueRequestId = new Date().getUTCMilliseconds();
 		var UniqueRequestId = Math.floor(Math.random() * 10000);
-		var TimeStart = new Date(2017, 1, 14, 9, 0, 0, 0);
-		var TimeStop = new Date(2017, 1, 14, 11, 0, 0, 0);
+		var TimeStart = new Date('2017-01-14T09:00:00');//9h00
+		var TimeStop = new Date('2017-01-14T09:10:00');//9h10
 		var TimeNow = new Date();
 		var jReq = {
 						request : 
 						{
 							id 		: UniqueRequestId,
-							db_type : "Duration",
+							type : "Duration",
 							NodeId 	: 6,
 							SensorName 	: "Temperature",
 							start 		: TimeStart.getTime(),
-							stop 		: TimeNow.getTime()
+							stop 		: TimeStop.getTime()
 						}
 					};
 		var Req = JSON.stringify(jReq);
@@ -88,25 +88,29 @@ $(function () {
 				message_text += nodeid + " : <br>";
 				for(var sk in json[nodeid])
 				{
-					message_text += sk + '(' + json[nodeid][sk].Value + ' : ' + json[nodeid][sk].Time + ')<br>';
+					message_text += sk + '(' + json[nodeid][sk].Values + ' : ' + json[nodeid][sk].Times + ')<br>';
 					if(sk == "Pressure")
 					{
-						var value = Math.round(json[nodeid]["Pressure"].Value);
+						var value = Math.round(json[nodeid]["Pressure"].Values);
+						console.log("Press",nodeid, value);
 						//d3_SetPressureValue(nodeid,value);
 					}
 					if(sk == "Temperature")
 					{
-						var value = Math.round(100*json[nodeid]["Temperature"].Value)/100;
+						var value = Math.round(100*json[nodeid]["Temperature"].Values)/100;
+						console.log("Temp",nodeid, value);
 						d3_SetTemperatureValue(nodeid,value);
 					}
 					if(sk == "Humidity")
 					{
-						var value = Math.round(json[nodeid]["Humidity"].Value);
+						var value = Math.round(json[nodeid]["Humidity"].Values);
+						console.log("Hum",nodeid, value);
 						d3_SetHumidityValue(nodeid,value);
 					}
 					if(sk == "Light")
 					{
-						d3_SetLightValue(nodeid,json[nodeid]["Light"].Value);
+						console.log("Light", nodeid, value);
+						d3_SetLightValue(nodeid,json[nodeid]["Light"].Values);
 					}
 				}
 				//message_text += '<br>';
