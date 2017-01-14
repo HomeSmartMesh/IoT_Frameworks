@@ -7,6 +7,9 @@
 #include <vector>
 #include <ctime>
 
+#include "json.hpp"
+
+
 typedef std::map<std::string,std::string> strmap;
 
 typedef std::vector<std::string> strvect;
@@ -52,7 +55,14 @@ namespace utl
 	std::string data2hextext(const uint8_t *data,int data_size);
 	
 	//json routines
-	std::string stringify(NodeMap_t &measures,const std::string &type);
+	std::string 	stringify(NodeMap_t &measures,const std::string &type);
+	void 			make_json(NodeMap_t &measures,nlohmann::json &jRes,const std::string &type);
+	void 			make_json_resp(	int 				NodeId,
+									const std::string 	&SensorName,
+									 NodeMap_t 	&measures,
+									nlohmann::json		&jRes,
+									const std::string 	&type
+									);
 }
 
 #endif /*__UTILS__*/

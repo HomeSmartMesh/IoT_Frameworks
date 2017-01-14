@@ -248,26 +248,43 @@ void db_manager_c::addMeasures(NodeMap_t &NodesSensorsVals)
 	}
 }
 
+void db_manager_c::getMeasures(int NodeId,std::string SensorName, time_t start, time_t stop,NodeMap_t &ResVals)
+{
+	sensor_measures_table_t &db_measures 	= Nodes[NodeId][SensorName];
+	sensor_measures_table_t &resp_measures 	= ResVals[NodeId][SensorName];
+	for(auto const& Measure : db_measures)
+	{
+		if((Measure.time >= start) && (Measure.time <= stop) )
+		{
+			resp_measures.push_back(Measure);
+		}
+	}
+	
+}
+
 void db_manager_c::handle_request(const std::string &request,std::string &response)
 {
 	if(!request.empty())
 	{
 		std::cout << "dbm> request>" << request << std::endl;
 		json jReq = json::parse(request);
-		std::cout << "dbm> json req>" << jReq << std::endl;
+		if(jReq["request"]["type"].dump().find("Duration") == 0)
+		{
+			time_t start = std::stoll(jReq["request"]["start"].dump())/1000;
+			time_t stop = std::stoll(jReq["request"]["stop"].dump())/1000;
 
-		time_t rawtime;
-		time(&rawtime);
-		std::cout << "dbm> raw    time now is>" << rawtime << std::endl;
-		std::cout << "dbm> client time now is>" << jReq["request"]["stop"] << std::endl;
-		long long diff = std::stoll(jReq["request"]["stop"].dump())/1000 - rawtime;
-		std::cout << "dbm> diff>" << diff << std::endl;
-
-		json jResp;
-		jResp["response"]["id"] = jReq["request"]["id"];
-		std::cout << "dbm> json resp>" << jResp << std::endl;
-		
-		response = jResp.dump();
+			int NodeId 				= std::stoi(jReq["request"]["NodeId"].dump());
+			std::string SensorName 	= jReq["request"]["SensorName"];
+			NodeMap_t ResVals;
+			getMeasures(NodeId,SensorName,start,stop,ResVals);
+			json jResp;
+			utl::make_json_resp(NodeId,SensorName,ResVals,jResp,"response");
+			jResp["response"]["id"] = jReq["request"]["id"];
+			jResp["response"]["NodeId"] = NodeId;
+			jResp["response"]["SensorName"] = SensorName;
+			
+			response = jResp.dump();
+		}
 		std::cout << "dbm> response>" << response << std::endl;
 	}
 }

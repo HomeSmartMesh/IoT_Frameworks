@@ -59,8 +59,8 @@ public:
 	bool config(strmap &v_conf);
 	void load();
 	void handle_request(const std::string &request,std::string &response);
-	void addMeasures(sensors_tables_t &measures);
 	void addMeasures(NodeMap_t &NodesSensorsVals);
+	void getMeasures(int NodeId,std::string SensorName, time_t start, time_t stop,NodeMap_t &ResVals);
 	void print();
 private:
 	bool splitPath2Names(std::string path,int &year,int &month,int &NodeName,std::string &SensorName);
