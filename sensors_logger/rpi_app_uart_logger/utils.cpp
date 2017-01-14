@@ -1,7 +1,7 @@
 
 
 #include "utils.hpp"
-#include <time.h>
+#include <ctime>
 
 //for file
 #include <fstream>

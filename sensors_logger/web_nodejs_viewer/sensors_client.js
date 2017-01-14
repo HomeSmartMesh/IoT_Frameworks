@@ -34,10 +34,20 @@ $(function () {
         // first we want users to enter their names
         status.text('Connected');
 		
+		//var UniqueRequestId = new Date().getUTCMilliseconds();
+		var UniqueRequestId = Math.floor(Math.random() * 10000);
+		var TimeStart = new Date(2017, 1, 14, 9, 0, 0, 0);
+		var TimeStop = new Date(2017, 1, 14, 11, 0, 0, 0);
+		var TimeNow = new Date();
 		var jReq = {
 						request : 
 						{
-							id : 375
+							id 		: UniqueRequestId,
+							db_type : "Duration",
+							NodeId 	: 6,
+							SensorName 	: "Temperature",
+							start 		: TimeStart.getTime(),
+							stop 		: TimeNow.getTime()
 						}
 					};
 		var Req = JSON.stringify(jReq);

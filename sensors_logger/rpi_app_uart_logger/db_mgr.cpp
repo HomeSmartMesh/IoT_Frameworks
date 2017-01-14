@@ -255,6 +255,14 @@ void db_manager_c::handle_request(const std::string &request,std::string &respon
 		std::cout << "dbm> request>" << request << std::endl;
 		json jReq = json::parse(request);
 		std::cout << "dbm> json req>" << jReq << std::endl;
+
+		time_t rawtime;
+		time(&rawtime);
+		std::cout << "dbm> raw    time now is>" << rawtime << std::endl;
+		std::cout << "dbm> client time now is>" << jReq["request"]["stop"] << std::endl;
+		long long diff = std::stoll(jReq["request"]["stop"].dump())/1000 - rawtime;
+		std::cout << "dbm> diff>" << diff << std::endl;
+
 		json jResp;
 		jResp["response"]["id"] = jReq["request"]["id"];
 		std::cout << "dbm> json resp>" << jResp << std::endl;
