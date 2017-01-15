@@ -27,6 +27,11 @@ var lastVals = {};
 //Temperature[0].Time = date
 //Temperature[0].Value = 23.5
 
+function jsout(data)
+{
+	return JSON.stringify(data,null,'  ');
+}
+
 function myTimestamp() {
   return new Date().toString();
 };
@@ -54,7 +59,7 @@ ws_sensors.on(
 	'connection', 
 	function(ws) 
 	{
-		logger.info('rf_logger is connected');
+		logger.info('streamer is connected');
 		/*var jReq = {request : {id : 362}};
 		var Req = JSON.stringify(jReq);
 		ws.send(Req);*/
@@ -64,61 +69,54 @@ ws_sensors.on(
 		function(data, flags)
 		{
 			if (flags.binary) { return; }
-			
 			var json = JSON.parse(data);
+			console.log("received:streamer> ", jsout(json));
 			//------------------------------- update -------------------------------
 			if(json && ("update" in json) )
 			{
-				var message = json["update"];
-				console.log('rf_logger:update> ',message);
-				logger.verbose('rf_logger:update> ',message);
-				for (var key in message) 
-				{
-					if(!(key in lastVals))
-						lastVals[key] = {};
-					for(var sk in message[key])
-					{
-						lastVals[key][sk] = message[key][sk];
-					}
-				}
-				
 				ws_browser.clients.forEach(
 				function each(client)
 				{
-					var client_message = JSON.stringify(lastVals);
-					client.send(client_message);
+					client.send(data);
 				}	);
+				//keep all the new data in the current state array
+				var upjson = json["update"];
+				for (var key in upjson) 
+				{
+					if(!(key in lastVals))
+						lastVals[key] = {};
+					for(var sk in upjson[key])
+					{
+						lastVals[key][sk] = upjson[key][sk];
+					}
+				}
 			}
 			//------------------------------- response -------------------------------
 			else if(json && ("response" in json) )
 			{
 				var message = json.response;
 				if("Values" in json.response)
-					console.log('rf_logger:response Nb Values> ',json.response.Values.length);
-				//logger.verbose('rf_logger:response> ',message);
+					console.log('  streamer:response:Nb Values> ',json.response.Values.length);
 				if("id" in json.response)
 				{
-					//console.log("--- looking for clients to give response>>>>");
-					var clients = 
+					var RequestClients = 
 					ws_browser.clients.filter(
 						function( obj )
 						{
 							return ("lastRequestId" in obj && obj.lastRequestId == json.response.id);
 						}					);
-					//console.log("--- found", clients.length, "clients");
 	
-					if(clients.length >= 1)
+					if(RequestClients.length >= 1)
 					{
-						clients[0].send(data);
-						console.log('rf_logger:send to client');
+						RequestClients[0].send(data);
+						console.log('  streamer:response:sent to client');
 					}
 				}
 			}
 			//------------------------------- others -------------------------------
 			else
 			{
-				console.log('rf_logger:data> ',data);
-				logger.verbose('rf_logger:data> ',data);
+				//nothing yet to do
 			}
 		}	);
 
@@ -143,26 +141,25 @@ ws_browser.on(
 	{
 		logger.info('measures client is connected');
 		//start by updating the client with the last available values
-		var client_message = JSON.stringify(lastVals);
+		var alljson = {update:lastVals};
+		var client_message = JSON.stringify(alljson);
 		ws.send(client_message);
-				
+		console.log("startup update>", jsout(alljson));
 		ws.on(
 		'message',
 		function(data, flags)
 		{
 			if (flags.binary) { return; }
 			var json = JSON.parse(data);
+			console.log('received:browser> ',jsout(json));
 			//------------------------------- request -------------------------------
 			if(json && ("request" in json) )
 			{
 				if("id" in json.request)
 				{
 					ws.lastRequestId = json.request.id;
-					var message = json.request;
-					console.log('browser:request> ',message);
-					logger.verbose('browser:request> ',message);
 					//only one client expected for the DE_Sensors - simple forward
-					if(ws_sensors.clients.length >= 0)
+					if(ws_sensors.clients.length > 0)
 					{
 						ws_sensors.clients[0].send(data);
 					}
@@ -171,8 +168,7 @@ ws_browser.on(
 			//------------------------------- others -------------------------------
 			else
 			{
-				console.log('browser:data> ',data);
-				logger.verbose('browser:data> ',data);
+				//nothing to do
 			}
 			
 		}	);

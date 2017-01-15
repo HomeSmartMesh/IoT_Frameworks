@@ -80,44 +80,47 @@ $(function () {
 			console.log("response>",json.response);
 		}
 		//------------------------------------------ update ------------------------------------------
-		else // must be update but without type
+		else if("update" in json)
 		{
+			var upjson = json.update;
 			var message_text = '';
-			for (var nodeid in json) 
+			for (var nodeid in upjson) 
 			{
 				message_text += nodeid + " : <br>";
-				for(var sk in json[nodeid])
+				for(var sk in upjson[nodeid])
 				{
-					message_text += sk + '(' + json[nodeid][sk].Values + ' : ' + json[nodeid][sk].Times + ')<br>';
+					var d = new Date(upjson[nodeid][sk].Times*1000);
+					var dtext = d.getHours() +':'+ d.getMinutes() + ':' + d.getSeconds();
+					message_text += sk + '(' + upjson[nodeid][sk].Values + ' - ' + dtext + ')<br>';
 					if(sk == "Pressure")
 					{
-						var value = Math.round(json[nodeid]["Pressure"].Values);
+						var value = Math.round(upjson[nodeid]["Pressure"].Values);
 						console.log("Press",nodeid, value);
 						//d3_SetPressureValue(nodeid,value);
 					}
 					if(sk == "Temperature")
 					{
-						var value = Math.round(100*json[nodeid]["Temperature"].Values)/100;
+						var value = Math.round(100*upjson[nodeid]["Temperature"].Values)/100;
 						console.log("Temp",nodeid, value);
 						d3_SetTemperatureValue(nodeid,value);
 					}
 					if(sk == "Humidity")
 					{
-						var value = Math.round(json[nodeid]["Humidity"].Values);
+						var value = Math.round(upjson[nodeid]["Humidity"].Values);
 						console.log("Hum",nodeid, value);
 						d3_SetHumidityValue(nodeid,value);
 					}
 					if(sk == "Light")
 					{
 						console.log("Light", nodeid, value);
-						d3_SetLightValue(nodeid,json[nodeid]["Light"].Values);
+						d3_SetLightValue(nodeid,upjson[nodeid]["Light"].Values);
 					}
 				}
 				//message_text += '<br>';
 			}
 			
 			addMessage(message_text);
-			console.log('received ', json);
+			console.log('update> ', upjson);
 		}
     };
 
@@ -140,7 +143,7 @@ $(function () {
      * Add message to the chat window
      */
     function addMessage(message) {
-        //content.prepend('<p>' + message + '</p>');
-		content.html('<p>' + message + '</p>');
+        content.prepend('<p>' + message + '</p>');
+		//content.html('<p>' + message + '</p>');
     }
 });

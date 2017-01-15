@@ -323,7 +323,7 @@ std::string utl::stringify(NodeMap_t &measures,const std::string &type)
 			std::string SensorName = Table.first;
 			for(auto const& Measure : Table.second) 
 			{
-				jsonMeasures[type][NodeId][SensorName]["Times"].push_back(utl::getTime(Measure.time));
+				jsonMeasures[type][NodeId][SensorName]["Times"].push_back(Measure.time);
 				jsonMeasures[type][NodeId][SensorName]["Values"].push_back(Measure.value);
 			}
 		}
@@ -342,7 +342,7 @@ void utl::make_json(NodeMap_t &measures,json &jRes,const std::string &type)
 			std::string SensorName = Table.first;
 			for(auto const& Measure : Table.second) 
 			{
-				jRes[type][NodeId][SensorName]["Times"].push_back(utl::getTime(Measure.time));
+				jRes[type][NodeId][SensorName]["Times"].push_back(Measure.time);
 				jRes[type][NodeId][SensorName]["Values"].push_back(Measure.value);
 			}
 		}
@@ -360,7 +360,7 @@ void utl::make_json_resp(	int 				NodeId,
 	const sensor_measures_table_t &resp_measures = measures[NodeId][SensorName];
 	for(auto const& Measure : resp_measures)
 	{
-		jRes[type]["Times"].push_back(utl::getTime(Measure.time));
+		jRes[type]["Times"].push_back(Measure.time);
 		jRes[type]["Values"].push_back(Measure.value);
 	}
 }
