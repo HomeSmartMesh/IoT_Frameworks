@@ -7,12 +7,12 @@ var scale_x = d3.time.scale();
 var scale_y = d3.scale.linear();
 
 var timeFormat = d3.time.format('%H:%M:%S');
-//var timeFormat = d3.time.format('(%Y-%m-%d %H:%M:%S)');
+var FulltimeFormat = d3.time.format('(%Y-%m-%d %H:%M:%S)');
 
 scale_x.range([0, width]);
 scale_y.range([height, 0]);
-scale_x.domain([new Date(1484478466000),new Date(1484478470000)]);
-scale_y.domain([200,2000]);
+scale_x.domain(Chart.scale_x_domain);
+scale_y.domain(Chart.scale_y_domain);
 
 // Define the axes
 var xAxis = d3.svg.axis().scale(scale_x)
@@ -38,9 +38,9 @@ var svg = d3.select(Chart.svgID)
 			  
 	
 // Add the valueline path.
-svg.append("path")
-	.attr("class", "line")
-	.attr("d", valueline(Chart.data));
+var PLine = svg.append("path")
+		.attr("class", "line")
+		.attr("d", valueline(Chart.data));
 
 // Add the X Axis
 svg.append("g")
@@ -53,11 +53,23 @@ svg.append("g")
 	.attr("class", "y axis")
 	.call(yAxis);
 
-
+svg.append("text")
+		.attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+		.attr("transform", "translate("+ (width/2) +","+(height-20)+")")  // centre below axis
+		.text("Bathroom Temperature");//could not use Chart.SensorName
+		
 function d3_SetChartValues(Times,Values)
 {
-	console.log("MyChart: setting time series from response");
-	Chart.Times = Times;
-	Chart.Values = Values;
-	
+	if(Times.length == Values.length)
+	{
+		Chart.data = [];
+		for(var i = 0; i<Times.length ; i++)
+		{
+			var datum = {time:Times[i]*1000, value:Values[i]};
+			Chart.data.push(datum);
+		}
+	}
+	PLine.attr("d", valueline(Chart.data));	
 }
+	
+//------------------------------------------------------------------------------

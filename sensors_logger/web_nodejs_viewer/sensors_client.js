@@ -28,21 +28,6 @@ $(function () {
     // open connection
     var connection = new WebSocket('ws://10.0.0.12:4348/measures');
 
-	var UniqueRequestId = Math.floor(Math.random() * 10000);
-	var TimeStart = new Date('2017-01-14T09:00:00');//9h00
-	var TimeStop = new Date('2017-01-14T09:10:00');//9h10
-	var jReq = {
-					request : 
-					{
-						id 		: UniqueRequestId,
-						type : "Duration",
-						NodeId 	: 6,
-						SensorName 	: "Temperature",
-						start 		: TimeStart.getTime(),
-						stop 		: TimeStop.getTime()
-					}
-				};
-
 					connection.onopen = 
 	function()
 	{
@@ -76,7 +61,8 @@ $(function () {
 		//------------------------------------------ response ------------------------------------------
 		if("response" in json)
 		{
-			console.log("response>",json.response);
+			console.log("request>",jReq);
+			console.log("response>",json);
 			if(("id" in json.response)&& (json.response.id == jReq.request.id))
 			{
 				d3_SetChartValues(json.response.Times,json.response.Values);
@@ -98,24 +84,24 @@ $(function () {
 					if(sk == "Pressure")
 					{
 						var value = Math.round(upjson[nodeid]["Pressure"].Values);
-						console.log("Press",nodeid, value);
+						//console.log("Press",nodeid, value);
 						//d3_SetPressureValue(nodeid,value);
 					}
 					if(sk == "Temperature")
 					{
 						var value = Math.round(100*upjson[nodeid]["Temperature"].Values)/100;
-						console.log("Temp",nodeid, value);
+						//console.log("Temp",nodeid, value);
 						d3_SetTemperatureValue(nodeid,value);
 					}
 					if(sk == "Humidity")
 					{
 						var value = Math.round(upjson[nodeid]["Humidity"].Values);
-						console.log("Hum",nodeid, value);
+						//console.log("Hum",nodeid, value);
 						d3_SetHumidityValue(nodeid,value);
 					}
 					if(sk == "Light")
 					{
-						console.log("Light", nodeid, value);
+						//console.log("Light", nodeid, value);
 						d3_SetLightValue(nodeid,upjson[nodeid]["Light"].Values);
 					}
 				}
@@ -123,7 +109,7 @@ $(function () {
 			}
 			
 			addMessage(message_text);
-			console.log('update> ', upjson);
+			//console.log('update> ', upjson);
 		}
     };
 

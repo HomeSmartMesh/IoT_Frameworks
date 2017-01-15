@@ -175,9 +175,3 @@ function d3_SetHumidityValue(id,Value)
 	}
 }
 
-function d3_SetChartValues(Times,Values)
-{
-	Chart.Times = Times;
-	Chart.Values = Values;
-	
-}
