@@ -1,27 +1,14 @@
 var w = window.innerWidth,
     h = window.innerHeight;
 
-d3.select("body");
+//d3.select("body");
 
-var svgo = d3.select("body").append("svg")
+//var svgo = d3.select("body").append("svg")
+var svgo = d3.select("#StatusDisp")
 	.style("background-color", "#dae0ea")
     .attr("width", w)
     .attr("height", 200)
     ;
-
-var Nodes = [
-	{ x: 100, y: 100, r: 20, color: "Blue", 
-		Temperature : 26, Light : 500,
-		Name : "LivingRoom"
-		},
-	{ x: 300, y: 100, r: 20, color: "Blue", 
-		Temperature : 26, Light : 500,
-		Name : "BathRoom"
-		}
-];
-
-var nmap = {6 : 0,
-			7 : 1};
 //var coloursTempArray = ["#2c7bb6", "#00a6ca","#00ccbc","#90eb9d","#ffff8c","#f9d057","#f29e2e","#e76818","#d7191c"];
 var coloursTempArray = ["#2c7bb6", "#00a6ca","#ffff8c","#e76818","#d7191c"];
 var coloursTempRange = d3.range(0, 1, 1.0 / (coloursTempArray.length - 1));////[0.125, 0.25,...,0.875]
@@ -52,21 +39,6 @@ var TempToPos = d3.scale.linear()
 	.domain(TempRange)
 	.range([temp_rect_min,temp_rect_max]);
 
-
-console.log("coloursTempArray:",coloursTempArray);
-console.log("coloursTempRange:",coloursTempRange);
-console.log("colorTempScale:",colorTempScale);
-console.log("colorTempInterpolate:",colorTempInterpolate);
-
-console.log("colorTempScale(0):",colorTempScale(0));
-console.log("colorTempScale(0.54):",colorTempScale(0.54));
-console.log("colorTempScale(1):",colorTempScale(1));
-console.log("colorTempInterpolate(-15):",colorTempInterpolate(-15));
-console.log("colorTempInterpolate(12):",colorTempInterpolate(12));
-console.log("colorTempInterpolate(35):",colorTempInterpolate(35));
-console.log("TempToColor(-15):",TempToColor(-15));
-console.log("TempToColor(12):",TempToColor(12));
-console.log("TempToColor(35):",TempToColor(35));
 //Append multiple color stops by using D3's data/enter step
 //Append a defs (for definition) element to your SVG
 var defs = svgo.append("defs");
@@ -87,7 +59,7 @@ linearGradient	.attr("x1", "0%")
 				.attr("y2", "0%")
 				;
 
-var NodesGroups = svgo.selectAll("g").data(Nodes).enter().append("g");
+var NodesGroups = svgo.selectAll("g").data(Status.data).enter().append("g");
 
 var TempNodesGroups = NodesGroups.append("g").attr("class","cTemp");
 var LightNodesGroups = NodesGroups.append("g").attr("class","cLight");
@@ -165,15 +137,15 @@ HumNodesGroups.append("text")
 				.attr('y',5)
 				;
 
-var TempGroupUpdate = svgo.selectAll("g.cTemp").data(Nodes);
-var LightGroupUpdate = svgo.selectAll("g.cLight").data(Nodes);
-var HumGroupUpdate = svgo.selectAll("g.cHum").data(Nodes);
+var TempGroupUpdate = svgo.selectAll("g.cTemp").data(Status.data);
+var LightGroupUpdate = svgo.selectAll("g.cLight").data(Status.data);
+var HumGroupUpdate = svgo.selectAll("g.cHum").data(Status.data);
 
 function d3_SetTemperatureValue(id,Value)
 {
 	if((id==6) || (id==7))
 	{
-		Nodes[nmap[id]].Temperature = Value;
+		Status.data[nmap[id]].Temperature = Value;
 		TempGroupUpdate.select("text")	.text(function(d){return d.Temperature + " °C"})
 										.attr("y",function(d){return TempToPos(d.Temperature)+5});
 		//TempGroupUpdate.select("circle").style("fill",TempToColor(Value));
@@ -189,7 +161,7 @@ function d3_SetLightValue(id,Value)
 {
 	if((id==6) || (id==7))
 	{
-		Nodes[nmap[id]].Light = Value;
+		Status.data[nmap[id]].Light = Value;
 		LightGroupUpdate.select("text").text(function(d){return d.Light});
 	}
 }
@@ -198,7 +170,14 @@ function d3_SetHumidityValue(id,Value)
 {
 	if((id==6) || (id==7))
 	{
-		Nodes[nmap[id]].Humidity = Value;
+		Status.data[nmap[id]].Humidity = Value;
 		HumGroupUpdate.select("text").text(function(d){return d.Humidity + " %RH"});
 	}
+}
+
+function d3_SetChartValues(Times,Values)
+{
+	Chart.Times = Times;
+	Chart.Values = Values;
+	
 }

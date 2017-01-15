@@ -28,28 +28,27 @@ $(function () {
     // open connection
     var connection = new WebSocket('ws://10.0.0.12:4348/measures');
 
-    connection.onopen = 
+	var UniqueRequestId = Math.floor(Math.random() * 10000);
+	var TimeStart = new Date('2017-01-14T09:00:00');//9h00
+	var TimeStop = new Date('2017-01-14T09:10:00');//9h10
+	var jReq = {
+					request : 
+					{
+						id 		: UniqueRequestId,
+						type : "Duration",
+						NodeId 	: 6,
+						SensorName 	: "Temperature",
+						start 		: TimeStart.getTime(),
+						stop 		: TimeStop.getTime()
+					}
+				};
+
+					connection.onopen = 
 	function()
 	{
         // first we want users to enter their names
         status.text('Connected');
 		
-		//var UniqueRequestId = new Date().getUTCMilliseconds();
-		var UniqueRequestId = Math.floor(Math.random() * 10000);
-		var TimeStart = new Date('2017-01-14T09:00:00');//9h00
-		var TimeStop = new Date('2017-01-14T09:10:00');//9h10
-		var TimeNow = new Date();
-		var jReq = {
-						request : 
-						{
-							id 		: UniqueRequestId,
-							type : "Duration",
-							NodeId 	: 6,
-							SensorName 	: "Temperature",
-							start 		: TimeStart.getTime(),
-							stop 		: TimeStop.getTime()
-						}
-					};
 		var Req = JSON.stringify(jReq);
 		connection.send(Req);
     };
@@ -78,6 +77,10 @@ $(function () {
 		if("response" in json)
 		{
 			console.log("response>",json.response);
+			if(("id" in json.response)&& (json.response.id == jReq.request.id))
+			{
+				d3_SetChartValues(json.response.Times,json.response.Values);
+			}
 		}
 		//------------------------------------------ update ------------------------------------------
 		else if("update" in json)
