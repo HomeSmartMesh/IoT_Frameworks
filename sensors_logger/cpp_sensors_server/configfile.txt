@@ -12,7 +12,7 @@ SensorNodes=06;07;
 #logout=1
 
 #The "websocket_url" defines all of the IP, PORT and Path, it enables the websocket webserver
-websocket_url=ws://10.0.0.2:8126/rf_logger
+websocket_url=ws://10.0.0.12:4348/rf_logger
 
 dbpath=/home/pi/share/
 

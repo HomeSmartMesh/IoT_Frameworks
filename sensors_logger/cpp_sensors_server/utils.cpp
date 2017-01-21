@@ -71,13 +71,15 @@ std::string	utl::get_stop(utl::time_u& start_time)
 	std::chrono::duration<double> elapsed_seconds = std::chrono::system_clock::now() - start_time;
 
 	std::string resp;
-	long long ms;
+	int ms;
 
 	if(elapsed_seconds.count() > 1)
 	{
 		int sec = elapsed_seconds.count();
 		resp = std::to_string(sec)+" s";
-		ms = elapsed_seconds.count() - sec;
+		double remain_s = elapsed_seconds.count() - sec;
+		ms = remain_s * 1000;//round it as to_string() does not format
+		resp += " " + std::to_string(ms)+" ms";
 	}
 	else
 	{

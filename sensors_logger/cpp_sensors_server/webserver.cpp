@@ -202,16 +202,18 @@ public:
             int flags = 0;//init is important as receive is not blocking
             int n = 0;
 			utl::time_u start_time;
+			bool isResp = false;
             do
             {
 				//5 ms poll cycle
 				if(ws.poll(5000, Poco::Net::Socket::SELECT_READ || Poco::Net::Socket::SELECT_ERROR))
 				{
 					start_time = utl::get_start();
+					isResp = true;
 					n = ws.receiveFrame(buffer, sizeof(buffer), flags);
 					if(n!=0)
 					{
-						std::cout << Poco::format("wbs>  Frame received (length=%d, flags=0x%x).", n, unsigned(flags)) << std::endl;
+						std::cout << Poco::format("wbs>  Frame received (length=%d, flags=0x%x) from ", n, unsigned(flags)) << ClientKey << std::endl;
 						message.append(buffer,n);
 						if(n == 2)
 						{
@@ -231,7 +233,15 @@ public:
 				if(!wsResponse.empty())
 				{
 					ws.sendFrame(wsResponse.c_str(), wsResponse.size());//default flags are text_frame
-					std::cout << "wbs> websocket response sent within "<< utl::get_stop(start_time) << std::endl;
+					if(isResp)
+					{
+						std::cout << "wbs> websocket response to "<< ClientKey <<" sent within "<< utl::get_stop(start_time) << std::endl;
+						isResp = false;
+					}
+					else
+					{
+						std::cout << "wbs> broadcast to client "<< ClientKey << std::endl;
+					}
 				}
             }
             while ( (n > 0) || ((flags & WebSocket::FRAME_OP_BITMASK) != WebSocket::FRAME_OP_CLOSE) );
