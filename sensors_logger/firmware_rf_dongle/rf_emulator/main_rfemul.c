@@ -17,34 +17,32 @@
 #include "clock_led.h"
 
 /*
-NodeId:4,is:Alive
-NodeId:7;BME280: 0x07 53 F5 00 7E F6 00 73 EB 
-NodeId:7;BME280: 0x07 53 F7 00 7E F7 00 73 07 
-NodeId:7;BME280: 0x07 53 F9 00 7E F5 00 73 BB 
-NodeId:6,is:Alive
-NodeId:6,Light: 1701
-NodeId:4,is:Alive
-NodeId:7;BME280: 0x07 53 F7 00 7E F7 00 73 6C 
-NodeId:7;BME280: 0x07 53 F3 00 7E F1 00 74 3F 
-NodeId:6,is:Alive
-NodeId:6,Light: 1700
-NodeId:7;BME280: 0x07 53 F6 00 7E ED 00 73 70 
-NodeId:4,is:Alive
-NodeId:7;BME280: 0x07 53 F5 00 7E EF 00 74 44 
+
+NodeId:7;BME280: 0x53 EB 00 7C 77 00 70 08
+
+NodeId:6;BME280: 0x56 33 00 7F 82 00 62 34
 */
 
 void emulate_sensors_log(int count)
 {
+	count*=8;//0 -> 2040
 	
-	printf_ln("NodeId:7;BME280: 0x07 53 F5 00 7E F6 00 73 EB");		
+	printf_ln("NodeId:7;BME280: 0x53 EB 00 7C 77 00 70 08");
 	delay_ms(100);
 	
-	count*=8;//0 -> 2040
 	printf("NodeId:7,Light: ");							
 	printf_uint(count);
 	printf_eol();
 	delay_ms(100);
   
+	delay_ms(1000);
+	printf_ln("NodeId:6;BME280: 0x56 33 00 7F 82 00 62 34");
+	delay_ms(100);
+	
+	printf("NodeId:6,Light: ");							
+	printf_uint(count);
+	printf_eol();
+	delay_ms(100);
 }
 
 
@@ -69,7 +67,7 @@ int main( void )
 		AliveActiveCounter++;//Why are you counting ?
 		
 		Test_Led_Off();
-		delay_ms(4900);
+		delay_ms(3900);
 		
 		Test_Led_On();
 		delay_ms(100);
