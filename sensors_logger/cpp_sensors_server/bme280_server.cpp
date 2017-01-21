@@ -59,19 +59,19 @@ void bme_measures_c::set_all_measures_8(uint8_t *data)
 void bme_measures_c::set_all_measures_Text(std::string Measures)
 {
 	uint8_t data_vals[8];
-	utl::hextext2data(Measures,data_vals);
+	utl::hextext2data(Measures,data_vals,8);
 	std::string check_str = utl::data2hextext(data_vals,8);
-	//DEBUG std::cout << "BME280 here !!!! with value: " << check_str << std::endl;
+	//DEBUG 	std::cout << "BME280 here !!!! with value: " << check_str << std::endl;
 	
 	//update measures values
 	set_all_measures_8(data_vals);
 	
 	//process the compensation with the calibration parameters !temperature first as t_fine used by others!
-	//DEBUG std::cout << "compensate_T_int32()" << std::endl;
+	//DEBUG 	std::cout << "compensate_T_int32()" << std::endl;
 	comp_T = compensate_T_int32();
-	//DEBUG std::cout << "compensate_P_int64()" << std::endl;
+	//DEBUG 	std::cout << "compensate_P_int64()" << std::endl;
 	comp_P = compensate_P_int64();
-	//DEBUG std::cout << "compensate_H_int32()" << std::endl;
+	//DEBUG 	std::cout << "compensate_H_int32()" << std::endl;
 	comp_H = compensate_H_int32();
 }
 
@@ -275,7 +275,7 @@ void bme_measures_c::load_calib_data(std::string filename)
 				utl::remove_0x(line);
 				uint8_t data_vals[10];
 				std::cout << "T1:" << line << std::endl;
-				utl::hextext2data(line,data_vals);
+				utl::hextext2data(line,data_vals,10);
 				set_calib_part1_10(data_vals);
 				//line 2 : Reg 0x92
 				getline (calibfile,line);
@@ -283,7 +283,7 @@ void bme_measures_c::load_calib_data(std::string filename)
 				utl::remove_spaces(line);
 				utl::remove_0x(line);
 				std::cout << "T2:" << line << std::endl;
-				utl::hextext2data(line,data_vals);
+				utl::hextext2data(line,data_vals,10);
 				set_calib_part2_10(data_vals);
 				//line 3 : Reg 0x9C
 				getline (calibfile,line);
@@ -291,7 +291,7 @@ void bme_measures_c::load_calib_data(std::string filename)
 				utl::remove_spaces(line);
 				utl::remove_0x(line);
 				std::cout << "T3:" << line << std::endl;
-				utl::hextext2data(line,data_vals);
+				utl::hextext2data(line,data_vals,10);
 				set_calib_part3_6(data_vals);
 				//line 4 : Reg 0xE1
 				getline (calibfile,line);
@@ -299,8 +299,10 @@ void bme_measures_c::load_calib_data(std::string filename)
 				utl::remove_spaces(line);
 				utl::remove_0x(line);
 				std::cout << "T4:" << line << std::endl;
-				utl::hextext2data(line,data_vals);
+				utl::hextext2data(line,data_vals,10);
 				set_calib_part4_8(data_vals);
+				
+				isReady = true;
 			}
 			
 		}

@@ -103,6 +103,7 @@ public:
 	void push(const std::string &Key, const std::string &message);
 	void pull(const std::string &Key, std::string &message);
 	void poll_any(std::string &Key, std::string &message);
+	void push_for_all(const std::string &message);
 	void remove(const std::string &Key);
 private:	
 	MessagesMap_t 	Messages;
@@ -144,6 +145,16 @@ void SafeMessaging_c::poll_any(std::string &Key, std::string &message)
 			//break; but return rather
 			return;
 		}
+	}
+}
+
+void SafeMessaging_c::push_for_all(const std::string &message)
+{
+	std::lock_guard<std::mutex> guard(messages_mutex);
+	for(auto &msg : Messages)
+	{
+		//do not care who the first is, push for all
+		msg.second.push_back(message);
 	}
 }
 
@@ -193,8 +204,8 @@ public:
 			utl::time_u start_time;
             do
             {
-				//10 ms poll cycle
-				if(ws.poll(10000, Poco::Net::Socket::SELECT_READ || Poco::Net::Socket::SELECT_ERROR))
+				//5 ms poll cycle
+				if(ws.poll(5000, Poco::Net::Socket::SELECT_READ || Poco::Net::Socket::SELECT_ERROR))
 				{
 					start_time = utl::get_start();
 					n = ws.receiveFrame(buffer, sizeof(buffer), flags);
@@ -299,13 +310,13 @@ void webserver_c::startServer()
 	}
 	else
 	{
-		std::cout << "wsm>" << " 'websocket_url' parameter not provided, Webserver will not be started" << std::endl;
+		std::cout << "wsm>" << " => 'websocket_url' parameter not provided, Webserver will not be started" << std::endl;
 	}
 }
 
 void webserver_c::broadcast(std::string &update)
 {
-	
+	responses.push_for_all(update);
 }
 
 void webserver_c::respond(std::string &response)

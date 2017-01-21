@@ -106,7 +106,7 @@ namespace utl
 	std::string remove_0x(std::string &str);
 	void remove(std::string substr, std::string &str);
 	
-	void hextext2data(const std::string &str, uint8_t *data);
+	void hextext2data(const std::string &str, uint8_t *data,const int MaxData);
 	std::string data2hextext(const uint8_t *data,int data_size);
 	
 	//json routines

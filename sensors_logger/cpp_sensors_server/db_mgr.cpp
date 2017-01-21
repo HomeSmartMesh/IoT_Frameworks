@@ -194,11 +194,16 @@ void db_manager_c::load()
 		{
 			cout << ex.what() << '\n';
 		}
+		if(nbLoadedSamples > 0)
+		{
+			std::cout << "dbm> loaded " << nbLoadedSamples<< " Measures in " << utl::get_stop(load_start) << std::endl;
+		}
 	}
-	if(nbLoadedSamples > 0)
+	else
 	{
-		std::cout << "dbm> loaded " << nbLoadedSamples<< " Measures in " << utl::get_stop(load_start) << std::endl;
+		std::cout << "dbm> => 'dbloadpaths' parameter not available, databse will not be used" << std::endl;
 	}
+		
 }
 
 void db_manager_c::print()

@@ -324,45 +324,51 @@ void Serial::processLine(NodeMap_t &nodes)
 	(*logbuf.plinebuf) = '\0';
 	std::string logline(logbuf.linebuf);
 	utl::replace(logline,',',';');
-	//std::cout << "DEBUG:" << logline << "|||" << std::endl;
 	//reset the line buffer pointer to the beginning of the line
 	logbuf.plinebuf = logbuf.linebuf;
 	
 	
 	strmap notif_map;
 	utl::str2map( logline, notif_map);
-	
 	if(utl::exists(notif_map,"NodeId"))
 	{
 		std::string t_Id = notif_map["NodeId"];
 		int l_Id = std::stoi(t_Id);
 		if(utl::exists(notif_map,"BME280"))
 		{
-			NodesMeasures[l_Id].set_all_measures_Text(notif_map["BME280"]);
-			
-			sensor_measure_t temperature,humidity,pressure;
-			temperature.time = logbuf.time_now;
-			humidity.time = logbuf.time_now;
-			pressure.time = logbuf.time_now;
+			if(NodesMeasures.find(l_Id) != NodesMeasures.end())
+			if(NodesMeasures[l_Id].isReady)
+			{
+				NodesMeasures[l_Id].set_all_measures_Text(notif_map["BME280"]);
+				
+				sensor_measure_t temperature,humidity,pressure;
+				temperature.time = logbuf.time_now;
+				humidity.time = logbuf.time_now;
+				pressure.time = logbuf.time_now;
 
-			temperature.value = NodesMeasures[l_Id].get_float_temperature();
-			humidity.value = NodesMeasures[l_Id].get_float_humidity();
-			pressure.value = NodesMeasures[l_Id].get_float_pressure();
-			
-			nodes[l_Id]["Temperature"].push_back(temperature);
-			nodes[l_Id]["Humidity"].push_back(humidity);
-			nodes[l_Id]["Pressure"].push_back(pressure);
-			
-			logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" 
-									+ "NodeId:" + std::to_string(l_Id)
-									+ ";Temperature:" + NodesMeasures[l_Id].get_temperature());
-									
-			logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" 
-									+ "NodeId:" + std::to_string(l_Id)
-									+ ";Humidity:" + NodesMeasures[l_Id].get_humidity());
-			logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" 
-									+ "NodeId:" + std::to_string(l_Id)
-									+ ";Pressure:" + NodesMeasures[l_Id].get_pressure());
+				temperature.value = NodesMeasures[l_Id].get_float_temperature();
+				humidity.value = NodesMeasures[l_Id].get_float_humidity();
+				pressure.value = NodesMeasures[l_Id].get_float_pressure();
+				
+				nodes[l_Id]["Temperature"].push_back(temperature);
+				nodes[l_Id]["Humidity"].push_back(humidity);
+				nodes[l_Id]["Pressure"].push_back(pressure);
+				
+				logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" 
+										+ "NodeId:" + std::to_string(l_Id)
+										+ ";Temperature:" + NodesMeasures[l_Id].get_temperature());
+										
+				logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" 
+										+ "NodeId:" + std::to_string(l_Id)
+										+ ";Humidity:" + NodesMeasures[l_Id].get_humidity());
+				logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" 
+										+ "NodeId:" + std::to_string(l_Id)
+										+ ";Pressure:" + NodesMeasures[l_Id].get_pressure());
+			}
+			else
+			{
+				std::cout << "str> Error> SensorId"<<l_Id<<" calib files not loaded" << std::endl;
+			}
 		}
 		else if(utl::exists(notif_map,"Light"))
 		{
@@ -426,6 +432,10 @@ NodeMap_t Serial::processBuffer()
 			//else non printable characters other than '\n' are discarded
 			buf_w++;
 		}
+	}
+	if(!logbuf.currentlines.empty())
+	{
+		std::cout << "ser> Processed " << logbuf.currentlines.size() << "Line(s)" << std::endl;
 	}
 	return nodes;
 }

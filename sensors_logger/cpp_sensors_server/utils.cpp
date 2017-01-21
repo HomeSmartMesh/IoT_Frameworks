@@ -147,7 +147,7 @@ int char2int(char input)
 		return input - 'a' + 10;
 }
 
-void utl::hextext2data(const std::string &str, uint8_t *data)
+void utl::hextext2data(const std::string &str, uint8_t *data,const int MaxData)
 {
 	std::string v_str = str;
 	//std::cout << "C1: " << v_str << std::endl;
@@ -156,10 +156,16 @@ void utl::hextext2data(const std::string &str, uint8_t *data)
 	utl::remove_0x(v_str);
 	//std::cout << "C3: " << v_str << std::endl;
 	int i=0;
-	while(i<v_str.length()-1)
+	int nb = 0;
+	while((i<v_str.length()-1) && (nb< MaxData))
 	{
 		*(data++) = char2int(v_str[i])*16 + char2int(v_str[i+1]);
 		i += 2;
+		nb++;
+	}
+	if( (nb == MaxData) && (i < v_str.length()-1) )
+	{
+		std::cout << "str> Error Parsing " << nb << " reached, string too long" << std::endl;
 	}
 }
 

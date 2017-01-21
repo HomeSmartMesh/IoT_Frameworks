@@ -49,8 +49,11 @@ ________________________________________________________________________________
 
 class bme_measures_c
 {
+	public:
+	bme_measures_c(){isReady = false;}
 	//----------------------- Measures ----------------------- 
 	public:
+		bool isReady;
 		void set_all_measures_8(uint8_t *data);
 	public:
 		int32_t		adc_P;//Pressure
