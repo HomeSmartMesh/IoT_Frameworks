@@ -111,12 +111,12 @@ int main( int argc, char** argv )
 		if(stream.update())
 		{
 			NodeMap_t measures = stream.processBuffer();
-
-			dbm.addMeasures(measures);	//save into the data base (memory db & files db)
-
-			std::string jMeasures = utl::stringify(measures,"update");//data type is "update"
-			
-			wsm.send(jMeasures);
+			if(measures.size() != 0)
+			{
+				dbm.addMeasures(measures);	//save into the data base (memory db & files db)
+				std::string jMeasures = utl::stringify(measures,"update");//data type is "update"
+				wsm.send(jMeasures);
+			}
 		}
 		
 		usleep(100000);//100 ms : this is an unnneccessary load if the processing grows up
