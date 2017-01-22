@@ -1,0 +1,155 @@
+pi@ioserv:~/IoT_Frameworks/sensors_logger/cpp_sensors_server $ ./streamer
+______________________Config______________________
+configfile = ./configfile.txt
+wsm> => websocket_url = ws://10.0.0.2:8126/rf_logger
+    starting server at port : 8126
+wsm> => HTTP_POST => host(10.0.0.2) port(8127) path(/rf_logger)
+str> port = /dev/ttyUSB0
+str> 2017-01-22 14:02:06        port /dev/ttyUSB0 is open @B115200
+str> Line: 06
+Loading calib file(./NodeId06.txt)
+T1:FB6EF5683200B19277D6
+T2:D00BC3173500F9FFAC26
+T3:0AD8BD10004B
+T4:6701001405001E6C
+str> Line: 07
+Loading calib file(./NodeId07.txt)
+T1:296DE46432007990ADD4
+T2:D00B951B8BFFF9FFAC26
+T3:0AD8BD10004B
+T4:650100140C001E8F
+dbm>loading files
+    "/home/pi/share/2017/01"
+        /home/pi/share/2017/01/NodeId6_Light.txt
+        /home/pi/share/2017/01/NodeId6_Humidity.txt
+        /home/pi/share/2017/01/NodeId7_Temperature.txt
+        /home/pi/share/2017/01/NodeId7_Humidity.txt
+        /home/pi/share/2017/01/NodeId6_Temperature.txt
+        /home/pi/share/2017/01/NodeId7_Pressure.txt
+        /home/pi/share/2017/01/NodeId7_Light.txt
+        /home/pi/share/2017/01/NodeId6_Pressure.txt
+dbm> loaded 20883 Measures in  672 ms
+______________________Main Loop______________________
+ser> Processed 1Line(s)
+dbm>NodeId7
+dbm>    Sensor: Light
+dbm>            time: 14:02:07
+dbm>            val: 72
+dbm>>>> Opening file: /home/pi/share/2017/01/NodeId7_Light.txt
+wbs> Post Fail :Connection refused
+ser> Processed 3Line(s)
+dbm>NodeId6
+dbm>    Sensor: Humidity
+dbm>            time: 14:02:08
+dbm>            val: 24.0537
+dbm>>>> Opening file: /home/pi/share/2017/01/NodeId6_Humidity.txt
+dbm>    Sensor: Pressure
+dbm>            time: 14:02:08
+dbm>            val: 989.516
+dbm>>>> Opening file: /home/pi/share/2017/01/NodeId6_Pressure.txt
+dbm>    Sensor: Temperature
+dbm>            time: 14:02:08
+dbm>            val: 21.69
+dbm>>>> Opening file: /home/pi/share/2017/01/NodeId6_Temperature.txt
+wbs> Post Fail :Connection refused
+ser> Processed 1Line(s)
+dbm>NodeId6
+dbm>    Sensor: Light
+dbm>            time: 14:02:08
+dbm>            val: 72
+dbm>>>> Opening file: /home/pi/share/2017/01/NodeId6_Light.txt
+wbs> Post Fail :Connection refused
+ser> Processed 3Line(s)
+dbm>NodeId7
+dbm>    Sensor: Humidity
+dbm>            time: 14:02:12
+dbm>            val: 40.6445
+dbm>>>> Opening file: /home/pi/share/2017/01/NodeId7_Humidity.txt
+dbm>    Sensor: Pressure
+dbm>            time: 14:02:12
+dbm>            val: 989.542
+dbm>>>> Opening file: /home/pi/share/2017/01/NodeId7_Pressure.txt
+dbm>    Sensor: Temperature
+dbm>            time: 14:02:12
+dbm>            val: 19.3
+dbm>>>> Opening file: /home/pi/share/2017/01/NodeId7_Temperature.txt
+wbs> Post Fail :Connection refused
+ser> Processed 1Line(s)
+dbm>NodeId7
+dbm>    Sensor: Light
+dbm>            time: 14:02:12
+dbm>            val: 80
+wbs> Posted update: 63 Bytes
+ser> Processed 3Line(s)
+dbm>NodeId6
+dbm>    Sensor: Humidity
+dbm>            time: 14:02:13
+dbm>            val: 24.0537
+dbm>    Sensor: Pressure
+dbm>            time: 14:02:13
+dbm>            val: 989.516
+dbm>    Sensor: Temperature
+dbm>            time: 14:02:13
+dbm>            val: 21.69
+wbs> Posted update: 204 Bytes
+ser> Processed 1Line(s)
+dbm>NodeId6
+dbm>    Sensor: Light
+dbm>            time: 14:02:13
+dbm>            val: 80
+wbs> Posted update: 63 Bytes
+ser> Processed 3Line(s)
+dbm>NodeId7
+dbm>    Sensor: Humidity
+dbm>            time: 14:02:16
+dbm>            val: 40.6445
+dbm>    Sensor: Pressure
+dbm>            time: 14:02:16
+dbm>            val: 989.542
+dbm>    Sensor: Temperature
+dbm>            time: 14:02:16
+dbm>            val: 19.3
+wbs> Posted update: 202 Bytes
+ser> Processed 1Line(s)
+dbm>NodeId7
+dbm>    Sensor: Light
+dbm>            time: 14:02:17
+dbm>            val: 88
+wbs> Posted update: 63 Bytes
+ser> Processed 3Line(s)
+dbm>NodeId6
+dbm>    Sensor: Humidity
+dbm>            time: 14:02:18
+dbm>            val: 24.0537
+dbm>    Sensor: Pressure
+dbm>            time: 14:02:18
+dbm>            val: 989.516
+dbm>    Sensor: Temperature
+dbm>            time: 14:02:18
+dbm>            val: 21.69
+wbs> Posted update: 204 Bytes
+ser> Processed 1Line(s)
+dbm>NodeId6
+dbm>    Sensor: Light
+dbm>            time: 14:02:18
+dbm>            val: 88
+wbs> Posted update: 63 Bytes
+ser> Processed 3Line(s)
+dbm>NodeId7
+dbm>    Sensor: Humidity
+dbm>            time: 14:02:21
+dbm>            val: 40.6445
+dbm>    Sensor: Pressure
+dbm>            time: 14:02:21
+dbm>            val: 989.542
+dbm>    Sensor: Temperature
+dbm>            time: 14:02:21
+dbm>            val: 19.3
+wbs> Posted update: 202 Bytes
+ser> Processed 1Line(s)
+dbm>NodeId7
+dbm>    Sensor: Light
+dbm>            time: 14:02:21
+dbm>            val: 96
+wbs> Posted update: 63 Bytes
+^C

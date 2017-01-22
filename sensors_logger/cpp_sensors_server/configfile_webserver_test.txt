@@ -6,10 +6,10 @@
 
 # -------------- STREAMER -------------- 
 # The "port" parameter, once defined, enables the serial port buffer update
-port=/dev/ttyUSB0
+#port=/dev/ttyUSB0
 
 #Sensors Nodes needed t oload calibration files e.g. '06;07;' for NodeId06.txt,NodeId07.txt
-SensorNodes=06;07;
+#SensorNodes=06;07;
 
 # The "logfile" is optionnal and deprecated as now the db saves values into files
 #logfile=/home/pi/share/logDays.txt
@@ -18,14 +18,14 @@ SensorNodes=06;07;
 #logout=1
 
 # -------------- SELF DATABASE -------------- 
-dbpath=/home/pi/share/
+#dbpath=/home/pi/share/
 
-dbloadpaths=/home/pi/share/2017/
+#dbloadpaths=/home/pi/share/2017/
 
 # -------------- WEB SERVER -------------- 
 #The "websocket_url" defines all of the IP, PORT and Path, it enables the websocket webserver
-websocket_url=ws://10.0.0.2:8126/rf_logger
+websocket_url=ws://10.0.0.2:8127/rf_logger
 
 # -------------- WEB CLIENT -------------- 
 #HTTP POST data to another server as a feeding client
-HTTP_POST=ws://10.0.0.2:8127/rf_logger
+#HTTP_POST=ws://10.0.0.2:8127/rf_logger

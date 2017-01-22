@@ -146,7 +146,7 @@ Serial::Serial(strmap &conf)
 {
 	if(!config(conf))
 	{
-		std::cout << "str> => Serial Port not configured, will not be used" << std::endl;
+		std::cout << "str> X :Serial Port not configured, will not be used" << std::endl;
 		
 	}
 }

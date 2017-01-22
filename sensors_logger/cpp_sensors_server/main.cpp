@@ -101,8 +101,6 @@ int main( int argc, char** argv )
 
 	webserver_c		wbs(conf);	//websocket manager : broadcast() and respond()
 	
-	wbs.startServer();
-	
 	Serial 			stream(conf);	// - process serial port stream : - calibrate sensors values
 									// - provides ready to store measures MAP of Nodes.Sensors.Values,Timestamp
 									// - If not configured to be used then the .update() polling is neutral
@@ -130,6 +128,7 @@ int main( int argc, char** argv )
 				dbm.addMeasures(measures);	//save into the data base (memory db & files db)
 				std::string jMeasures = utl::stringify(measures,"update");//data type is "update"
 				wbs.broadcast(jMeasures);
+				wbs.post(jMeasures);//for another webserver if configured
 			}
 		}
 		

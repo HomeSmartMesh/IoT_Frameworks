@@ -1,7 +1,8 @@
 help 
 
-Command line example 
-'./ser param1=value1 param2=value2':
+Command line examples 
+'./streamer param1=value1 param2=value2':
+'./streamer configfile=configfile_webserver_test.txt':
 
 Parameters:
 

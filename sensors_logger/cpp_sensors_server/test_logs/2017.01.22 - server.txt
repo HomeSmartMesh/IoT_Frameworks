@@ -1,0 +1,83 @@
+pi@ioserv:~/IoT_Frameworks/sensors_logger/cpp_sensors_server $ ./streamer configfile=configfile_webserver_test.txt
+______________________Config______________________
+configfile = configfile_webserver_test.txt
+wsm> => websocket_url = ws://10.0.0.2:8127/rf_logger
+    starting server at port : 8127
+wsm> X : No HTTP Post Client
+str> X :Serial Port not configured, will not be used
+dbm> X :'dbloadpaths' parameter not available, databse will not be used
+______________________Main Loop______________________
+wbs> ------------- => New HTTP request
+wbs>  Request from 10.0.0.2:50820 -- method: POST -- uri: /rf_logger -- version: HTTP/1.1
+        Content-Length  63
+        Connection      Close
+        Host    10.0.0.2:8127
+wbs> ---> HTTP POST Handler
+wbs> POST Body:
+{"update":{"7":{"Light":{"Times":[1485093732],"Values":[80]}}}}
+wbs> ------------- => New HTTP request
+wbs>  Request from 10.0.0.2:50822 -- method: POST -- uri: /rf_logger -- version: HTTP/1.1
+        Content-Length  204
+        Connection      Close
+        Host    10.0.0.2:8127
+wbs> ---> HTTP POST Handler
+wbs> POST Body:
+{"update":{"6":{"Humidity":{"Times":[1485093733],"Values":[24.0537109375]},"Pressure":{"Times":[1485093733],"Values":[989.516418457031]},"Temperature":{"Times":[1485093733],"Values":[21.6900005340576]}}}}
+wbs> ------------- => New HTTP request
+wbs>  Request from 10.0.0.2:50824 -- method: POST -- uri: /rf_logger -- version: HTTP/1.1
+        Content-Length  63
+        Connection      Close
+        Host    10.0.0.2:8127
+wbs> ---> HTTP POST Handler
+wbs> POST Body:
+{"update":{"6":{"Light":{"Times":[1485093733],"Values":[80]}}}}
+wbs> ------------- => New HTTP request
+wbs>  Request from 10.0.0.2:50826 -- method: POST -- uri: /rf_logger -- version: HTTP/1.1
+        Content-Length  202
+        Connection      Close
+        Host    10.0.0.2:8127
+wbs> ---> HTTP POST Handler
+wbs> POST Body:
+{"update":{"7":{"Humidity":{"Times":[1485093736],"Values":[40.64453125]},"Pressure":{"Times":[1485093736],"Values":[989.541870117188]},"Temperature":{"Times":[1485093736],"Values":[19.2999992370605]}}}}
+wbs> ------------- => New HTTP request
+wbs>  Request from 10.0.0.2:50828 -- method: POST -- uri: /rf_logger -- version: HTTP/1.1
+        Content-Length  63
+        Connection      Close
+        Host    10.0.0.2:8127
+wbs> ---> HTTP POST Handler
+wbs> POST Body:
+{"update":{"7":{"Light":{"Times":[1485093737],"Values":[88]}}}}
+wbs> ------------- => New HTTP request
+wbs>  Request from 10.0.0.2:50830 -- method: POST -- uri: /rf_logger -- version: HTTP/1.1
+        Content-Length  204
+        Connection      Close
+        Host    10.0.0.2:8127
+wbs> ---> HTTP POST Handler
+wbs> POST Body:
+{"update":{"6":{"Humidity":{"Times":[1485093738],"Values":[24.0537109375]},"Pressure":{"Times":[1485093738],"Values":[989.516418457031]},"Temperature":{"Times":[1485093738],"Values":[21.6900005340576]}}}}
+wbs> ------------- => New HTTP request
+wbs>  Request from 10.0.0.2:50832 -- method: POST -- uri: /rf_logger -- version: HTTP/1.1
+        Content-Length  63
+        Connection      Close
+        Host    10.0.0.2:8127
+wbs> ---> HTTP POST Handler
+wbs> POST Body:
+{"update":{"6":{"Light":{"Times":[1485093738],"Values":[88]}}}}
+wbs> ------------- => New HTTP request
+wbs>  Request from 10.0.0.2:50834 -- method: POST -- uri: /rf_logger -- version: HTTP/1.1
+        Content-Length  202
+        Connection      Close
+        Host    10.0.0.2:8127
+wbs> ---> HTTP POST Handler
+wbs> POST Body:
+{"update":{"7":{"Humidity":{"Times":[1485093741],"Values":[40.64453125]},"Pressure":{"Times":[1485093741],"Values":[989.541870117188]},"Temperature":{"Times":[1485093741],"Values":[19.2999992370605]}}}}
+wbs> ------------- => New HTTP request
+wbs>  Request from 10.0.0.2:50836 -- method: POST -- uri: /rf_logger -- version: HTTP/1.1
+        Content-Length  63
+        Connection      Close
+        Host    10.0.0.2:8127
+wbs> ---> HTTP POST Handler
+wbs> POST Body:
+{"update":{"7":{"Light":{"Times":[1485093741],"Values":[96]}}}}
+^C
+

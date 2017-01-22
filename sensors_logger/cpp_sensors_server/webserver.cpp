@@ -62,6 +62,10 @@ ________________________________________________________________________________
 #include "Poco/Util/OptionSet.h"
 #include "Poco/Util/HelpFormatter.h"
 #include "Poco/Format.h"
+
+#include "Poco/Net/HTTPRequest.h"
+#include "Poco/Net/HTTPClientSession.h"
+
 #include <iostream>
 
 #include <chrono>
@@ -89,6 +93,10 @@ using Poco::Util::Application;
 using Poco::Util::Option;
 using Poco::Util::OptionSet;
 using Poco::Util::HelpFormatter;
+
+using Poco::Net::HTTPRequest;
+using Poco::Net::HTTPClientSession;
+using Poco::Net::ConnectionRefusedException;
 
 using Poco::Timespan;
 
@@ -168,7 +176,8 @@ class PageRequestHandler: public HTTPRequestHandler
 public:
     void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
     {
-		std::cout << "------------- => HTTP Request" << std::endl;
+		for (auto &param : request){std::cout << "        " + param.first + "\t" + param.second << std::endl;}
+		std::cout << "wbs> ---> HTTP Page Request Handler" << std::endl;
         response.setChunkedTransferEncoding(true);
         response.setContentType("text/html");
         std::ostream& ostr = response.send();
@@ -183,13 +192,31 @@ public:
     }
 };
 
+class PostHandler: public HTTPRequestHandler
+{
+public:
+    void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
+    {
+		for (auto &param : request){std::cout << "        " + param.first + "\t" + param.second << std::endl;}
+		std::cout << "wbs> ---> HTTP POST Handler" << std::endl;
+		//handle request
+		std::cout << "wbs> POST Body:" << std::endl;
+		std::cout << request.stream().rdbuf() << std::endl;
+		//prepare the response
+        response.setChunkedTransferEncoding(true);
+        response.setContentType("text/html");
+        std::ostream& ostr = response.send();
+		ostr << "POST handled within the cpp streamer";
+    }
+};
+
 
 class WebSocketRequestHandler: public HTTPRequestHandler
 {
 public:
     void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
     {
-		std::cout << "wbs> ------------- => Websocket Request" << std::endl;
+		std::cout << "wbs> ---> Websocket Upgrade Request" << std::endl;
         try
         {
             WebSocket ws(request, response);
@@ -275,7 +302,8 @@ class RequestHandlerFactory: public HTTPRequestHandlerFactory
 public:
     HTTPRequestHandler* createRequestHandler(const HTTPServerRequest& request)
     {
-		std::cout << "wbs> ------------- => Request Factory" << std::endl;
+		HTTPRequestHandler* Handler = NULL;
+		std::cout << "wbs> ------------- => New HTTP request" << std::endl;
         //Application& app = Application::instance();
         //app.logger().information("Request from " 
 		std::cout << "wbs>  Request from " 
@@ -287,13 +315,20 @@ public:
             + " -- version: "
             + request.getVersion()
 			<< std::endl;
-        //request is a MAP
-		//for (auto &param : request){std::cout << "  " + param.first + "\t" + param.second << std::endl;}
         
-        if(request.find("Upgrade") != request.end() && Poco::icompare(request["Upgrade"], "websocket") == 0)
-            return new WebSocketRequestHandler;
+		if(request.has("Upgrade") && Poco::icompare(request["Upgrade"], "websocket") == 0)
+		{
+            Handler = new WebSocketRequestHandler;
+		}
+        else if(request.getMethod().compare("POST") == 0)
+		{
+            Handler = new PostHandler;
+		}
         else
-            return new PageRequestHandler;
+		{
+            Handler = new PageRequestHandler;
+		}
+		return Handler;
     }
 };
 
@@ -303,13 +338,10 @@ webserver_c::webserver_c(strmap &v_conf)
 {
 	p_srv = NULL;
 	conf = v_conf;
-}
 
-void webserver_c::startServer()
-{
 	if(utl::exists(conf,"websocket_url"))
 	{
-		std::cout << "wsm>" << " websocket_url = " << conf["websocket_url"] << std::endl;
+		std::cout << "wsm> =>" << " websocket_url = " << conf["websocket_url"] << std::endl;
 		
 		URI uri(conf["websocket_url"]);
 		int port = uri.getPort();
@@ -320,8 +352,34 @@ void webserver_c::startServer()
 	}
 	else
 	{
-		std::cout << "wsm>" << " => 'websocket_url' parameter not provided, Webserver will not be started" << std::endl;
+		std::cout << "wsm>" << " X : 'websocket_url' parameter not provided, Webserver will not be started" << std::endl;
 	}
+	
+	if(utl::exists(conf,"HTTP_POST"))
+	{
+		client.uri = URI(conf["HTTP_POST"]);
+		std::string path(client.uri.getPathAndQuery());
+		if (path.empty()) path = "/";
+		
+		
+		//client.session.setHost(uri.getHost());
+		//client.session.setPort(uri.getPort());
+		client.request.setMethod(HTTPRequest::HTTP_POST);
+		client.request.setURI(path);
+		client.request.setVersion(HTTPRequest::HTTPMessage::HTTP_1_1);
+		
+		std::cout << "wsm> => " << "HTTP_POST => host(" << client.uri.getHost()
+										<< ") port(" << client.uri.getPort()
+										<< ") path(" << path
+										<< ")" << std::endl;
+		client.isReady = true;
+	}
+	else
+	{
+		std::cout << "wsm>" << " X : No HTTP Post Client" << std::endl;
+		client.isReady = false;
+	}
+	
 }
 
 void webserver_c::broadcast(std::string &update)
@@ -343,3 +401,22 @@ std::string webserver_c::poll()
 	return request;
 }
 
+//HTTP POST to another server
+void webserver_c::post(std::string &update)
+{
+	if(client.isReady)
+	{
+		try
+		{
+			HTTPClientSession session(client.uri.getHost(), client.uri.getPort());
+			client.request.setContentLength(update.length());
+			std::ostream& post_stream = session.sendRequest(client.request);
+			post_stream << update;
+			std::cout << "wbs> Posted update: " << update.length() << " Bytes" << std::endl;
+		}
+		catch(ConnectionRefusedException& exc)
+		{
+			std::cout <<"wbs> Post Fail :"<< exc.displayText() << std::endl;
+		}
+	}
+}

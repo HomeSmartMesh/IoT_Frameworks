@@ -201,7 +201,7 @@ void db_manager_c::load()
 	}
 	else
 	{
-		std::cout << "dbm> => 'dbloadpaths' parameter not available, databse will not be used" << std::endl;
+		std::cout << "dbm> X :'dbloadpaths' parameter not available, databse will not be used" << std::endl;
 	}
 		
 }

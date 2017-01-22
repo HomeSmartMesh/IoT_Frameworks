@@ -43,6 +43,20 @@ ________________________________________________________________________________
 #include <vector>
 
 #include "Poco/Net/HTTPServer.h"
+//#include "Poco/Net/HTTPClientSession.h"
+#include "Poco/Net/HTTPRequest.h"
+#include "Poco/URI.h"
+
+class client_c
+{
+public:
+	client_c(){isReady = false;};
+public:
+	//Poco::Net::HTTPClientSession 	session;
+	Poco::Net::HTTPRequest 			request;
+	Poco::URI						uri;
+	bool							isReady;
+};
 
 class webserver_c
 {
@@ -50,15 +64,16 @@ public:
 	webserver_c();
 	webserver_c(strmap &v_conf);
 public:
-	void 		startServer();
 	void 		sendLines(std::vector<std::string> &lines);
 	void 		broadcast(std::string &update);			//to all connected clients
+	void 		post(std::string &update);				//HTTP POST to another server
 	std::string poll();										//get a request from the first client which list is not empty
 															//could be improved by a round robin to avoid Dos attacks
 	void 		respond(std::string &response);				//to the current client that sent the request
 	std::string currentclient;								//the poll() respond() is linked to the currentclient
 private:
 	Poco::Net::HTTPServer *p_srv;
+	client_c				client;
 	strmap conf;
 
 };
