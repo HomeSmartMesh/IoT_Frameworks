@@ -321,6 +321,24 @@ void db_manager_c::getMeasures(int NodeId,std::string SensorName, time_t start, 
 	std::cout << "dbm> counts/found : " << count << "/" << found << std::endl;
 }
 
+//get the last measures of all nodes and sensors
+void db_manager_c::getUpdate(NodeMap_t &ResVals)
+{
+	std::cout << "dbm> get update" << std::endl;
+	int count = 0;
+	for(auto const& node : Nodes)
+	{
+		int NodeId = node.first;
+		for(auto const& sensor: node.second)
+		{
+			std::string sensorName = sensor.first;
+			ResVals[NodeId][sensorName].push_back(sensor.second.back());
+			count++;
+		}
+	}
+	std::cout << "dbm> update with " << count << " measures" << std::endl;
+}
+
 void db_manager_c::handle_request(const std::string &request,std::string &response)
 {
 	utl::start();
@@ -333,7 +351,6 @@ void db_manager_c::handle_request(const std::string &request,std::string &respon
 		std::cout << "dbm> req Type>" << reqType << std::endl;
 		if(reqType.find("Duration") == 0)
 		{
-			std::cout << "dbm> find>" << std::endl;
 			time_t start = std::stoll(jReq["request"]["start"].dump())/1000;
 			time_t stop = std::stoll(jReq["request"]["stop"].dump())/1000;
 
@@ -344,12 +361,24 @@ void db_manager_c::handle_request(const std::string &request,std::string &respon
 			json jResp;
 			utl::make_json_resp(NodeId,SensorName,ResVals,jResp,"response");
 			jResp["response"]["id"] = jReq["request"]["id"];
+			jResp["response"]["type"] = "Duration";
 			jResp["response"]["NodeId"] = NodeId;
 			jResp["response"]["SensorName"] = SensorName;
 			
 			response = jResp.dump();
+			std::cout << "dbm> response is an update> " << response.length() << " Bytes, prepared in "<< utl::stop() << std::endl;
 		}
-		//std::cout << "dbm> response>" << response << std::endl;
-		std::cout << "dbm> response> " << response.length() << " Bytes, prepared in "<< utl::stop() << std::endl;
+		else if(reqType.find("update") == 0)
+		{
+			NodeMap_t ResVals;
+			getUpdate(ResVals);
+			response = utl::stringify(ResVals,"update");
+			std::cout << "dbm> response is an update> " << response.length() << " Bytes, prepared in "<< utl::stop() << std::endl;
+		}
+		else
+		{
+			std::cout << "dbm> Error : undefined request 'type' " << utl::stop() << std::endl;
+		}
+		
 	}
 }

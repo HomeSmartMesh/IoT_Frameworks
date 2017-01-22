@@ -34,7 +34,11 @@ $(function () {
         // first we want users to enter their names
         status.text('Connected');
 		
-		var Req = JSON.stringify(jReq);
+		var Req = JSON.stringify(statusReq);
+		connection.send(Req);
+		console.log("request>",statusReq);
+		
+		Req = JSON.stringify(jReq);
 		connection.send(Req);
     };
 
@@ -46,32 +50,9 @@ $(function () {
                                     + 'connection or the server is down.' } ));
     };
 
-    // most important part - incoming messages
-    connection.onmessage = 
-	function(message)
-	{
-        try 
+	
+	function handle_update(upjson)
 		{
-            var json = JSON.parse(message.data);
-        } catch (e) 
-		{
-            console.log('This doesn\'t look like a valid JSON: ', message.data);
-            return;
-        }
-		//------------------------------------------ response ------------------------------------------
-		if("response" in json)
-		{
-			console.log("request>",jReq);
-			console.log("response>",json);
-			if(("id" in json.response)&& (json.response.id == jReq.request.id))
-			{
-				d3_SetChartValues(json.response.Times,json.response.Values);
-			}
-		}
-		//------------------------------------------ update ------------------------------------------
-		else if("update" in json)
-		{
-			var upjson = json.update;
 			var message_text = '';
 			for (var nodeid in upjson) 
 			{
@@ -107,6 +88,44 @@ $(function () {
 				}
 				//message_text += '<br>';
 			}
+		return message_text;
+	};
+	
+	
+    // most important part - incoming messages
+    connection.onmessage = 
+	function(message)
+	{
+        try 
+		{
+            var json = JSON.parse(message.data);
+        } catch (e) 
+		{
+            console.log('This doesn\'t look like a valid JSON: ', message.data);
+            return;
+        }
+		//------------------------------------------ response ------------------------------------------
+		if("response" in json)
+		{
+			if(("type" in json.response)&& (json.response.type == "Duration"))
+			{
+				if(("id" in json.response)&& (json.response.id == jReq.request.id))
+				{
+					d3_SetChartValues(json.response.Times,json.response.Values);
+				}
+			}
+			else if(("type" in json.response)&& (json.response.type == "update"))
+			{
+				if(("id" in json.response)&& (json.response.id == jReq.request.id))
+				{
+					handle_update(json.response.update);
+				}
+			}
+		}
+		//------------------------------------------ update ------------------------------------------
+		else if("update" in json)
+		{
+			var message_text = handle_update(json.update);
 			
 			addMessage(message_text);
 			//console.log('update> ', upjson);

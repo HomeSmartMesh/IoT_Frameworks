@@ -47,16 +47,24 @@ var Chart =
 //require(['LastHourChart']);
 
 
-var UniqueRequestId = Math.floor(Math.random() * 10000);
 var jReq = {
 				request : 
 				{
-					id 		: UniqueRequestId,
+					id 		: Math.floor(Math.random() * 10000),
 					type : "Duration",
 					NodeId 	: 7,
 					SensorName 	: "Temperature",
 					start 		: Chart.scale_x_domain[0],
 					stop 		: Chart.scale_x_domain[1]
+				}
+			};
+
+var statusReq = {
+				request : 
+				{
+					id 		: Math.floor(Math.random() * 10000),
+					type : "update",
+					NodeIds : [6,7]
 				}
 			};
 
