@@ -2,7 +2,7 @@
  - Client ws websocket 
 */
 
-$(function () {
+function initWebsocket() {
     "use strict";
 
     // for better performance - to avoid searching in DOM
@@ -52,42 +52,42 @@ $(function () {
 
 	
 	function handle_update(upjson)
+	{
+		var message_text = '';
+		for (var nodeid in upjson) 
 		{
-			var message_text = '';
-			for (var nodeid in upjson) 
+			message_text += nodeid + " : <br>";
+			for(var sk in upjson[nodeid])
 			{
-				message_text += nodeid + " : <br>";
-				for(var sk in upjson[nodeid])
+				var d = new Date(upjson[nodeid][sk].Times*1000);
+				var dtext = d.getHours() +':'+ d.getMinutes() + ':' + d.getSeconds();
+				message_text += sk + '(' + upjson[nodeid][sk].Values + ' - ' + dtext + ')<br>';
+				if(sk == "Pressure")
 				{
-					var d = new Date(upjson[nodeid][sk].Times*1000);
-					var dtext = d.getHours() +':'+ d.getMinutes() + ':' + d.getSeconds();
-					message_text += sk + '(' + upjson[nodeid][sk].Values + ' - ' + dtext + ')<br>';
-					if(sk == "Pressure")
-					{
-						var value = Math.round(upjson[nodeid]["Pressure"].Values);
-						//console.log("Press",nodeid, value);
-						//d3_SetPressureValue(nodeid,value);
-					}
-					if(sk == "Temperature")
-					{
-						var value = Math.round(100*upjson[nodeid]["Temperature"].Values)/100;
-						//console.log("Temp",nodeid, value);
-						d3_SetTemperatureValue(nodeid,value);
-					}
-					if(sk == "Humidity")
-					{
-						var value = Math.round(upjson[nodeid]["Humidity"].Values);
-						//console.log("Hum",nodeid, value);
-						d3_SetHumidityValue(nodeid,value);
-					}
-					if(sk == "Light")
-					{
-						//console.log("Light", nodeid, value);
-						d3_SetLightValue(nodeid,upjson[nodeid]["Light"].Values);
-					}
+					var value = Math.round(upjson[nodeid]["Pressure"].Values);
+					//console.log("Press",nodeid, value);
+					//d3_SetPressureValue(nodeid,value);
 				}
-				//message_text += '<br>';
+				if(sk == "Temperature")
+				{
+					var value = Math.round(100*upjson[nodeid]["Temperature"].Values)/100;
+					//console.log("Temp",nodeid, value);
+					d3_SetTemperatureValue(nodeid,value);
+				}
+				if(sk == "Humidity")
+				{
+					var value = Math.round(upjson[nodeid]["Humidity"].Values);
+					//console.log("Hum",nodeid, value);
+					d3_SetHumidityValue(nodeid,value);
+				}
+				if(sk == "Light")
+				{
+					//console.log("Light", nodeid, value);
+					d3_SetLightValue(nodeid,upjson[nodeid]["Light"].Values);
+				}
 			}
+			//message_text += '<br>';
+		}
 		return message_text;
 	};
 	
@@ -154,4 +154,4 @@ $(function () {
         content.prepend('<p>' + message + '</p>');
 		//content.html('<p>' + message + '</p>');
     }
-});
+};

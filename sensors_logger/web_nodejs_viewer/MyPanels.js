@@ -20,33 +20,23 @@ var Status =
 var nmap = {6 : 0,
 			7 : 1};
 
-//require(['MyStatus']);
 //---------------------------------------------------------------------------
 //					Chart
 //---------------------------------------------------------------------------
 var now = Date.now();
-var start_disp = now - 24*60*60*1000;//10 mn
+var start_disp = now - 24*60*60*1000;//1 day
 var Chart = 
 {
 	svgID : "#ChartDisp",
-	data : 
-		[
-			{time: new Date('2017-01-14T09:00:00'), value: 1223},
-			{time: new Date('2017-01-14T09:10:00'), value: 1500},
-			{time: new Date('2017-01-14T09:15:00'), value: 200},
-			{time: new Date('2017-01-14T09:30:00'), value: 2000}
-			
-		],
-//	scale_x_domain : [new Date('2017-01-14T07:00:00'),new Date('2017-01-14T11:00:00')],
+	data : [],
 	scale_x_domain : [start_disp,now],
 	scale_y_domain : [10,25],
 	SensorName : "Temperature"
 };
 
-//require(['MyChart']);
-//require(['LastHourChart']);
-
-
+//---------------------------------------------------------------------------
+//					Requests
+//---------------------------------------------------------------------------
 var jReq = {
 				request : 
 				{
@@ -70,11 +60,23 @@ var statusReq = {
 
 //---------------------------------------------------------------------------
 
-require(["MyStatus", "LastHourChart"], function(){
-	
-require(["sensors_client.js"]);
-	
+//---------------------------------------------------------------------------
+//					Loading modules
+//---------------------------------------------------------------------------
+require([	"MyStatus", 
+			"LastHourChart",
+			"sensors_client.js",
+			"MovingChartExample"
+		], 
+		function()
+		{
+			console.log("require done");
+			initChart(Chart);
+			initWebsocket();
+		}
+		);
+
+$(function() {
+    console.log( "ready!" );
 });
 
-
-require(["MovingChartExample"]);
