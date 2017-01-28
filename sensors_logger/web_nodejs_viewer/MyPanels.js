@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
-//					Status
+//					Status Panel
 //---------------------------------------------------------------------------
-var Status = 
+var StatusParams = 
 {
 	svgID : "#StatusDisp",
 	data  :
@@ -21,34 +21,22 @@ var nmap = {6 : 0,
 			7 : 1};
 
 //---------------------------------------------------------------------------
-//					Chart
+//					Time Chart
 //---------------------------------------------------------------------------
 var now = Date.now();
 var start_disp = now - 24*60*60*1000;//1 day
 var CharParams = 
 {
 	svgID : "#ChartDisp",
-	data : [],
 	scale_x_domain : [start_disp,now],
 	scale_y_domain : [10,25],
+	NodeId : 7,
 	SensorName : "Temperature"
 };
 
 //---------------------------------------------------------------------------
 //					Requests
 //---------------------------------------------------------------------------
-var jReq = {
-				request : 
-				{
-					id 		: Math.floor(Math.random() * 10000),
-					type : "Duration",
-					NodeId 	: 7,
-					SensorName 	: "Temperature",
-					start 		: CharParams.scale_x_domain[0],
-					stop 		: CharParams.scale_x_domain[1]
-				}
-			};
-
 var statusReq = {
 				request : 
 				{
@@ -63,8 +51,8 @@ var statusReq = {
 //---------------------------------------------------------------------------
 //					Loading modules
 //---------------------------------------------------------------------------
-require([	"MyStatus", 
-			"LastHourChart",
+require([	"StatusPanel", //still using dirty hack global var Status
+			"TimeChart",
 			"sensors_client.js",
 			"MovingChartExample"
 		], 
@@ -72,13 +60,12 @@ require([	"MyStatus",
 		{
 			console.log("require done");
 			
-			var MyChart = new MyTimeChart(CharParams);
-			//initChart(Chart);
-			initWebsocket(jReq,statusReq,MyChart);
+			var MyPanel = new StatusPanel(StatusParams);
+
+			var MyChart = new TimeChart(CharParams);
+			
+			var jReq = MyChart.getRequestDuration();
+
+			initWebsocket(jReq,statusReq,MyPanel,MyChart);
 		}
 		);
-
-$(function() {
-    console.log( "ready!" );
-});
-

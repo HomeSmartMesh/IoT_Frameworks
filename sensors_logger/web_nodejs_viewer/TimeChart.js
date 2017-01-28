@@ -1,15 +1,16 @@
 
 
-class MyTimeChart
+class TimeChart
 {
 	constructor(CharParams)
 	{
-		this.svgID 			= CharParams.svgID;
-		this.data  			= CharParams.data;
-		this.scale_x_domain = CharParams.scale_x_domain;
-		this.scale_y_domain = CharParams.scale_y_domain;
-		this.SensorName 	= CharParams.SensorName;
-		//this = CharParams;
+		//Take all members of CharParams into this
+		for(var param in CharParams)
+		{
+			this[param] = CharParams[param];
+		}
+		//add members
+		this.data = [];
 
 		var margin = {top: 30, right: 40, bottom: 30, left: 50};
 		var width = 600 - margin.left - margin.right;
@@ -85,6 +86,21 @@ class MyTimeChart
 		this.PLine.attr("d", this.valueline(this.data));	
 	}
 
+	getRequestDuration()
+	{
+		var Request = {
+						request : 
+						{
+							id 		: Math.floor(Math.random() * 10000),
+							type : "Duration",
+							NodeId 	: this.NodeId,
+							SensorName 	: this.SensorName,
+							start 		: this.scale_x_domain[0],
+							stop 		: this.scale_x_domain[1]
+						}
+					};
+		return Request;
+	}
 }
 
 //------------------------------------------------------------------------------

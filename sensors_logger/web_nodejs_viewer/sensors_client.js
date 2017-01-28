@@ -2,7 +2,7 @@
  - Client ws websocket 
 */
 
-function initWebsocket(req1,req2,chart) {
+function initWebsocket(req1,req2,panel,chart) {
     "use strict";
 
     // for better performance - to avoid searching in DOM
@@ -72,18 +72,18 @@ function initWebsocket(req1,req2,chart) {
 				{
 					var value = Math.round(100*upjson[nodeid]["Temperature"].Values)/100;
 					//console.log("Temp",nodeid, value);
-					d3_SetTemperatureValue(nodeid,value);
+					panel.d3_SetTemperatureValue(nodeid,value);
 				}
 				if(sk == "Humidity")
 				{
 					var value = Math.round(upjson[nodeid]["Humidity"].Values);
 					//console.log("Hum",nodeid, value);
-					d3_SetHumidityValue(nodeid,value);
+					panel.d3_SetHumidityValue(nodeid,value);
 				}
 				if(sk == "Light")
 				{
 					//console.log("Light", nodeid, value);
-					d3_SetLightValue(nodeid,upjson[nodeid]["Light"].Values);
+					panel.d3_SetLightValue(nodeid,upjson[nodeid]["Light"].Values);
 				}
 			}
 			//message_text += '<br>';
@@ -104,6 +104,7 @@ function initWebsocket(req1,req2,chart) {
             console.log('This doesn\'t look like a valid JSON: ', message.data);
             return;
         }
+		console.log("message>",json);
 		//------------------------------------------ response ------------------------------------------
 		if("response" in json)
 		{
