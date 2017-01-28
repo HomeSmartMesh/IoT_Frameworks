@@ -33,7 +33,23 @@ var CharParams =
 	NodeId : 7,
 	SensorName : "Temperature"
 };
-
+var ChartsParamsList = 
+[
+	{
+		svgID : "#ChartDisp",
+		scale_x_domain : [start_disp,now],
+		scale_y_domain : [10,25],
+		NodeId : 7,
+		SensorName : "Temperature"
+	},
+	{
+		svgID : "#ChartDisp2",
+		scale_x_domain : [start_disp,now],
+		scale_y_domain : [10,25],
+		NodeId : 7,
+		SensorName : "Humidity"
+	}
+];
 //---------------------------------------------------------------------------
 //					Requests
 //---------------------------------------------------------------------------
@@ -53,8 +69,7 @@ var statusReq = {
 //---------------------------------------------------------------------------
 require([	"StatusPanel", //still using dirty hack global var Status
 			"TimeChart",
-			"sensors_client.js",
-			"MovingChartExample"
+			"websocket"
 		], 
 		function()
 		{
@@ -62,10 +77,13 @@ require([	"StatusPanel", //still using dirty hack global var Status
 			
 			var MyPanel = new StatusPanel(StatusParams);
 
-			var MyChart = new TimeChart(CharParams);
+			var MyChartList = new TimeChartsList(ChartsParamsList);
 			
-			var jReq = MyChart.getRequestDuration();
+			var jReq = MyChartList.getRequestDuration(7,"Temperature");
+			var jReq2 = MyChartList.getRequestDuration(7,"Humidity");
 
-			initWebsocket(jReq,statusReq,MyPanel,MyChart);
+			var reqList = [jReq,jReq2,statusReq];
+
+			initWebsocket(reqList,MyPanel,MyChartList);
 		}
 		);

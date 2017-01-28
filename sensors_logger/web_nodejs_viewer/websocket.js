@@ -2,7 +2,7 @@
  - Client ws websocket 
 */
 
-function initWebsocket(req1,req2,panel,chart) {
+function initWebsocket(reqList,panel,chartlist) {
     "use strict";
 
     // for better performance - to avoid searching in DOM
@@ -34,12 +34,20 @@ function initWebsocket(req1,req2,panel,chart) {
         // first we want users to enter their names
         status.text('Connected');
 		
-		var Req = JSON.stringify(req2);
-		connection.send(Req);
-		console.log("request>",req2);
-		
-		Req = JSON.stringify(req1);
-		connection.send(Req);
+		console.log("connected : ",reqList);
+		for(var i = 0; i<reqList.length;i++)
+		{
+			if(reqList[i]!= 0)
+			{
+				var Req = JSON.stringify(reqList[i]);
+				console.log("sent: ",Req);
+				connection.send(Req);
+			}
+			else
+			{
+				console.log("reqList : ",reqList[i]);
+			}
+		}
     };
 
     connection.onerror = 
@@ -71,7 +79,7 @@ function initWebsocket(req1,req2,panel,chart) {
 				if(sk == "Temperature")
 				{
 					var value = Math.round(100*upjson[nodeid]["Temperature"].Values)/100;
-					//console.log("Temp",nodeid, value);
+					console.log("Temp",nodeid, value);
 					panel.d3_SetTemperatureValue(nodeid,value);
 				}
 				if(sk == "Humidity")
@@ -110,9 +118,9 @@ function initWebsocket(req1,req2,panel,chart) {
 		{
 			if(("type" in json.response)&& (json.response.type == "Duration"))
 			{
-				if(("id" in json.response)&& (json.response.id == req1.request.id))
+				//if(("id" in json.response)&& (json.response.id == req1.request.id))
 				{
-					chart.d3_SetChartValues(json.response.Times,json.response.Values);
+					chartlist.d3_SetChartValues(json.response);
 				}
 			}
 			else if(("type" in json.response)&& (json.response.type == "update"))

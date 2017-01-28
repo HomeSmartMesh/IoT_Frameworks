@@ -22,6 +22,14 @@ var TempToColor = function (temp)
 	return colorTempScale(colorTempInterpolate(temp));
 }
 
+var temp_rect_min = 100;
+var temp_rect_height = 200;
+var temp_rect_max = -100;
+	
+var TempToPos = d3.scale.linear()
+		.domain(TempRange)
+		.range([temp_rect_min,temp_rect_max]);
+
 class StatusPanel
 {
 	constructor(params)
@@ -44,14 +52,7 @@ class StatusPanel
 			.attr("height", 200)
 			;
 
-		this.temp_rect_min = 100;
-		var temp_rect_height = 200;
-		this.temp_rect_max = -100;
 
-		/*var TempToPos = d3.scale.linear()
-			.domain(TempRange)
-			.range([temp_rect_min,temp_rect_max]);
-			*/
 
 		//Append multiple color stops by using D3's data/enter step
 		//Append a defs (for definition) element to your SVG
@@ -87,7 +88,7 @@ class StatusPanel
 						.append("text")	.text(function(d,i){return d.Name;})
 										.style("font-size", "16px")
 										.style("fill", "#011a4c")
-										.attr('x',-30)
+										.attr('x',0)
 										.attr('y',90)
 						;
 
@@ -95,29 +96,25 @@ class StatusPanel
 		LightNodesGroups.attr	("transform", "translate(40,-40)");
 		HumNodesGroups.attr	("transform", "translate(40,40)");
 
-		TempNodesGroups.append("circle")
-						.attr('r',30)
-						.attr('cx',0)
-						.attr('cy',0)
-						.style("fill", "White")
-						//.style("stroke", "#000")
-						//.style("stroke-width", "2px")
-						;
 		TempNodesGroups.append("rect")
 						.attr('x',-50)
-						.attr('y',-this.temp_rect_min)
-						.attr('width',20)
+						.attr('y',-temp_rect_min)
+						.attr('width',80)
 						.attr('height',temp_rect_height)
 						.style("fill", "url(#temp-color-gradient)")
-						//.style("stroke", "#000")
-						//.style("stroke-width", "2px")
+						;
+		TempNodesGroups.append("circle")
+						.attr('r',30)
+						.attr('cx',-10)
+						.attr('cy',0)
+						.style("fill", "White")
 						;
 		TempNodesGroups.append("text")
 						.text("Temperature")
 						.style("font-size", "12px")
 						.style("font-weight", "bold")
 						.style("fill", "#011a4c")
-						.attr('x',-25)
+						.attr('x',-35)
 						.attr('y',5)
 						;
 		LightNodesGroups.append("circle")
@@ -156,15 +153,11 @@ class StatusPanel
 		this.HumGroupUpdate = svgo.selectAll("g.cHum").data(this.data);
 	}
 
-
 	d3_SetTemperatureValue(id,Value)
 	{
 		if((id==6) || (id==7))
 		{
-					var TempToPos = d3.scale.linear()
-					.domain(TempRange)
-					.range([this.temp_rect_min,this.temp_rect_max]);
-
+			console.log("this.TempTopos");
 			this.data[nmap[id]].Temperature = Value;
 			this.TempGroupUpdate.select("text")	.text(function(d){return d.Temperature + " °C"})
 											.attr("y",function(d){return TempToPos(d.Temperature)+5});
@@ -196,5 +189,3 @@ class StatusPanel
 	}
 }
 
-		
-	

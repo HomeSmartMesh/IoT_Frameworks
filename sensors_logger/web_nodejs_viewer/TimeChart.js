@@ -72,8 +72,9 @@ class TimeChart
 				.text("Bathroom Temperature");//could not use Chart.SensorName
 	}
 
-	d3_SetChartValues(Times,Values)
+	d3_SetChartValues(Times ,Values)
 	{
+		//console.log("---> in plot ", this.NodeId, this.SensorName);
 		if(Times.length == Values.length)
 		{
 			this.data = [];
@@ -104,3 +105,59 @@ class TimeChart
 }
 
 //------------------------------------------------------------------------------
+
+class TimeChartsList
+{
+	constructor(chartParamsList)
+	{
+		this.chartsList = [];
+		for(var i = 0; i<chartParamsList.length;i++)
+		{
+			this.chartsList.push(new TimeChart(chartParamsList[i]) );
+		}
+	}
+
+	getChartId(NodeId,SensorName)
+	{
+		for(var i = 0; i<this.chartsList.length;i++)
+		{
+			if(this.chartsList[i].NodeId == NodeId)
+			{
+				if(this.chartsList[i].SensorName == SensorName)
+				{
+					return i;
+				}
+			}
+			i++;
+		}
+		return -1;
+	}
+
+	d3_SetChartValues(response)
+	{
+		var Times = response.Times;
+		var Values = response.Values;
+		var NodeId = response.NodeId;
+		var SensorName = response.SensorName;
+		var index = this.getChartId(NodeId,SensorName);
+		if(index != -1)
+		{
+			this.chartsList[index].d3_SetChartValues(Times,Values);
+		}
+		else
+		{console.log("Sensor not found");}
+	}
+
+	getRequestDuration(NodeId,SensorName)
+	{
+		var index = this.getChartId(NodeId,SensorName);
+		if(index != -1)
+		{
+			return 	this.chartsList[index].getRequestDuration();
+		}
+		else
+		{
+			return 0;
+		}
+	}
+}
