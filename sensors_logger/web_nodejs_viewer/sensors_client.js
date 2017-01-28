@@ -2,7 +2,7 @@
  - Client ws websocket 
 */
 
-function initWebsocket() {
+function initWebsocket(req1,req2,chart) {
     "use strict";
 
     // for better performance - to avoid searching in DOM
@@ -34,11 +34,11 @@ function initWebsocket() {
         // first we want users to enter their names
         status.text('Connected');
 		
-		var Req = JSON.stringify(statusReq);
+		var Req = JSON.stringify(req2);
 		connection.send(Req);
-		console.log("request>",statusReq);
+		console.log("request>",req2);
 		
-		Req = JSON.stringify(jReq);
+		Req = JSON.stringify(req1);
 		connection.send(Req);
     };
 
@@ -109,14 +109,14 @@ function initWebsocket() {
 		{
 			if(("type" in json.response)&& (json.response.type == "Duration"))
 			{
-				if(("id" in json.response)&& (json.response.id == jReq.request.id))
+				if(("id" in json.response)&& (json.response.id == req1.request.id))
 				{
-					d3_SetChartValues(json.response.Times,json.response.Values);
+					chart.d3_SetChartValues(json.response.Times,json.response.Values);
 				}
 			}
 			else if(("type" in json.response)&& (json.response.type == "update"))
 			{
-				if(("id" in json.response)&& (json.response.id == jReq.request.id))
+				if(("id" in json.response)&& (json.response.id == req1.request.id))
 				{
 					handle_update(json.response.update);
 				}

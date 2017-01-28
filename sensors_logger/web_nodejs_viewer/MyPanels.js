@@ -25,7 +25,7 @@ var nmap = {6 : 0,
 //---------------------------------------------------------------------------
 var now = Date.now();
 var start_disp = now - 24*60*60*1000;//1 day
-var Chart = 
+var CharParams = 
 {
 	svgID : "#ChartDisp",
 	data : [],
@@ -44,8 +44,8 @@ var jReq = {
 					type : "Duration",
 					NodeId 	: 7,
 					SensorName 	: "Temperature",
-					start 		: Chart.scale_x_domain[0],
-					stop 		: Chart.scale_x_domain[1]
+					start 		: CharParams.scale_x_domain[0],
+					stop 		: CharParams.scale_x_domain[1]
 				}
 			};
 
@@ -71,8 +71,10 @@ require([	"MyStatus",
 		function()
 		{
 			console.log("require done");
-			initChart(Chart);
-			initWebsocket();
+			
+			var MyChart = new MyTimeChart(CharParams);
+			//initChart(Chart);
+			initWebsocket(jReq,statusReq,MyChart);
 		}
 		);
 
