@@ -41,6 +41,8 @@ database manager : RAM and Files mirroring
 
 //for stdout
 #include <iostream>
+#include <exception>
+#include <stdexcept>
 
 //Linux dependency
 #include <sys/stat.h>
@@ -351,22 +353,42 @@ void db_manager_c::handle_request(const std::string &request,std::string &respon
 		std::cout << "dbm> req Type>" << reqType << std::endl;
 		if(reqType.find("Duration") == 0)
 		{
-			time_t start = std::stoll(jReq["request"]["start"].dump())/1000;
-			time_t stop = std::stoll(jReq["request"]["stop"].dump())/1000;
+			bool isVerifOK = true;
+			//std::exception_ptr eptr;
+			time_t start,stop;
+			int NodeId;
+			std::string SensorName;
+			try
+			{
+				start 		= std::stoll(jReq["request"]["start"].dump())/1000;
+				stop 		= std::stoll(jReq["request"]["stop"].dump())/1000;
+				NodeId 		= std::stoi(jReq["request"]["NodeId"].dump());
+				SensorName 	= jReq["request"]["SensorName"];
+			}
+			catch(const std::exception& ex)
+			{
+				std::cout << "dbm> !!! Caught exception \"" << ex.what() << "\"!!!\n";
+				isVerifOK = false;
+			}
 
-			int NodeId 				= std::stoi(jReq["request"]["NodeId"].dump());
-			std::string SensorName 	= jReq["request"]["SensorName"];
-			NodeMap_t ResVals;
-			getMeasures(NodeId,SensorName,start,stop,ResVals);
-			json jResp;
-			utl::make_json_resp(NodeId,SensorName,ResVals,jResp,"response");
-			jResp["response"]["id"] = jReq["request"]["id"];
-			jResp["response"]["type"] = "Duration";
-			jResp["response"]["NodeId"] = NodeId;
-			jResp["response"]["SensorName"] = SensorName;
-			
-			response = jResp.dump();
-			std::cout << "dbm> response is an update> " << response.length() << " Bytes, prepared in "<< utl::stop() << std::endl;
+			if(isVerifOK)
+			{
+				NodeMap_t ResVals;
+				getMeasures(NodeId,SensorName,start,stop,ResVals);
+				json jResp;
+				utl::make_json_resp(NodeId,SensorName,ResVals,jResp,"response");
+				jResp["response"]["id"] = jReq["request"]["id"];
+				jResp["response"]["type"] = "Duration";
+				jResp["response"]["NodeId"] = NodeId;
+				jResp["response"]["SensorName"] = SensorName;
+				
+				response = jResp.dump();
+				std::cout << "dbm> response is an update> " << response.length() << " Bytes, prepared in "<< utl::stop() << std::endl;
+			}
+			else
+			{
+				std::cout << "dbm> request parameters verification Failed "<< utl::stop() << std::endl;
+			}
 		}
 		else if(reqType.find("update") == 0)
 		{

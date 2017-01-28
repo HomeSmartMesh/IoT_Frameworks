@@ -12,7 +12,7 @@ port=/dev/ttyUSB0
 SensorNodes=06;07;
 
 # The "logfile" is optionnal and deprecated as now the db saves values into files
-#logfile=/home/pi/share/logDays.txt
+logfile=/home/pi/share/logDays.txt
 
 # The "logout" is deprecated as log needed for debug only which is run in console mode
 #logout=1

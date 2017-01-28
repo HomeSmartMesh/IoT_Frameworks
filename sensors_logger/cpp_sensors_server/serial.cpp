@@ -285,12 +285,21 @@ void Serial::log(const std::string &str)
 {
 	std::string d = utl::getDay();
 	std::string t = utl::getTime();
-	logfile << d << "\t" << t << "\t";
-	logfile << str << std::endl;
 
-	std::cout <<"str> "<< d << "\t" << t << "\t";
-	std::cout << str << std::endl;
-
+	if(isLogOut)
+	{
+		std::cout <<"str> "<< d << "\t" << t << "\t";
+		std::cout << str << std::endl;
+	}
+	if(isLogFile && logfile.is_open())
+	{
+		logfile << d << "\t" << t << "\t";
+		logfile << str << std::endl;
+	}
+	if(isLogFile && logfile.is_open())
+	{
+		logfile.flush();
+	}
 }
 
 void Serial::logBuffer()
@@ -298,18 +307,7 @@ void Serial::logBuffer()
 	//std::cout << "[nb lines]" << logbuf.currentlines.size() << std::endl;
 	for(std::string cl : logbuf.currentlines)
 	{
-		if(isLogOut)
-		{
-			std::cout 	<< cl << std::endl;
-		}
-		if(isLogFile && logfile.is_open())
-		{
-			logfile 	<< cl << std::endl;
-		}
-	}
-	if(isLogFile && logfile.is_open())
-	{
-		logfile.flush();
+		log(cl);
 	}
 }
 
