@@ -8,10 +8,10 @@ Complete working samples for specific use cases including
 These projects are of intermediate level, for a beginning [STM8 IoT Hello World Samples](https://github.com/wassfila/STM8_IoT_HelloWorld) are available on a separate repository.
 
 # Sensors Logger
-<img src="https://github.com/wassfila/IoT_Frameworks/blob/master/sensors_logger/IoT_Infrastructure.png" height=400>
+<img src="https://github.com/wassfila/media/blob/master/IoT_Infrastructure.png" height=400>
 
 ## Webclient screenshot
-<img src="https://github.com/wassfila/IoT_Frameworks/blob/master/sensors_logger/webclient.png" height=400>
+<img src="https://github.com/wassfila/media/blob/master/webclient.png" height=400>
 
 ###Javascript easy to use configuration API
 ```javascript
@@ -45,7 +45,7 @@ Here have firmware for the Mobile Node which is the base for the sensors:
  
 More details on [Home Smart Mesh](http://www.homesmartmesh.com)
 
-<img src="https://github.com/wassfila/IoT_Frameworks/blob/master/sensors_logger/IoT_Node_Mobile_v2.JPG" height=300>
+<img src="https://github.com/wassfila/media/blob/master/IoT_Node_Mobile_v2.JPG" height=300>
 
 ## Raspberry Pi : C++ Sensors Server
 - Serial port reader
@@ -76,20 +76,20 @@ sudo ./b2 install
 [Technolab/Mesh Controller Interface wiki](http://www.technolab.ddns.net/display/SSN/Mesh+Controller+Interface)
 
 ## Configuration Steps
-<img src="https://github.com/wassfila/IoT_Frameworks/blob/master/mesh_controller_interface/configuration_steps.png" height=300>
+<img src="https://github.com/wassfila/media/blob/master/configuration_steps.png" height=300>
 
 ## Configuration Options
-<img src="https://github.com/wassfila/IoT_Frameworks/blob/master/mesh_controller_interface/configuration_options.png" height=300>
+<img src="https://github.com/wassfila/media/blob/master/configuration_options.png" height=300>
 
 
 # Smartio
 Control any thing (up to 48V 500mA) with a smartphone. Both offline, with Raspberry Pi as a wifi access point, or even easier when from internet (Beyond scopes of Router Ports and Security aspects).
 More under the [smartio directory](https://github.com/wassfila/IoT_Frameworks/tree/master/smartio).
 
-<img src="https://github.com/wassfila/IoT_Frameworks/blob/master/smartio/WebIO.jpg" height=300>
+<img src="https://github.com/wassfila/media/blob/master/WebIO.jpg" height=300>
 
 # Joystick Servo
 Control a servo motor using a PS4 controller linked wirelessly to a Raspberry Pi that has a [servo board](https://github.com/wassfila/STM8_IoT_Boards/tree/master/ServoMotors_Controller).
 Configuration steps are provided on how to use the PS4 on the Pi.
 
-<img src="https://github.com/wassfila/IoT_Frameworks/blob/master/joystick_servo/ServoController.JPG" height=300>
+<img src="https://github.com/wassfila/media/blob/master/ServoController.JPG" height=300>
