@@ -214,27 +214,67 @@ void startup_info()
 		
 }
 
-void clear_unused_PIO()
+void configure_All_PIO()
 {
-	//C5
-	PC_DDR_bit.DDR5 = 1;//output
-	PC_ODR_bit.ODR5 = 0;//Low
-	//C6
-	PC_DDR_bit.DDR6 = 1;//output
-	PC_ODR_bit.ODR6 = 0;//Low
-	//A3
+	//A0 - SWIM
+	//PA_DDR_bit.DDR3 = 1;//output
+	//PA_ODR_bit.ODR3 = 0;//Low
+	//A1 - NRST
+	//PA_DDR_bit.DDR3 = 1;//output
+	//PA_ODR_bit.ODR3 = 0;//Low
+	//A2 - UART-Tx
+	PA_DDR_bit.DDR2 = 1;//output
+	PA_ODR_bit.ODR2 = 0;//Low
+	//A3 - unconnected
 	PA_DDR_bit.DDR3 = 1;//output
 	PA_ODR_bit.ODR3 = 0;//Low
-	//B2
+
+	//B0 - Magnet-1
+	PB_DDR_bit.DDR0 = 1;//output
+	PB_ODR_bit.ODR0 = 0;//Low
+      	//B1 - Light-IRQ
+	PB_DDR_bit.DDR1 = 1;//output
+	PB_ODR_bit.ODR1 = 0;//Low
+	//B2 - unconnected
 	PB_DDR_bit.DDR2 = 1;//output
 	PB_ODR_bit.ODR2 = 0;//Low
-	//A0
-	/*PA_DDR_bit.DDR3 = 1;//output
-	PA_ODR_bit.ODR3 = 0;//Low
-	//A1
-	PA_DDR_bit.DDR3 = 1;//output
-	PA_ODR_bit.ODR3 = 0;//Low
-	*/
+        //B3 - nRF CE_Pin_LowDisable()
+	PB_DDR_bit.DDR3 = 1;//output
+	PB_ODR_ODR3 = 0;
+        //B4 - nRF CSN High Disable
+	PB_DDR_bit.DDR4 = 1;//output
+	PB_ODR_ODR4 = 1;
+        //B5 - nRF SPI-SCK
+	PB_DDR_bit.DDR5 = 1;//output
+	PB_ODR_ODR5 = 0;
+        //B6 - nRF SPI-MOSI
+	PB_DDR_bit.DDR6 = 1;//output
+	PB_ODR_ODR6 = 1;
+        //B7 - nRF SPI-MISO
+	PB_DDR_bit.DDR7 = 0;//input
+	//PB_ODR_ODR7 = 1;
+
+	//C0 - I²C SDA
+	PC_DDR_bit.DDR0 = 1;//output
+	PC_ODR_bit.ODR0 = 0;//Low
+	//C1 - I²C SCL
+	PC_DDR_bit.DDR1 = 1;//output
+	PC_ODR_bit.ODR1 = 0;//Low
+        //C2-C3 : do not exist
+	//C4 - nRF IRQ
+	PC_DDR_bit.DDR4 = 0;//input
+	//PC_ODR_bit.ODR4 = 0;
+        //C5 - Osc 1
+	PC_DDR_bit.DDR5 = 1;//output
+	PC_ODR_bit.ODR5 = 0;//Low
+	//C6 - Osc 2
+	PC_DDR_bit.DDR6 = 1;//output
+	PC_ODR_bit.ODR6 = 0;//Low
+
+	//D0 - Magnet-2
+	PD_DDR_bit.DDR0 = 1;//output
+	PD_ODR_bit.ODR0 = 0;//Low
+
 }
 
 void clear_all_PIO()
@@ -262,7 +302,14 @@ int main( void )
 	__enable_interrupt();
 	
 #ifdef CheckMinimalPower
-	clear_all_PIO();					//with all pio cleared goes down from 6 uA down to 1 uA !!!
+	SYSCFG_RMPCR1_USART1TR_REMAP = 1; // Remap 01: USART1_TX on PA2 and USART1_RX on PA3
+	uart_init();//Tx only
+	I2C_Init();
+	nRF_Config();
+	nRF_SetMode_PowerDown();
+        
+        configure_All_PIO();
+        //STM8L(halt) + nRF(PowerDown) + (nothing) => 9 uA
 	while (1)
 	{
 		__halt();

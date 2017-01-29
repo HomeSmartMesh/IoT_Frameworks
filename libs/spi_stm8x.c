@@ -91,7 +91,7 @@ void SPI_Init_SCK_MOSI_MISO_Pins()
 
 BYTE CE_Pin_getstate()
 {
-	return PB_IDR_IDR4;
+	return PB_IDR_IDR3;
 }
 
 void CSN_Pin_LowSelect()
