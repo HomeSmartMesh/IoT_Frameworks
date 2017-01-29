@@ -1,11 +1,15 @@
 # IoT Frameworks
-Complete working samples for specific use cases including
-- **Sensors firmware** : for a specific IoT Board such as the [STM8 IoT Boards](https://github.com/wassfila/STM8_IoT_Boards)
-- **Server Drivers** : Linux c++ applications on Raspberry Pi
-- **Server Back end** : Nodejs servers for back end
-- **Client Front End** : Javascript clients for front end
-
-These projects are of intermediate level, for a beginning [STM8 IoT Hello World Samples](https://github.com/wassfila/STM8_IoT_HelloWorld) are available on a separate repository.
+Complete working samples for specific use cases
+* **Sensors Node firmware** : for a specific IoT Board such as the [STM8 IoT Boards](https://github.com/wassfila/STM8_IoT_Boards)
+  * 8 bit Ultra low power & ultralow cost STM8L
+  * BME280 (Pressure, Temperature, Humidity), MAX44009 (Ambient Light) and Magnetic switches
+  * Custom RF protocol for efficiency and simplicity of the sensors usecase
+* **C++ Server** : Linux c++ application running on the Raspberry Pi 
+  * Network with Poco for HTTP server and websockets
+  * performance Databse (ROM/RAM mirror) optimised from requests handling with minimal latency
+* **Webclient Front End with d3js** 
+  * Real time Javascript app with server update through websocket
+  * Custom charts and Panels with simple configuration and open to further d3js customisations
 
 # Sensors Logger
 <img src="https://github.com/wassfila/media/blob/master/IoT_Infrastructure.png" height=400>
