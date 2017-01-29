@@ -38,7 +38,10 @@ var ChartsParamsList =
  ...
 ```
 
-## Firmware for the Mobile Node
+## IoT Data Flow
+<img src="https://github.com/wassfila/media/blob/master/IoT_Dataflow.png" height=400>
+
+## Firmware for the Sensors Node
 Here have firmware for the Mobile Node which is the base for the sensors:
  - *BME280* Temperature Humidity Pressure
  - *MAX44009* Ambient Light
@@ -57,8 +60,8 @@ More details on [Home Smart Mesh](http://www.homesmartmesh.com)
 - Scons : a single line for the whole compilation, linker stuf,...
 - C++11 : Modern c++ is easier than javascript (the luxury of having a compiler)
 - Boost 1.60 (filesystem) : A warm welcome to Boost on RPI (see install instructions)
-- json for modern c++ : yes, json as easy to use as in javascript https://github.com/nlohmann/json
-- C++ websocket client : https://github.com/dhbaird/easywsclient
+- Poco-1.7.7 : HTTP server&client, websocket server : https://pocoproject.org/
+- json for modern c++ : json as easy to use as in javascript https://github.com/nlohmann/json (to be replaced by Poco::JSON)
 
 ### Boost installation on the Raspberry pi
 Minimal install for filesystem support:
@@ -71,24 +74,26 @@ cd boost_1_60_0
 ./bootstrap.sh --with-libraries=filesystem,system
 sudo ./b2 install
 ```
-# Mesh Controller Interface
-## Commands help and Protocol details
+___
+# Other misc Projects : 
+## Mesh Controller Interface
+### Commands help and Protocol details
 [Technolab/Mesh Controller Interface wiki](http://www.technolab.ddns.net/display/SSN/Mesh+Controller+Interface)
 
-## Configuration Steps
+### Configuration Steps
 <img src="https://github.com/wassfila/media/blob/master/configuration_steps.png" height=300>
 
-## Configuration Options
+### Configuration Options
 <img src="https://github.com/wassfila/media/blob/master/configuration_options.png" height=300>
 
 
-# Smartio
+## Smartio
 Control any thing (up to 48V 500mA) with a smartphone. Both offline, with Raspberry Pi as a wifi access point, or even easier when from internet (Beyond scopes of Router Ports and Security aspects).
 More under the [smartio directory](https://github.com/wassfila/IoT_Frameworks/tree/master/smartio).
 
 <img src="https://github.com/wassfila/media/blob/master/WebIO.jpg" height=300>
 
-# Joystick Servo
+## Joystick Servo
 Control a servo motor using a PS4 controller linked wirelessly to a Raspberry Pi that has a [servo board](https://github.com/wassfila/STM8_IoT_Boards/tree/master/ServoMotors_Controller).
 Configuration steps are provided on how to use the PS4 on the Pi.
 
