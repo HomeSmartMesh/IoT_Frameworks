@@ -28,35 +28,35 @@ function initWebsocket(reqList,panel,chartlist) {
     // open connection
     var connection = new WebSocket('ws://10.0.0.12:4348/measures');
 
-					connection.onopen = 
-	function()
-	{
-        // first we want users to enter their names
-        status.text('Connected');
-		
-		console.log("connected : ",reqList);
-		for(var i = 0; i<reqList.length;i++)
+	connection.onopen = 
+		function()
 		{
-			if(reqList[i]!= 0)
+			// first we want users to enter their names
+			status.text('Connected');
+			
+			console.log("onopen> reqList: ",reqList);
+			for(var i = 0; i<reqList.length;i++)
 			{
-				var Req = JSON.stringify(reqList[i]);
-				console.log("sent: ",Req);
-				connection.send(Req);
+				if(reqList[i]!= 0)
+				{
+					var Req = JSON.stringify(reqList[i]);
+					connection.send(Req);
+					console.log("onopen> sent Req: ",Req);
+				}
+				else
+				{
+					console.log("onopen> not sent reqList[",i,"] : ",reqList[i]);
+				}
 			}
-			else
-			{
-				console.log("reqList : ",reqList[i]);
-			}
-		}
-    };
+		};
 
     connection.onerror = 
-	function(error) 
-	{
-        // just in there were some problems with conenction...
-        content.html($('<p>', { text: 'Sorry, but there\'s some problem with your '
-                                    + 'connection or the server is down.' } ));
-    };
+		function(error) 
+		{
+			// just in there were some problems with conenction...
+			content.html($('<p>', { text: 'Sorry, but there\'s some problem with your '
+										+ 'connection or the server is down.' } ));
+		};
 
 	
 	function handle_update(upjson)
@@ -79,7 +79,7 @@ function initWebsocket(reqList,panel,chartlist) {
 				if(sk == "Temperature")
 				{
 					var value = Math.round(100*upjson[nodeid]["Temperature"].Values)/100;
-					console.log("Temp",nodeid, value);
+					//console.log("Temp",nodeid, value);
 					panel.d3_SetTemperatureValue(nodeid,value);
 				}
 				if(sk == "Humidity")
@@ -102,44 +102,44 @@ function initWebsocket(reqList,panel,chartlist) {
 	
     // most important part - incoming messages
     connection.onmessage = 
-	function(message)
-	{
-        try 
+		function(message)
 		{
-            var json = JSON.parse(message.data);
-        } catch (e) 
-		{
-            console.log('This doesn\'t look like a valid JSON: ', message.data);
-            return;
-        }
-		console.log("message>",json);
-		//------------------------------------------ response ------------------------------------------
-		if("response" in json)
-		{
-			if(("type" in json.response)&& (json.response.type == "Duration"))
+			try 
 			{
-				//if(("id" in json.response)&& (json.response.id == req1.request.id))
+				var json = JSON.parse(message.data);
+			} catch (e) 
+			{
+				console.log('This doesn\'t look like a valid JSON: ', message.data);
+				return;
+			}
+			//console.log("message>",json);
+			//------------------------------------------ response ------------------------------------------
+			if("response" in json)
+			{
+				if(("type" in json.response)&& (json.response.type == "Duration"))
 				{
-					chartlist.d3_SetChartValues(json.response);
+					//if(("id" in json.response)&& (json.response.id == req1.request.id))
+					{
+						chartlist.d3_SetChartValues(json.response);
+					}
+				}
+				else if(("type" in json.response)&& (json.response.type == "update"))
+				{
+					if(("id" in json.response)&& (json.response.id == req1.request.id))
+					{
+						handle_update(json.response.update);
+					}
 				}
 			}
-			else if(("type" in json.response)&& (json.response.type == "update"))
+			//------------------------------------------ update ------------------------------------------
+			else if("update" in json)
 			{
-				if(("id" in json.response)&& (json.response.id == req1.request.id))
-				{
-					handle_update(json.response.update);
-				}
+				var message_text = handle_update(json.update);
+				
+				addMessage(message_text);
+				//console.log('update> ', upjson);
 			}
-		}
-		//------------------------------------------ update ------------------------------------------
-		else if("update" in json)
-		{
-			var message_text = handle_update(json.update);
-			
-			addMessage(message_text);
-			//console.log('update> ', upjson);
-		}
-    };
+		};
 
     /**
      * This method is optional. If the server wasn't able to respond to the

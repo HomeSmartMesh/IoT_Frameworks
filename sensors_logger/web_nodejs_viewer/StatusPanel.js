@@ -157,7 +157,6 @@ class StatusPanel
 	{
 		if((id==6) || (id==7))
 		{
-			console.log("this.TempTopos");
 			this.data[nmap[id]].Temperature = Value;
 			this.TempGroupUpdate.select("text")	.text(function(d){return d.Temperature + " °C"})
 											.attr("y",function(d){return TempToPos(d.Temperature)+5});

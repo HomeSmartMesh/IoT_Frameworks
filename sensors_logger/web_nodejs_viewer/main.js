@@ -25,33 +25,43 @@ var nmap = {6 : 0,
 //---------------------------------------------------------------------------
 var now = Date.now();
 var start_disp = now - 24*60*60*1000;//1 day
-var CharParams = 
-{
-	svgID : "#ChartDisp",
-	scale_x_domain : [start_disp,now],
-	scale_y_domain : [10,25],
-	NodeId : 7,
-	SensorName : "Temperature"
-};
 var ChartsParamsList = 
 [
 	{
-		svgID : "#ChartDisp",
+		svgID : "#ChartLivTemp",
 		scale_x_domain : [start_disp,now],
 		scale_y_domain : [10,25],
-		NodeId : 7,
-		SensorName : "Temperature"
+		NodeId : 6,
+		SensorName : "Temperature",
+		Label : "Livingroom Temperature °C"
 	},
 	{
-		svgID : "#ChartDisp2",
+		svgID : "#ChartLivHum",
+		scale_x_domain : [start_disp,now],
+		scale_y_domain : [0,100],
+		NodeId : 6,
+		SensorName : "Humidity",
+		Label : "Livingroom Humidity %RH"
+	},
+	{
+		svgID : "#ChartBathTemp",
 		scale_x_domain : [start_disp,now],
 		scale_y_domain : [10,25],
 		NodeId : 7,
-		SensorName : "Humidity"
+		SensorName : "Temperature",
+		Label : "Bathroom Temperature °C"
+	},
+	{
+		svgID : "#ChartBathHum",
+		scale_x_domain : [start_disp,now],
+		scale_y_domain : [0,100],
+		NodeId : 7,
+		SensorName : "Humidity",
+		Label : "Bathroom Humidity %RH"
 	}
 ];
 //---------------------------------------------------------------------------
-//					Requests
+//					Status Request
 //---------------------------------------------------------------------------
 var statusReq = {
 				request : 
@@ -73,16 +83,13 @@ require([	"StatusPanel", //still using dirty hack global var Status
 		], 
 		function()
 		{
-			console.log("require done");
+			console.log("require> done");
 			
 			var MyPanel = new StatusPanel(StatusParams);
 
 			var MyChartList = new TimeChartsList(ChartsParamsList);
-			
-			var jReq = MyChartList.getRequestDuration(7,"Temperature");
-			var jReq2 = MyChartList.getRequestDuration(7,"Humidity");
 
-			var reqList = [jReq,jReq2,statusReq];
+			var reqList = [statusReq].concat(MyChartList.getAllRequestsDuration());
 
 			initWebsocket(reqList,MyPanel,MyChartList);
 		}

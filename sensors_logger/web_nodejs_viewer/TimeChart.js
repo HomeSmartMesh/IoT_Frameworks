@@ -66,15 +66,17 @@ class TimeChart
 			.attr("class", "y axis")
 			.call(yAxis);
 
+		
 		svg.append("text")
 				.attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
 				.attr("transform", "translate("+ (width/2) +","+(height-20)+")")  // centre below axis
-				.text("Bathroom Temperature");//could not use Chart.SensorName
+				.style("font-size", "20px") 
+				.text(String(this.Label));//could not use Chart.SensorName
 	}
 
 	d3_SetChartValues(Times ,Values)
 	{
-		//console.log("---> in plot ", this.NodeId, this.SensorName);
+		console.log("---> in plot ", this.NodeId, this.SensorName);
 		if(Times.length == Values.length)
 		{
 			this.data = [];
@@ -121,15 +123,18 @@ class TimeChartsList
 	{
 		for(var i = 0; i<this.chartsList.length;i++)
 		{
+			//console.log("test:",i,this.chartsList[i].NodeId,NodeId);
+			//console.log("test:",i,this.chartsList[i].SensorName,SensorName);
 			if(this.chartsList[i].NodeId == NodeId)
 			{
 				if(this.chartsList[i].SensorName == SensorName)
 				{
+					//console.log("test:match");
 					return i;
 				}
 			}
-			i++;
 		}
+		//console.log("test:no match");
 		return -1;
 	}
 
@@ -145,7 +150,7 @@ class TimeChartsList
 			this.chartsList[index].d3_SetChartValues(Times,Values);
 		}
 		else
-		{console.log("Sensor not found");}
+		{console.log("TimeChartsList> d3_SetChartValues> Sensor not found");}
 	}
 
 	getRequestDuration(NodeId,SensorName)
@@ -157,7 +162,19 @@ class TimeChartsList
 		}
 		else
 		{
+			console.log("TimeChartsList> getRequestDuration> not found:",NodeId,SensorName);
+			console.log("TimeChartsList> chartsList :",this.chartsList);
 			return 0;
 		}
+	}
+
+	getAllRequestsDuration()
+	{
+		var reqList = [];
+		for(var i = 0; i<this.chartsList.length;i++)
+		{
+			reqList.push(this.chartsList[i].getRequestDuration());
+		}
+		return reqList;
 	}
 }
