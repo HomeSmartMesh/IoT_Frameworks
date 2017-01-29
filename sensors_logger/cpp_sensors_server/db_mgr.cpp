@@ -349,8 +349,15 @@ void db_manager_c::handle_request(const std::string &request,std::string &respon
 		
 		std::cout << "dbm> request>" << request << std::endl;
 		json jReq = json::parse(request);
-		std::string reqType = jReq["request"]["type"];
-		std::cout << "dbm> req Type>" << reqType << std::endl;
+		std::string reqType;
+		if(jReq.find("request") != jReq.end())
+		{
+			if(jReq["request"].find("type") != jReq["request"].end())
+			{
+				reqType = jReq["request"]["type"];
+				std::cout << "dbm> req Type>" << reqType << std::endl;
+			}
+		}
 		if(reqType.find("Duration") == 0)
 		{
 			bool isVerifOK = true;
