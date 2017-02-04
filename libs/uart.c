@@ -33,6 +33,7 @@ void UARTPrintfLn(char const *ch)
 
 void UARTPrintf4Bits(unsigned char val4bits)
 {
+#if UART_DISABLE != 1
 	char res;
 	if(val4bits < 10)
 	{
@@ -44,6 +45,7 @@ void UARTPrintf4Bits(unsigned char val4bits)
 		res = 'A' + val4bits;
 	}
 	putc(res);
+#endif
 }
 
 void UARTPrintfHex(unsigned char val)

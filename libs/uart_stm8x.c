@@ -46,7 +46,7 @@ void uart_rx_user_callback(BYTE *buffer,BYTE size);
 
 #if DEVICE_STM8L == 1
 
-void uart_init()
+void uart_init_impl()
 {
         //Enable USART Peripheral Clock
         CLK_PCKENR1_PCKEN15 = 1;
@@ -91,7 +91,7 @@ void uart_init()
 	USART1_CR3_CLKEN = 0;//Clock Pin Disabled (UART not USART)
 }
 
-void putc(char c)
+void putc_impl(char c)
 {
 	while (USART1_SR_TXE == 0);          //  Wait for transmission to complete.
 	USART1_DR = c;
@@ -100,7 +100,7 @@ void putc(char c)
 //
 //  Send a message to the debug port (UART1).
 //
-void printf(char const *ch)
+void printf_impl(char const *ch)
 {
 	while (*ch)
 	{
@@ -111,7 +111,7 @@ void printf(char const *ch)
 }
 
 #elif DEVICE_STM8S == 1
-void uart_init()
+void uart_init_impl()
 {
 	//Enable UART Clock Peripheral
 	CLK_PCKENR1 |= 0x20;// USART1
@@ -158,7 +158,7 @@ void uart_init()
 	#endif
 }
 
-void putc(char c)
+void putc_impl(char c)
 {
 	while (UART1_SR_TXE == 0);          //  Wait for transmission to complete.
 	UART1_DR = c;
@@ -167,7 +167,7 @@ void putc(char c)
 //
 //  Send a message to the debug port (UART1).
 //
-void printf(char const *ch)
+void printf_impl(char const *ch)
 {
 	while (*ch)
 	{

@@ -1629,6 +1629,12 @@
       <name>$PROJ_DIR$\..\..\..\libs\nRF_Tx.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\libs\rf_protocol.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\rf_protocol.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\libs\spi_stm8x.c</name>
     </file>
     <file>
@@ -1655,6 +1661,9 @@
   </file>
   <file>
     <name>$PROJ_DIR$\nRF_Configuration.h</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\uart_config.h</name>
   </file>
 </project>
 

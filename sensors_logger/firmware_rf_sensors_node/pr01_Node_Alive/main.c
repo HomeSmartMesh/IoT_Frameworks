@@ -1,6 +1,10 @@
 #include <iostm8l151f3.h>
 #include <intrinsics.h>
 
+//should be before other files that use it such as clock_led.h
+#include "deviceType.h"
+#include "nRF_Configuration.h"
+
 #include "nRF_SPI.h"
 //for nRF_SetMode_TX()
 #include "nRF.h"
@@ -15,17 +19,19 @@
 #define NODE_ID       (char *) EEPROM_Offset;
 unsigned char NodeId;
 
+//to format the tx data
+#include "rf_protocol.h"
+
+BYTE tx_data[RF_RX_DATASIZE];
+
 //---------------------- Active Halt Mode :
 // - CPU and Peripheral clocks stopped, RTC running
 // - wakeup from RTC, or external/Reset
 
-void RfAlive()
+void rf_send_alive()
 {
-      unsigned char Tx_Data[3];
-      Tx_Data[0]=0x75;
-      Tx_Data[1]=NodeId;
-      Tx_Data[2]= Tx_Data[0] ^ NodeId;
-      nRF_Transmit(Tx_Data,3);
+	rf_get_tx_alive_3B(NodeId, tx_data);
+	nRF_Transmit(tx_data,3);
 }
 
 void RfSwitch(unsigned char state)
@@ -111,7 +117,7 @@ __interrupt void IRQHandler_RTC(void)
   {
     RTC_ISR2_WUTF = 0;
     
-    RfAlive();
+    rf_send_alive();
     
     //LogMagnets();
   }
@@ -176,33 +182,89 @@ void PingUart(unsigned char index)
       printf(" \n");
 }
 
+void configure_All_PIO()
+{
+	//A0 - SWIM
+	//PA_DDR_bit.DDR3 = 1;//output
+	//PA_ODR_bit.ODR3 = 0;//Low
+	//A1 - NRST
+	//PA_DDR_bit.DDR3 = 1;//output
+	//PA_ODR_bit.ODR3 = 0;//Low
+	//A2 - UART-Tx
+	PA_DDR_bit.DDR2 = 1;//output
+	PA_ODR_bit.ODR2 = 0;//Low
+	//A3 - unconnected
+	PA_DDR_bit.DDR3 = 1;//output
+	PA_ODR_bit.ODR3 = 0;//Low
+
+	//B0 - Magnet-1
+	PB_DDR_bit.DDR0 = 1;//output
+	PB_ODR_bit.ODR0 = 0;//Low
+      	//B1 - Light-IRQ
+	PB_DDR_bit.DDR1 = 1;//output
+	PB_ODR_bit.ODR1 = 0;//Low
+	//B2 - unconnected
+	PB_DDR_bit.DDR2 = 1;//output
+	PB_ODR_bit.ODR2 = 0;//Low
+        //B3 - nRF CE_Pin_LowDisable()
+	PB_DDR_bit.DDR3 = 1;//output
+	PB_ODR_ODR3 = 0;
+        //B4 - nRF CSN High Disable
+	PB_DDR_bit.DDR4 = 1;//output
+	PB_ODR_ODR4 = 1;
+        //B5 - nRF SPI-SCK
+	PB_DDR_bit.DDR5 = 1;//output
+	PB_ODR_ODR5 = 0;
+        //B6 - nRF SPI-MOSI
+	PB_DDR_bit.DDR6 = 1;//output
+	PB_ODR_ODR6 = 1;
+        //B7 - nRF SPI-MISO
+	PB_DDR_bit.DDR7 = 0;//input
+	//PB_ODR_ODR7 = 1;
+
+	//C0 - I²C SDA
+	PC_DDR_bit.DDR0 = 1;//output
+	PC_ODR_bit.ODR0 = 0;//Low
+	//C1 - I²C SCL
+	PC_DDR_bit.DDR1 = 1;//output
+	PC_ODR_bit.ODR1 = 0;//Low
+        //C2-C3 : do not exist
+	//C4 - nRF IRQ
+	PC_DDR_bit.DDR4 = 0;//input
+	//PC_ODR_bit.ODR4 = 0;
+        //C5 - Osc 1
+	PC_DDR_bit.DDR5 = 1;//output
+	PC_ODR_bit.ODR5 = 0;//Low
+	//C6 - Osc 2
+	PC_DDR_bit.DDR6 = 1;//output
+	PC_ODR_bit.ODR6 = 0;//Low
+
+	//D0 - Magnet-2
+	PD_DDR_bit.DDR0 = 1;//output
+	PD_ODR_bit.ODR0 = 0;//Low
+
+}
+
 
 int main( void )
 {
-    NodeId = *NODE_ID;
-  //unsigned char index = 0;
-    Initialise_STM8L_Clock();
-    
-    SYSCFG_RMPCR1_USART1TR_REMAP = 1; // Remap 01: USART1_TX on PA2 and USART1_RX on PA3
-    uart_init();//Tx only
-    
-    printf("ws04_Node_LowSimple\\pr01_Node_Alive\n\r");
-    delay_ms(1000);
+	NodeId = *NODE_ID;
 
+	//clear_unused_PIO();//no noticable effect
+	
+	Initialise_STM8L_Clock();			//here the RTC clock source is set to LSI
+	Initialise_STM8L_RTC_LowPower(30);//sleep period 30 sec
+	__enable_interrupt();
     
-    //Applies the compile time configured parameters from nRF_Configuration.h
-    nRF_Config();
+        configure_All_PIO();
+	//SYSCFG_RMPCR1_USART1TR_REMAP = 1; // Remap 01: USART1_TX on PA2 and USART1_RX on PA3
+	//uart_init();//UART Disabled
+	//Applies the compile time configured parameters from nRF_Configuration.h
+	nRF_Config();
 
-    //The TX Mode is independently set from nRF_Config() and can be changed on run time
-    nRF_SetMode_TX();
-      
+  //Init_Magnet_PB0();
+  //Init_Magnet_PD0();
     
-    Init_Magnet_PB0();
-    Init_Magnet_PD0();
-    
-    Initialise_STM8L_RTC_LowPower();
-
-    __enable_interrupt();
     //
     // Main loop
     //

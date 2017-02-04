@@ -10,11 +10,24 @@
  *
  */
 
+#if UART_DISABLE == 1
+
+#define uart_init(X)
+#define putc(X)
+#define printf(X)
+
+#else
+
+#define uart_init uart_init_impl
+#define putc putc_impl
+#define printf printf_impl
+
 void uart_init();
-
 void putc(char c);
-
 void printf(char const *message);
+
+#endif /*UART_DISABLE == 1*/
+
 
 //if interrupt mode, otherwise not declared
 #if UART_USE_RX_INETRRUPT == 1
