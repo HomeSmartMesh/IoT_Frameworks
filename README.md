@@ -49,8 +49,9 @@ var ChartsParamsList =
 Here have firmware for the Mobile Node which is the base for the sensors:
  - *BME280* Temperature Humidity Pressure
  - *MAX44009* Ambient Light
- 
-More details on [Home Smart Mesh](http://www.homesmartmesh.com)
+
+[STM8L Mobile Node wiki page](http://technolab.ddns.net/display/SSN/STM8L+Mobile+Node)
+
 
 <img src="https://github.com/wassfila/media/blob/master/IoT_Node_Mobile_v2.JPG" height=300>
 
