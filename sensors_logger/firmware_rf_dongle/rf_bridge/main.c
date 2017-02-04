@@ -18,6 +18,9 @@
 //for nRF_Config() nRF_SetMode_RX() 
 #include "nRF.h"
 
+//for transmit
+#include "nRF_Tx.h"
+
 //to parse the RF response with rx_temperature_ds18b20()
 #include "temp_ds18b20.h"
 
@@ -27,44 +30,42 @@
 //for parsing rf bme280 data
 #include "bme280.h"
 
+BYTE tx_data[32];
+
+void retransmit(BYTE timeToLive, BYTE *rxData,BYTE rx_DataSize)
+{
+	if(rx_DataSize < 30)//max was 31, now 2 more so <=29
+	{
+		tx_data[0] = rf_pid_0x5F_retransmit;
+		tx_data[1] = timeToLive;
+		BYTE* pData = tx_data+2;
+		for(BYTE i=0;i<rx_DataSize;i++)
+		{
+			pData++ = rxData++;
+		}
+		nRF_Transmit(tx_data,rx_DataSize+2);
+	}
+	//else not subject to retransmission as size protocol does not allow
+}
+
 //User Rx CallBack
 void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 {
-	switch(rxData[0])
+	Test_Led_On();
+	if(rxData[0] == rf_pid_0x5F_retransmit)
 	{
-		case rf_pid_0x35_temperature:
-			{
-				rx_temperature_ds18b20(rxData,rx_DataSize);
-			}
-			break;
-		case rf_pid_0x75_alive:
-			{
-				rx_alive(rxData,rx_DataSize);
-			}
-			break;
-		case rf_pid_0x3B_light:
-			{
-				rx_light(rxData,rx_DataSize);
-			}
-			break;
-		case rf_pid_0xC5_magnet:
-			{
-				rx_magnet(rxData,rx_DataSize);
-			}
-			break;
-		case rf_pid_0xE2_bme280:
-			{
-				bme280_rx_measures(rxData,rx_DataSize);
-			}
-			break;
-		default :
-			{
-				printf("Unknown Protocol Id: ");
-				UARTPrintfHex(rxData[0]);
-				UARTPrintfLn("");
-			}
-			break;
+		BYTE ttl = rxData[1];
+		if(ttl>0)
+		{
+			retransmit(ttl-1,rxData,rx_DataSize);
+		}
 	}
+	else//new transmission
+	{
+		BYTE ttl = 2;
+		retransmit(ttl,rxData,rx_DataSize);
+	}
+	Test_Led_Off();
 }
 
 int main( void )
@@ -81,7 +82,7 @@ int main( void )
     uart_init();
 	
     printf("\r\n__________________________________________________\n\r");
-    printf("sensors_logger\\firmware_rf_dongle\\rf_receiver_logger\\\n\r");
+    printf("sensors_logger\\firmware_rf_dongle\\rf_bridge\\\n\r");
 
     //Applies the compile time configured parameters from nRF_Configuration.h
     BYTE status = nRF_Config();

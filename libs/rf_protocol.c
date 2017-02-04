@@ -24,6 +24,7 @@ void rf_get_tx_alive_3B(BYTE NodeId, BYTE* tx_data)
       tx_data[2]= tx_data[0] ^ NodeId;
 }
 
+//Rx 3 Bytes
 void rx_alive(BYTE *rxData,BYTE rx_DataSize)
 {
 	BYTE crc = rxData[0] ^ rxData[1];
@@ -39,6 +40,7 @@ void rx_alive(BYTE *rxData,BYTE rx_DataSize)
 	}
 }
 
+//Rx 5 Bytes
 void rx_light(BYTE *rxData,BYTE rx_DataSize)
 {
 	unsigned int SensorVal;
@@ -60,6 +62,7 @@ void rx_light(BYTE *rxData,BYTE rx_DataSize)
 	}
 }
 
+//Rx 4 Bytes
 void rx_magnet(BYTE *rxData,BYTE rx_DataSize)
 {
 	BYTE crc = rxData[0] ^ rxData[1] ^ rxData[2];

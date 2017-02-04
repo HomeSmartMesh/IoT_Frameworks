@@ -23,8 +23,8 @@
 #define	Enable_RT_IRQ	0
 
 //----------------------------- nRF Communication Configuration ---------------------------------
-//data size, from 1 till 32 bytes payload
-#define RF_RX_DATASIZE	11
+//data size, fixed to 32 bytes and size is at data[31]
+#define RF_RX_DATASIZE	32
 //disable auto acknowledgement for all pipes
 #define SPI_Write_Register_EN_AA		0x00
 //disable retransmission

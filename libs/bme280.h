@@ -35,4 +35,4 @@ void bme280_print_measures();
 //make sure the tx_data is a pre allocated 10 bytes buffer
 void bme280_get_tx_measures_11B(BYTE NodeId, BYTE *tx_data);
 
-void bme280_rx_measures(BYTE* rx_data, BYTE rx_DataSize);
+void bme280_rx_measures(BYTE* rx_data, BYTE rx_DataSize);//Rx 11 Bytes

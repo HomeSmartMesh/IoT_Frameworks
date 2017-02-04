@@ -59,7 +59,7 @@ void bme280_read_registers(BYTE Start, BYTE Number,BYTE *data)
     delay_100us();
     I2C_Read(0x76, data,Number); 
     delay_100us();//wait to complete before writing into unallocated variable
-    //i²c repeat 3rd should be worked around here
+    //iï¿½c repeat 3rd should be worked around here
   
 }
 //--------------------------------------------------------------------
@@ -214,6 +214,7 @@ void bme280_get_tx_measures_11B(BYTE NodeId, BYTE *tx_data)
 
 //--------------------------------------------------------------------
 
+//Rx 11 Bytes
 void bme280_rx_measures(BYTE* rx_data, BYTE rx_DataSize)
 {
 	BYTE i;
