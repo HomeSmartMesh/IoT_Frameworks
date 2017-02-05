@@ -47,6 +47,7 @@ ________________________________________________________________________________
 
 #include <vector>
 #include <map>
+#include <list>
 
 #include "utils.hpp"
 
@@ -67,8 +68,13 @@ public:
 	std::string time;
 	std::string line;
 	std::vector<std::string> currentlines;
+	std::list<sensor_line_t> lastLines;
 public:
 	bool update(int fd);
+	bool		lastLinesCheck(std::string &line);
+	void		lastLinesAdd(std::string &line);
+	void		lastLinesDiscardOld();
+	
 };
 
 class Serial
@@ -100,6 +106,7 @@ public:
 	void 		processLine(NodeMap_t &nodes);
 	void 		logOneLine(std::string line);
 	
+
 public:
 	std::string exepath;
 };

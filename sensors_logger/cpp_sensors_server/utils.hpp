@@ -62,6 +62,13 @@ typedef std::vector<std::string> strvect;
 // humidity in %RH as unsigned 32 bit integer in Q22.10 format (22 integer and 10 fractional bits).
 // Output value of “47445” represents 47445/1024 = 46.333 %RH
 
+struct sensor_line_t
+{
+	std::time_t time;
+	std::string	line;
+};
+
+
 struct sensor_measure_t
 {
 	std::time_t time;
@@ -89,6 +96,8 @@ namespace utl
 	//command line to map including check in configfile.txt
 	std::string args2map( int argc, char** argv ,strmap &params);
 	void str2map(const std::string &str ,strmap &params);
+
+	bool compare(std::string& str1, std::string str2);
 	
 	bool exists(const strmap &params,const std::string param);
 	std::string ParseRemTill(std::string &str,char sep,bool &found);
