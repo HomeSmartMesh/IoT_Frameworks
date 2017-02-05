@@ -11,6 +11,9 @@
 #ifndef _UART_CONFIG_
 #define _UART_CONFIG_
 
+//----------------------------------- UART Disable Enable ---------------------------------------
+
+#define UART_DISABLE 1
 
 //----------------------------------- Interruptions ---------------------------------------
 //Flag: UART_USE_RX_INETRRUPT

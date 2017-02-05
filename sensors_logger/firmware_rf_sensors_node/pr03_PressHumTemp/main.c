@@ -35,6 +35,16 @@ unsigned char NodeId;
 //RF_RX_DATASIZE must be used as the nRF_Transmit rely on it for a zero copy frame update
 BYTE tx_data[RF_RX_DATASIZE];
 
+
+//------------------------------ Node Config ---------------------------------
+#define NODE_MAGNET_B_SET               0
+#define NODE_MAGNET_D_SET               0
+#define NODE_MAGNET_D_INTERRUPT         0
+#define NODE_I2C_SET                    1
+#define NODE_MAX44009_SET               0
+//----------------------------------------------------------------------------
+
+
 void rf_send_alive()
 {
 	rf_get_tx_alive_3B(NodeId, tx_data);
@@ -62,9 +72,11 @@ void rf_send_bme280_measures()
 
 void rf_send_light()
 {
+#if NODE_MAX44009_SET == 1
 	uint16_t light = max44009_read_light();
 	max44009_get_rf_5B(NodeId, light, tx_data);
 	nRF_Transmit(tx_data,5);
+#endif
 }
 
 void LogMagnets()
@@ -115,24 +127,6 @@ void SMT8L_Switch_ToHSI()
   CLK_SWCR_SWEN = 1;                  //  Enable switching.
   CLK_SWR = 0x01;                     //  Use HSI as the clock source.
   while (CLK_SWCR_SWBSY != 0);        //  Pause while the clock switch is busy.
-}
-
-
-void Init_Magnet_PB0()
-{
-    PB_DDR_bit.DDR0 = 0;//  0: Input
-    PB_CR1_bit.C10 = 0; //  0: Floating
-    PB_CR2_bit.C20 = 1; // Exernal interrupt enabled
-    
-    EXTI_CR1_P0IS = 3;//Rising and Falling edges, interrupt on events - bit 0
-    //EXTI_CR3_PBIS = 00;//Falling edge and low level - Port B
-    
-}
-
-void Init_Magnet_PD0()
-{
-    PD_DDR_bit.DDR0 = 0;//  0: Input
-    PD_CR1_bit.C10 = 0; //  0: Floating
 }
 
 
@@ -214,6 +208,7 @@ void startup_info()
 		
 }
 
+
 void configure_All_PIO()
 {
 	//A0 - SWIM
@@ -229,12 +224,16 @@ void configure_All_PIO()
 	PA_DDR_bit.DDR3 = 1;//output
 	PA_ODR_bit.ODR3 = 0;//Low
 
-	//B0 - Magnet-1
-	PB_DDR_bit.DDR0 = 1;//output
+	//B0 - Magnet-1 Side
+#if NODE_MAGNET_B_SET != 1
+	PB_DDR_bit.DDR0 = 0;//output
 	PB_ODR_bit.ODR0 = 0;//Low
+#endif
+#if NODE_MAX44009_SET != 1
       	//B1 - Light-IRQ
 	PB_DDR_bit.DDR1 = 1;//output
 	PB_ODR_bit.ODR1 = 0;//Low
+#endif
 	//B2 - unconnected
 	PB_DDR_bit.DDR2 = 1;//output
 	PB_ODR_bit.ODR2 = 0;//Low
@@ -254,12 +253,14 @@ void configure_All_PIO()
 	PB_DDR_bit.DDR7 = 0;//input
 	//PB_ODR_ODR7 = 1;
 
+#if NODE_I2C_SET != 1
 	//C0 - I²C SDA
 	PC_DDR_bit.DDR0 = 1;//output
 	PC_ODR_bit.ODR0 = 0;//Low
 	//C1 - I²C SCL
 	PC_DDR_bit.DDR1 = 1;//output
 	PC_ODR_bit.ODR1 = 0;//Low
+#endif
         //C2-C3 : do not exist
 	//C4 - nRF IRQ
 	PC_DDR_bit.DDR4 = 0;//input
@@ -271,11 +272,42 @@ void configure_All_PIO()
 	PC_DDR_bit.DDR6 = 1;//output
 	PC_ODR_bit.ODR6 = 0;//Low
 
-	//D0 - Magnet-2
+	//D0 - Magnet-2 Top
+#if NODE_MAGNET_D_SET != 1
 	PD_DDR_bit.DDR0 = 1;//output
 	PD_ODR_bit.ODR0 = 0;//Low
+#endif
 
 }
+
+
+void Init_Magnet_PB0()
+{
+#if NODE_MAGNET_B_SET == 1
+    PB_DDR_bit.DDR0 = 0;//  0: Input
+    PB_CR1_bit.C10 = 0; //  0: Floating
+  #if MAGNET_B_INTERRUPT == 1
+    PB_CR2_bit.C20 = 1; // Exernal interrupt enabled
+    EXTI_CR1_P0IS = 3;//Rising and Falling edges, interrupt on events - bit 0
+  #endif
+    //EXTI_CR3_PBIS = 00;//Falling edge and low level - Port B
+#endif
+}
+
+void Init_Magnet_PD0()
+{
+#if NODE_MAGNET_D_SET == 1
+    PD_DDR_bit.DDR0 = 0;//  0: Input
+    PD_CR1_bit.C10 = 0; //  0: Floating
+
+  #if MAGNET_D_INTERRUPT == 1
+    PD_CR2_bit.C20 = 1; // Exernal interrupt enabled
+    EXTI_CR1_P0IS = 3;//Rising and Falling edges, interrupt on events - bit 0
+  #endif
+#endif
+}
+
+
 
 void clear_all_PIO()
 {
@@ -295,11 +327,12 @@ int main( void )
 	BYTE counter = 0;
 	NodeId = *NODE_ID;
 
-	//clear_unused_PIO();//no noticable effect
+        configure_All_PIO();//config conditionnal
+        Init_Magnet_PB0();//config conditionnal
+        Init_Magnet_PD0();//config conditionnal
 	
 	Initialise_STM8L_Clock();			//here the RTC clock source is set to LSI
 	Initialise_STM8L_RTC_LowPower(30);//sleep period 30 sec
-	__enable_interrupt();
 	
 #ifdef CheckMinimalPower
 	SYSCFG_RMPCR1_USART1TR_REMAP = 1; // Remap 01: USART1_TX on PA2 and USART1_RX on PA3
@@ -310,6 +343,7 @@ int main( void )
         
         configure_All_PIO();
         //STM8L(halt) + nRF(PowerDown) + (nothing) => 9 uA
+	__enable_interrupt();
 	while (1)
 	{
 		__halt();
@@ -323,6 +357,7 @@ int main( void )
 	//Applies the compile time configured parameters from nRF_Configuration.h
 	nRF_Config();
 
+	__enable_interrupt();
 	//
 	// Main loop
 	//
@@ -342,7 +377,7 @@ int main( void )
 		}
 		else
 		{
-			rf_send_light();
+			rf_send_light();//config conditionnal
 		}
 		
 		nRF_Wait_Transmit();
