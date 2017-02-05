@@ -30,6 +30,8 @@
 //for parsing rf bme280 data
 #include "bme280.h"
 
+BYTE Led_Extend = 0;
+
 BYTE tx_data[32];
 
 void retransmit(BYTE timeToLive, BYTE *rxData,BYTE rx_DataSize)
@@ -41,9 +43,12 @@ void retransmit(BYTE timeToLive, BYTE *rxData,BYTE rx_DataSize)
 		BYTE* pData = tx_data+2;
 		for(BYTE i=0;i<rx_DataSize;i++)
 		{
-			pData++ = rxData++;
+			(*pData++) = (*rxData++);
 		}
 		nRF_Transmit(tx_data,rx_DataSize+2);
+		nRF_Wait_Transmit();
+		nRF_SetMode_RX();	//back to listening
+		Led_Extend = 2;//signal retransmission
 	}
 	//else not subject to retransmission as size protocol does not allow
 }
@@ -65,7 +70,6 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 		BYTE ttl = 2;
 		retransmit(ttl,rxData,rx_DataSize);
 	}
-	Test_Led_Off();
 }
 
 int main( void )
@@ -92,13 +96,16 @@ int main( void )
 
     while (1)
     {
-
 		AliveActiveCounter++;//Why are you counting ?
-		
-		Test_Led_Off();
-		delay_ms(4900);
-		
-		Test_Led_On();
+		if(Led_Extend != 0)
+		{
+			Test_Led_On();
+			Led_Extend--;
+		}
+		else
+		{
+			Test_Led_Off();
+		}
 		delay_ms(100);
     }
 }

@@ -299,8 +299,8 @@ void UARTPrint_DS18B20_Temperature(BYTE * data)
     frac+=5000;
   }
   UARTPrintf_sint(trunc);
-  printf(".");
-  UARTPrintf_uint(frac);
+  putc('.');
+  printf_uint(frac);
 }
 
 void rx_temperature_ds18b20(BYTE *rxData,BYTE rx_DataSize)
@@ -314,13 +314,13 @@ void rx_temperature_ds18b20(BYTE *rxData,BYTE rx_DataSize)
 	{
 	  printf("NodeId:");
 	  UARTPrintf_uint(rxData[1]);
-	  printf(",Temperature:");
+	  printf(";Temperature:");
 	  UARTPrint_DS18B20_Temperature(rxData+2);
 	  UARTPrintfLn("");
 	}
 	else
 	{
-	  printf("Protocol Id: 0x35, CRC Fail\n");
+	  printf_ln("Pid:Temperature;Error:CRC Fail");
 	}
 }
 

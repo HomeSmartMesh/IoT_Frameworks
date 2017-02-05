@@ -28,9 +28,23 @@
 //for parsing rf bme280 data
 #include "bme280.h"
 
+BYTE Led_Extend = 0;
+
+//forward declaration as recurisve call from each other
+void userRxCallBack(BYTE *rxData,BYTE rx_DataSize);
+
+void handle_retransmission(BYTE *rxData,BYTE rx_DataSize)
+{
+	printf("RTX:");
+	UARTPrintf_uint(rxData[1]);
+	putc(';');
+	userRxCallBack(rxData+2,rx_DataSize-2);
+}
+
 //User Rx CallBack
 void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 {
+	Led_Extend = 2;//signal retransmission
 	switch(rxData[0])
 	{
 		case rf_pid_0x35_temperature:
@@ -58,11 +72,17 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 				bme280_rx_measures(rxData,rx_DataSize);
 			}
 			break;
+		case rf_pid_0x5F_retransmit:
+		{
+			handle_retransmission(rxData,rx_DataSize);
+		}
+		break;
 		default :
 			{
-				printf("Unknown Protocol Id: ");
-				UARTPrintfHex(rxData[0]);
-				UARTPrintfLn("");
+				printf("Unknown Pid:");
+				printf_hex(rxData[0]);
+				printf_eol();
+				Led_Extend = 1;//shorten the signal
 			}
 			break;
 	}
@@ -92,13 +112,16 @@ int main( void )
 
     while (1)
     {
-
 		AliveActiveCounter++;//Why are you counting ?
-		
-		Test_Led_Off();
-		delay_ms(4900);
-		
-		Test_Led_On();
+		if(Led_Extend != 0)
+		{
+			Test_Led_On();
+			Led_Extend--;
+		}
+		else
+		{
+			Test_Led_Off();
+		}
 		delay_ms(100);
     }
 }

@@ -221,7 +221,7 @@ void bme280_rx_measures(BYTE* rx_data, BYTE rx_DataSize)
 	BYTE CRC = 0;
 	if(rx_DataSize != 11)
 	{
-		printf("rfId:0xE2;Error:dataSize not 11 but ");
+		printf("Pid:BME280;Error:dataSize not 11 but ");
 		printf_uint(rx_DataSize);
 		printf_eol();
 		return;
@@ -240,7 +240,7 @@ void bme280_rx_measures(BYTE* rx_data, BYTE rx_DataSize)
 	}
 	else
 	{
-		printf("rfId:0xE2;Error:CRC\n");
+		printf("Pid:BME280;Error:CRC\n");
 	}
 }
 

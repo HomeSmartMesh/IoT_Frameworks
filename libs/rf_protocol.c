@@ -32,11 +32,11 @@ void rx_alive(BYTE *rxData,BYTE rx_DataSize)
 	{
 		printf("NodeId:");
 		UARTPrintf_uint(rxData[1]);
-		printf_ln(",is:Alive");
+		printf_ln(";is:Alive");
 	}
 	else
 	{
-		printf_ln("Protocol Id: 0x75, CRC Fail");
+		printf_ln("Pid:Alive;Error:CRC Fail");
 	}
 }
 
@@ -49,7 +49,7 @@ void rx_light(BYTE *rxData,BYTE rx_DataSize)
 	{
 	  printf("NodeId:");
 	  printf_uint(rxData[1]);
-	  printf(",Light: ");
+	  printf(";Light:");
 	  SensorVal = rxData[2];
 	  SensorVal <<= 4;//shift to make place for the 4 LSB
 	  SensorVal = SensorVal + (0x0F & rxData[3]);
@@ -58,7 +58,7 @@ void rx_light(BYTE *rxData,BYTE rx_DataSize)
 	}
 	else
 	{
-	  printf("Protocol Id: 0x3B, CRC Fail\n");
+	  printf_ln("Pid:Light;Error:CRC Fail");
 	}
 }
 
@@ -70,7 +70,7 @@ void rx_magnet(BYTE *rxData,BYTE rx_DataSize)
 	{
 		printf("NodeId:");
 		printf_uint(rxData[1]);
-		printf(",is:");
+		printf(";Magnet:");
 		if(rxData[2] == 0)
 		{
 			printf_ln("Low");
@@ -82,6 +82,6 @@ void rx_magnet(BYTE *rxData,BYTE rx_DataSize)
 	}
     else
     {
-      printf_ln("Protocol Id: 0xC5, CRC Fail");
+      printf_ln("Pid:Magnet;Error:CRC Fail");
     }
 }
