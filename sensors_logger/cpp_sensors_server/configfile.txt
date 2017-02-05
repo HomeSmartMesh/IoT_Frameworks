@@ -9,7 +9,7 @@
 port=/dev/ttyUSB0
 
 #Sensors Nodes needed t oload calibration files e.g. '06;07;' for NodeId06.txt,NodeId07.txt
-SensorNodes=06;07;
+SensorNodes=06;07;16;
 
 # The "logfile" is optionnal and deprecated as now the db saves values into files
 logfile=/home/pi/share/logDays.txt
