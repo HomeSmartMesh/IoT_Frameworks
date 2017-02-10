@@ -7,6 +7,9 @@
   <project>
     <path>$WS_DIR$\pr02_RF_ReceiveLogger\02_RF_ReceiveLogger.ewp</path>
   </project>
+  <project>
+    <path>$WS_DIR$\pr04_RF_Light_Temperature\pr04_RF_Light_Temperature.ewp</path>
+  </project>
   <batchBuild/>
 </workspace>
 

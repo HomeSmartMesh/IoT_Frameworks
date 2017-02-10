@@ -116,3 +116,5 @@ sensors_logger/rpi_app_uart_logger/.sconsign.dblite
 sensors_logger/rpi_app_uart_logger/node_modules/
 *.dblite
 sensors_logger/cpp_sensors_server/streamer
+ws01_WeatherLogger/pr04_RF_Light_Temperature/Debug/
+ws01_WeatherLogger/pr04_RF_Light_Temperature/settings/
