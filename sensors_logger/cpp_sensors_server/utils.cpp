@@ -60,6 +60,18 @@ using namespace std;
 
 std::chrono::time_point<std::chrono::system_clock> g_start;
 
+bool utl::compare(std::string& str1, std::string str2)
+{
+	bool result = false;
+	if(str1.size() == str2.size())
+	{
+		if(str1.find(str2) == 0)
+		{
+			result = true;
+		}
+	}
+	return result;
+}
 
 utl::time_u	utl::get_start()
 {

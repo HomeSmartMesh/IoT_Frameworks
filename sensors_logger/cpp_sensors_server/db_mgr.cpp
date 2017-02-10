@@ -306,7 +306,8 @@ void db_manager_c::addMeasures(NodeMap_t &NodesSensorsVals)
 
 void db_manager_c::getMeasures(int NodeId,std::string SensorName, time_t start, time_t stop,NodeMap_t &ResVals)
 {
-	std::cout << "dbm> get> " << NodeId << " " <<SensorName<<" " << start << "  " << stop << std::endl;
+	std::cout << "dbm> get> " << NodeId << " " <<SensorName	<<" from("  << utl::getDay(start)<<" "<< utl::getTime(start)
+															<<") till(" << utl::getDay(stop)<<" "<< utl::getTime(stop)<< ")" <<std::endl;
 	sensor_measures_table_t &db_measures 	= Nodes[NodeId][SensorName];
 	sensor_measures_table_t &resp_measures 	= ResVals[NodeId][SensorName];
 	int count = 0;

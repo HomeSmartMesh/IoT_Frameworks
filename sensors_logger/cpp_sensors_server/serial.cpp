@@ -316,6 +316,55 @@ void Serial::clearBuffer()
 	logbuf.currentlines.clear();
 }
 
+void LogBuffer_c::lastLinesDiscardOld()
+{
+	const int nbSecondsToRetain = 2;
+	std::time_t right_now;
+	std::time(&right_now);
+	std::time_t oldTime = right_now - nbSecondsToRetain;
+	bool isDone = false;
+	while(!lastLines.empty() && !isDone)
+	{
+		auto &vLine = lastLines.front();
+		if(vLine.time<=oldTime)
+		{
+			//std::cout << "lastline_Remove>" << vLine.line << std::endl;
+			lastLines.pop_front();
+		}
+		else
+		{
+			isDone = true;
+		}
+	}
+}
+
+bool LogBuffer_c::lastLinesCheck(std::string &line)
+{
+	bool isFound = false;	
+	//-------------------check duplicate
+	if(!lastLines.empty())
+	{
+		//more likely to be in the back
+		for(std::list<sensor_line_t>::reverse_iterator rit=lastLines.rbegin();
+			(rit!=lastLines.rend() && !isFound);
+			++rit)
+		{
+			if(utl::compare(line,(*rit).line))
+			{
+				isFound = true;
+				//std::cout << "lastline_Found>" << line << std::endl;
+			}
+		}
+	}
+	return isFound;
+}
+
+void LogBuffer_c::lastLinesAdd(std::string &line)
+{
+	lastLines.push_back({time_now,line});
+	//std::cout << "lastline_add>" << line << std::endl;
+}
+
 void Serial::processLine(NodeMap_t &nodes)
 {
 	//replace end of line by end of string
@@ -332,6 +381,21 @@ void Serial::processLine(NodeMap_t &nodes)
 	{
 		std::string t_Id = notif_map["NodeId"];
 		int l_Id = std::stoi(t_Id);
+		if(utl::exists(notif_map,"RTX"))//If this is a retransmitted frame
+		{
+			utl::TakeParseTo(logline,';');//remove the first section "RTX:ttl;"
+			logbuf.lastLinesDiscardOld();
+			bool isDuplicate = logbuf.lastLinesCheck(logline);
+			//Here should be taken out the duplicaes,
+			// and release it for normal processing otherwise
+			if(isDuplicate)
+			{
+				std::cout << "ser> Discarded Duplicate: "<< logline << std::endl;
+				return;
+			}
+		}
+		logbuf.lastLinesAdd(logline);
+		
 		if(utl::exists(notif_map,"BME280"))
 		{
 			if(NodesMeasures.find(l_Id) != NodesMeasures.end())
