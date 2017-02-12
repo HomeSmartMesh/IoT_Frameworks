@@ -79,6 +79,8 @@ typedef std::vector<sensor_measure_t> sensor_measures_table_t;
 
 typedef std::map<std::string,sensor_measures_table_t> sensors_tables_t;
 
+//Nodes[NodeId][SensorName].time
+//Nodes[NodeId][SensorName].value
 typedef std::map<int,sensors_tables_t> NodeMap_t;
 
 

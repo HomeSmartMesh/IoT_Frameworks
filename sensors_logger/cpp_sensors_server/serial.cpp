@@ -446,6 +446,20 @@ void Serial::processLine(NodeMap_t &nodes)
 			//yes it is a generic log
 			logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" + logline);
 		}
+		else if(utl::exists(notif_map,"Temperature"))
+		{
+			sensor_measure_t temper;
+			temper.time = logbuf.time_now;
+
+			std::string t_temper = notif_map["Temperature"];
+			int l_temper = std::stof(t_temper);
+			temper.value = l_temper;
+			
+			nodes[l_Id]["Temperature"].push_back(temper);
+
+			//yes it is a generic log
+			logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" + logline);
+		}
 		else//other logs that do not need pre-formatting
 		{
 			logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" + logline);
