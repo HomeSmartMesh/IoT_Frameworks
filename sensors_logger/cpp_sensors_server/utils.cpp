@@ -431,6 +431,31 @@ std::string utl::stringify(NodeMap_t &measures,const std::string &type)
 	return jsonMeasures.dump();
 }
 
+std::string utl::stringify2(NodeMap_t &measures,const std::string &type)
+{
+	json jsonMeasures;
+	
+	for(auto const& sensorsTables : measures)
+	{
+		std::string NodeId = std::to_string(sensorsTables.first);
+		jsonMeasures["nodeid"] = NodeId;
+		for(auto const& Table : sensorsTables.second) 
+		{
+			std::string SensorName = Table.first;
+			for(auto const& Measure : Table.second) 
+			{
+				json jMeasure;
+				jMeasure["name"] = SensorName;
+				jMeasure["vale"] =  Measure.value;
+				jsonMeasures["sensors"].push_back(jMeasure);
+				jsonMeasures["packettime"] = Measure.time;
+			}
+		}
+	}
+	
+	return jsonMeasures.dump();
+}
+
 void utl::make_json(NodeMap_t &measures,json &jRes,const std::string &type)
 {
 	for(auto const& sensorsTables : measures)

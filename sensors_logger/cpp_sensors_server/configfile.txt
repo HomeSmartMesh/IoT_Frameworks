@@ -28,4 +28,4 @@ websocket_url=ws://10.0.0.12:4348/measures
 
 # -------------- WEB CLIENT -------------- 
 #HTTP POST data to another server as a feeding client
-#HTTP_POST=ws://10.0.0.2:8127/rf_logger
+HTTP_POST=ws://10.0.0.2:8127/rf_logger

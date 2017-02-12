@@ -92,6 +92,10 @@ void help_arguments()
 	}
 	
 }
+void localActions(NodeMap_t &measures)
+{
+	
+}
 
 int main( int argc, char** argv )
 {
@@ -125,10 +129,12 @@ int main( int argc, char** argv )
 			NodeMap_t measures = stream.processBuffer();
 			if(measures.size() != 0)
 			{
+				localActions(measures);
 				dbm.addMeasures(measures);	//save into the data base (memory db & files db)
 				std::string jMeasures = utl::stringify(measures,"update");//data type is "update"
 				wbs.broadcast(jMeasures);
-				wbs.post(jMeasures);//for another webserver if configured
+				std::string jMeasures2 = utl::stringify2(measures,"update");//data type is "update"
+				wbs.post(jMeasures2);//for another webserver if configured
 			}
 		}
 		

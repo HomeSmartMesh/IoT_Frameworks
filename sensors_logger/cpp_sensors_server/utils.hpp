@@ -122,6 +122,7 @@ namespace utl
 	
 	//json routines
 	std::string 	stringify(NodeMap_t &measures,const std::string &type);
+	std::string 	stringify2(NodeMap_t &measures,const std::string &type);
 	void 			make_json(NodeMap_t &measures,nlohmann::json &jRes,const std::string &type);
 	void 			make_json_resp(	int 				NodeId,
 									const std::string 	&SensorName,
