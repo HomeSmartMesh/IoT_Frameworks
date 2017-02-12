@@ -446,7 +446,7 @@ std::string utl::stringify2(NodeMap_t &measures,const std::string &type)
 			{
 				json jMeasure;
 				jMeasure["name"] = SensorName;
-				jMeasure["vale"] =  Measure.value;
+				jMeasure["value"] =  Measure.value;
 				jsonMeasures["sensors"].push_back(jMeasure);
 				jsonMeasures["packettime"] = Measure.time;
 			}
