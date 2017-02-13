@@ -143,8 +143,8 @@ void db_manager_c::load()
 							{
 								std::tm timeinfo;
 								timeinfo.tm_year = year - 1900;//standard say so
-								timeinfo.tm_mon = month - 1;//as mon start from 0
-								timeinfo.tm_isdst = 1;//true time saving applies
+								timeinfo.tm_mon = month-1;
+								timeinfo.tm_isdst = 0;//false as if it applies, it will take one hour off time-=1h
 								
 								std::ifstream ifile;
 								ifile.open(filename.c_str(), std::ios::in );
