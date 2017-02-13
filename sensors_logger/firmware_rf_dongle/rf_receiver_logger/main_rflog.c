@@ -57,6 +57,11 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 				rx_alive(rxData,rx_DataSize);
 			}
 			break;
+		case rf_pid_0x49_reset:
+			{
+				rx_reset(rxData,rx_DataSize);
+			}
+			break;
 		case rf_pid_0x3B_light:
 			{
 				rx_light(rxData,rx_DataSize);

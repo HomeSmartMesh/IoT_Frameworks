@@ -16,6 +16,7 @@
 
 #define rf_pid_0x35_temperature	0x35
 #define rf_pid_0x75_alive		0x75
+#define rf_pid_0x49_reset		0x49
 #define rf_pid_0x3B_light		0x3B
 #define rf_pid_0xC5_magnet		0xC5
 #define rf_pid_0xE2_bme280		0xE2
@@ -26,6 +27,10 @@
 // Alive RF ping
 void rf_get_tx_alive_3B(BYTE NodeId, BYTE* tx_data);
 void rx_alive(BYTE *rxData,BYTE rx_DataSize);//Rx 3 Bytes
+
+// Reset
+void rf_get_tx_reset_3B(BYTE NodeId, BYTE* tx_data);
+void rx_reset(BYTE *rxData,BYTE rx_DataSize);//Rx 3 Bytes
 
 //should move to max44009 lib
 void rx_light(BYTE *rxData,BYTE rx_DataSize);//Rx 5 Bytes

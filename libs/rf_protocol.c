@@ -40,6 +40,28 @@ void rx_alive(BYTE *rxData,BYTE rx_DataSize)
 	}
 }
 
+// Reset
+void rf_get_tx_reset_3B(BYTE NodeId, BYTE* tx_data)
+{
+      tx_data[0]= rf_pid_0x49_reset;
+      tx_data[1]= NodeId;
+      tx_data[2]= tx_data[0] ^ NodeId;
+}
+void rx_reset(BYTE *rxData,BYTE rx_DataSize)
+{
+	BYTE crc = rxData[0] ^ rxData[1];
+	if(crc == rxData[2])
+	{
+		printf("NodeId:");
+		UARTPrintf_uint(rxData[1]);
+		printf_ln(";was:Reset");
+	}
+	else
+	{
+		printf_ln("Pid:Reset;Error:CRC Fail");
+	}
+}
+
 //Rx 5 Bytes
 void rx_light(BYTE *rxData,BYTE rx_DataSize)
 {

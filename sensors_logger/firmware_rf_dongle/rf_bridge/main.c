@@ -27,12 +27,25 @@
 //for rx_pids and callbacks
 #include "rf_protocol.h"
 
+#include "nRF_Configuration.h"
+
 //for parsing rf bme280 data
 #include "bme280.h"
 
 BYTE Led_Extend = 0;
 
-BYTE tx_data[32];
+BYTE tx_data[RF_RX_DATASIZE];
+
+#define EEPROM_Offset 0x4000
+#define EE_NODE_ID       (char *) EEPROM_Offset;
+unsigned char NodeId;
+
+void rf_send_reset()
+{
+	rf_get_tx_reset_3B(NodeId, tx_data);
+	nRF_Transmit(tx_data,3);
+}
+
 
 void retransmit(BYTE timeToLive, BYTE *rxData,BYTE rx_DataSize)
 {
@@ -74,7 +87,7 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 
 int main( void )
 {
-	
+    NodeId = *EE_NODE_ID;
     BYTE AliveActiveCounter = 0;
 
     InitialiseSystemClock();
@@ -90,6 +103,9 @@ int main( void )
 
     //Applies the compile time configured parameters from nRF_Configuration.h
     BYTE status = nRF_Config();
+
+	//notify that a reset happened
+	rf_send_reset();
 
     //The RX Mode is independently set from nRF_Config() and can be changed on run time
     nRF_SetMode_RX();
