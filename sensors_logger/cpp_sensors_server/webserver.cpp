@@ -66,6 +66,9 @@ ________________________________________________________________________________
 #include "Poco/Net/HTTPRequest.h"
 #include "Poco/Net/HTTPClientSession.h"
 
+#include "Poco/Net/DatagramSocket.h"
+#include "Poco/Net/SocketAddress.h"
+
 #include <iostream>
 
 #include <chrono>
@@ -419,4 +422,49 @@ void webserver_c::post(std::string &update)
 			std::cout <<"wbs> Post Fail :"<< exc.displayText() << std::endl;
 		}
 	}
+}
+
+const char GROUP_1_ALL_OFF	= 0x46;//	           70
+const char GROUP_2_ALL_ON	= 0x47;//	           71	(SYNC/PAIR RGB+W Bulb within 2 seconds of Wall Switch Power being turned ON)
+const char GROUP_1_ALL_ON   = 0x45;//	           69	(SYNC/PAIR RGB+W Bulb within 2 seconds of Wall Switch Power being turned ON)
+const char GROUP_2_ALL_OFF	= 0x48;//	           72
+const char GROUP_3_ALL_ON	= 0x49;//	           73	(SYNC/PAIR RGB+W Bulb within 2 seconds of Wall Switch Power being turned ON)
+const char GROUP_3_ALL_OFF	= 0x4A;//	           74
+const char GROUP_4_ALL_ON	= 0x4B;//	           75	(SYNC/PAIR RGB+W Bulb within 2 seconds of Wall Switch Power being turned ON)
+const char GROUP_4_ALL_OFF	= 0x4C;//	           76
+
+const char BRIGHTNESS       = 0x4E;
+
+void webserver_c::sendLight()
+{
+	std::cout << " => send Light" << std::endl;
+
+	Poco::Net::SocketAddress local_Add(Poco::Net::IPAddress(), 8820);
+    Poco::Net::DatagramSocket dSocket(local_Add);
+	Poco::Net::SocketAddress lightbridge_Add("10.0.0.8", 8899);
+	
+	unsigned char message[3];
+	message[0] = GROUP_4_ALL_ON;//all on 
+	message[1] = 0;	//Max Bright Val
+	message[2] = 0x55;	
+
+	//3x times	
+	for(int i=0;i<3;i++)
+	{
+		int sentB = dSocket.sendTo(message, 3, lightbridge_Add);
+		std::cout << "sent> " << sentB << std::endl;
+		usleep(200000);
+	}
+
+	message[0] = BRIGHTNESS;	//Brightness
+	message[1] = 27;	//Max Bright Val
+	message[2] = 0x55;	
+	//3x times	
+	for(int i=0;i<3;i++)
+	{
+		int sentB = dSocket.sendTo(message, 3, lightbridge_Add);
+		std::cout << "sent> " << sentB << std::endl;
+		usleep(200000);
+	}
+
 }

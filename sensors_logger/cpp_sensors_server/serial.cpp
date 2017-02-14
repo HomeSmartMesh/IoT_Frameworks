@@ -461,6 +461,20 @@ void Serial::processLine(NodeMap_t &nodes)
 			//yes it is a generic log
 			logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" + logline);
 		}
+		else if(utl::exists(notif_map,"was"))//events
+		{
+			sensor_measure_t reset_evt;
+			reset_evt.time = logbuf.time_now;
+
+			if(utl::compare(notif_map["was"],"Reset"))
+			{
+				reset_evt.value = 1;
+				nodes[l_Id]["Reset"].push_back(reset_evt);
+				//yes it is a generic log
+				logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" + logline);
+			}
+
+		}
 		else//other logs that do not need pre-formatting
 		{
 			logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" + logline);

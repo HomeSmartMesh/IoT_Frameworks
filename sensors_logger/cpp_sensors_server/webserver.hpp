@@ -68,6 +68,7 @@ public:
 	void 		broadcast(std::string &update);			//to all connected clients
 	void 		post(std::string &update);				//HTTP POST to another server
 	std::string poll();										//get a request from the first client which list is not empty
+	void		sendLight();
 															//could be improved by a round robin to avoid Dos attacks
 	void 		respond(std::string &response);				//to the current client that sent the request
 	std::string currentclient;								//the poll() respond() is linked to the currentclient

@@ -92,9 +92,20 @@ void help_arguments()
 	}
 	
 }
-void localActions(NodeMap_t &measures)
+void localActions(NodeMap_t &measures,webserver_c &ser)
 {
-	
+	if(measures.find(10) != measures.end())
+	{
+		if(measures[10].find("Reset") != measures[10].end() )
+		{
+			auto &vals = measures[10]["Reset"];
+			if(!vals.empty() && vals[0].value == 1)
+			{
+				ser.sendLight();
+				std::cout << "localActions> Node[10]['Reset']:1" << std::endl;
+			}
+		}
+	}
 }
 
 int main( int argc, char** argv )
@@ -129,7 +140,7 @@ int main( int argc, char** argv )
 			NodeMap_t measures = stream.processBuffer();
 			if(measures.size() != 0)
 			{
-				localActions(measures);
+				localActions(measures,wbs);
 				dbm.addMeasures(measures);	//save into the data base (memory db & files db)
 				std::string jMeasures = utl::stringify(measures,"update");//data type is "update"
 				wbs.broadcast(jMeasures);
