@@ -15,7 +15,7 @@
 
 
 // Macro to read SPI Interrupt flag
-#define WAIT_SPIF (!(SPI0CN & 0x80))  // SPI interrupt flag(µC platform dependent)
+#define WAIT_SPIF (!(SPI0CN & 0x80))  // SPI interrupt flag(ï¿½C platform dependent)
 
 // Define nRF24L01 interrupt flag's
 #define IDLE            0x00  // Idle, no interrupt pending
@@ -98,6 +98,12 @@
 	
 //FIFO_STATUS bits	
 #define	bit_TX_EMPTY		0x10
+
+//RF_SETUP bits
+#define bit_RF_DR_LOW_250Kb 0x20
+#define bit_RF_DR_Mask      0x28
+#define bit_RF_DR_High_1Mb  0x00
+#define bit_RF_DR_High_2Mb  0x08
 
 extern const unsigned char nRF24L01pRegNumber;
 

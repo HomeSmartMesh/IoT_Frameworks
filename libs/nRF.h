@@ -40,6 +40,7 @@ BYTE nRF_SetMode_TX();
 
 BYTE nRF_ClearStatus();
 
+BYTE nRF_SetDataRate(BYTE dr);//1=> 1Mb, 2=> 2Mb, 250=> 250Kb
 BYTE nRF_SelectChannel(BYTE channel);
 void nRF_PrintChannel();
 

@@ -76,6 +76,8 @@ BYTE nRF_Config()
 		nRF_Config_PrintStatus(status);
 	}
 
+	nRF_SetDataRate(RF_Data_Rate);
+
 	return status;
 }
 
@@ -262,6 +264,31 @@ BYTE nRF_ClearStatus()
 BYTE nRF_SelectChannel(BYTE channel)
 {
 	BYTE status = SPI_Write_Register(RF_CH,channel & bit_Mask_RF_CH);
+	return status;
+}
+
+BYTE nRF_SetDataRate(BYTE dr)//1=> 1Mb, 2=> 2Mb, 250=> 250Kb
+{
+	BYTE status,rf_setup;
+	rf_setup = SPI_Read_Register(RF_SETUP);
+	rf_setup &= (~bit_RF_DR_Mask);
+	if(dr == 250)
+	{
+		rf_setup |= bit_RF_DR_LOW_250Kb;
+	}
+	else if (dr == 1)
+	{
+		rf_setup |= bit_RF_DR_High_1Mb;
+	}
+	else if(dr == 2)
+	{
+		rf_setup |= bit_RF_DR_High_2Mb;
+	}
+	else
+	{
+		//do not do anything unexpected value
+	}
+	status = SPI_Write_Register(RF_SETUP,rf_setup);
 	return status;
 }
 

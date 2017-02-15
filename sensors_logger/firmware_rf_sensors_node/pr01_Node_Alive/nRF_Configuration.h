@@ -29,7 +29,9 @@
 #define SPI_Write_Register_EN_AA		0x00
 //disable retransmission
 #define SPI_Write_Register_SETUP_RETR	0x00
- 
+//RF data rate : 1=> 1Mb, 2=> 2Mb, 250=> 250Kb
+#define RF_Data_Rate    	250
+
 //--------------------------------Debug log Enable or disable-----------------------------------
 // set to 1 or 0
 #define Enable_Debug_IRQHandler_PortD_nRF 		        1

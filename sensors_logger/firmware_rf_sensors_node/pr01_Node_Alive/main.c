@@ -31,6 +31,7 @@ BYTE tx_data[RF_RX_DATASIZE];
 
 //------------------------------ Node Config ---------------------------------
 #define NODE_MAGNET_B_SET               0
+#define MAGNET_B_INTERRUPT				0
 #define NODE_MAGNET_D_SET               1
 #define NODE_MAGNET_D_INTERRUPT         1
 #define NODE_I2C_SET                    0
@@ -244,10 +245,10 @@ void configure_All_PIO()
 	//PB_ODR_ODR7 = 1;
 
 #if NODE_I2C_SET != 1
-	//C0 - I²C SDA
+	//C0 - Iï¿½C SDA
 	PC_DDR_bit.DDR0 = 1;//output
 	PC_ODR_bit.ODR0 = 0;//Low
-	//C1 - I²C SCL
+	//C1 - Iï¿½C SCL
 	PC_DDR_bit.DDR1 = 1;//output
 	PC_ODR_bit.ODR1 = 0;//Low
 #endif
