@@ -243,7 +243,7 @@ void uart_rx_user_callback(BYTE *buffer,BYTE size)
 	if(rfmaster_Connected)
 	{
 		//convert UART Text to RF Fixed size format done inside nRF_Transmit()
-		//if size >= RF_RX_DATASIZE, will return without doing anything
+		//if size >= RF_MAX_DATASIZE, will return without doing anything
 		nRF_Transmit(buffer,size);
 		nRF_Wait_Transmit();
 		nRF_SetMode_RX();

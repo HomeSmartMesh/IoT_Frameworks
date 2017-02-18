@@ -34,7 +34,7 @@
 
 BYTE Led_Extend = 0;
 
-BYTE tx_data[RF_RX_DATASIZE];
+BYTE tx_data[RF_MAX_DATASIZE];
 
 #define EEPROM_Offset 0x4000
 #define EE_NODE_ID       (char *) EEPROM_Offset;

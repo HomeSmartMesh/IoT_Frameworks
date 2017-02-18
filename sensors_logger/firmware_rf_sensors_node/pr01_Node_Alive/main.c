@@ -22,7 +22,7 @@ unsigned char NodeId;
 //to format the tx data
 #include "rf_protocol.h"
 
-BYTE tx_data[RF_RX_DATASIZE];
+BYTE tx_data[RF_MAX_DATASIZE];
 
 //---------------------- Active Halt Mode :
 // - CPU and Peripheral clocks stopped, RTC running
@@ -129,9 +129,6 @@ __interrupt void IRQHandler_RTC(void)
   {
     RTC_ISR2_WUTF = 0;
     
-    rf_send_alive();
-    
-    //LogMagnets();
   }
   
 }
@@ -284,7 +281,7 @@ int main( void )
   Init_Magnet_PD0();
 #endif
 	
-	Initialise_STM8L_Clock();			//here the RTC clock source is set to LSI
+	Initialise_STM8L_Clock();			//here enable the RTC clock
 	Initialise_STM8L_RTC_LowPower(30);//sleep period 30 sec
     
 	//SYSCFG_RMPCR1_USART1TR_REMAP = 1; // Remap 01: USART1_TX on PA2 and USART1_RX on PA3
@@ -299,7 +296,13 @@ int main( void )
     //
     while (1)
     {
-      __halt();
-      
+		__halt();
+
+		//here we wake up from halt
+		rf_send_alive();
+
+		nRF_Wait_Transmit();//wait by polling, RF is consuming high current so why send uC to sleep
+		nRF_SetMode_PowerDown();
+
     }
 }

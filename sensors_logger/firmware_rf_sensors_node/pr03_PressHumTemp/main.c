@@ -32,8 +32,8 @@ unsigned char NodeId;
 // - wakeup from RTC, or external/Reset
 
 
-//RF_RX_DATASIZE must be used as the nRF_Transmit rely on it for a zero copy frame update
-BYTE tx_data[RF_RX_DATASIZE];
+//RF_MAX_DATASIZE must be used as the nRF_Transmit rely on it for a zero copy frame update
+BYTE tx_data[RF_MAX_DATASIZE];
 
 
 //------------------------------ Node Config ---------------------------------
@@ -254,10 +254,10 @@ void configure_All_PIO()
 	//PB_ODR_ODR7 = 1;
 
 #if NODE_I2C_SET != 1
-	//C0 - I²C SDA
+	//C0 - Iï¿½C SDA
 	PC_DDR_bit.DDR0 = 1;//output
 	PC_ODR_bit.ODR0 = 0;//Low
-	//C1 - I²C SCL
+	//C1 - Iï¿½C SCL
 	PC_DDR_bit.DDR1 = 1;//output
 	PC_ODR_bit.ODR1 = 0;//Low
 #endif

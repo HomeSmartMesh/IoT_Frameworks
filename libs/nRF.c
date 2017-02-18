@@ -78,6 +78,9 @@ BYTE nRF_Config()
 
 	nRF_SetDataRate(RF_Data_Rate);
 
+	//ensure a starts with Power down more
+	nRF_SetMode_PowerDown();
+
 	return status;
 }
 

@@ -24,7 +24,7 @@
 
 //----------------------------- nRF Communication Configuration ---------------------------------
 //data size, fixed to 32 bytes and size is at data[31]
-#define RF_RX_DATASIZE	4
+#define RF_MAX_DATASIZE	4
 //disable auto acknowledgement for all pipes
 #define SPI_Write_Register_EN_AA		0x00
 //disable retransmission
@@ -43,7 +43,7 @@
 
 //--------Configuration inherited from previous parameters not to be edited -----------------
 //Sets the Pipe 0 width
-#define SPI_Write_Register_RX_PW_P0		RF_RX_DATASIZE
+#define SPI_Write_Register_RX_PW_P0		RF_MAX_DATASIZE
 //add the mask to the or bits to disable it. Masks are : bit_MASK_RX_DR | bit_MASK_TX_DS | bit_MASK_MAX_RT
 #if(Enable_RX_IRQ == 1)
 #define Enable_RX_IRQ_Config	0x00

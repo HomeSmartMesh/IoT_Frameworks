@@ -40,7 +40,7 @@
 
 void userRxCallBack(BYTE *rxData,BYTE rx_DataSize);
 
-BYTE RxData[RF_RX_DATASIZE];
+BYTE RxData[RF_MAX_DATASIZE];
 
 
 //---------------------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ BYTE RxData[RF_RX_DATASIZE];
 void ProcessUserData_inIRQ()
 {
 	BYTE rx_size = RxData[0];			//protocol change to size in the HEAD
-	if(rx_size < RF_RX_DATASIZE)		//avoid table access overflow
+	if(rx_size < RF_MAX_DATASIZE)		//avoid table access overflow
 	{
 		userRxCallBack(RxData+1,rx_size);	//keep the user's data same from first payload data
 		#if (Enable_Debug_IRQHandler_PortD_nRF == 1)
@@ -111,7 +111,7 @@ __interrupt void IRQHandler_PortD_nRF(void)
 		do
 		{
                         //TODO check the size before reading the Hard coded value
-			SPI_Read_Buf(RD_RX_PLOAD,RxData,RF_RX_DATASIZE);
+			SPI_Read_Buf(RD_RX_PLOAD,RxData,RF_MAX_DATASIZE);
 			ProcessUserData_inIRQ();
 			
 			nRF_ClearStatus( bit_RX_DR );
@@ -183,7 +183,7 @@ __interrupt void IRQHandler_PortD_nRF(void)
             BYTE fifo_Status;
             do
             {
-                    SPI_Read_Buf(RD_RX_PLOAD,RxData,RF_RX_DATASIZE);
+                    SPI_Read_Buf(RD_RX_PLOAD,RxData,RF_MAX_DATASIZE);
                     ProcessUserData_inIRQ();
                     
                     nRF_ClearStatus( bit_RX_DR );
