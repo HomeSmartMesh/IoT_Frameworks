@@ -33,11 +33,13 @@
 #include "bme280.h"
 
 BYTE Led_Extend = 0;
+BYTE RTX_Delay = 0;
 
 BYTE tx_data[RF_MAX_DATASIZE];
 
 #define EEPROM_Offset 0x4000
 #define EE_NODE_ID       (char *) EEPROM_Offset;
+#define EE_RTX_Delay     (char *) (EEPROM_Offset+1);
 unsigned char NodeId;
 
 void rf_send_reset()
@@ -49,6 +51,7 @@ void rf_send_reset()
 
 void retransmit(BYTE timeToLive, BYTE *rxData,BYTE rx_DataSize)
 {
+	delay_ms(RTX_Delay);
 	if(rx_DataSize < 30)//max was 31, now 2 more so <=29
 	{
 		tx_data[0] = rf_pid_0x5F_retransmit;
@@ -88,6 +91,7 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 int main( void )
 {
     NodeId = *EE_NODE_ID;
+	RTX_Delay = *EE_RTX_Delay;
     BYTE AliveActiveCounter = 0;
 
     InitialiseSystemClock();
