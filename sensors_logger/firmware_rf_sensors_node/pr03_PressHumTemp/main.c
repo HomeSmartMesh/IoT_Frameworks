@@ -39,6 +39,7 @@ BYTE tx_data[RF_MAX_DATASIZE];
 //------------------------------ Node Config ---------------------------------
 #define NODE_MAGNET_B_SET               0
 #define NODE_MAGNET_D_SET               0
+#define NODE_MAGNET_B_INTERRUPT         0
 #define NODE_MAGNET_D_INTERRUPT         0
 #define NODE_I2C_SET                    1
 #define NODE_MAX44009_SET               0
@@ -363,13 +364,17 @@ int main( void )
 	//
 	while (1)
 	{
+		//Important to set the halt in the beginning so that battery reset do not retransmit directly
+		__halt();
 		//printf("Measure---------------\n");
+		#ifdef STARTUP_SEND_CALIB_INFO
 		if(counter == 1)
 		{
 			//startup info are only sent once after a sleep cycle to avoid continuous restarts
 			//that kill the battery with a lot of uart that drops again and loops in another restart cycle
 			startup_info();
 		}
+		#endif
 		
 		if(counter % 2 == 0)
 		{
@@ -390,6 +395,5 @@ int main( void )
 		}
 		counter++;
                 
-		__halt();
 	}
 }

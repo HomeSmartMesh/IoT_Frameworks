@@ -24,12 +24,12 @@
 
 //----------------------------- nRF Communication Configuration ---------------------------------
 //data size, fixed to 32 bytes and size is at data[31]
-#define RF_MAX_DATASIZE	4
+#define RF_MAX_DATASIZE	32
 //disable auto acknowledgement for all pipes
 #define SPI_Write_Register_EN_AA		0x00
 //disable retransmission
 #define SPI_Write_Register_SETUP_RETR	0x00
-#define RF_Data_Rate    	250
+#define RF_Data_Rate    	2
 
 //--------------------------------Debug log Enable or disable-----------------------------------
 // set to 1 or 0
