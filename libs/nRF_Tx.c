@@ -35,7 +35,6 @@ BYTE nRF_Transmit(BYTE* payload, BYTE size)
 		//non supported size, do nothing
 		return 0;
 	}
-	payload[RF_RX_DATASIZE-1] = size;//at the 32nd location wich is index 0 to 31
 	
 	//this will intrrupt any previously on going or blocked Tx (lost link)
 	//This Flush is dubtfull, not necessary
@@ -50,7 +49,7 @@ BYTE nRF_Transmit(BYTE* payload, BYTE size)
 	{
 		nRF_SetMode_TX();
 	}
-	status = SPI_Write_Buf(WR_TX_PLOAD,payload,RF_RX_DATASIZE);
+	status = SPI_Write_Buf(WR_TX_PLOAD,payload,size);
 	
 	//This pin setting do not support multiple successive transmissions
 	//that fill tx data in multiple buffers

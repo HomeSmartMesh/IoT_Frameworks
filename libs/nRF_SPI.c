@@ -138,7 +138,7 @@ BYTE SPI_Command(BYTE reg)
 	return(status);       
 }
 
-BYTE SPI_Write_Buf(BYTE reg, BYTE *pBuf, BYTE bytes)
+BYTE SPI_Write_Buf(BYTE reg, BYTE *pBuf, BYTE size)
 {
 	BYTE status,byte_ctr;
 	BYTE last_state = CE_Pin_getstate();
@@ -147,7 +147,8 @@ BYTE SPI_Write_Buf(BYTE reg, BYTE *pBuf, BYTE bytes)
 	CSN_Pin_LowSelect();                           
 	status = SPI_RW(reg);                          
 
-	for(byte_ctr=0; byte_ctr<bytes; byte_ctr++)    
+	SPI_RW(size);								//protocol with size as first Byte
+	for(byte_ctr=0; byte_ctr<size; byte_ctr++)	//will send size+1 bytes
 		SPI_RW(*pBuf++);
 
 	CSN_Pin_HighDisable();

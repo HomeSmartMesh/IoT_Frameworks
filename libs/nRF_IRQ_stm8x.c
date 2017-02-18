@@ -47,13 +47,16 @@ BYTE RxData[RF_RX_DATASIZE];
 #if(Enable_RX_IRQ == 1)
 void ProcessUserData_inIRQ()
 {
-	BYTE rx_size = RxData[31];
-	userRxCallBack(RxData,rx_size);
-	#if (Enable_Debug_IRQHandler_PortD_nRF == 1)
-		  IRQ_Printf("  Received Packet: ");
-		  UARTPrintfHexTable(RxData,rx_size);
-		  IRQ_Printf("");
-	#endif
+	BYTE rx_size = RxData[0];			//protocol change to size in the HEAD
+	if(rx_size < RF_RX_DATASIZE)		//avoid table access overflow
+	{
+		userRxCallBack(RxData+1,rx_size);	//keep the user's data same from first payload data
+		#if (Enable_Debug_IRQHandler_PortD_nRF == 1)
+			IRQ_Printf("  Received Packet: ");
+			printf_hex(RxData,rx_size);
+			IRQ_Printf("");
+		#endif
+	}
 
 }
 #endif

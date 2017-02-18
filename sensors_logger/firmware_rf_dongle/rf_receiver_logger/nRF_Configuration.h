@@ -76,7 +76,7 @@
 //----------------------------------------------------------------------------------------
 #if (Enable_Debug_nRF_Config == 1)
 #define nRF_Config_Printf(x) 			printf(x)
-#define nRF_Config_PrintfHex(x)	        UARTPrintfHex(x)
+#define nRF_Config_PrintfHex(x)	        printf_hex(x)
 #define nRF_Config_PrintStatus(x)		nRF_PrintStatus(x)
 #else
 #define nRF_Config_Printf(x) 			(void)0
@@ -86,7 +86,7 @@
 
 #if (Enable_Debug_nRF_SetMode_RX == 1)
 #define nRF_SetMode_RX_Printf(x) 		printf(x)
-#define nRF_SetMode_RX_PrintfHex(x)		UARTPrintfHex(x)
+#define nRF_SetMode_RX_PrintfHex(x)		printf_hex(x)
 #define nRF_SetMode_RX_PrintStatus(x)	nRF_PrintStatus(x)
 #else
 #define nRF_SetMode_RX_Printf(x) 		(void)0
@@ -99,7 +99,7 @@
 //---------------------------------------------------------------------------------------------
 #if (Enable_Debug_IRQHandler_PortD_nRF == 1)
 #define IRQ_Printf(x) 					printf(x)
-#define IRQ_PrintfHex(x)				UARTPrintfHex(x)
+#define IRQ_PrintfHex(x)				printf_hex(x)
 #define IRQ_PrintStatus(x)				nRF_PrintStatus(x)
 #else
 #define IRQ_Printf(x) 					(void)0
