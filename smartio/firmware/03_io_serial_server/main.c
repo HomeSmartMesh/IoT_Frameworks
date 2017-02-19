@@ -175,8 +175,8 @@ int main( void )
 	//command interface parameters
 	Dimmer_logon = 0;
 
-	Initialise_ULN_Outputs();
-	Reset_ULN_Output();
+	//Initialise_ULN_Outputs();
+	//Reset_ULN_Output();
 
 	InitialiseSystemClock();
 

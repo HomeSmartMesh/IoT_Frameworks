@@ -168,27 +168,19 @@ void pwm_off_all()
 void pwm1_init()
 {
 	//start with all pio off
-	pwm_off_all();
+	//pwm_off_all();
 	
 	// Pin C3 - TMR1 CH3
-    PC_DDR_bit.DDR3 = 1;// Data Direction Register - 1: Output
-    PC_CR1_bit.C13 = 0;// Control Register 1 - 1: Push-pull
-    PC_CR2_bit.C23 = 1;// Control Register 2 - 0: Output speed up to  2 MHz
+    PC_DDR_bit.DDR3 = 0;//input - alternate function
 
 	// Pin C4 -  TMR1 CH4
-    PC_DDR_bit.DDR4 = 1;// Data Direction Register - 1: Output
-    PC_CR1_bit.C14 = 0;// Control Register 1 - 1: Push-pull
-    PC_CR2_bit.C24 = 1;// Control Register 2 - 0: Output speed up to  2 MHz
+    PC_DDR_bit.DDR4 = 0;//input - alternate function
 
 	// Pin C6 -  TMR1 CH1
-    PC_DDR_bit.DDR6 = 1;// Data Direction Register - 1: Output
-    PC_CR1_bit.C16 = 0;// Control Register 1 - 1: Push-pull
-    PC_CR2_bit.C26 = 1;// Control Register 2 - 0: Output speed up to  2 MHz
+    PC_DDR_bit.DDR6 = 0;//input - alternate function
 
 	// Pin C7 - TMR1 CH2
-    PC_DDR_bit.DDR7 = 1;// Data Direction Register - 1: Output
-    PC_CR1_bit.C17 = 0;// Control Register 1 - 1: Push-pull
-    PC_CR2_bit.C27 = 1;// Control Register 2 - 0: Output speed up to  2 MHz
+    PC_DDR_bit.DDR7 = 0;//input - alternate function
 
 	timer1_init();
 	
@@ -197,22 +189,16 @@ void pwm1_init()
 void pwm2_init()
 {
 	//start with all pio off
-	pwm_off_all();
+	//pwm_off_all();
 	
     //D2 - TIM2 CH3
-    PD_DDR_DDR2 = 1;//output
-    PD_CR1_C12 = 0;//Push Pull
-    PD_CR2_C22 = 1;//Up to 10 MHz
+    PD_DDR_DDR2 = 0;//input - Alternate function
 
     //D3 - TIM2 CH2
-    PD_DDR_DDR3 = 1;//output
-    PD_CR1_C13 = 0;//Push Pull
-    PD_CR2_C23 = 1;//Up to 10 MHz
+    PD_DDR_DDR3 = 0;//input - Alternate function
 
     //C5 - TIM2 CH1
-    PC_DDR_DDR5 = 1;//output
-    PC_CR1_C15 = 0;//Push Pull
-    PC_CR2_C25 = 1;//Up to 10 MHz
+    PC_DDR_DDR5 = 0;//input - Alternate function
 
 	timer2_init();
 	
