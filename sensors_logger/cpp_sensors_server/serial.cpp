@@ -178,10 +178,15 @@ bool Serial::config(strmap &conf)
 	}
 	
 	//serial port config------------------------------------------------------------
-	if(utl::exists(conf,"port"))
+	if(utl::exists(conf,"portname"))
 	{
-		std::cout << "str> port = " << conf["port"] << std::endl;
-		start(conf["port"]);
+		std::cout << "str> port = " << conf["portname"] << std::endl;
+		std::string port_baud = "115200";
+		if(utl::exists(conf,"portbaud"))
+		{
+			port_baud = conf["portbaud"];
+		}
+		start(conf["portname"],port_baud);
 	}
 	else
 	{
@@ -214,7 +219,7 @@ void Serial::start_logfile(std::string fileName)
 	}
 }
 
-void Serial::start(std::string port_name,bool s_500)
+void Serial::start(std::string port_name,std::string baudrate)
 {
 	std::string strlog;
 	
@@ -225,10 +230,20 @@ void Serial::start(std::string port_name,bool s_500)
 	if (fd >= 0)
 	{
 		strlog+= "port "+port_name+" is open @";
-		if(s_500)
+		if( utl::compare(baudrate,"500000") )
 		{
 			set_interface_attribs (fd, B500000, 0);
 			strlog+="B500000";
+		}
+		else if( utl::compare(baudrate,"115200") )
+		{
+			set_interface_attribs (fd, B115200, 0);  // set speed to 115,200 bps, 8n1 (no parity)
+			strlog+="B115200";
+		}
+		else if( utl::compare(baudrate,"9600") )
+		{
+			set_interface_attribs (fd, B9600, 0);  // set speed to 115,200 bps, 8n1 (no parity)
+			strlog+="B9600";
 		}
 		else
 		{

@@ -95,7 +95,7 @@ public:
 	bool			isReady;
 public:
 	bool 		config(strmap &conf);
-	void 		start(std::string port_name,bool s_500 = false);
+	void 		start(std::string port_name,std::string baudrate);
 	void 		start_logfile(std::string fileName);
 	bool 		update();
 	void 		log(const std::string &str);//append timestamp and output to file and cout
