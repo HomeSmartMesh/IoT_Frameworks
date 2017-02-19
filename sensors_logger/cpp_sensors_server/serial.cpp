@@ -55,6 +55,7 @@ ________________________________________________________________________________
 #include <termios.h>
 #include <unistd.h>
 
+#include "log.hpp"
 
 #ifdef CUSTOM_SERIAL_PORT_SPEED_UNDER_INVESTIGATION
 //for serial_struct
@@ -229,7 +230,7 @@ void Serial::start(std::string port_name,std::string baudrate)
 	fd = open (port_name.c_str(), O_RDWR | O_NOCTTY | O_SYNC);
 	if (fd >= 0)
 	{
-		strlog+= "port "+port_name+" is open @";
+		strlog+= "ser\tport "+port_name+" is open @";
 		if( utl::compare(baudrate,"500000") )
 		{
 			set_interface_attribs (fd, B500000, 0);
@@ -255,7 +256,7 @@ void Serial::start(std::string port_name,std::string baudrate)
 	{
 		strlog+="error "+std::to_string(errno)+" opening "+port_name+" : "+strerror(errno);
 	}
-	log(strlog);
+	Log::cout << strlog << Log::Info();
 }
 
 bool LogBuffer_c::update(int fd)
@@ -296,33 +297,12 @@ bool Serial::update()
 	}
 }
 
-void Serial::log(const std::string &str)
-{
-	std::string d = utl::getDay();
-	std::string t = utl::getTime();
-
-	if(isLogOut)
-	{
-		std::cout <<"str> "<< d << "\t" << t << "\t";
-		std::cout << str << std::endl;
-	}
-	if(isLogFile && logfile.is_open())
-	{
-		logfile << d << "\t" << t << "\t";
-		logfile << str << std::endl;
-	}
-	if(isLogFile && logfile.is_open())
-	{
-		logfile.flush();
-	}
-}
-
 void Serial::logBuffer()
 {
 	//std::cout << "[nb lines]" << logbuf.currentlines.size() << std::endl;
 	for(std::string cl : logbuf.currentlines)
 	{
-		log(cl);
+		//log(cl);
 	}
 }
 
@@ -405,7 +385,7 @@ void Serial::processLine(NodeMap_t &nodes)
 			// and release it for normal processing otherwise
 			if(isDuplicate)
 			{
-				std::cout << "ser> Discarded Duplicate: "<< logline << std::endl;
+				Log::cout << "ser\tDiscarded Duplicate: "<< logline << Log::Debug();
 				return;
 			}
 		}
@@ -541,7 +521,7 @@ NodeMap_t Serial::processBuffer()
 	}
 	if(!logbuf.currentlines.empty())
 	{
-		std::cout << "ser> Processed " << logbuf.currentlines.size() << "Line(s)" << std::endl;
+		Log::cout << "ser\tProcessed " << logbuf.currentlines.size() << "Line(s)" << Log::Debug();
 	}
 	return nodes;
 }

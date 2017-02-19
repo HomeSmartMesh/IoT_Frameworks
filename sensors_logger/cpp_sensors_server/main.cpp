@@ -71,6 +71,7 @@ ________________________________________________________________________________
 #include "json.hpp"
 using json = nlohmann::json;
 
+#include "log.hpp"
 
 using namespace std;
 
@@ -113,6 +114,8 @@ int main( int argc, char** argv )
 	std::cout << "______________________Config______________________" << std::endl;
 	strmap conf;
 	utl::args2map(argc,argv,conf);//here is checked './configfile.txt'
+
+	Log::config(conf);
 
 	webserver_c		wbs(conf);	//websocket manager : broadcast() and respond()
 	

@@ -98,7 +98,6 @@ public:
 	void 		start(std::string port_name,std::string baudrate);
 	void 		start_logfile(std::string fileName);
 	bool 		update();
-	void 		log(const std::string &str);//append timestamp and output to file and cout
 	NodeMap_t 	processBuffer();
 	void 		logBuffer();
 	void 		clearBuffer();

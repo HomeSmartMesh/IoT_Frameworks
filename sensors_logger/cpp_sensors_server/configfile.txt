@@ -16,7 +16,7 @@ SensorNodes=06;07;16;
 logfile=/home/pi/share/logDays.txt
 
 # The "logout" is deprecated as log needed for debug only which is run in console mode
-#logout=1
+logout=1
 
 # -------------- SELF DATABASE -------------- 
 dbpath=/home/pi/share/

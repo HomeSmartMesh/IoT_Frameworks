@@ -56,6 +56,8 @@ using std::cout;
 #include "json.hpp"
 using json = nlohmann::json;
 
+#include "log.hpp"
+
 db_manager_c::db_manager_c()
 {
 
@@ -240,18 +242,18 @@ void db_manager_c::addMeasures(NodeMap_t &NodesSensorsVals)
 	{
 		int NodeId = sensorsTables.first;
 		std::string NodeName = "NodeId" + std::to_string(NodeId);
-		std::cout << "dbm>" << NodeName << std::endl;
+		Log::cout << "dbm\t" << NodeName << Log::Info();
 		for(auto const& Table : sensorsTables.second) 
 		{
 			std::string SensorName = Table.first;
-			std::cout << "dbm>" << "\tSensor: " << SensorName << std::endl;
+			Log::cout << "dbm" << "\tSensor: " << SensorName << Log::Debug();
 			for(auto const& Measure : Table.second) 
 			{
 				//--------------------------first add it to the memory DB--------------------------
 				Nodes[NodeId][SensorName].push_back(Measure);
 				//--------------------------then to cout--------------------------
-				std::cout << "dbm>" << "\t\ttime: " << utl::getTime(Measure.time) << std::endl;
-				std::cout << "dbm>" << "\t\tval: " << Measure.value << std::endl;
+				Log::cout << "dbm" << "\t\ttime: " << utl::getTime(Measure.time) << Log::Debug();
+				Log::cout << "dbm" << "\t\tval: " << Measure.value << Log::Debug();
 				//--------------------------then save it to the db files--------------------------
 				//TODO this year month setting could be triggered on event to update it once.
 				std::string text_year,text_month,text_day;
@@ -267,19 +269,19 @@ void db_manager_c::addMeasures(NodeMap_t &NodesSensorsVals)
 				}
 				else//come here only on exceptions for first time call
 				{
-					std::cout << "dbm>" << ">>> Opening file: " << filename << std::endl;
+					Log::cout << "dbm\t" << ">>> Opening file: " << filename << Log::Info();
 					ofile.open(filename.c_str(), (std::ios::out|std::ios::app) );
 					if(!ofile.is_open())
 					{
-						std::cout << "dbm>" << "could not open sensor file: " << filename << std::endl;
+						Log::cout << "dbm\t" << "could not open sensor file: " << filename << Log::Error();
 						struct stat buffer;
 						if(stat(filepath.c_str(), &buffer) != 0)//then Month directory does not exist
 						{
-							std::cout << "dbm>" << ">>> Directory does not exist: " << filepath << std::endl;
+							Log::cout << "dbm\t" << ">>> Directory does not exist: " << filepath << Log::Warning();
 							mkdir(filepath.c_str(),ACCESSPERMS);
 							if(stat(filepath.c_str(), &buffer) == 0)
 							{
-								std::cout << "dbm>" << ">>> Directory created,retry open file" << std::endl;
+								Log::cout << "dbm>" << ">>> Directory created,retry open file" << Log::Info();
 								ofile.open(filename.c_str(), (std::ios::out|std::ios::app) );
 								if(ofile.is_open())
 								{
@@ -288,13 +290,13 @@ void db_manager_c::addMeasures(NodeMap_t &NodesSensorsVals)
 								}
 								else
 								{
-									std::cout << "dbm>" << ">>> Still could not open sensor file !!!: " << filename << std::endl;
+									Log::cout << "dbm\t" << ">>> Still could not open sensor file !!!: " << filename << Log::Error();
 									//=> Error don't know what's goig on ?
 								}
 							}
 							else
 							{
-								std::cout << "dbm>" << ">>> Directory still does not exist !!!! : " << filepath << std::endl;
+								Log::cout << "dbm>" << ">>> Directory still does not exist !!!! : " << filepath << Log::Error();
 							}
 						}
 					}
