@@ -78,12 +78,17 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 		BYTE ttl = rxData[1];
 		if(ttl>0)
 		{
-			retransmit(ttl-1,rxData,rx_DataSize);
+			//decrease time to live
+			//remove old ttl header
+			//decrease size by old header of 2 bytes
+			retransmit(ttl-1,rxData+2,rx_DataSize-2);
 		}
 	}
-	else//new transmission
+	else//new retransmission
 	{
-		BYTE ttl = 2;
+		// 0 => no further retransmission
+		//for a single level bridge network
+		BYTE ttl = 0;
 		retransmit(ttl,rxData,rx_DataSize);
 	}
 }
