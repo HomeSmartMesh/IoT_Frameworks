@@ -120,3 +120,5 @@ ws01_WeatherLogger/pr04_RF_Light_Temperature/Debug/
 ws01_WeatherLogger/pr04_RF_Light_Temperature/settings/
 sensors_logger/firmware_rf_dongle/rf_emulator/Debug/
 sensors_logger/firmware_rf_dongle/rf_emulator/settings/
+smartio/firmware/03_io_serial_server/Debug/
+smartio/firmware/03_io_serial_server/settings/
