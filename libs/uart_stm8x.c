@@ -138,11 +138,15 @@ void uart_init_impl()
 	UART1_CR1_PCEN = 0;     //  Disable parity.
 	UART1_CR3_STOP = 0;     //  1 stop bit.
 	#if UART_BAUD_RATE == 9600
-		UART1_BRR1 = 0x68;      //  based upon a 16 MHz system clock.
+		// from datasheet Writing of BRR2 (if required) should precede BRR1,
+		//      since a write to BRR1 will update the baud counters.
 		UART1_BRR2 = 0x03;      //  from Datasheet - Set the baud rate registers to 9600 baud
+		UART1_BRR1 = 0x68;      //  based upon a 16 MHz system clock.
 	#elif UART_BAUD_RATE == 115200
-		UART1_BRR1 = 0x08;      //  based upon a 16 MHz system clock.
+		// from datasheet Writing of BRR2 (if required) should precede BRR1,
+		//      since a write to BRR1 will update the baud counters.
 		UART1_BRR2 = 0x0B;      //  0xB from Datasheet - Set the baud rate registers to 115200 baud
+		UART1_BRR1 = 0x08;      //  based upon a 16 MHz system clock.
 	#else
 	#error unsupported or undefined UART Baud rate
 	#endif
