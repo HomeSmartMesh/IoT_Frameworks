@@ -240,7 +240,10 @@ void bme280_rx_measures(BYTE* rx_data, BYTE rx_DataSize)
 	}
 	else
 	{
-		printf("Pid:BME280;Error:CRC\n");
+		printf("Pid:BME280;Error:CRC;");
+		printf("NodeId:");
+		printf_uint(rx_data[1]);// Byte 1 is Node Id
+		printf_eol();
 	}
 }
 
