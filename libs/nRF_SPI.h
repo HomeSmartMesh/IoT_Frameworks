@@ -105,6 +105,9 @@
 #define bit_RF_DR_High_1Mb  0x00
 #define bit_RF_DR_High_2Mb  0x08
 
+//SETUP_AW
+#define bit_MASK_SETUP_AW   0x03
+
 extern const unsigned char nRF24L01pRegNumber;
 
 extern const char* nRF24L01pRegNames[];

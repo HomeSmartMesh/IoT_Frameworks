@@ -12,6 +12,8 @@
 #include "nRF_RegText.h"
 #include "nRF_SPI.h"
 #include "uart.h"
+#include "spi_stm8x.h"
+#include "nRF.h"
 
 void nRF_PrintStatus(BYTE status)
 {
@@ -110,12 +112,12 @@ void nRF_PrintConfig(BYTE config)
 		printf("CRC Disabled; ");
 	}
 	if((config & bit_CRCO) == bit_CRCO )
-	{
-		printf("CRC 1 Byte; ");
+	{// => 1
+		printf("CRC 2 Byte; ");
 	}
 	else
 	{
-		printf("CRC 2 Bytes; ");
+		printf("CRC 1 Bytes; ");
 	}
 	if((config & bit_PWR_UP) == bit_PWR_UP )
 	{
@@ -136,3 +138,31 @@ void nRF_PrintConfig(BYTE config)
 	printf_eol();
 }
 
+void nRF_PrintAddW()
+{
+	BYTE addw = SPI_Read_Register(SETUP_AW);
+	printf("Address Width : ");
+	if((addw & bit_MASK_SETUP_AW) == 0x01 )
+	{
+		printf_ln("3 bytes");
+	}
+	else if((addw & bit_MASK_SETUP_AW) == 0x02 )
+	{
+		printf_ln("4 bytes");
+	}
+	else if((addw & bit_MASK_SETUP_AW) == 0x03 )
+	{
+		printf_ln("5 bytes");
+	}
+}
+
+void nRF_PrintInfo()
+{
+	nRF_PrintStatus(SPI_Read_Register(STATUS));
+	nRF_PrintConfig(SPI_Read_Register(CONFIG));
+	printf_ln((CE_Pin_getstate() == 1)?"ChipEnable High":"ChipEnable Low");
+	nRF_PrintChannel();
+	nRF_PrintAddW();
+	printf("Rx Address P0: ");printf_hex(nRF_GetRxAddress(0));printf_eol();
+	printf("Tx Address   : ");printf_hex(nRF_GetTxAddress());printf_eol();
+}

@@ -55,3 +55,6 @@ BYTE nRF_SetRxAddress(BYTE Pipe, BYTE address);
 
 extern BYTE nRF_Mode;
 extern BYTE ConfigVal;
+
+BYTE nRF_GetTxAddress();
+BYTE nRF_GetRxAddress(BYTE Pipe);

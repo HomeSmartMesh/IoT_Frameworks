@@ -29,6 +29,8 @@
 
 #include "nRF_Configuration.h"
 
+#include "nRF_RegText.h"
+
 //for parsing rf bme280 data
 #include "bme280.h"
 
@@ -113,6 +115,9 @@ int main( void )
     //Applies the compile time configured parameters from nRF_Configuration.h
     BYTE status = nRF_Config();
 
+    printf("__________________________________________________\n\r");
+	nRF_PrintInfo();
+    printf("__________________________________________________\n\r");
 	//notify that a reset happened
 	rf_send_reset();
 

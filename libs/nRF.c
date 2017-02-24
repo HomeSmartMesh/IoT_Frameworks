@@ -41,17 +41,31 @@ BYTE nRF_Config()
 		nRF_Init();
 	}
 
-	SPI_Write_Register(EN_AA,SPI_Write_Register_EN_AA);//disable auto acknowledgement for all pipes
-	SPI_Write_Register(SETUP_RETR,SPI_Write_Register_SETUP_RETR);//disable retransmission
-	SPI_Write_Register(RX_PW_P0,SPI_Write_Register_RX_PW_P0);//set pipe 0 width to 1
+	//Auto Acknowledge
+	SPI_Write_Register(EN_AA,SPI_Write_Register_EN_AA);
+	//Address width
+	SPI_Write_Register(SETUP_AW,SPI_Write_Register_SETUP_AW);
+	//Retransmission
+	SPI_Write_Register(SETUP_RETR,SPI_Write_Register_SETUP_RETR);
+	//Set pipe 0 width to RF_MAX_DATASIZE
+	SPI_Write_Register(RX_PW_P0,SPI_Write_Register_RX_PW_P0);
 	
 	//read previous config so that PWR_UP stay unchanged
 	ConfigVal = SPI_Read_Register(CONFIG);
 	ConfigVal &= bit_Mask_Reserved;//whatever read on reserved, Only 0 is written
-	
+
+	//clear to make space for setting the bits	
+	ConfigVal &= ~nRF_Config_Interruptions_Mask;
 	//Mask the interrupts 
 	ConfigVal |= nRF_Config_Interruptions_Mask_Set;
-	ConfigVal &= nRF_Config_Interruptions_Mask_ReSet;
+
+	#if(Enable_CRC == 1)
+	ConfigVal |= bit_EN_CRC;
+	#else
+	ConfigVal &= ~bit_EN_CRC;
+	#endif
+	//set to 0 => 1 Byte CRC
+	ConfigVal &= ~bit_CRCO;
 	
 	status = SPI_Write_Register(CONFIG,ConfigVal);
 	
@@ -312,6 +326,11 @@ BYTE nRF_SetTxAddress(BYTE address)
 	BYTE status = SPI_Write_Register(TX_ADDR,address);
 	return status;
 }
+BYTE nRF_GetTxAddress()
+{
+	return SPI_Read_Register(TX_ADDR);
+}
+
 
 //only LSByte set, others are default
 BYTE nRF_SetRxAddress(BYTE Pipe, BYTE address)
@@ -320,3 +339,8 @@ BYTE nRF_SetRxAddress(BYTE Pipe, BYTE address)
 	BYTE status = SPI_Write_Register(PipeAddress,address);
 	return status;
 }
+BYTE nRF_GetRxAddress(BYTE Pipe)
+{
+	return SPI_Read_Register(RX_ADDR_P0);
+}
+

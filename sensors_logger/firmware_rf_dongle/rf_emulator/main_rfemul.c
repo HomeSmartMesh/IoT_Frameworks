@@ -27,19 +27,19 @@ void emulate_sensors_log(int count)
 {
 	count*=8;//0 -> 2040
 	
-	printf_ln("NodeId:7;BME280: 0x53 EB 00 7C 77 00 70 08");
+	//printf_ln("NodeId:77;BME280: 0x53 EB 00 7C 77 00 70 08");
 	delay_ms(100);
 	
-	printf("NodeId:7,Light: ");							
+	printf("NodeId:77,Light: ");							
 	printf_uint(count);
 	printf_eol();
 	delay_ms(100);
   
 	delay_ms(1000);
-	printf_ln("NodeId:6;BME280: 0x56 33 00 7F 82 00 62 34");
+	//printf_ln("NodeId:6;BME280: 0x56 33 00 7F 82 00 62 34");
 	delay_ms(100);
 	
-	printf("NodeId:6,Light: ");							
+	printf("NodeId:66,Light: ");							
 	printf_uint(count);
 	printf_eol();
 	delay_ms(100);

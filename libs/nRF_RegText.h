@@ -13,3 +13,5 @@
 
 void nRF_PrintStatus(BYTE status);
 void nRF_PrintConfig(BYTE config);
+
+void nRF_PrintInfo();

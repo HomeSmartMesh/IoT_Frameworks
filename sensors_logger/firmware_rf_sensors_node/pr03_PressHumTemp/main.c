@@ -37,8 +37,8 @@ BYTE tx_data[RF_MAX_DATASIZE];
 
 
 //------------------------------ Node Config ---------------------------------
-#define NODE_MAGNET_B_SET               0
-#define NODE_MAGNET_D_SET               0
+#define NODE_MAGNET_B_SET               1
+#define NODE_MAGNET_D_SET               1
 #define NODE_MAGNET_B_INTERRUPT         0
 #define NODE_MAGNET_D_INTERRUPT         0
 #define NODE_I2C_SET                    1

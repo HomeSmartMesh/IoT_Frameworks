@@ -28,6 +28,8 @@
 //for parsing rf bme280 data
 #include "bme280.h"
 
+#include "nRF_RegText.h"
+
 BYTE Led_Extend = 0;
 
 //forward declaration as recurisve call from each other
@@ -112,8 +114,13 @@ int main( void )
     //Applies the compile time configured parameters from nRF_Configuration.h
     BYTE status = nRF_Config();
 
+    printf("__________________________________________________\n\r");
+	nRF_PrintInfo();
+    printf("__________________________________________________\n\r");
+
     //The RX Mode is independently set from nRF_Config() and can be changed on run time
     nRF_SetMode_RX();
+
 
     while (1)
     {

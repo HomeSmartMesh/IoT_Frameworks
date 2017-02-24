@@ -11,6 +11,8 @@
 #ifndef _UART_CONFIG_
 #define _UART_CONFIG_
 
+//UART_BAUD_RATE possible values 115200 9600
+#define UART_BAUD_RATE 115200
 
 //----------------------------------- Interruptions ---------------------------------------
 //Flag: UART_USE_RX_INETRRUPT
