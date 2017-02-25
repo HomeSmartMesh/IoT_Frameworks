@@ -122,3 +122,5 @@ sensors_logger/firmware_rf_dongle/rf_emulator/Debug/
 sensors_logger/firmware_rf_dongle/rf_emulator/settings/
 smartio/firmware/03_io_serial_server/Debug/
 smartio/firmware/03_io_serial_server/settings/
+joystick_servo/10_joy_Multi/Firmware_STM8_IoTNode/Debug/
+joystick_servo/10_joy_Multi/Firmware_STM8_IoTNode/settings/

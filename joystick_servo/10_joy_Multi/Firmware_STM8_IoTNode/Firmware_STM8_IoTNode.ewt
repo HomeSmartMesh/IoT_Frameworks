@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project>
+  <fileVersion>2</fileVersion>
+  <configuration>
+    <name>Debug</name>
+    <toolchain>
+      <name>STM8</name>
+    </toolchain>
+    <debug>1</debug>
+  </configuration>
+  <configuration>
+    <name>Release</name>
+    <toolchain>
+      <name>STM8</name>
+    </toolchain>
+    <debug>0</debug>
+  </configuration>
+  <file>
+    <name>$PROJ_DIR$\ClockUartLed.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\ClockUartLed.h</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\commonTypes.h</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\main.c</name>
+  </file>
+</project>
+
+
