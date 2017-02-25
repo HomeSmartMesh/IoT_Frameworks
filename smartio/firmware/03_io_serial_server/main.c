@@ -42,27 +42,35 @@ void Initialise_ULN_Outputs()
 {
   PD_DDR_bit.DDR1 = 1;// 1: Output : Rx Pin
   PD_CR1_bit.C11 = 1;//   0: Push Pull
+  PD_CR2_bit.C21 = 1;//   10 MHz
       
   PD_DDR_bit.DDR2 = 1;// 1: Output : Rx Pin
   PD_CR1_bit.C12 = 1;//   0: Push Pull
+  PD_CR2_bit.C22 = 1;//   10 MHz
 
   PD_DDR_bit.DDR3 = 1;// 1: Output : Rx Pin
   PD_CR1_bit.C13 = 1;//   0: Push Pull
+  PD_CR2_bit.C23 = 1;//   10 MHz
 
   PC_DDR_bit.DDR3 = 1;// 1: Output : Rx Pin
   PC_CR1_bit.C13 = 1;//   0: Push Pull
+  PC_CR2_bit.C23 = 1;//   10 MHz
 
   PC_DDR_bit.DDR4 = 1;// 1: Output : Rx Pin
   PC_CR1_bit.C14 = 1;//   0: Push Pull
+  PC_CR2_bit.C24 = 1;//   10 MHz
 
   PC_DDR_bit.DDR5 = 1;// 1: Output : Rx Pin
   PC_CR1_bit.C15 = 1;//   0: Push Pull
+  PC_CR2_bit.C25 = 1;//   10 MHz
 
   PC_DDR_bit.DDR6 = 1;// 1: Output : Rx Pin
   PC_CR1_bit.C16 = 1;//   0: Push Pull
+  PC_CR2_bit.C26 = 1;//   10 MHz
 
   PC_DDR_bit.DDR7 = 1;// 1: Output : Rx Pin
   PC_CR1_bit.C17 = 1;//   0: Push Pull
+  PC_CR2_bit.C27 = 1;//   10 MHz
 
 }
 
@@ -84,7 +92,7 @@ void Reset_ULN_Output()
 void help()
 {
 	printf_ln("available commands:");
-	printf_ln("dimm CHAN LEVEL_MSB LEVEL_LSB\n\t'dimm 0x00 0x08 0x98' sets the dimming level of channel 0 to 0x898");
+	printf_ln("pwm CHAN LEVEL_MSB LEVEL_LSB\n\t'pwm 0x00 0x39 0x16' sets the dimming level of channel 0 to 10000");
 	printf_ln("logon\tTurn the log on");
 	printf_ln("logoff\tTurn the log off");
 }
@@ -125,7 +133,7 @@ void handle_command(BYTE *buffer,BYTE size)
 		BYTE level_msb = get_hex(buffer,9);
 		BYTE level_lsb = get_hex(buffer,14);
 		uint16_t level = (uint16_t) (level_msb<<8) | level_lsb;
-		timer2_pwm_set_level(channel,level_lsb);
+		timer2_pwm_set_level(channel,level);
 		printf("pwm chan [");
 		printf_uint(channel);
 		printf("] to (");
@@ -138,11 +146,10 @@ void handle_command(BYTE *buffer,BYTE size)
 		BYTE level_msb = get_hex(buffer,7);
 		BYTE level_lsb = get_hex(buffer,12);
 		uint16_t level = (uint16_t) (level_msb<<8) | level_lsb;
-		timer2_pwm_set_level(1,level_lsb);
-		timer2_pwm_set_level(2,level_lsb);
-		timer2_pwm_set_level(3,level_lsb);
-		timer2_pwm_set_level(4,level_lsb);
-		printf("pwmall [1,2,3,4] to level (");
+		timer2_pwm_set_level(0,level);
+		timer2_pwm_set_level(1,level);
+		timer2_pwm_set_level(2,level);
+		printf("pwmall [0,1,2] to level (");
 		printf_uint(level);
 		printf_ln(")");
 	}
@@ -176,8 +183,8 @@ int main( void )
 	//command interface parameters
 	Dimmer_logon = 0;
 
-	Initialise_ULN_Outputs();
 	Reset_ULN_Output();
+	Initialise_ULN_Outputs();
 
 	InitialiseSystemClock();
 
@@ -200,13 +207,20 @@ int main( void )
 	__enable_interrupt();
 
 	timer2_pwm_set_level(0,0);
-	timer2_pwm_set_level(1,250);
-	delay_ms(1000);
-	timer2_pwm_set_level(0,100);
-	timer2_pwm_set_level(1,100);
-	delay_ms(1000);
-	timer2_pwm_set_level(0,250);
 	timer2_pwm_set_level(1,0);
+	timer2_pwm_set_level(2,0);
+	delay_ms(1000);
+	timer2_pwm_set_level(0,2000);
+	timer2_pwm_set_level(1,2000);
+	timer2_pwm_set_level(2,2000);
+	delay_ms(1000);
+	timer2_pwm_set_level(0,10000);
+	timer2_pwm_set_level(1,10000);
+	timer2_pwm_set_level(2,10000);
+	delay_ms(1000);
+	timer2_pwm_set_level(0,0);
+	timer2_pwm_set_level(1,0);
+	timer2_pwm_set_level(2,0);
 
 	
 	

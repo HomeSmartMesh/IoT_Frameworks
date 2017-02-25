@@ -37,5 +37,5 @@
 void timer2_pwm_init();
 
 //output function
-void timer2_pwm_set_level(BYTE channel, BYTE level);
+void timer2_pwm_set_level(BYTE channel, uint16_t level);
 

@@ -29,78 +29,104 @@
 	#error only DEVICE_STM8S supported with deviceType.h
 #endif
 
-#define TIMER_PERIOD 255
+#define TIMER_PERIOD 10000
 
-BYTE ChanTime[8],TimerCycle;
-BYTE ChanDuty[8];
+BYTE ServoPos_H[3];
+BYTE ServoPos_L[3];
 
 #pragma vector = TIM2_OVR_UIF_vector
 __interrupt void tim2_overflow(void)
 {
-	if(TIM2_SR1_UIF)//overflow
-	{
-        TimerCycle--;
-        if(TimerCycle == 0)
-        {
-            TimerCycle = TIMER_PERIOD;
-            ChanTime[0] = ChanDuty[0];
-            TIMER2_PWM_CH0 = 1;
-            TIMER2_PWM_CH1 = 1;
-        }
-        ChanTime[0]--;
-        ChanTime[1]--;
-        if(ChanTime[0] == 0)
-        {
-            TIMER2_PWM_CH0 = 0;
-        }
-        if(ChanTime[1] == 0)
-        {
-            TIMER2_PWM_CH1 = 0;
-        }
-		TIM2_SR1_UIF = 0;
-	}
+  TIM2_SR1_UIF = 0;
+  TIM2_SR1 = 0;//clear all other pending flags
+
+  TIM2_CCR3H = ServoPos_H[0];
+  TIM2_CCR3L = ServoPos_L[0];
+  
+  TIM2_CCR2H = ServoPos_H[1];
+  TIM2_CCR2L = ServoPos_L[1];
+  
+  TIM2_CCR1H = ServoPos_H[2];
+  TIM2_CCR1L = ServoPos_L[2];
 }
 
 void timer2_init()
 {
   // 256 * 62500 * 1/16MHz = 1
+  
  //CLK_PCKENR1_PCKEN15 = 1;//Timer 2 Clock enable - all already enabled
  
  TIM2_CR1_ARPE = 0;//use preload register
  
  TIM2_PSCR_PSC = 0x04;//0x00 to 0x0F : fCK_CNT = fCK_PSC/2^(PSC[3:0]); 1 => 2, 4 => 16 : 1MHz,  0x0F => 32768 : 
  
- //100 us
- TIM2_ARRH = 0;
- TIM2_ARRL = 100;
+ //10 000 us = 39*256 + 16
+ TIM2_ARRH = 39;
+ TIM2_ARRL = 16;
+
+ //1520 us = 5*256 + 240
+ //1720 us = 6*256 + 184
+
+ //------------TMR2 - Channel 1------------
+ TIM2_CCR1H = 0;
+ TIM2_CCR1L = 0;
+ 
+ //use Timer2 PWM channel 3 on pin A3/D2
+ TIM2_CCMR1_CC1S = 0x00;//CC1 channel configured as output
+ TIM2_CCMR1_OC1M = 0x06;//PWM1 mode 1 till match then 0
+ TIM2_CCMR1_OC1PE = 0x01;//Preload register enabled for TIM2_CCR1
+ 
+ TIM2_CCER1_CC1P = 0;//Default active high
+ TIM2_CCER1_CC1E = 1;//Enable output on pin
 
  
- TIM2_IER_UIE = 1;//interrupt not used
+ //------------TMR2 - Channel 3------------
+ TIM2_CCR3H = 0;
+ TIM2_CCR3L = 0;
+ 
+ //use Timer2 PWM channel 3 on pin A3/D2
+ TIM2_CCMR3_CC3S = 0x00;//CC1 channel configured as output
+ TIM2_CCMR3_OC3M = 0x06;//PWM1 mode 1 till match then 0
+ TIM2_CCMR3_OC3PE = 0x01;//Preload register enabled for TIM2_CCR1
+ 
+ TIM2_CCER2_CC3P = 0;//Default active high
+ TIM2_CCER2_CC3E = 1;//Enable output on pin
+
+ //------------TMR2 - Channel 2------------
+ TIM2_CCR2H = 0;
+ TIM2_CCR2L = 0;
+ 
+ //use Timer2 PWM channel 3 on pin A3/D2
+ TIM2_CCMR2_CC2S = 0x00;//CC1 channel configured as output
+ TIM2_CCMR2_OC2M = 0x06;//PWM1 mode 1 till match then 0
+ TIM2_CCMR2_OC2PE = 0x01;//Preload register enabled for TIM2_CCR1
+ 
+ TIM2_CCER1_CC2P = 0;//Default active high
+ TIM2_CCER1_CC2E = 1;//Enable output on pin
+
+ 
+ TIM2_IER_UIE = 1;//interrupt used for smoothing
  TIM2_CR1_CEN = 1;//Counter Enable
 }
 
 void pwm_all_off()
 {
-	TIMER2_PWM_CH0 = 0;
-	TIMER2_PWM_CH1 = 0;
-	TIMER2_PWM_CH2 = 0;
-	TIMER2_PWM_CH3 = 0;
-	TIMER2_PWM_CH4 = 0;
-	TIMER2_PWM_CH5 = 0;
-	TIMER2_PWM_CH6 = 0;
-	TIMER2_PWM_CH7 = 0;
+    ServoPos_H[0] = 0;
+    ServoPos_L[0] = 0;
+    ServoPos_H[1] = 0;
+    ServoPos_L[1] = 0;
+    ServoPos_H[2] = 0;
+    ServoPos_L[2] = 0;
 }
 
 void pwm_all_on()
 {
-	TIMER2_PWM_CH0 = 1;
-	TIMER2_PWM_CH1 = 1;
-	TIMER2_PWM_CH2 = 1;
-	TIMER2_PWM_CH3 = 1;
-	TIMER2_PWM_CH4 = 1;
-	TIMER2_PWM_CH5 = 1;
-	TIMER2_PWM_CH6 = 1;
-	TIMER2_PWM_CH7 = 1;
+    ServoPos_H[0] = 39;
+    ServoPos_L[0] = 16;
+    ServoPos_H[1] = 39;
+    ServoPos_L[1] = 16;
+    ServoPos_H[2] = 39;
+    ServoPos_L[2] = 16;
 }
 
 
@@ -109,19 +135,25 @@ void timer2_pwm_init()
 {
 	//start with all pio off
 	pwm_all_off();
-	BYTE i;
-    for(i = 0;i<8;i++)
-    {
-        ChanDuty[i] = 0;
-    }
 
 	timer2_init();
 	
 }
 
-//channel is 1,2,3,4
-//level is from 0 to 1.000
-void timer2_pwm_set_level(BYTE channel, uint8_t level)
+//channel is 1,2,3
+//level is from 0 to 10.000
+void timer2_pwm_set_level(BYTE channel, uint16_t level)
 {
-    ChanDuty[channel] = level;
+	if(level > TIMER_PERIOD)//should not shift to next cycle
+	{
+		level = TIMER_PERIOD;
+	}
+	BYTE level_L = level & 0x00FF;
+	BYTE level_H = level >> 8;
+    if(channel < 3)
+    {
+        ServoPos_H[channel] = level_H;
+        ServoPos_L[channel] = level_L;
+    }
+
 }
