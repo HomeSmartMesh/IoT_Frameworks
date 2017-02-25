@@ -35,10 +35,10 @@ unsigned char NodeId;
 //RF_MAX_DATASIZE must be used as the nRF_Transmit rely on it for a zero copy frame update
 BYTE tx_data[RF_MAX_DATASIZE];
 
-
+//NODE_I2C_SET means BME280 is there
 //------------------------------ Node Config ---------------------------------
-#define NODE_MAGNET_B_SET               1
-#define NODE_MAGNET_D_SET               1
+#define NODE_MAGNET_B_SET               0
+#define NODE_MAGNET_D_SET               0
 #define NODE_MAGNET_B_INTERRUPT         0
 #define NODE_MAGNET_D_INTERRUPT         0
 #define NODE_I2C_SET                    1
@@ -49,7 +49,7 @@ BYTE tx_data[RF_MAX_DATASIZE];
 void rf_send_alive()
 {
 	rf_get_tx_alive_3B(NodeId, tx_data);
-	nRF_Transmit(tx_data,3);
+	nRF_Transmit_Wait_Down(tx_data,3);
 }
 
 void RfSwitch(unsigned char state)
@@ -58,17 +58,19 @@ void RfSwitch(unsigned char state)
 	tx_data[1]=NodeId;
 	tx_data[2]=state;
 	tx_data[3]= tx_data[0] ^ NodeId ^ state;
-	nRF_Transmit(tx_data,4);
+	nRF_Transmit_Wait_Down(tx_data,4);
 }
 
 void rf_send_bme280_measures()
 {
+#if NODE_I2C_SET == 1
 	bme280_force_OneMeasure(1,1,1);//Pressure, Temperature, Humidity
 	bme280_wait_measures();
 	//bme280_print_measures();
 	//printf("rf_send---------------\n");
 	bme280_get_tx_measures_11B(NodeId, tx_data);
-	nRF_Transmit(tx_data,11);
+	nRF_Transmit_Wait_Down(tx_data,11);
+#endif
 }
 
 void rf_send_light()
@@ -76,7 +78,7 @@ void rf_send_light()
 #if NODE_MAX44009_SET == 1
 	uint16_t light = max44009_read_light();
 	max44009_get_rf_5B(NodeId, light, tx_data);
-	nRF_Transmit(tx_data,5);
+	nRF_Transmit_Wait_Down(tx_data,5);
 #endif
 }
 
@@ -115,9 +117,6 @@ __interrupt void IRQHandler_RTC(void)
   {
     RTC_ISR2_WUTF = 0;
     
-    //rf_send_alive();
-    
-    //LogMagnets();
   }
   
 }
@@ -145,15 +144,6 @@ void GPIO_B3_High()
 void GPIO_B3_Low()
 {
     PB_ODR_bit.ODR3 = 0;
-}
-
-void PingColor()
-{
-      tx_data[0]=128;
-      tx_data[1]=255;
-      tx_data[2]=100;
-      tx_data[3]=0x59;
-      nRF_Transmit(tx_data,4);
 }
 
 void i2c_user_Rx_Callback(BYTE *userdata,BYTE size)
@@ -195,6 +185,7 @@ void i2c_user_Error_Callback(BYTE l_sr2)
 
 void startup_info()
 {
+#if NODE_I2C_SET == 1
 	printf_eol();
 	printf_ln("_________________________________");
 	printf_ln("sensors_logger/firmware_rf_sensors_node/");
@@ -206,7 +197,7 @@ void startup_info()
 	bme280_check_id();
 
 	bme280_print_CalibData();
-		
+#endif		
 }
 
 
@@ -353,7 +344,9 @@ int main( void )
 
 	SYSCFG_RMPCR1_USART1TR_REMAP = 1; // Remap 01: USART1_TX on PA2 and USART1_RX on PA3
 	uart_init();//Tx only
+#if NODE_I2C_SET == 1
 	I2C_Init();
+#endif
 
 	//Applies the compile time configured parameters from nRF_Configuration.h
 	nRF_Config();
@@ -378,16 +371,13 @@ int main( void )
 		
 		if(counter % 2 == 0)
 		{
-			rf_send_bme280_measures();
+			rf_send_bme280_measures();//no effect if no i2C
 		}
 		else
 		{
-			rf_send_light();//config conditionnal
+			rf_send_light();//no effect if no NODE_MAX44009_SET
 		}
 		
-		nRF_Wait_Transmit();
-		//delay_ms(10);
-		nRF_SetMode_PowerDown();
 		
 		if(counter == 201)
 		{

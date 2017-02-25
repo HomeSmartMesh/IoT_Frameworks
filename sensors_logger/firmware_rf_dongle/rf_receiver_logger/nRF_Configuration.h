@@ -25,7 +25,7 @@
 #define	Enable_CRC  	0
 
 //----------------------------- nRF Communication Configuration ---------------------------------
-//data size, fixed to 32 bytes and size is at data[31]
+//data size, from 1 till 32 bytes payload
 #define RF_MAX_DATASIZE	32
 //disable auto acknowledgement for all pipes
 #define SPI_Write_Register_EN_AA		0x00

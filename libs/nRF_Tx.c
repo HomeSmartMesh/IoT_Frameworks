@@ -65,6 +65,16 @@ BYTE nRF_Transmit(BYTE* payload, BYTE size)
 	return status;
 }
 
+BYTE nRF_Transmit_Wait_Down(BYTE* payload, BYTE size)
+{
+	BYTE status;
+	status = nRF_Transmit(payload,size);
+	nRF_Wait_Transmit();
+	nRF_SetMode_PowerDown();
+
+	return status;
+}
+
 //waits for Tx by polling STATUS bit TX_DS, counts till 255 then comes back
 BYTE nRF_Wait_Transmit()
 {

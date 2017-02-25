@@ -16,7 +16,9 @@
 #include "commonTypes.h"
 
 BYTE nRF_Transmit(BYTE* payload, BYTE size);
+BYTE nRF_Transmit_Wait_Down(BYTE* payload, BYTE size);
 
 //waits for Tx by polling STATUS bit TX_DS, counts till 255 then comes back
 //usually returns after 2 cycles for 2Mbps
 BYTE nRF_Wait_Transmit();
+
