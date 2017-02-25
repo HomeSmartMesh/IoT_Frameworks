@@ -32,7 +32,8 @@
 #include "eeprom.h"
 #include "cmdutils.h"
 
-#include "pwm.h"
+//#include "pwm.h"
+#include "timer2_pwm.h"
 
 BYTE NodeId;
 BYTE Dimmer_logon;
@@ -124,7 +125,7 @@ void handle_command(BYTE *buffer,BYTE size)
 		BYTE level_msb = get_hex(buffer,9);
 		BYTE level_lsb = get_hex(buffer,14);
 		uint16_t level = (uint16_t) (level_msb<<8) | level_lsb;
-		pwm_set_level(channel,level);
+		timer2_pwm_set_level(channel,level_lsb);
 		printf("pwm chan [");
 		printf_uint(channel);
 		printf("] to (");
@@ -137,10 +138,10 @@ void handle_command(BYTE *buffer,BYTE size)
 		BYTE level_msb = get_hex(buffer,7);
 		BYTE level_lsb = get_hex(buffer,12);
 		uint16_t level = (uint16_t) (level_msb<<8) | level_lsb;
-		pwm_set_level(1,level);
-		pwm_set_level(2,level);
-		pwm_set_level(3,level);
-		pwm_set_level(4,level);
+		timer2_pwm_set_level(1,level_lsb);
+		timer2_pwm_set_level(2,level_lsb);
+		timer2_pwm_set_level(3,level_lsb);
+		timer2_pwm_set_level(4,level_lsb);
 		printf("pwmall [1,2,3,4] to level (");
 		printf_uint(level);
 		printf_ln(")");
@@ -175,15 +176,16 @@ int main( void )
 	//command interface parameters
 	Dimmer_logon = 0;
 
-	//Initialise_ULN_Outputs();
-	//Reset_ULN_Output();
+	Initialise_ULN_Outputs();
+	Reset_ULN_Output();
 
 	InitialiseSystemClock();
 
 	Initialise_TestLed_GPIO_B5();
 	Test_Led_Off();
 
-	pwm_init();
+	//pwm_init();
+	timer2_pwm_init();
 
 	uart_init();
 	//No echo by default, can be enabled by terminal commad
@@ -195,20 +197,17 @@ int main( void )
 	printf_ln("IoT_Frameworks/smartio/");
 	printf_ln("io_serial_server/");
 
-
-	pwm_set_level(1,0);
-	pwm_set_level(2,10000);
-	pwm_set_level(3,30000);
-	pwm_set_level(4,65000);
-	pwm_set_level(5,0);
-	pwm_set_level(6,100);
-	pwm_set_level(7,1000);
-	delay_ms(3000);
-	pwm_set_level(5,999);
-	pwm_set_level(6,500);
-	pwm_set_level(7,100);
-
 	__enable_interrupt();
+
+	timer2_pwm_set_level(0,0);
+	timer2_pwm_set_level(1,250);
+	delay_ms(1000);
+	timer2_pwm_set_level(0,100);
+	timer2_pwm_set_level(1,100);
+	delay_ms(1000);
+	timer2_pwm_set_level(0,250);
+	timer2_pwm_set_level(1,0);
+
 	
 	
 	prompt();
