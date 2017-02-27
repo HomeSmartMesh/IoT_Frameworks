@@ -2,6 +2,9 @@
 
 <workspace>
   <project>
+    <path>$WS_DIR$\hello_rgb\hello_rgb.ewp</path>
+  </project>
+  <project>
     <path>$WS_DIR$\pr01_RF_Color_Sender\pr01_RF_Color_Sender.ewp</path>
   </project>
   <project>

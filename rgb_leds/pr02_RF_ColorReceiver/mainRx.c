@@ -51,7 +51,8 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 
 int main( void )
 {
-	
+    RGBColor_t ColorRx;
+
     BYTE AliveActiveCounter = 0;
 
     InitialiseSystemClock();
@@ -73,6 +74,11 @@ int main( void )
     //The RX Mode is independently set from nRF_Config() and can be changed on run time
     nRF_SetMode_RX();
 
+    ColorRx.R = 40;
+    ColorRx.G = 200;
+    ColorRx.B = 160;
+    FlashColors(5,ColorRx);
+    UARTPrintf("Color Flashed 40,200,160\n\r");
     while (1)
     {
 

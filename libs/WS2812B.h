@@ -14,8 +14,8 @@
  *
  */
 
-#define NB_LEDS 60
-#define RGBLedPIN_A 2
+#define NB_LEDS 1
+#define RGBLedPIN_A 3
 
 #include "commonTypes.h"
 

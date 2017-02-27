@@ -16,11 +16,14 @@
 
 #include "WS2812B.h"
 
-#include <iostm8l151f3.h>
+#include <iostm8s103f3.h>
 
-#include "ClockUartLed.h"
+#include "clock_led.h"
 
-unsigned char LedsArray[NB_LEDS];
+//include user config file for NB_LEDS and RGBLedPIN_A
+#include "rgb_config.h"
+
+unsigned char LedsArray[NB_LEDS*3];
 unsigned int nbLedsBytes = NB_LEDS*3;
 
 
@@ -401,7 +404,8 @@ void RGBLeds_PIO_Init_A3()
 {
 	PA_DDR_bit.DDR3 = 1;//output
 
-	PA_CR1_bit.C13 = 0;//0:open Drain - 1:PushPull
+	PA_CR1_bit.C13 = 1;//1:PushPull
+	PA_CR2_bit.C23 = 1;//1:up to 10 MHz
 }
 
 void RGBLeds_PIO_Init()
