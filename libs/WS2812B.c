@@ -23,6 +23,10 @@
 //include user config file for NB_LEDS and RGBLedPIN_A
 #include "rgb_config.h"
 
+#include "rf_protocol.h"
+
+#include "uart.h"
+
 unsigned char LedsArray[NB_LEDS*3];
 unsigned int nbLedsBytes = NB_LEDS*3;
 
@@ -44,7 +48,7 @@ const RGBColor_t WHITE = {255,255,255};
 #define RGBLedPin_ReSet   "BRES    L:0x5000,      #0x03         \n"
 #endif
 
-void SendLedsArray()
+void rgb_SendArray()
 {
   asm(
         "lb_intiLoop:                          \n"
@@ -379,18 +383,26 @@ void SendLedsArray()
 }
 
 
-void SetLedColor(BYTE LedId, BYTE R, BYTE G, BYTE B)
+void rgb_SetColor(BYTE LedId, BYTE R, BYTE G, BYTE B)
 {
   LedsArray[LedId*3] = G;
   LedsArray[LedId*3+1] = R;
   LedsArray[LedId*3+2] = B;
 }
 
-void SetLedColors(BYTE LedId,RGBColor_t Color)
+void rgb_SetColors(BYTE LedId,RGBColor_t Color)
 {
   LedsArray[LedId*3] = Color.G;
   LedsArray[LedId*3+1] = Color.R;
   LedsArray[LedId*3+2] = Color.B;
+}
+
+void rgb_SetColors_range(BYTE first,BYTE NbLeds,RGBColor_t Color)
+{
+	for(BYTE i=first;i<NbLeds;i++)
+	{
+		rgb_SetColors(i,Color);
+	}
 }
 
 void RGBLeds_PIO_Init_A2()
@@ -408,7 +420,7 @@ void RGBLeds_PIO_Init_A3()
 	PA_CR2_bit.C23 = 1;//1:up to 10 MHz
 }
 
-void RGBLeds_PIO_Init()
+void rgb_PIO_Init()
 {
   #if(RGBLedPIN_A == 2)
   RGBLeds_PIO_Init_A2();
@@ -419,37 +431,37 @@ void RGBLeds_PIO_Init()
 
 //useful when only one Led is beeing used
 // updates the color memory, send it, then keeps the minimal reset delay
-void SendLedColor(BYTE R, BYTE G, BYTE B)
+void rgb_SendColor(BYTE R, BYTE G, BYTE B)
 {
   LedsArray[0] = G;
   LedsArray[1] = R;
   LedsArray[2] = B;
-  SendLedsArray();
+  rgb_SendArray();
   delay_100us();//minimal delay for reset to restart the same color is 50 us
 }
 
-void SendLedColors(RGBColor_t Color)
+void rgb_SendColors(RGBColor_t Color)
 {
   LedsArray[0] = Color.G;
   LedsArray[1] = Color.R;
   LedsArray[2] = Color.B;
-  SendLedsArray();
+  rgb_SendArray();
   delay_100us();//minimal delay for reset to restart the same color is 50 us
 }
 
-void RGB_SwitchOff(BYTE first,BYTE NbLeds)
+void rgb_SwitchOff_Range(BYTE first,BYTE NbLeds)
 {
 	for(BYTE i=first;i<NbLeds;i++)
 	{
-		SetLedColor(i,0,0,0);
+		rgb_SetColor(i,0,0,0);
 	}
-	SendLedsArray();
+	rgb_SendArray();
 	delay_100us();//minimal delay for reset to restart the same color is 50 us
 }
 //delay : x255 meas 10 => 2.55 sec for cycle completion
 //XUp : 0 = unmodified, 1 = Up, 2 = Down
 //RGB : used when XUp = 0; unmodified stays at any user provided value
-void RampColors(BYTE delay,BYTE RUp,BYTE GUp,BYTE BUp,BYTE R,BYTE G,BYTE B)
+void rgb_RampColors(BYTE delay,BYTE RUp,BYTE GUp,BYTE BUp,BYTE R,BYTE G,BYTE B)
 {
         if(RUp == 1)
         {
@@ -477,7 +489,7 @@ void RampColors(BYTE delay,BYTE RUp,BYTE GUp,BYTE BUp,BYTE R,BYTE G,BYTE B)
         }
 	for(int ml=0;ml<256;ml++)
 	{
-	  SendLedColor(R,G,B);//first values sent are 0, last are 255
+	  rgb_SendColor(R,G,B);//first values sent are 0, last are 255
           if(RUp == 1)
           {
             R++;
@@ -508,17 +520,17 @@ void RampColors(BYTE delay,BYTE RUp,BYTE GUp,BYTE BUp,BYTE R,BYTE G,BYTE B)
 }
 
 //1 : Blink, 0 : Keep off
-void BlinkColors(BYTE R, BYTE G, BYTE B)
+void rgb_BlinkColors(BYTE R, BYTE G, BYTE B)
 {
   const BYTE delay = 1;
-  RampColors(delay,1&R,1&G,1&B,0,0,0);//Selected Colors Up
-  RampColors(delay,2&R,2&G,2&B,0,0,0);//Selected Colors Down
+  rgb_RampColors(delay,1&R,1&G,1&B,0,0,0);//Selected Colors Up
+  rgb_RampColors(delay,2&R,2&G,2&B,0,0,0);//Selected Colors Down
 }
 
 //input : two colors, and ratio integers
 //output : the interpolaetd color
 //Sets the interpolated color between Colors Start and End, to the ratio of iCount/nbCount
-RGBColor_t ColorScale(int iCount,int nbCount,RGBColor_t ColorStart,RGBColor_t ColorEnd)
+RGBColor_t rgb_ColorScale(int iCount,int nbCount,RGBColor_t ColorStart,RGBColor_t ColorEnd)
 {
     RGBColor_t resColor;
     
@@ -545,32 +557,126 @@ RGBColor_t ColorScale(int iCount,int nbCount,RGBColor_t ColorStart,RGBColor_t Co
 //action: updates the leds memory with the first and last led colors and all intermediate leds are interpolated
 //comment: This function does not send the led data bits on the bus, so that multiple operations can 
 //         be applied before sending the whole result together with SendLedsArray();
-void ShadeLeds(BYTE LedStart, BYTE LedEnd, RGBColor_t ColorStart, RGBColor_t ColorEnd)
+void rgb_Shade(BYTE LedStart, BYTE LedEnd, RGBColor_t ColorStart, RGBColor_t ColorEnd)
 {
   int nbLeds = LedEnd - LedStart;
   BYTE LedId = LedStart;
   for(int iCount=0;iCount<nbLeds;iCount++)//0-10
   {
-    RGBColor_t Ci = ColorScale(iCount,nbLeds,ColorStart,ColorEnd);
-    SetLedColors(LedId,Ci);
+    RGBColor_t Ci = rgb_ColorScale(iCount,nbLeds,ColorStart,ColorEnd);
+    rgb_SetColors(LedId,Ci);
     LedId++;
   }
 }
 
-void FlashColors(BYTE delay, RGBColor_t Color)
+void rgb_FlashColors(BYTE delay, RGBColor_t Color)
 {
   for(int iCount=0;iCount<255;iCount++)//0-10
   {
-    RGBColor_t Ci = ColorScale(iCount,255,BLACK,Color);
-    SendLedColors(Ci);
+    RGBColor_t Ci = rgb_ColorScale(iCount,255,BLACK,Color);
+    rgb_SendColors(Ci);
     delay_ms(delay);
   }
   for(int iCount=0;iCount<255;iCount++)//0-10
   {
-    RGBColor_t Ci = ColorScale(iCount,255,Color,BLACK);
-    SendLedColors(Ci);
+    RGBColor_t Ci = rgb_ColorScale(iCount,255,Color,BLACK);
+    rgb_SendColors(Ci);
     delay_ms(delay);
   }
-  SwitchOffLed();
+  rgb_SwitchOff();
 }
 
+void rgb_TestColors()
+{
+  rgb_BlinkColors(1,0,0);//Blink Red
+  rgb_BlinkColors(1,0,0);//Twice
+  rgb_BlinkColors(0,1,0);//Blink Green
+  rgb_BlinkColors(0,1,0);//Twice
+  rgb_BlinkColors(0,0,1);//Blink Blue
+  rgb_BlinkColors(0,0,1);//Twice
+  delay_ms(500);//rest a while
+
+  rgb_BlinkColors(1,1,0);//Blink RG
+  rgb_BlinkColors(0,1,1);//Blink GB
+  rgb_BlinkColors(1,0,1);//Blink RB
+
+  delay_ms(500);//rest a while
+
+  rgb_RampColors(5,1,1,1,0,0,0);//All Up
+  rgb_RampColors(5,2,2,2,0,0,0);//All Down
+
+  rgb_SwitchOff();
+  delay_ms(500);//rest a while
+  
+  //Red Stays 0, Green stays 100, Blue Goes Up then Down
+  //Flash strange
+  rgb_RampColors(0,0,0,1,20,100,0);
+  rgb_RampColors(0,0,0,2,20,100,0);
+  rgb_SwitchOff();
+  delay_ms(500);
+  //replay the Flash strange in slow motion
+  rgb_RampColors(5,0,0,1,20,100,0);
+  rgb_RampColors(5,0,0,2,20,100,0);
+  rgb_SwitchOff();
+}
+
+void rgb_Loop_BlueRedBlue(BYTE nbLeds)
+{
+    RGBColor_t ColorStart, ColorEnd;
+    ColorStart = GREEN;
+    ColorEnd = RED;
+    for(int t=0;t<256;t++)
+    {
+      ColorStart = GREEN;
+      ColorEnd = rgb_ColorScale(t,256,BLUE,RED);
+      rgb_Shade(0,nbLeds,ColorStart,ColorEnd);
+      rgb_SendArray();
+      delay_ms(20);
+    }
+    for(int t=0;t<256;t++)
+    {
+      ColorStart = GREEN;
+      ColorEnd = rgb_ColorScale(t,256,RED,BLUE);
+      rgb_Shade(0,nbLeds,ColorStart,ColorEnd);
+      rgb_SendArray();
+      delay_ms(20);
+    }
+}
+
+
+void rgb_decode_rf(BYTE *rxData,BYTE rx_DataSize)
+{
+  if(rxData[0] != rf_pid_0x59_rgb)
+  {
+    return;
+  }
+  if(rx_DataSize >= 4)
+  {
+    if(rxData[4] == (rxData[0] ^ rxData[1] ^ rxData[2] ^ rxData[3]) )
+    {
+      RGBColor_t ColorRx;
+      ColorRx.R = rxData[1];
+      ColorRx.G = rxData[2];
+      ColorRx.B = rxData[3];
+      rgb_SetColors_range(0,NB_LEDS,ColorRx);
+      rgb_SendArray();
+      delay_ms(1);
+      printf("rgb_decode_rf : ");
+      printf_tab(rxData+1,3);
+      printf_eol();
+    }
+    else
+    {
+      printf_ln("rgb_decode_rf : CRC Fail");
+    }
+  }
+}
+
+void rgb_rf_get_tx_Color_5B(BYTE *txData,RGBColor_t Color)
+{
+  txData[0] = rf_pid_0x59_rgb;
+  txData[1] = Color.R;
+  txData[2] = Color.G;
+  txData[3] = Color.B;
+  txData[4] = txData[0] ^ txData[1] ^ txData[2] ^ txData[3];
+}

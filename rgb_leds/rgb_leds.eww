@@ -10,6 +10,15 @@
   <project>
     <path>$WS_DIR$\pr02_RF_ColorReceiver\pr02_RF_ColorReceiver.ewp</path>
   </project>
+  <project>
+    <path>$WS_DIR$\rgb_led_bar\rgb_led_bar.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\rgb_leds_rf\rgb_leds_rf.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\rgb_rf_commander\rgb_rf_commander.ewp</path>
+  </project>
   <batchBuild/>
 </workspace>
 

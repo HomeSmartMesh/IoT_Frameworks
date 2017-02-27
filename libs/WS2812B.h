@@ -14,9 +14,6 @@
  *
  */
 
-#define NB_LEDS 1
-#define RGBLedPIN_A 3
-
 #include "commonTypes.h"
 
 typedef struct
@@ -36,29 +33,47 @@ extern const RGBColor_t WHITE;
 
 // user configuration
 
-#define SwitchOffLed(); SendLedColor(0, 0, 0);
+#define rgb_SwitchOff(); rgb_SendColor(0, 0, 0);
 
 // shared variables
 
-void RGBLeds_PIO_Init();
+void rgb_PIO_Init();
 
-void SetLedColor(BYTE LedId, BYTE R, BYTE G, BYTE B);
-void SetLedColors(BYTE LedId,RGBColor_t Color);
+//These functions only update the LED colors memory without sending the data
+void rgb_SetColor(BYTE LedId, BYTE R, BYTE G, BYTE B);
+void rgb_SetColors(BYTE LedId,RGBColor_t Color);
 
-void SendLedsArray();
+void rgb_SetColors_range(BYTE first,BYTE NbLeds,RGBColor_t Color);
 
-void RGB_SwitchOff(BYTE first,BYTE NbLeds);
+//The Function that serialises the RGB bit values from memory into pulses for the LED WS2812B
+//this is used manually by the user in case of complex combination of partial shading of the array
+//the sending the complete LED sequence together.
+void rgb_SendArray();
 
-void SendLedColor(BYTE R, BYTE G, BYTE B);
-void SendLedColors(RGBColor_t Color);
+//----------------- Functions with direct impact ------------------------
+void rgb_SwitchOff_Range(BYTE first,BYTE NbLeds);
 
 
-void RampColors(BYTE delay,BYTE RUp,BYTE GUp,BYTE BUp,BYTE R,BYTE G,BYTE B);
+void rgb_SendColor(BYTE R, BYTE G, BYTE B); // 1st LED Function
+void rgb_SendColors(RGBColor_t Color);      // 1st LED Function
 
-void BlinkColors(BYTE R, BYTE G, BYTE B);
+void rgb_RampColors(BYTE delay,BYTE RUp,BYTE GUp,BYTE BUp,BYTE R,BYTE G,BYTE B);
 
-void FlashColors(BYTE delay, RGBColor_t Color);
+void rgb_BlinkColors(BYTE R, BYTE G, BYTE B);
 
-RGBColor_t ColorScale(int iCount,int nbCount,RGBColor_t ColorStart,RGBColor_t ColorEnd);
+void rgb_FlashColors(BYTE delay, RGBColor_t Color);
 
-void ShadeLeds(BYTE LedStart, BYTE LedEnd, RGBColor_t ColorStart, RGBColor_t ColorEnd);
+//--------------------- Functions for Colors Memory update only --------------------
+RGBColor_t rgb_ColorScale(int iCount,int nbCount,RGBColor_t ColorStart,RGBColor_t ColorEnd);
+
+void rgb_Shade(BYTE LedStart, BYTE LedEnd, RGBColor_t ColorStart, RGBColor_t ColorEnd);
+
+//--------------------- Demo functions with animation sequence ----------------------
+void rgb_TestColors();
+
+void rgb_Loop_BlueRedBlue(BYTE nbLeds);
+
+//--------------------- RF Protocol handling ----------------------------------------
+void rgb_decode_rf(BYTE *rxData,BYTE rx_DataSize);
+
+void rgb_rf_get_tx_Color_5B(BYTE *txData,RGBColor_t Color);

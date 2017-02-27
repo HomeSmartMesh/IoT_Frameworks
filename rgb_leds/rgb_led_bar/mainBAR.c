@@ -8,18 +8,21 @@
 	
 */
 
-//------------------Target Board--------------
+// ----------------------- Target Board ---------------------
 // Fixed Node v2
 // Port B Pin 5 => Test Led is
 // SPI          => nRF
 // UART         
 // Port A Pin 3 => RGB WS2812B
+// ---------------- Test with 60 RGB LED Bar ---------------- 
 
 #include "clock_led.h"
 
 #include "uart.h"
 
 #include "WS2812B.h"
+//for NB_LEDS
+#include "rgb_config.h"
 
 int main( void )
 {
@@ -31,7 +34,7 @@ int main( void )
     Test_Led_Off();
 
     rgb_PIO_Init();
-    rgb_SwitchOff_Range(0,1);//(First led, one led)
+    rgb_SwitchOff_Range(0,NB_LEDS);//(From led id 0, NB_LEDS leds)
     
     uart_init();
 
@@ -46,7 +49,11 @@ int main( void )
       delay_ms(100);
       Test_Led_Off();
 
-      rgb_TestColors();
+      //cycle a shading color from Blue to Red and Back to Blue over NB_LEDS RGB LED Bar
+      printf("Color Loop. ");
+      printf_uint(NB_LEDS);
+      printf_ln(" Leds GREEN to BLUE then to RED"); 
+      rgb_Loop_BlueRedBlue(NB_LEDS);
 
       printf("Cycle:");
       printf_uint(AliveActiveCounter);
