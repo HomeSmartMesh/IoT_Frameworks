@@ -16,7 +16,7 @@
 //1 - 255 : this parameter has for limit the size of the RAM and the 8bit counter => 255
 //the value of 256 == 0 was not tested
 //255 => 75% of RAM
-#define NB_LEDS 60
+#define NB_LEDS 1
 
 
 

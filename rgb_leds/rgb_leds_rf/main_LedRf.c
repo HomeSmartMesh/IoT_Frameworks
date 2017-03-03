@@ -29,6 +29,10 @@
 //for rx_pids and callbacks
 #include "rf_protocol.h"
 
+#define EEPROM_Offset 0x4000
+#define EE_NODE_ID       (char *) EEPROM_Offset;
+unsigned char NodeId;
+
 BYTE Led_Extend = 0;
 
 //User Rx CallBack
@@ -39,7 +43,7 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 	{
 		case rf_pid_0x59_rgb:
 			{
-				rgb_decode_rf(rxData,rx_DataSize);
+				rgb_decode_rf(NodeId,rxData,rx_DataSize);
 			}
 			break;
 		default :
@@ -57,6 +61,7 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 int main( void )
 {
     BYTE AliveActiveCounter = 0;
+    NodeId = *EE_NODE_ID;
 
     InitialiseSystemClock();
 

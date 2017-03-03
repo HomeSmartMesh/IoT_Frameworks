@@ -54,7 +54,7 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 int main( void )
 {
     BYTE AliveActiveCounter = 0;
-	BYTE txData[5];
+	BYTE txData[6];
     RGBColor_t MyColors[5];
     
     MyColors[0] = RED;
@@ -90,8 +90,9 @@ int main( void )
 		}
         ColorSend = MyColors[AliveActiveCounter];
         rgb_FlashColors(0,ColorSend);
-		rgb_rf_get_tx_Color_5B(txData,ColorSend);
-		nRF_Transmit(txData,5);
+		BYTE TargetNodeID = 18;//3 - 18
+		rgb_rf_get_tx_Color_6B(TargetNodeID,txData,ColorSend);
+		nRF_Transmit(txData,6);
 
 		Test_Led_On();
 		delay_ms(100);

@@ -643,27 +643,30 @@ void rgb_Loop_BlueRedBlue(BYTE nbLeds)
     }
 }
 
-
-void rgb_decode_rf(BYTE *rxData,BYTE rx_DataSize)
+// PID - NodeID - R - G - B - CRC
+void rgb_decode_rf(BYTE Host_NodeId,BYTE *rxData,BYTE rx_DataSize)
 {
   if(rxData[0] != rf_pid_0x59_rgb)
   {
     return;
   }
-  if(rx_DataSize >= 4)
+  if(rx_DataSize >= 5)
   {
-    if(rxData[4] == (rxData[0] ^ rxData[1] ^ rxData[2] ^ rxData[3]) )
+    if(rxData[5] == (rxData[0] ^ rxData[1] ^ rxData[2] ^ rxData[3] ^ rxData[4]) )
     {
-      RGBColor_t ColorRx;
-      ColorRx.R = rxData[1];
-      ColorRx.G = rxData[2];
-      ColorRx.B = rxData[3];
-      rgb_SetColors_range(0,NB_LEDS,ColorRx);
-      rgb_SendArray();
-      delay_ms(1);
-      printf("rgb_decode_rf : ");
-      printf_tab(rxData+1,3);
-      printf_eol();
+      if(Host_NodeId == rxData[1])
+      {
+        RGBColor_t ColorRx;
+        ColorRx.R = rxData[1];
+        ColorRx.G = rxData[2];
+        ColorRx.B = rxData[3];
+        rgb_SetColors_range(0,NB_LEDS,ColorRx);
+        rgb_SendArray();
+        delay_ms(1);
+        printf("rgb_decode_rf : ");
+        printf_tab(rxData+1,3);
+        printf_eol();
+      }
     }
     else
     {
@@ -672,11 +675,12 @@ void rgb_decode_rf(BYTE *rxData,BYTE rx_DataSize)
   }
 }
 
-void rgb_rf_get_tx_Color_5B(BYTE *txData,RGBColor_t Color)
+void rgb_rf_get_tx_Color_6B(BYTE Target_NodeId,BYTE *txData,RGBColor_t Color)
 {
   txData[0] = rf_pid_0x59_rgb;
-  txData[1] = Color.R;
-  txData[2] = Color.G;
-  txData[3] = Color.B;
-  txData[4] = txData[0] ^ txData[1] ^ txData[2] ^ txData[3];
+  txData[1] = Target_NodeId;
+  txData[2] = Color.R;
+  txData[3] = Color.G;
+  txData[4] = Color.B;
+  txData[5] = txData[0] ^ txData[1] ^ txData[2] ^ txData[3] ^ txData[4];
 }
