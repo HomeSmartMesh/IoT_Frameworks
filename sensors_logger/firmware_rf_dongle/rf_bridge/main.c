@@ -34,6 +34,11 @@
 //for parsing rf bme280 data
 #include "bme280.h"
 
+#include "WS2812B.h"
+//for NB_LEDS
+#include "rgb_config.h"
+
+
 BYTE Led_Extend = 0;
 BYTE RTX_Delay = 0;
 
@@ -75,9 +80,18 @@ void retransmit(BYTE timeToLive, BYTE *rxData,BYTE rx_DataSize)
 void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 {
 	Test_Led_On();
+	if(rxData[0] == rf_pid_0x59_rgb)
+	{
+		rgb_decode_rf(NodeId,rxData,rx_DataSize);
+	}
+
 	if(rxData[0] == rf_pid_0x5F_retransmit)
 	{
 		BYTE ttl = rxData[1];
+		if(rxData[1] == rf_pid_0x59_rgb)
+		{
+			rgb_decode_rf(NodeId,rxData+1,rx_DataSize-1);
+		}
 		if(ttl>0)
 		{
 			//decrease time to live
