@@ -33,6 +33,13 @@ typedef signed int      int16_t;
 typedef unsigned long   uint32_t;
 typedef signed long     int32_t;
 
+typedef struct
+{
+  BYTE R;
+  BYTE G;
+  BYTE B;
+}RGBColor_t;
+
 
 #define E_OK 				0x00
 

@@ -40,3 +40,7 @@ void UARTPrintf_sint(signed int num);
 void UARTPrintf_uint(U16_t num);
 
 void print_data_tab(unsigned char *pval,unsigned char length);
+
+#if UART_CALLBACK_POLLING == 1
+void uart_rx_user_poll();
+#endif

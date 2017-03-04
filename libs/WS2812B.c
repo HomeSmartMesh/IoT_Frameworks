@@ -657,9 +657,9 @@ void rgb_decode_rf(BYTE Host_NodeId,BYTE *rxData,BYTE rx_DataSize)
       if(Host_NodeId == rxData[1])
       {
         RGBColor_t ColorRx;
-        ColorRx.R = rxData[1];
-        ColorRx.G = rxData[2];
-        ColorRx.B = rxData[3];
+        ColorRx.R = rxData[2];
+        ColorRx.G = rxData[3];
+        ColorRx.B = rxData[4];
         rgb_SetColors_range(0,NB_LEDS,ColorRx);
         rgb_SendArray();
         delay_ms(1);
@@ -675,12 +675,3 @@ void rgb_decode_rf(BYTE Host_NodeId,BYTE *rxData,BYTE rx_DataSize)
   }
 }
 
-void rgb_rf_get_tx_Color_6B(BYTE Target_NodeId,BYTE *txData,RGBColor_t Color)
-{
-  txData[0] = rf_pid_0x59_rgb;
-  txData[1] = Target_NodeId;
-  txData[2] = Color.R;
-  txData[3] = Color.G;
-  txData[4] = Color.B;
-  txData[5] = txData[0] ^ txData[1] ^ txData[2] ^ txData[3] ^ txData[4];
-}

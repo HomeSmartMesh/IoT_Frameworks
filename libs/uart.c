@@ -20,6 +20,11 @@
 
 #include "clock_led.h"
 
+#if UART_CALLBACK_POLLING == 1
+void uart_rx_user_callback(BYTE *buffer,BYTE size);
+#endif
+
+
 void UARTPrintfLn(char const *ch)
 {
 	printf(ch);
@@ -130,3 +135,15 @@ void UARTPrintfHexLn(unsigned char val)
 }
 
 
+#if UART_CALLBACK_POLLING == 1
+void uart_rx_user_poll()
+{
+    if(uart_rx_user_callback_pending)
+    {
+        //use it by polling after the timer which is the most convenient time not to bother the dimming timings
+        uart_rx_user_callback(uart_BUFFER,uart_index);
+        uart_rx_user_callback_pending = 0;
+        uart_rx_user_callback_performed = 1;
+    }
+}
+#endif

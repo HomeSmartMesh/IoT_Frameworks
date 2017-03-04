@@ -39,3 +39,4 @@ void rx_light(BYTE *rxData,BYTE rx_DataSize);//Rx 5 Bytes
 //should move to magnet lib
 void rx_magnet(BYTE *rxData,BYTE rx_DataSize);//Rx 4 Bytes
 
+void rgb_rf_get_tx_Color_6B(BYTE Target_NodeId,BYTE *txData,RGBColor_t Color);

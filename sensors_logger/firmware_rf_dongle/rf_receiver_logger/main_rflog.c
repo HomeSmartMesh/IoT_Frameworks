@@ -28,7 +28,14 @@
 //for parsing rf bme280 data
 #include "bme280.h"
 
+#include "nRF_Tx.h"
 #include "nRF_RegText.h"
+
+#include "cmdutils.h"
+
+#define EEPROM_Offset 0x4000
+#define EE_NODE_ID       (char *) EEPROM_Offset;
+unsigned char NodeId;
 
 BYTE Led_Extend = 0;
 
@@ -95,10 +102,66 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 	}
 }
 
+void prompt()
+{
+	printf("Node");
+	printf_hex(NodeId);
+	printf_ln(">");
+}
+
+void handle_command(BYTE *buffer,BYTE size)
+{
+	
+	if(strbegins(buffer,"rgb") == 0)
+	{
+		BYTE txData[6];
+		RGBColor_t Color;
+		//rgb NodeId R G B
+		//rgb 0x00 0x00 0x00 0x00
+		BYTE TargetNodeId = get_hex(buffer,4);
+		Color.R = get_hex(buffer,9);
+		Color.G = get_hex(buffer,14);
+		Color.B = get_hex(buffer,19);
+		rgb_rf_get_tx_Color_6B(TargetNodeId,txData,Color);
+		nRF_Transmit_Wait_Rx(txData,6);
+		printf("Node (");
+		printf_uint(TargetNodeId);
+		printf(") R ");
+		printf_uint(Color.R);
+		printf_eol();
+		printf("  G ");
+		printf_uint(Color.G);
+		printf_eol();
+		printf("  B ");
+		printf_uint(Color.B);
+		printf_eol();
+	}
+	else if(strcmp(buffer,"help") == 0)
+	{
+		printf_ln("see help in https://github.com/wassfila/IoT_Frameworks");
+	}
+	else if(size > 1)
+	{
+		printf_ln("Unknown Command, type 'help' for info");
+	}
+}
+
+//UART Rx Callback
+void uart_rx_user_callback(BYTE *buffer,BYTE size)
+{
+	//convert UART Text Terminal Format to String commands
+	buffer[size-1] = '\0';//replace UART_EOL_C with string EoL
+
+	handle_command(buffer,size);
+	prompt();
+}
+
+
 int main( void )
 {
 	
     BYTE AliveActiveCounter = 0;
+    NodeId = *EE_NODE_ID;
 
     InitialiseSystemClock();
 
@@ -135,5 +198,6 @@ int main( void )
 			Test_Led_Off();
 		}
 		delay_ms(100);
+		uart_rx_user_poll();//will call uart_rx_user_callback if necessary
     }
 }

@@ -16,13 +16,6 @@
 
 #include "commonTypes.h"
 
-typedef struct
-{
-  BYTE R;
-  BYTE G;
-  BYTE B;
-}RGBColor_t;
-
 
 extern const RGBColor_t RED;
 extern const RGBColor_t GREEN;

@@ -19,16 +19,19 @@
 // 1 : Enabled
 // declares the IRQ and requires teh user to declare a uart_callback() function
 
-#define UART_USE_RX_INETRRUPT 0
+#define UART_USE_RX_INETRRUPT 1
 
 //Flag: UART_CALLBACK_POLLING
-// 1 : Enabled => 'uart_rx_user_callback_pending' has to be polled
+// 1 : Enabled =>   simplified to just calling uart_rx_user_poll()
+//                  which will if necessary call the uart_rx_user_callback()
+//                  The work behind is :
+//                  'uart_rx_user_callback_pending' will be polled
 //					consume 'uart_BUFFER' with 'uart_index', 
 //					acknowledge with 'uart_rx_user_callback_performed'
 // 0 : INTERRUPT => The 'uart_rx_user_callback()' will be called from the uart interrupt context
 // Flags dependencies
 // '#define UART_USE_RX_INETRRUPT 1' has to be set to 1
-#define UART_CALLBACK_POLLING 0
+#define UART_CALLBACK_POLLING 1
 
 
 #define UART_FRAME_SIZE 31
