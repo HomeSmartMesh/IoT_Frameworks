@@ -1,10 +1,11 @@
 # Install MQTT broquer
 ```bash
 sudo apt-get install Mosquitto
-sudo apt-get install libmosquittopp-dev
 ```
 config file: /etc/mosquitto/mosquitto.conf
+
 /usr/share/doc/mosquitto/examples/mosquitto.conf.example
+
 config should be placed in	/etc/mosquitto/conf.d/
 
 ##mosquitto service
@@ -29,8 +30,9 @@ https://pypi.python.org/pypi/paho-mqtt
 pip install paho-mqtt
 ```
 
-#Cpp client
+#C, Cpp clients
 ##Install
 ```bash
 apt-get install libmosquitto-dev
+sudo apt-get install libmosquittopp-dev
 ```
