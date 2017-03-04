@@ -192,7 +192,11 @@ void printf_impl(char const *ch)
 BYTE uart_BUFFER[UART_FRAME_SIZE];
 BYTE uart_index = 0;
 BYTE uart_oveflow = 0;
+#if UART_ECHO == 1
 BYTE uart_echo = 1;
+#else
+BYTE uart_echo = 0;
+#endif
 
 	#if UART_CALLBACK_POLLING == 1
 	BYTE uart_rx_user_callback_pending = 0;
