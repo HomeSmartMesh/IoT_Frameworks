@@ -7,7 +7,7 @@
 # -------------- STREAMER -------------- 
 # The "port" parameter, once defined, enables the serial port buffer update
 portname=/dev/ttyUSB0
-portbaud=9600
+portbaud=115200
 
 #Sensors Nodes needed t oload calibration files e.g. '06;07;' for NodeId06.txt,NodeId07.txt
 SensorNodes=06;07;16;

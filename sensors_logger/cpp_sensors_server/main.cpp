@@ -93,20 +93,34 @@ void help_arguments()
 	}
 	
 }
-void localActions(NodeMap_t &measures,webserver_c &ser)
+void localActions(NodeMap_t &measures,webserver_c &l_wbs)
 {
-	if(measures.find(10) != measures.end())
+	const int Rx_NodeId = 10;
+	if(measures.find(Rx_NodeId) != measures.end())
 	{
-		if(measures[10].find("Reset") != measures[10].end() )
+		if(measures[Rx_NodeId].find("Reset") != measures[Rx_NodeId].end() )
 		{
-			auto &vals = measures[10]["Reset"];
+			auto &vals = measures[Rx_NodeId]["Reset"];
 			if(!vals.empty() && vals[0].value == 1)
 			{
-				ser.sendLight();
-				std::cout << "localActions> Node[10]['Reset']:1" << std::endl;
+				l_wbs.sendLight();
+				std::cout << "localActions> Node[Rx_NodeId]['Reset']:1" << std::endl;
 			}
 		}
 	}
+}
+
+void send_RGB_Status(Serial &l_str)
+{
+	char text[31];
+	char TargetNodeId = 0x12;
+	unsigned char R = 20;
+	unsigned char G = 5;
+	unsigned char B = 50;
+	int nbWrite = sprintf(text,"rgb 0x%02x 0x%02x 0x%02x 0x%02x\r",TargetNodeId,R,G,B);
+	l_str.send(text,nbWrite);
+	std::string s(text);
+	std::cout << "rgb> " << s << std::endl;
 }
 
 int main( int argc, char** argv )
@@ -136,6 +150,9 @@ int main( int argc, char** argv )
 	
 	std::cout << "______________________Main Loop______________________" << std::endl;
 	
+	std::cout << "----------> send RGB" << std::endl;
+	send_RGB_Status(stream);
+
 	while (1) 
 	{
 		if(stream.update())
