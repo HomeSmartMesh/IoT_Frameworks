@@ -118,8 +118,10 @@ int main( void )
     InitialiseSystemClock();
 
     Initialise_TestLed_GPIO_B5();
-
     Test_Led_Off();
+
+    rgb_PIO_Init();
+    rgb_SwitchOff_Range(0,NB_LEDS);//(From led id 0, NB_LEDS leds)
 
     uart_init();
 	
