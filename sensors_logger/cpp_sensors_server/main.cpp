@@ -60,6 +60,8 @@ ________________________________________________________________________________
 
 #include "utils.hpp"
 
+#include "mqtt.hpp"
+
 #include "webserver.hpp"
 
 #include <assert.h>
@@ -137,6 +139,7 @@ int main( int argc, char** argv )
 									// - provides ready to store measures MAP of Nodes.Sensors.Values,Timestamp
 									// - If not configured to be used then the .update() polling is neutral
 
+	mqtt_c			mqtt(conf);	//MQTT client app wrapper, will attempt connection on creation if params provided
 	
 	db_manager_c	dbm(conf);	//adds values to files and memory db, answers requests
 	
@@ -149,9 +152,10 @@ int main( int argc, char** argv )
 	stream.update();
 	
 	std::cout << "______________________Main Loop______________________" << std::endl;
-	
+#ifdef RGB_STATUS_TEST
 	std::cout << "----------> send RGB" << std::endl;
 	send_RGB_Status(stream);
+#endif
 
 	while (1) 
 	{
@@ -166,10 +170,16 @@ int main( int argc, char** argv )
 				wbs.broadcast(jMeasures);
 				std::string jMeasures2 = utl::stringify2(measures,"update");//data type is "update"
 				wbs.post(jMeasures2);//for another webserver if configured
+
+				mqtt.publish_measures(measures);
 			}
 		}
+
+		//run() contains the loop needed to process certain QoS messages and reconnect if connection lost
+		mqtt.run();
 		
-		usleep(5000);//5 ms : this is an unnneccessary load if the processing grows up
+		//5 ms : this is an unnneccessary load if the processing grows up
+		usleep(5000);
 		
 		std::string request = wbs.poll();
 		

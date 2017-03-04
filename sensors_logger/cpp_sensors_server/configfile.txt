@@ -12,11 +12,21 @@ portbaud=115200
 #Sensors Nodes needed t oload calibration files e.g. '06;07;' for NodeId06.txt,NodeId07.txt
 SensorNodes=06;07;16;
 
-# The "logfile" is optionnal and deprecated as now the db saves values into files
+# -------------- Log -------------- 
+# The "logfile" is optionnal used for persistance
 logfile=/home/pi/share/logDays.txt
 
-# The "logout" is deprecated as log needed for debug only which is run in console mode
-logout=1
+# 'level_out' is for console mode, and the 'level_file' is for the file record
+#Error:1, Warning:2, Info:3, Debug:4
+# default level_out is 
+level_out=4
+level_file=2
+
+# -------------- MQTT Client -------------- 
+#Optionnal publishing to Mqtt Broquer
+#Enabled when both 'mqtt_host' and 'mqtt_port' are available
+mqtt_host=localhost
+mqtt_port=1883
 
 # -------------- SELF DATABASE -------------- 
 dbpath=/home/pi/share/

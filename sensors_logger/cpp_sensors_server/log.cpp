@@ -65,7 +65,7 @@ bool Log::config(strmap &conf)
 	//logfile : log into a file------------------------------------------------------
 	if(utl::exists(conf,"logfile"))
 	{
-		std::cout << "str> logfile = " << conf["logfile"] << std::endl;
+		std::cout << "log> logfile = " << conf["logfile"] << std::endl;
 		std::string fileName = conf["logfile"];
 		logfile.open(fileName.c_str(), (std::ios::out|std::ios::app) );
 		if(!logfile.is_open())
@@ -74,22 +74,29 @@ bool Log::config(strmap &conf)
 		}
 		else
 		{
-			level_file = loglevel_Warning;
+			if(utl::exists(conf,"level_file"))
+			{
+				level_out = std::stoi(conf["level_file"]);
+				std::cout << "log> level_file = " << level_file << std::endl;
+			}
+			else
+			{
+				level_file = loglevel_Warning;
+			}
 		}
 	}
 
 	//logout is on by default, only a 0 stops it------------------------------------
-	if(utl::exists(conf,"logout"))
+	isLogOut = true;//by default
+	if(utl::exists(conf,"level_out"))
 	{
-		std::cout << "str> logout = " << conf["logout"] << std::endl;
-		isLogOut = true;//by default
-		if(conf["logout"] == "0")
-		{
-			level_out = loglevel_Debug;
-		}
+		level_out = std::stoi(conf["level_out"]);
+		std::cout << "log> level_out = " << level_out << std::endl;
 	}
-	
-	
+	else
+	{
+		level_out = loglevel_Debug;
+	}
 	
 	isReady = res;
 	return isReady;
@@ -120,13 +127,13 @@ void Log::log(const std::string &str,const int &level)
 	}
 	std::string d = utl::getDay();
 	std::string t = utl::getTime();
-
-	if(level_out <= level)
+	//Debug 4 >= Info 3
+	if(level_out >= level)
 	{
 		std::cout << d << " " << t << "\t";
 		std::cout << logstr(level) << "\t" << str << std::endl;
 	}
-	if( (level_file <= level) && logfile.is_open())
+	if( (level_file >= level) && logfile.is_open())
 	{
 		logfile << d << " " << t << "\t";
 		logfile << logstr(level) << "\t"<< str << std::endl;

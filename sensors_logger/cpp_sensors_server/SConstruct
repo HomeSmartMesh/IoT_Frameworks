@@ -6,7 +6,7 @@ Program('streamer',
 		Glob('*.cpp'),
 		CPPPATH = ['.','/usr/local/include/Poco/'],
 		CCFLAGS = ['-std=c++11'],
-		LIBS=['libPocoNet','libPocoUtil','libPocoFoundation'],
+		LIBS=['libmosquittopp','libPocoNet','libPocoUtil','libPocoFoundation'],
 		LIBPATH='/usr/local/lib/',
 		LINKFLAGS=['-lboost_system','-lboost_filesystem']
 		)
