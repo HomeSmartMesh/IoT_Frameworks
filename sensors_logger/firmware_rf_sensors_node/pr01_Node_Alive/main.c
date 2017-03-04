@@ -32,8 +32,8 @@ BYTE tx_data[RF_MAX_DATASIZE];
 //------------------------------ Node Config ---------------------------------
 #define NODE_MAGNET_B_SET               0
 #define MAGNET_B_INTERRUPT				0
-#define NODE_MAGNET_D_SET               0
-#define NODE_MAGNET_D_INTERRUPT         0
+#define NODE_MAGNET_D_SET               1
+#define NODE_MAGNET_D_INTERRUPT         1
 #define NODE_I2C_SET                    0
 #define NODE_MAX44009_SET               0
 //----------------------------------------------------------------------------
@@ -43,7 +43,7 @@ BYTE tx_data[RF_MAX_DATASIZE];
 void rf_send_alive()
 {
 	rf_get_tx_alive_3B(NodeId, tx_data);
-	nRF_Transmit(tx_data,3);
+	nRF_Transmit_Wait_Down(tx_data,3);
 }
 
 void RfSwitch(unsigned char state)
@@ -53,7 +53,7 @@ void RfSwitch(unsigned char state)
       Tx_Data[1]=NodeId;
       Tx_Data[2]=state;
       Tx_Data[3]= Tx_Data[0] ^ NodeId ^ state;
-      nRF_Transmit(Tx_Data,4);
+      nRF_Transmit_Wait_Down(Tx_Data,4);
 }
 
 
@@ -299,10 +299,7 @@ int main( void )
 		__halt();
 
 		//here we wake up from halt
-		rf_send_alive();
-
-		nRF_Wait_Transmit();//wait by polling, RF is consuming high current so why send uC to sleep
-		nRF_SetMode_PowerDown();
+		rf_send_alive();//using nRF_Transmit_Wait_Down()
 
     }
 }

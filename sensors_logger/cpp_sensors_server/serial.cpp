@@ -470,6 +470,20 @@ void Serial::processLine(NodeMap_t &nodes)
 			}
 
 		}
+		else if(utl::exists(notif_map,"is"))//current states
+		{
+			sensor_measure_t state;
+			state.time = logbuf.time_now;
+
+			if(utl::compare(notif_map["is"],"Alive"))
+			{
+				state.value = 1;
+				nodes[l_Id]["Alive"].push_back(state);
+				//yes it is a generic log
+				logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" + logline);
+			}
+
+		}
 		else//other logs that do not need pre-formatting
 		{
 			logbuf.currentlines.push_back(	logbuf.day + "\t" + logbuf.time + "\t" + logline);
