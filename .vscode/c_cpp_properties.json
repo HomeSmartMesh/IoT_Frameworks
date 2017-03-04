@@ -18,7 +18,7 @@
         },
         {
             "name": "Win32",
-            "includePath": ["c:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include","D:/pi/include/c++/4.9"],
+            "includePath": ["c:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include","D:/pi/include/c++/4.9","D:/pi/include/mosquitto"],
             "browse" : {
                 "limitSymbolsToIncludedHeaders" : true,
                 "databaseFilename" : ""
