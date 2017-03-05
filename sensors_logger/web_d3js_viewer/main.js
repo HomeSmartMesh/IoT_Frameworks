@@ -58,6 +58,22 @@ var ChartsParamsList =
 		NodeId : 7,
 		SensorName : "Humidity",
 		Label : "Bathroom Humidity %RH"
+	},
+	{
+		svgID : "#ChartRoomLight",
+		scale_x_domain : [start_disp,now],
+		scale_y_domain : [0,1800],
+		NodeId : 6,
+		SensorName : "Light",
+		Label : "Room Light"
+	},
+	{
+		svgID : "#ChartBathLight",
+		scale_x_domain : [start_disp,now],
+		scale_y_domain : [0,1800],
+		NodeId : 7,
+		SensorName : "Light",
+		Label : "Bathroom Light"
 	}
 ];
 //---------------------------------------------------------------------------
