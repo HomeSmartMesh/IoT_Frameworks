@@ -30,10 +30,10 @@ BYTE tx_data[RF_MAX_DATASIZE];
 
 
 //------------------------------ Node Config ---------------------------------
-#define NODE_MAGNET_B_SET               0
+#define NODE_MAGNET_B_SET               1
 #define MAGNET_B_INTERRUPT				0
 #define NODE_MAGNET_D_SET               1
-#define NODE_MAGNET_D_INTERRUPT         1
+#define NODE_MAGNET_D_INTERRUPT         0
 #define NODE_I2C_SET                    0
 #define NODE_MAX44009_SET               0
 //----------------------------------------------------------------------------
@@ -115,8 +115,11 @@ __interrupt void IRQHandler_Pin0(void)
 {
   if(EXTI_SR1_P0F == 1)
   {
-    //printf("Pin0_Interrupt ");LogMagnets();
-    RfSwitch(PD_IDR_IDR0);//D0 is Top
+	#if NODE_MAGNET_B_SET == 1
+		RfSwitch(PB_IDR_IDR0);//B0 is Side
+	#elif NODE_MAGNET_D_SET == 1
+		RfSwitch(PD_IDR_IDR0);//D0 is Top
+	#endif
   }
   EXTI_SR1 = 0xFF;//acknowledge all interrupts pins
 }
@@ -144,23 +147,30 @@ void SMT8L_Switch_ToHSI()
 
 void Init_Magnet_PB0()
 {
+#if NODE_MAGNET_B_SET == 1
     PB_DDR_bit.DDR0 = 0;//  0: Input
     PB_CR1_bit.C10 = 0; //  0: Floating
-#if MAGNET_B_INTERRUPT == 1
-    PB_CR2_bit.C20 = 1; // Exernal interrupt enabled
-    EXTI_CR1_P0IS = 3;//Rising and Falling edges, interrupt on events - bit 0
+	#if MAGNET_B_INTERRUPT == 1
+    	PB_CR2_bit.C20 = 1; // Exernal interrupt enabled
+    	EXTI_CR1_P0IS = 3;//Rising and Falling edges, interrupt on events - bit 0
+	#else
+    	PB_CR2_bit.C20 = 0; // Exernal interrupt disabled
+	#endif
 #endif
     //EXTI_CR3_PBIS = 00;//Falling edge and low level - Port B
 }
 
 void Init_Magnet_PD0()
 {
+#if NODE_MAGNET_B_SET == 1
     PD_DDR_bit.DDR0 = 0;//  0: Input
     PD_CR1_bit.C10 = 0; //  0: Floating
-
-#if MAGNET_D_INTERRUPT == 1
-    PD_CR2_bit.C20 = 1; // Exernal interrupt enabled
-    EXTI_CR1_P0IS = 3;//Rising and Falling edges, interrupt on events - bit 0
+	#if MAGNET_D_INTERRUPT == 1
+    	PD_CR2_bit.C20 = 1; // Exernal interrupt enabled
+    	EXTI_CR1_P0IS = 3;//Rising and Falling edges, interrupt on events - bit 0
+	#else
+   		PD_CR2_bit.C20 = 0; // Exernal interrupt disabled
+	#endif
 #endif
 }
 
@@ -268,28 +278,25 @@ void configure_All_PIO()
 
 }
 
-
 int main( void )
 {
 	NodeId = *NODE_ID;
 
-        configure_All_PIO();
-#if NODE_MAGNET_B_SET == 1
-  Init_Magnet_PB0();
-#endif
-#if NODE_MAGNET_D_SET == 1
-  Init_Magnet_PD0();
-#endif
+	configure_All_PIO();
+	Init_Magnet_PB0();//conditionned config with flags
+	Init_Magnet_PD0();//conditionned config with flags
 	
-	Initialise_STM8L_Clock();			//here enable the RTC clock
-	Initialise_STM8L_RTC_LowPower(30);//sleep period 30 sec
+	Initialise_STM8L_Clock();		//here enable the RTC clock
+
+	//#issue cannot change after first config
+	sleep(10);						//this is a low power halt sleep 
+	Initialise_STM8L_RTC_LowPower(10);//configure the sleep cycle for a period of 30 sec
     
 	//SYSCFG_RMPCR1_USART1TR_REMAP = 1; // Remap 01: USART1_TX on PA2 and USART1_RX on PA3
 	//uart_init();//UART Disabled
 	//Applies the compile time configured parameters from nRF_Configuration.h
 	nRF_Config();
 
-    
 	__enable_interrupt();
     //
     // Main loop

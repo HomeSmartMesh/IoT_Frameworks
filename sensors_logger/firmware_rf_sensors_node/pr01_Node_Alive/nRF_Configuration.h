@@ -26,7 +26,7 @@
 
 //----------------------------- nRF Communication Configuration ---------------------------------
 //data size, from 1 till 32 bytes payload
-#define RF_MAX_DATASIZE	32
+#define RF_MAX_DATASIZE	12
 //disable auto acknowledgement for all pipes
 #define SPI_Write_Register_EN_AA		0x00
 //disable retransmission
@@ -39,8 +39,8 @@
 
 //--------------------------------Debug log Enable or disable-----------------------------------
 // set to 1 or 0
-#define Enable_Debug_IRQHandler_PortD_nRF 		        1
-#define Enable_Debug_nRF_Config 				1
+#define Enable_Debug_IRQHandler_PortD_nRF 		0
+#define Enable_Debug_nRF_Config 				0
 #define Enable_Debug_nRF_SetMode_RX				0
 //-------------------------------------------------------------------------------------------------
 //-------------------------------- End of User Editable Section -----------------------------------

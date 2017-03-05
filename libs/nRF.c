@@ -105,7 +105,8 @@ BYTE nRF_Init()
 	if(nRF_Mode == nRF_Mode_Uninitialised)
 	{
 		//After Power on reset wait 100ms (nRF24L01P Product Specification 1.0 page22)
-		delay_ms(100);
+		//delay_ms(100); => This delay has to be performed before calling nRF_Config
+		//due to the low power wait that is managed by the user
 		SPI_Init();
 		
 		nRF_Mode = nRF_Mode_PowerDown;//mode in which SPI is active

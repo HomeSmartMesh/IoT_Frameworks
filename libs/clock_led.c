@@ -16,6 +16,7 @@
 
 #if DEVICE_STM8L == 1
 	#include <iostm8l151f3.h>
+    #include <intrinsics.h>
 #elif DEVICE_STM8S == 1
 	#include <iostm8s103f3.h>
 #else
@@ -87,6 +88,10 @@ void Initialise_STM8L_Clock()
 BYTE Initialise_STM8L_RTC_LowPower(uint16_t times_sec)
 {
 	BYTE result = 0;
+
+    BYTE int_state = __get_interrupt_state();
+    __disable_interrupt();
+
     //unlock the write protection for RTC
     RTC_WPR = 0xCA;
     RTC_WPR = 0x53;
@@ -147,7 +152,14 @@ BYTE Initialise_STM8L_RTC_LowPower(uint16_t times_sec)
     PWR_CSR2_ULP = 1;//Internal Voltage Reference Stopped in Halt Active Halt
     PWR_CSR2_FWU = 1;//Fast wakeup time
     
+    __set_interrupt_state(int_state);
     return result;
+}
+
+void sleep(BYTE time)
+{
+	Initialise_STM8L_RTC_LowPower(time);//Power on sleep to avoid active wait
+	__halt();
 }
 
 
