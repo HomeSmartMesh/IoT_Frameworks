@@ -45,6 +45,9 @@ var ChartsParamsList =
 ## IoT Data Flow
 <img src="https://github.com/wassfila/media/blob/master/IoT_Dataflow.png" height=400>
 
+## MQTT integration
+<img src="https://github.com/wassfila/media/blob/master/MQTT_integration.png" height=400>
+
 ## Firmware for the Sensors Node
 Here have firmware for the Mobile Node which is the base for the sensors:
  - *BME280* Temperature Humidity Pressure
