@@ -139,7 +139,7 @@ int main( int argc, char** argv )
 									// - provides ready to store measures MAP of Nodes.Sensors.Values,Timestamp
 									// - If not configured to be used then the .update() polling is neutral
 
-	mqtt_c			mqtt(conf);	//MQTT client app wrapper, will attempt connection on creation if params provided
+	mqtt_c			mqtt(conf,stream);	//MQTT client app wrapper, will attempt connection on creation if params provided
 	
 	db_manager_c	dbm(conf);	//adds values to files and memory db, answers requests
 	

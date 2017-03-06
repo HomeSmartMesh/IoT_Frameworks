@@ -48,9 +48,11 @@ ________________________________________________________________________________
 //for Log::cout
 #include "log.hpp"
 
+#include "json.hpp"
+using json = nlohmann::json;
 
 //one per app 
-mqtt_c::mqtt_c(strmap &conf) : mosquittopp("streamer")
+mqtt_c::mqtt_c(strmap &conf,Serial &l_rfcom) : mosquittopp("streamer"),rfcom(l_rfcom)
 {
     isReady = false;
 	//logfile : log into a file------------------------------------------------------
@@ -95,11 +97,58 @@ void mqtt_c::run()
 void mqtt_c::on_connect(int rc)
 {
     Log::cout << "mqtt"<<"\t"<<"connected id(" << rc << ")" << Log::Info();
+
+    subscribe(NULL,"Nodes/+/RGB");
+}
+
+
+void mqtt_send_RGB_Status(Serial &l_str,int TargetNodeId,int R,int G,int B)
+{
+	char text[31];
+	int nbWrite = sprintf(text,"rgb 0x%02x 0x%02x 0x%02x 0x%02x\r",TargetNodeId,R,G,B);
+	l_str.send(text,nbWrite);
+	std::string s(text);
+	Log::cout << "ser\t" << s << Log::Debug();
 }
 
 void mqtt_c::on_message(const struct mosquitto_message *message)
 {
-    Log::cout << "mqtt"<<"\t"<<"received message with length(" << message->payloadlen << ")" << Log::Debug();
+    bool found = false;
+    std::string msg(static_cast<const char*>(message->payload) );
+    json jMsg = json::parse(msg);
+    if(jMsg.find("Red") != jMsg.end())
+    if(jMsg.find("Green") != jMsg.end())
+    if(jMsg.find("Blue") != jMsg.end())
+    {
+        found = true;
+    }
+    if(found)
+    {
+        std::string topic(message->topic);
+        if(topic.find("Nodes/") == 0)
+        {
+            std::string Text = topic;
+            //the topic is "Node/6/RGB"
+            utl::TakeParseTo(Text,'/');//remove first section 
+            std::string Id = utl::TakeParseTo(Text,'/');//take the second element
+            int NodeId = std::stoi(Id);
+            int R = std::stoi(jMsg["Red"].dump());
+            int G = std::stoi(jMsg["Green"].dump());
+            int B = std::stoi(jMsg["Blue"].dump());
+            Log::cout << "mqtt"<<"\t"<<"=> NodeId:"<< NodeId << " RGB: ("<< R <<","<< G <<","<< B <<")"<< Log::Debug();
+            mqtt_send_RGB_Status(rfcom,NodeId,R,G,B);
+        }
+        else
+        {
+            Log::cout << "mqtt"<<"\t"<<"unexpected Topic : "<< topic << Log::Debug();
+        }
+    }
+    else
+    {
+        Log::cout << "mqtt"<<"\t"<<"unexpected message ; length(" << message->payloadlen << ")" << Log::Debug();
+        Log::cout << "mqtt"<<"\t"<<"=> "<< msg<< Log::Debug();
+    }
+
 }
 
 void mqtt_c::on_subscribe(int mid, int qos_count, const int *granted_qos)

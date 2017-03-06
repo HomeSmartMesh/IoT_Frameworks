@@ -36,11 +36,12 @@ ________________________________________________________________________________
 #include <mosquittopp.h>
 
 #include "utils.hpp"
+#include "serial.hpp"
 
 class mqtt_c : public mosqpp::mosquittopp
 {
 	public:
-		mqtt_c(strmap &conf);
+		mqtt_c(strmap &conf,Serial &l_rfcom);
         void run();
 		void say_hello();
 		void on_connect(int rc);
@@ -49,4 +50,6 @@ class mqtt_c : public mosqpp::mosquittopp
         bool isReady;
 
         void publish_measures(NodeMap_t &NodesSensorsVals);
+	private:
+	Serial &rfcom;
 };

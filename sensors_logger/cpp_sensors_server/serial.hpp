@@ -36,6 +36,9 @@ ________________________________________________________________________________
  
 */
 
+#ifndef __SERIAL__
+#define __SERIAL__
+
 #include "bme280_server.hpp"
 
 #include <linux/joystick.h>
@@ -110,3 +113,4 @@ public:
 	std::string exepath;
 };
 
+#endif /*__SERIAL__*/
