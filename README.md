@@ -11,8 +11,11 @@ Complete working samples for specific use cases
   * Real time Javascript app with server update through websocket
   * Custom charts and Panels with simple configuration and open to further d3js customisations
 
-# Sensors Logger
-<img src="https://github.com/wassfila/media/blob/master/IoT_Infrastructure.png" height=400>
+# IoT Environment
+
+<img src="https://github.com/wassfila/media/blob/master/IoT_Hardware.PNG" height=400>
+
+<img src="https://github.com/wassfila/media/blob/master/IoT_Software.PNG" height=400>
 
 ## Webclient screenshot
 <img src="https://github.com/wassfila/media/blob/master/webclient.png" height=400>
@@ -44,9 +47,6 @@ var ChartsParamsList =
 
 ## IoT Data Flow
 <img src="https://github.com/wassfila/media/blob/master/IoT_Dataflow.png" height=400>
-
-## MQTT integration
-<img src="https://github.com/wassfila/media/blob/master/MQTT_integration.png" height=400>
 
 ## Firmware for the Sensors Node
 Here have firmware for the Mobile Node which is the base for the sensors:
