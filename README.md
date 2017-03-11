@@ -1,12 +1,18 @@
 # IoT Frameworks
-Complete working samples for specific use cases
-* **Sensors Node firmware** : for a specific IoT Board such as the [STM8 IoT Boards](https://github.com/wassfila/STM8_IoT_Boards)
+Complete working samples ready to use on the field
+* **Wireless Sensors ** : based on the STM8 IoT Boards [STM8 IoT Boards](https://github.com/wassfila/STM8_IoT_Boards)
   * 8 bit Ultra low power & ultralow cost STM8L
   * BME280 (Pressure, Temperature, Humidity), MAX44009 (Ambient Light) and Magnetic switches
   * Custom RF protocol for efficiency and simplicity of the sensors usecase
-* **C++ Server** : Linux c++ application running on the Raspberry Pi 
+* **MQTT and OpenHAB2 bindings** : Fully inetgrated with the most popular IoT Ecosystems 
+  * Publishes MQTT topics per sensors
+  * Subscribe to MQTT topics to control custom RF devices
+  * subscribes to other topics coming from On the Shelf IoT devices
+* **C++ Application** : Linux c++ app running on the Raspberry Pi 
   * Network with Poco for HTTP server and websockets
-  * performance Databse (ROM/RAM mirror) optimised from requests handling with minimal latency
+  * MQTT cpp client : publish and subscribes to Mosquitto broquer
+  * Custom Persistence : performance Databse (ROM/RAM mirror) optimised for requests handling with minimal latency and maximum memory efficiency
+  * serial port : buffer management, receptions and lines parsing, sending commands to the RF dongle
 * **Webclient Front End with d3js** 
   * Real time Javascript app with server update through websocket
   * Custom charts and Panels with simple configuration and open to further d3js customisations
