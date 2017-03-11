@@ -24,6 +24,9 @@
 
 #define rf_pid_0x5F_retransmit  0x5F
 
+#define rf_pid_0x84_test_ping   0x84
+#define rf_pid_0x89_test_pong   0x89
+
 
 // Alive RF ping
 void rf_get_tx_alive_3B(BYTE NodeId, BYTE* tx_data);
@@ -39,4 +42,8 @@ void rx_light(BYTE *rxData,BYTE rx_DataSize);//Rx 5 Bytes
 //should move to magnet lib
 void rx_magnet(BYTE *rxData,BYTE rx_DataSize);//Rx 4 Bytes
 
+
+//id, GetSet, node, r, g, b, crc
+void rgb_rf_get_tx_Color_7B(BYTE Target_NodeId,BYTE isSet,BYTE *txData,RGBColor_t Color);
+//id, node, r, g, b, crc
 void rgb_rf_get_tx_Color_6B(BYTE Target_NodeId,BYTE *txData,RGBColor_t Color);

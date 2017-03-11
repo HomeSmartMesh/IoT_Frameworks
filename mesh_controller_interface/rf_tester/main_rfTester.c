@@ -3,10 +3,9 @@
 		IoT_Frameworks
 			\sensors_logger
 				\firmware_rf_dongle
-					\rf_receiver_logger
+					\rf_tester
 
-	started	
-	refactored	29.10.2016
+	started		11.03.2017
 	
 */
 
@@ -19,35 +18,35 @@
 //for nRF_Config() nRF_SetMode_RX() 
 #include "nRF.h"
 
-//to parse the RF response with rx_temperature_ds18b20()
-#include "temp_ds18b20.h"
-
-//for rx_pids and callbacks
-#include "rf_protocol.h"
-
-//for parsing rf bme280 data
-#include "bme280.h"
-
 #include "nRF_Tx.h"
 #include "nRF_RegText.h"
 
 #include "cmdutils.h"
+
+#include "rf_protocol.h"
 
 #define EEPROM_Offset 0x4000
 #define EE_NODE_ID       (char *) EEPROM_Offset;
 unsigned char NodeId;
 
 BYTE Led_Extend = 0;
+BYTE start_test = 0;
+BYTE send_pong = 0;
 
-//forward declaration as recurisve call from each other
-void userRxCallBack(BYTE *rxData,BYTE rx_DataSize);
-
-void handle_retransmission(BYTE *rxData,BYTE rx_DataSize)
+void rf_ping()
 {
-	printf("RTX:");
-	UARTPrintf_uint(rxData[1]);
-	putc(';');
-	userRxCallBack(rxData+2,rx_DataSize-2);
+	BYTE txByte;
+	txByte = rf_pid_0x84_test_ping;
+	printf_ln("sending ping");
+	nRF_Transmit_Wait_Rx(&txByte,1);
+}
+
+void rf_pong()
+{
+	BYTE txByte;
+	txByte = rf_pid_0x89_test_pong;
+	printf_ln("sending pong");
+	nRF_Transmit_Wait_Rx(&txByte,1);
 }
 
 //User Rx CallBack
@@ -56,41 +55,11 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 	Led_Extend = 2;//signal retransmission
 	switch(rxData[0])
 	{
-		case rf_pid_0x35_temperature:
+		case rf_pid_0x84_test_ping:
 			{
-				rx_temperature_ds18b20(rxData,rx_DataSize);
+				send_pong = 1;
 			}
 			break;
-		case rf_pid_0x75_alive:
-			{
-				rx_alive(rxData,rx_DataSize);
-			}
-			break;
-		case rf_pid_0x49_reset:
-			{
-				rx_reset(rxData,rx_DataSize);
-			}
-			break;
-		case rf_pid_0x3B_light:
-			{
-				rx_light(rxData,rx_DataSize);
-			}
-			break;
-		case rf_pid_0xC5_magnet:
-			{
-				rx_magnet(rxData,rx_DataSize);
-			}
-			break;
-		case rf_pid_0xE2_bme280:
-			{
-				bme280_rx_measures(rxData,rx_DataSize);
-			}
-			break;
-		case rf_pid_0x5F_retransmit:
-		{
-			handle_retransmission(rxData,rx_DataSize);
-		}
-		break;
 		default :
 			{
 				printf("Unknown Pid:");
@@ -109,32 +78,21 @@ void prompt()
 	printf_ln(">");
 }
 
+//From main() context
+void rf_testChannels()
+{
+	printf_ln("rf_testChannels()");
+	rf_ping();
+	delay_ms(1);
+}
+
+
 void handle_command(BYTE *buffer,BYTE size)
 {
 	
-	if(strbegins(buffer,"rgb") == 0)
+	if(strbegins(buffer,"test") == 0)
 	{
-		BYTE txData[6];
-		RGBColor_t Color;
-		//rgb NodeId R G B
-		//rgb 0x00 0x00 0x00 0x00
-		BYTE TargetNodeId = get_hex(buffer,4);
-		Color.R = get_hex(buffer,9);
-		Color.G = get_hex(buffer,14);
-		Color.B = get_hex(buffer,19);
-		rgb_rf_get_tx_Color_6B(TargetNodeId,txData,Color);
-		nRF_Transmit_Wait_Rx(txData,6);
-		printf("Node (");
-		printf_uint(TargetNodeId);
-		printf(") R ");
-		printf_uint(Color.R);
-		printf_eol();
-		printf("  G ");
-		printf_uint(Color.G);
-		printf_eol();
-		printf("  B ");
-		printf_uint(Color.B);
-		printf_eol();
+		start_test = 1;
 	}
 	else if(strcmp(buffer,"help") == 0)
 	{
@@ -172,7 +130,7 @@ int main( void )
     uart_init();
 	
     printf("\r\n__________________________________________________\n\r");
-    printf("sensors_logger\\firmware_rf_dongle\\rf_receiver_logger\\\n\r");
+    printf("sensors_logger\\firmware_rf_dongle\\rf_tester\\\n\r");
 
     //Applies the compile time configured parameters from nRF_Configuration.h
     BYTE status = nRF_Config();
@@ -198,5 +156,13 @@ int main( void )
 			Test_Led_Off();
 		}
 		delay_ms(100);
+		if(start_test)
+		{
+			rf_testChannels();
+		}
+		if(send_pong)
+		{
+			rf_pong();
+		}
     }
 }

@@ -2,6 +2,9 @@
 
 <workspace>
   <project>
+    <path>$WS_DIR$\rf_tester\rf_tester.ewp</path>
+  </project>
+  <project>
     <path>$WS_DIR$\rfmaster\rfmaster.ewp</path>
   </project>
   <project>

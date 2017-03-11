@@ -138,3 +138,5 @@ rgb_leds/rgb_rf_commander/Debug/
 rgb_leds/rgb_rf_commander/settings/
 rgb_leds/rgb_leds_rf/settings/
 mqtt/mqtt_test_cpp/mqtt_test
+mesh_controller_interface/rf_tester/Debug/
+mesh_controller_interface/rf_tester/settings/

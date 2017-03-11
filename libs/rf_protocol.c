@@ -108,6 +108,17 @@ void rx_magnet(BYTE *rxData,BYTE rx_DataSize)
     }
 }
 
+void rgb_rf_get_tx_Color_7B(BYTE Target_NodeId,BYTE isSet,BYTE *txData,RGBColor_t Color)
+{
+  txData[0] = rf_pid_0x59_rgb;
+  txData[1] = Target_NodeId;
+  txData[2] = isSet;// 1: Set, 0: Get
+  txData[3] = Color.R;
+  txData[4] = Color.G;
+  txData[5] = Color.B;
+  txData[6] = txData[0] ^ txData[1] ^ txData[2] ^ txData[3] ^ txData[4] ^ txData[5];
+}
+
 void rgb_rf_get_tx_Color_6B(BYTE Target_NodeId,BYTE *txData,RGBColor_t Color)
 {
   txData[0] = rf_pid_0x59_rgb;
@@ -117,3 +128,4 @@ void rgb_rf_get_tx_Color_6B(BYTE Target_NodeId,BYTE *txData,RGBColor_t Color)
   txData[4] = Color.B;
   txData[5] = txData[0] ^ txData[1] ^ txData[2] ^ txData[3] ^ txData[4];
 }
+
