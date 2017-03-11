@@ -310,6 +310,11 @@ BYTE nRF_SetDataRate(BYTE dr)//1=> 1Mb, 2=> 2Mb, 250=> 250Kb
 	return status;
 }
 
+BYTE nRF_GetChannel()
+{
+	return SPI_Read_Register(RF_CH);
+}
+
 void nRF_PrintChannel()
 {
 	BYTE channel = SPI_Read_Register(RF_CH);

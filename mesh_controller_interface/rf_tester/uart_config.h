@@ -22,7 +22,7 @@
 #define UART_USE_RX_INETRRUPT 1
 
 #if UART_USE_RX_INETRRUPT == 1
-#define UART_ECHO 0
+#define UART_ECHO 1
 #endif
 //Flag: UART_CALLBACK_POLLING
 // 1 : Enabled =>   simplified to just calling uart_rx_user_poll()
@@ -34,7 +34,7 @@
 // 0 : INTERRUPT => The 'uart_rx_user_callback()' will be called from the uart interrupt context
 // Flags dependencies
 // '#define UART_USE_RX_INETRRUPT 1' has to be set to 1
-#define UART_CALLBACK_POLLING 1
+#define UART_CALLBACK_POLLING 0
 
 
 #define UART_FRAME_SIZE 31

@@ -27,6 +27,8 @@
 #define rf_pid_0x84_test_ping   0x84
 #define rf_pid_0x89_test_pong   0x89
 
+#define rf_pid_0x87_test_switchChan     0x87
+#define rf_pid_0x81_test_chanAck        0x81
 
 // Alive RF ping
 void rf_get_tx_alive_3B(BYTE NodeId, BYTE* tx_data);
