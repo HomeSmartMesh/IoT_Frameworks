@@ -1,6 +1,6 @@
 # IoT Frameworks
 Complete working samples ready to use on the field
-* **Wireless Sensors ** : based on the STM8 IoT Boards [STM8 IoT Boards](https://github.com/wassfila/STM8_IoT_Boards)
+* **Wireless Sensors** : based on the STM8 IoT Boards [STM8 IoT Boards](https://github.com/wassfila/STM8_IoT_Boards)
   * 8 bit Ultra low power & ultralow cost STM8L
   * BME280 (Pressure, Temperature, Humidity), MAX44009 (Ambient Light) and Magnetic switches
   * Custom RF protocol for efficiency and simplicity of the sensors usecase
