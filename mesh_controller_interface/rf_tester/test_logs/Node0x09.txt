@@ -1,0 +1,30 @@
+  ------------  output log 1 ------------  
+
+Rx Pings : 100
+
+  ------------  output log 3 OK ------------  
+
+__________________________________________________
+sensors_logger\firmware_rf_dongle\rf_tester\
+Node Id: 9
+nRF_Config
+
+Config updated with : 0x31 ; reread 0x31 ; STATUS: 0x0E : No Data Ready i; No Data Sent i; No Max Ret i; Rx Fifo Empty ; Available TX Fifo Locations;
+__________________________________________________
+
+STATUS: 0x0E : No Data Ready i; No Data Sent i; No Max Ret i; Rx Fifo Empty ; Available TX Fifo Locations;
+CONFIG: 0x31 : RX IRQ Active; TX IRQ Masked; Max RT IRQ Masked; CRC Disabled; CRC 1 Bytes; Power Down; P RX Mode;
+ChipEnable Low
+Channel 2 selected : 2402 MHz
+Address Width : 5 bytes
+Rx Address P0: 0xE7
+Tx Address   : 0xE7
+__________________________________________________
+
+Rx Pings : 100
+Switched Channel:Channel 5 selected : 2405 MHz
+Rx Pings : 100
+Switched Channel:Channel 96 selected : 2496 MHz
+Rx Pings : 100
+Switched Channel:Channel 96 selected : 2496 MHz
+Switched Channel:Channel 2 selected : 2402 MHz

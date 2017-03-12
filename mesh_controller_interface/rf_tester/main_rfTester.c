@@ -27,23 +27,30 @@
 
 #define EEPROM_Offset 0x4000
 #define EE_NODE_ID       (char *) EEPROM_Offset;
-unsigned char NodeId;
+BYTE NodeId;
 
 BYTE Led_Extend = 0;
-BYTE start_test = 0;
-BYTE start_chan = 0;
-BYTE start_chan_target = 0;
+
+BYTE test_targetNodeId = 0;
+
+BYTE test_ping_start = 0;
+BYTE test_ping_nb = 0;
+
+BYTE test_chan_start = 0;
+BYTE test_chan_select = 0;
+
 BYTE send_pong = 0;
 int16_t rx_ping = 0;
 BYTE rx_pong = 0;
 BYTE rx_chan_ack = 0;
 
-void rf_send_ping()
+void rf_send_ping(BYTE target_id)
 {
-	BYTE txByte;
-	txByte = rf_pid_0x84_test_ping;
+	BYTE txData[2];
+	txData[0] = rf_pid_0x84_test_ping;
+	txData[1] = target_id;
 	//printf_ln("sending ping");
-	nRF_Transmit_Wait_Rx(&txByte,1);
+	nRF_Transmit_Wait_Rx(txData,2);
 }
 
 void rf_send_pong()
@@ -53,17 +60,19 @@ void rf_send_pong()
 	nRF_Transmit_Wait_Rx(&txByte,1);
 }
 
-void rf_send_switchChan(BYTE channel)
+//Triple redunduncy for a safe channel switching
+void rf_send_switchChan(BYTE target_id,BYTE channel)
 {
-	BYTE txData[4];
+	BYTE txData[5];
 	txData[0] = rf_pid_0x87_test_switchChan;
-	txData[1] = channel;
+	txData[1] = target_id;
 	txData[2] = channel;
 	txData[3] = channel;
-	nRF_Transmit_Wait_Rx(txData,4);
+	txData[4] = channel;
+	nRF_Transmit_Wait_Rx(txData,5);
 }
 
-void rf_chanAck()
+void rf_send_chanAck()
 {
 	BYTE txByte;
 	txByte = rf_pid_0x81_test_chanAck;
@@ -71,16 +80,17 @@ void rf_chanAck()
 	nRF_Transmit_Wait_Rx(&txByte,1);
 }
 
-void rf_test_setChan(BYTE *rxData)
+void rf_request_setChan(BYTE *rxData)
 {
 	//test that all three samples of channel are identical (error verification)
-	if( (rxData[1] == rxData[2]) && (rxData[2] == rxData[3]) )
+	if( (rxData[2] == rxData[3]) && (rxData[3] == rxData[4]) )
 	{
-		BYTE channel = rxData[1];
-		nRF_SelectChannel(channel);
-		printf("Switched to Channel:");printf_uint(channel);printf_eol();
+		BYTE Requested_Channel = rxData[2];
+		nRF_SelectChannel(Requested_Channel);
+		printf("Switched Channel:");
+		nRF_PrintChannel();
 		//send a channel achknowledge on the newly selected channel
-		rf_chanAck();
+		rf_send_chanAck();
 	}
 }
 
@@ -93,8 +103,12 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 		case rf_pid_0x84_test_ping:
 			{
 				rx_ping++;
-				//what do we do when we receive a ping request, => We send a pong back
-				rf_send_pong();
+				//what do we do when we receive a ping request, 
+				//check if we're the target, if do => We send a pong back
+				if(rxData[1] == NodeId)
+				{
+					rf_send_pong();
+				}
 			}
 			break;
 		case rf_pid_0x89_test_pong:
@@ -105,7 +119,10 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 			break;
 		case rf_pid_0x87_test_switchChan:
 			{
-				rf_test_setChan(rxData);
+				if(rxData[1] == NodeId)
+				{
+					rf_request_setChan(rxData);
+				}
 			}
 			break;
 		case rf_pid_0x81_test_chanAck:
@@ -129,49 +146,58 @@ void prompt()
 	printf_ln(">");
 }
 
-BYTE rf_ping()
+BYTE rf_ping(BYTE target_id)
 {
 	rx_pong = 0;
-	rf_send_ping();
+	rf_send_ping(target_id);
 	//maximum delay after which there is no statistical difference
 	//in waiting a longer time
 	delay_ms(30);
 	return rx_pong;
 }
 
-BYTE rf_many_pings(BYTE nb_retries)
+//This multi ping completes all requests before returning
+BYTE rf_many_pings(BYTE target_id,BYTE nb_requests)
 {
 	BYTE success = 0;
 	BYTE i;
-	for(i=0;i<nb_retries;i++)
+	for(i=0;i<nb_requests;i++)
 	{
-		success += rf_ping();//1 on success, 0 on fail
+		success += rf_ping(target_id);//1 on success, 0 on fail
 	}
+	return success;
+}
+
+//This multi ping returns since the first success
+BYTE rf_ping_retries(BYTE target_id,BYTE nb_retries)
+{
+	BYTE success = 0;
+	BYTE i = 0;
+	do
+	{
+		success = rf_ping(target_id);//1 on success, 0 on fail
+		i++;
+	}while((i<nb_retries) && (success == 0) );
 	return success;
 }
 
 //From main() context
-BYTE rf_testSignal(BYTE nb_retries)
+BYTE rf_test_many_pings(BYTE target_id,BYTE nb_requests)
 {
-	BYTE success = 0;
-	BYTE i;
-	for(i=0;i<nb_retries;i++)
-	{
-		success += rf_ping();//1 on success, 0 on fail
-	}
-	printf("TxRx Chan ");	printf_uint(nRF_GetChannel());	printf(" : ");
-	printf_uint(success);printf("/");	printf_uint(nb_retries);printf_eol();
+	BYTE success = rf_many_pings(target_id,nb_requests);
+	printf("Many Pings : ");
+	printf_uint(success);printf("/");printf_uint(nb_requests);printf_eol();
 	delay_ms(100);
 	return success;
 }
 
-void rf_test_Switch_Channel(BYTE channel)
+void rf_test_Switch_Channel(BYTE targetNodeId,BYTE channel)
 {
-	BYTE oldChannel = nRF_GetChannel();
+	BYTE prev_Channel = nRF_GetChannel();
 	//clear the acknowledge for a later check
 	rx_chan_ack = 0;
 	//send request to the remote
-	rf_send_switchChan(channel);
+	rf_send_switchChan(targetNodeId,channel);
 	//switch immidiatly after sending the switch request to the remote
 	//there's no point in waiting an ack as an ack can be lost as well
 	//which would bring always one way or the other in an undefined switch state
@@ -184,21 +210,23 @@ void rf_test_Switch_Channel(BYTE channel)
 	}
 	else
 	{
-		printf_ln("Channel Switch fail, have to ping now");
-		if(rf_many_pings(10))
+		printf_ln("Channel Switch attempt failed, have to find the Target now :");
+		if(rf_ping_retries(targetNodeId,100))
 		{
+			printf("Channel Switch confirmed: ");
 			nRF_PrintChannel();
 		}
 		else
 		{
-			nRF_SelectChannel(oldChannel);
-			if(rf_many_pings(10))
+			nRF_SelectChannel(prev_Channel);
+			if(rf_ping_retries(targetNodeId,100))
 			{
+				printf("Channel Switch canceled: ");
 				nRF_PrintChannel();
 			}
 			else
 			{
-				printf_ln("We're in trouble, remote lost");
+				printf_ln("We're in trouble, target unreachable");
 			}
 		}
 	}
@@ -207,18 +235,31 @@ void rf_test_Switch_Channel(BYTE channel)
 
 void handle_command(BYTE *buffer,BYTE size)
 {
-	
-	if(strbegins(buffer,"test") == 0)
+	//ping 0x09 0x64 => ping TargetNodeId nbRequests
+	if(strbegins(buffer,"ping") == 0)
 	{
-		start_test = 1;
+		test_targetNodeId = get_hex(buffer,5);
+		test_ping_nb = get_hex(buffer,10);
+		test_ping_start = 1;
 	}
-	//chan 0x02
-	else if(strbegins(buffer,"chan") == 0)
+	//rfch 0x12 0x02 => rfch TargetNodeId ChannelToSet
+	else if(strbegins(buffer,"rfch") == 0)
 	{
-		start_chan_target = get_hex(buffer,5);
-		if( (start_chan_target > 1 ) && (start_chan_target <= 125 ) )
+		test_targetNodeId = get_hex(buffer,5);
+		test_chan_select = get_hex(buffer,10);
+		if( (test_chan_select > 1 ) && (test_chan_select <= 125 ) )
 		{
-			start_chan = 1;
+			test_chan_start = 1;
+		}
+	}
+	//rfch 0x02 => stch ChannelToSetOnHost
+	else if(strbegins(buffer,"stch") == 0)
+	{
+		BYTE NewHostChannel = get_hex(buffer,5);
+		if( (NewHostChannel > 1 ) && (NewHostChannel <= 125 ) )
+		{
+			nRF_SelectChannel(NewHostChannel);
+			nRF_PrintChannel();
 		}
 	}
 	else if(strcmp(buffer,"help") == 0)
@@ -256,8 +297,11 @@ int main( void )
 
     uart_init();
 	
-    printf("\r\n__________________________________________________\n\r");
-    printf("sensors_logger\\firmware_rf_dongle\\rf_tester\\\n\r");
+	printf_eol();
+    printf_ln("__________________________________________________");
+    printf_ln("sensors_logger\\firmware_rf_dongle\\rf_tester\\");
+	printf("Node Id: ");printf_uint(NodeId);printf_eol();
+
 
     //Applies the compile time configured parameters from nRF_Configuration.h
     BYTE status = nRF_Config();
@@ -283,15 +327,15 @@ int main( void )
 			Test_Led_Off();
 		}
 		delay_ms(100);
-		if(start_test)
+		if(test_ping_start)
 		{
-			rf_testSignal(100);
-			start_test = 0;
+			rf_test_many_pings(test_targetNodeId,test_ping_nb);
+			test_ping_start = 0;
 		}
-		if(start_chan)
+		if(test_chan_start)
 		{
-			rf_test_Switch_Channel(start_chan_target);
-			start_chan = 0;
+			rf_test_Switch_Channel(test_targetNodeId,test_chan_select);
+			test_chan_start = 0;
 		}
 		if(rx_ping)
 		{
@@ -303,8 +347,7 @@ int main( void )
 				rx_ping = 0;	//clear reception
 				delay_ms(70);	//did another reception happen in the meanwhile ?
 			}while(rx_ping != 0);//if yes, then keep looping
-			printf("Rx Chan ");	printf_uint(nRF_GetChannel());	printf(" : ");
-			printf_uint(total_rx);printf_eol();
+			printf("Rx Pings : ");printf_uint(total_rx);printf_eol();
 		}
     }
 }
