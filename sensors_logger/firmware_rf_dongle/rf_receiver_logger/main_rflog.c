@@ -56,22 +56,22 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 	Led_Extend = 2;//signal retransmission
 	switch(rxData[0])
 	{
-		case rf_pid_0x35_temperature:
+		case rf_pid_0xB5_temperature:
 			{
 				rx_temperature_ds18b20(rxData,rx_DataSize);
 			}
 			break;
-		case rf_pid_0x75_alive:
+		case rf_pid_0xF5_alive:
 			{
 				rx_alive(rxData,rx_DataSize);
 			}
 			break;
-		case rf_pid_0x49_reset:
+		case rf_pid_0xC9_reset:
 			{
 				rx_reset(rxData,rx_DataSize);
 			}
 			break;
-		case rf_pid_0x3B_light:
+		case rf_pid_0xBB_light:
 			{
 				rx_light(rxData,rx_DataSize);
 			}
@@ -86,7 +86,7 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 				bme280_rx_measures(rxData,rx_DataSize);
 			}
 			break;
-		case rf_pid_0x5F_retransmit:
+		case rf_pid_0xDF_retransmit:
 		{
 			handle_retransmission(rxData,rx_DataSize);
 		}

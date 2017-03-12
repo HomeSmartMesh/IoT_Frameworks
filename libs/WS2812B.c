@@ -646,7 +646,7 @@ void rgb_Loop_BlueRedBlue(BYTE nbLeds)
 // PID - NodeID - R - G - B - CRC
 void rgb_decode_rf(BYTE Host_NodeId,BYTE *rxData,BYTE rx_DataSize)
 {
-  if(rxData[0] != rf_pid_0x59_rgb)
+  if(rxData[0] != rf_pid_0x79_rgb)
   {
     return;
   }

@@ -61,7 +61,7 @@ void retransmit(BYTE timeToLive, BYTE *rxData,BYTE rx_DataSize)
 	delay_ms(RTX_Delay);
 	if(rx_DataSize < 30)//max was 31, now 2 more so <=29
 	{
-		tx_data[0] = rf_pid_0x5F_retransmit;
+		tx_data[0] = rf_pid_0xDF_retransmit;
 		tx_data[1] = timeToLive;
 		BYTE* pData = tx_data+2;
 		for(BYTE i=0;i<rx_DataSize;i++)
@@ -80,15 +80,15 @@ void retransmit(BYTE timeToLive, BYTE *rxData,BYTE rx_DataSize)
 void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 {
 	Test_Led_On();
-	if(rxData[0] == rf_pid_0x59_rgb)
+	if(rxData[0] == rf_pid_0x79_rgb)
 	{
 		rgb_decode_rf(NodeId,rxData,rx_DataSize);
 	}
 
-	if(rxData[0] == rf_pid_0x5F_retransmit)
+	if(rxData[0] == rf_pid_0xDF_retransmit)
 	{
 		BYTE ttl = rxData[1];
-		if(rxData[1] == rf_pid_0x59_rgb)
+		if(rxData[1] == rf_pid_0x79_rgb)
 		{
 			rgb_decode_rf(NodeId,rxData+1,rx_DataSize-1);
 		}

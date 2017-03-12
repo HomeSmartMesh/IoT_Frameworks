@@ -345,6 +345,7 @@ BYTE nRF_SetRxAddress(BYTE Pipe, BYTE address)
 	BYTE status = SPI_Write_Register(PipeAddress,address);
 	return status;
 }
+
 BYTE nRF_GetRxAddress(BYTE Pipe)
 {
 	return SPI_Read_Register(RX_ADDR_P0);

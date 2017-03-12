@@ -12,23 +12,67 @@
 
 #include "commonTypes.h"
 
+//The RF Module addresses might not fit the final TargetId 
+//Thus Source and Dest would still be required in addition to the RF address
+//The Schockburst Ack is a point to point Acknowledge
+
+//The source Node Id is needed most of the time
+//The target Node Id is also needed most of the time
+//0xFF should be kept as Broadcast and No Address
+
 //protocol ids for the first identification byte
 
-#define rf_pid_0x35_temperature	0x35
-#define rf_pid_0x75_alive		0x75
-#define rf_pid_0x49_reset		0x49
-#define rf_pid_0x59_rgb 		0x59
-#define rf_pid_0x3B_light		0x3B
+//[7] 1: Broadcat, 0: P2P (Point To Point)
+//in case of [7] == 1 => Broadcast then :
+//[6] 1: Msg_Ack,  0: Req_Resp
+//[5] 1: Message,  0: Acknowledge
+//[5] 1: Request,  0: Response
+//Broadcast has 7 bits => 128 Pids
+//P2P       has 6 bits =>  64 Pids
+//MAX Payload Size is 27 :
+// + Retransmission needs 2 additionnal Bytes 
+// + 1 for Size
+// + 1 for CRC
+//MAX Payload Size for P2P is 26 :
+// Broadcast - 1
+//---------------- Broadcast --------------
+//Temperature   : Size Pid  SrcId  Payload2    CRC
+//Alive         : Size Pid  SrcId  CRC
+//Reset         : Size Pid  SrcId  CRC
+//Light         : Size Pid  SrcId  Payload2 CRC
+//Magnet        : Size Pid  SrcId  CRC
+//BME280        : Size Pid  SrcId  Payload7 CRC
+//Retransmit    : Size Pid  TTL    PayloadX
+//---------------- P2P --------------------
+//Protocol      : Size BRPid  Src Dest Payload CRC
+//Ping          : Size Pid  SrcId DstId CRC
+//Pong          : Size Pid  SrcId DstId CRC
+//RGB           : Size Pid  TrgId  Payload3 CRC
+//SwitchChan    : Size Pid  TrgId Payload
+//ChanAck       : Size Pid  SrcId DstId
+
+//---------------- Broadcast --------------
+#define rf_pid_0xB5_temperature	0xB5
+#define rf_pid_0xF5_alive		0xF5
+#define rf_pid_0xC9_reset		0xC9
+#define rf_pid_0xBB_light		0xBB
 #define rf_pid_0xC5_magnet		0xC5
 #define rf_pid_0xE2_bme280		0xE2
+#define rf_pid_0xDF_retransmit  0xDF
 
-#define rf_pid_0x5F_retransmit  0x5F
+//---------------- P2P --------------
+//---Messages_With_Acknowledge [6] = 1
+//---Messages [5] = 1
+#define rf_pid_0x79_rgb 		        0x79
+#define rf_pid_0x64_test_ping           0x64
+#define rf_pid_0x67_test_switchChan     0x67
+//---Acknowledge [5] = 0
+#define rf_pid_0x41_test_chanAck        0x41
+#define rf_pid_0x49_test_pong           0x49
+// => Empty response is an Acknowledge => Check Size
 
-#define rf_pid_0x84_test_ping   0x84
-#define rf_pid_0x89_test_pong   0x89
 
-#define rf_pid_0x87_test_switchChan     0x87
-#define rf_pid_0x81_test_chanAck        0x81
+
 
 // Alive RF ping
 void rf_get_tx_alive_3B(BYTE NodeId, BYTE* tx_data);

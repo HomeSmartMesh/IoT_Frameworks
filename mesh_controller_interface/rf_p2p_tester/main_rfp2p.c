@@ -44,7 +44,7 @@ int16_t rx_ping = 0;
 BYTE rx_pong = 0;
 BYTE rx_chan_ack = 0;
 
-void rf_send_ping(BYTE source_id,BYTE target_id)
+void rf_prepare_ping(BYTE source_id,BYTE target_id)
 {
 	BYTE txData[3];
 	txData[0] = rf_pid_0x64_test_ping;
@@ -74,14 +74,6 @@ void rf_send_switchChan(BYTE target_id,BYTE channel)
 	nRF_Transmit_Wait_Rx(txData,5);
 }
 
-void rf_send_chanAck()
-{
-	BYTE txByte;
-	txByte = rf_pid_0x41_test_chanAck;
-	//printf("Channel");printf_uint()
-	nRF_Transmit_Wait_Rx(&txByte,1);
-}
-
 void rf_request_setChan(BYTE *rxData)
 {
 	//test that all three samples of channel are identical (error verification)
@@ -96,47 +88,14 @@ void rf_request_setChan(BYTE *rxData)
 	}
 }
 
-//User Rx CallBack
-void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
+void rf_Message_CallBack(BYTE *rxData,BYTE rx_DataSize)
 {
 	Led_Extend = 2;//signal retransmission
 	switch(rxData[0])
 	{
-		case rf_pid_0x64_test_ping:
+		case rf_pid_0x79_rgb:
 			{
-				rx_ping++;
-				//what do we do when we receive a ping request, 
-				//check if we're the target, if do => We send a pong back
-				if(rxData[2] == NodeId)
-				{
-					BYTE requesterId = rxData[1];
-					rf_send_pong(requesterId);
-				}
-			}
-			break;
-		case rf_pid_0x49_test_pong:
-			{
-				if(rxData[2] == NodeId)//if this pong is directed to us
-				{
-					if(rxData[1] == test_ping_targetNodeId)//if it's coming the Node we pinged
-					{
-						//received a pong
-						rx_pong = 1;
-					}
-				}
-			}
-			break;
-		case rf_pid_0x67_test_switchChan:
-			{
-				if(rxData[1] == NodeId)//if the request is directed to us
-				{
-					rf_request_setChan(rxData);
-				}
-			}
-			break;
-		case rf_pid_0x41_test_chanAck:
-			{
-				rx_chan_ack = 1;
+				//set the RGB
 			}
 			break;
 		default :
@@ -291,6 +250,17 @@ void uart_rx_user_callback(BYTE *buffer,BYTE size)
 	prompt();
 }
 
+void rf_safe_pings(BYTE test_ping_targetNodeId)
+{
+	rf_message_t msg;
+	BYTE txData[5];
+	msg.source = NodeId;
+	msg.dest = test_ping_targetNodeId;
+	msg.nb_retries = 20;
+	msg.Pid = rf_pid_0x64_test_ping;//No Payload required for Ping
+	p2p_send_message(&msg);
+
+}
 
 int main( void )
 {
@@ -338,7 +308,7 @@ int main( void )
 		delay_ms(100);
 		if(test_ping_start)
 		{
-			rf_test_many_pings(test_ping_targetNodeId,test_ping_nb);
+			rf_safe_pings(test_ping_targetNodeId);
 			test_ping_start = 0;
 		}
 		if(test_chan_start)

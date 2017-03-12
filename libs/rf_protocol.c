@@ -19,7 +19,7 @@
 
 void rf_get_tx_alive_3B(BYTE NodeId, BYTE* tx_data)
 {
-      tx_data[0]= rf_pid_0x75_alive;
+      tx_data[0]= rf_pid_0xF5_alive;
       tx_data[1]= NodeId;
       tx_data[2]= tx_data[0] ^ NodeId;
 }
@@ -43,7 +43,7 @@ void rx_alive(BYTE *rxData,BYTE rx_DataSize)
 // Reset
 void rf_get_tx_reset_3B(BYTE NodeId, BYTE* tx_data)
 {
-      tx_data[0]= rf_pid_0x49_reset;
+      tx_data[0]= rf_pid_0xC9_reset;
       tx_data[1]= NodeId;
       tx_data[2]= tx_data[0] ^ NodeId;
 }
@@ -110,7 +110,7 @@ void rx_magnet(BYTE *rxData,BYTE rx_DataSize)
 
 void rgb_rf_get_tx_Color_7B(BYTE Target_NodeId,BYTE isSet,BYTE *txData,RGBColor_t Color)
 {
-  txData[0] = rf_pid_0x59_rgb;
+  txData[0] = rf_pid_0x79_rgb;
   txData[1] = Target_NodeId;
   txData[2] = isSet;// 1: Set, 0: Get
   txData[3] = Color.R;
@@ -121,7 +121,7 @@ void rgb_rf_get_tx_Color_7B(BYTE Target_NodeId,BYTE isSet,BYTE *txData,RGBColor_
 
 void rgb_rf_get_tx_Color_6B(BYTE Target_NodeId,BYTE *txData,RGBColor_t Color)
 {
-  txData[0] = rf_pid_0x59_rgb;
+  txData[0] = rf_pid_0x79_rgb;
   txData[1] = Target_NodeId;
   txData[2] = Color.R;
   txData[3] = Color.G;

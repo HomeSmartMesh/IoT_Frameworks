@@ -41,7 +41,7 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 	Led_Extend = 2;//signal reception
 	switch(rxData[0])
 	{
-		case rf_pid_0x59_rgb:
+		case rf_pid_0x79_rgb:
 			{
 				rgb_decode_rf(NodeId,rxData,rx_DataSize);
 			}
