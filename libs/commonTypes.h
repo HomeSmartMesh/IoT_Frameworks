@@ -16,6 +16,7 @@
 #define _COMMON_TYPES_
 
 
+typedef void* NULL;
 typedef unsigned int UINT;
 typedef unsigned char BYTE;
 

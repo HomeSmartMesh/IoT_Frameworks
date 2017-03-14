@@ -25,6 +25,8 @@
 
 #include "rf_protocol.h"
 
+#include "nRF_P2P.h"
+
 #define EEPROM_Offset 0x4000
 #define EE_NODE_ID       (char *) EEPROM_Offset;
 BYTE NodeId;
@@ -44,49 +46,6 @@ int16_t rx_ping = 0;
 BYTE rx_pong = 0;
 BYTE rx_chan_ack = 0;
 
-void rf_prepare_ping(BYTE source_id,BYTE target_id)
-{
-	BYTE txData[3];
-	txData[0] = rf_pid_0x64_test_ping;
-	txData[1] = source_id;
-	txData[2] = target_id;
-	nRF_Transmit_Wait_Rx(txData,3);
-}
-
-void rf_send_pong(BYTE requesterId)
-{
-	BYTE txData[3];
-	txData[0] = rf_pid_0x49_test_pong;
-	txData[1] = NodeId;		//Source
-	txData[2] = requesterId;//Dest
-	nRF_Transmit_Wait_Rx(&txByte,3);
-}
-
-//Triple redunduncy for a safe channel switching
-void rf_send_switchChan(BYTE target_id,BYTE channel)
-{
-	BYTE txData[5];
-	txData[0] = rf_pid_0x67_test_switchChan;
-	txData[1] = target_id;
-	txData[2] = channel;
-	txData[3] = channel;
-	txData[4] = channel;
-	nRF_Transmit_Wait_Rx(txData,5);
-}
-
-void rf_request_setChan(BYTE *rxData)
-{
-	//test that all three samples of channel are identical (error verification)
-	if( (rxData[2] == rxData[3]) && (rxData[3] == rxData[4]) )
-	{
-		BYTE Requested_Channel = rxData[2];
-		nRF_SelectChannel(Requested_Channel);
-		printf("Switched Channel:");
-		nRF_PrintChannel();
-		//send a channel achknowledge on the newly selected channel
-		rf_send_chanAck();
-	}
-}
 
 void rf_Message_CallBack(BYTE *rxData,BYTE rx_DataSize)
 {
@@ -114,93 +73,6 @@ void prompt()
 	printf_ln(">");
 }
 
-BYTE rf_ping(BYTE target_id)
-{
-	rx_pong = 0;
-	rf_send_ping(NodeId,target_id);
-	//maximum delay after which there is no statistical difference
-	//in waiting a longer time
-	delay_ms(30);
-	return rx_pong;
-}
-
-//This multi ping completes all requests before returning
-BYTE rf_many_pings(BYTE target_id,BYTE nb_requests)
-{
-	BYTE success = 0;
-	BYTE i;
-	for(i=0;i<nb_requests;i++)
-	{
-		success += rf_ping(target_id);//1 on success, 0 on fail
-	}
-	return success;
-}
-
-//This multi ping returns since the first success
-BYTE rf_ping_retries(BYTE target_id,BYTE nb_retries)
-{
-	BYTE success = 0;
-	BYTE i = 0;
-	do
-	{
-		success = rf_ping(target_id);//1 on success, 0 on fail
-		i++;
-	}while((i<nb_retries) && (success == 0) );
-	return success;
-}
-
-//From main() context
-BYTE rf_test_many_pings(BYTE target_id,BYTE nb_requests)
-{
-	BYTE success = rf_many_pings(target_id,nb_requests);
-	printf("Many Pings : ");
-	printf_uint(success);printf("/");printf_uint(nb_requests);printf_eol();
-	delay_ms(100);
-	return success;
-}
-
-void rf_test_Switch_Channel(BYTE targetNodeId,BYTE channel)
-{
-	BYTE prev_Channel = nRF_GetChannel();
-	//clear the acknowledge for a later check
-	rx_chan_ack = 0;
-	//send request to the remote
-	rf_send_switchChan(targetNodeId,channel);
-	//switch immidiatly after sending the switch request to the remote
-	//there's no point in waiting an ack as an ack can be lost as well
-	//which would bring always one way or the other in an undefined switch state
-	nRF_SelectChannel(channel);
-	delay_ms(100);
-
-	if(rx_chan_ack)
-	{
-		printf("Channel Switched to : ");printf_uint(channel);printf_eol();
-	}
-	else
-	{
-		printf_ln("Channel Switch attempt failed, have to find the Target now :");
-		if(rf_ping_retries(targetNodeId,100))
-		{
-			printf("Channel Switch confirmed: ");
-			nRF_PrintChannel();
-		}
-		else
-		{
-			nRF_SelectChannel(prev_Channel);
-			if(rf_ping_retries(targetNodeId,100))
-			{
-				printf("Channel Switch canceled: ");
-				nRF_PrintChannel();
-			}
-			else
-			{
-				printf_ln("We're in trouble, target unreachable");
-			}
-		}
-	}
-}
-
-
 void handle_command(BYTE *buffer,BYTE size)
 {
 	//ping 0x09 0x64 => ping TargetNodeId nbRequests
@@ -209,26 +81,6 @@ void handle_command(BYTE *buffer,BYTE size)
 		test_ping_targetNodeId = get_hex(buffer,5);
 		test_ping_nb = get_hex(buffer,10);
 		test_ping_start = 1;
-	}
-	//rfch 0x12 0x02 => rfch TargetNodeId ChannelToSet
-	else if(strbegins(buffer,"rfch") == 0)
-	{
-		test_ping_targetNodeId = get_hex(buffer,5);
-		test_chan_select = get_hex(buffer,10);
-		if( (test_chan_select > 1 ) && (test_chan_select <= 125 ) )
-		{
-			test_chan_start = 1;
-		}
-	}
-	//rfch 0x02 => stch ChannelToSetOnHost
-	else if(strbegins(buffer,"stch") == 0)
-	{
-		BYTE NewHostChannel = get_hex(buffer,5);
-		if( (NewHostChannel > 1 ) && (NewHostChannel <= 125 ) )
-		{
-			nRF_SelectChannel(NewHostChannel);
-			nRF_PrintChannel();
-		}
 	}
 	else if(strcmp(buffer,"help") == 0)
 	{
@@ -253,12 +105,11 @@ void uart_rx_user_callback(BYTE *buffer,BYTE size)
 void rf_safe_pings(BYTE test_ping_targetNodeId)
 {
 	rf_message_t msg;
-	BYTE txData[5];
-	msg.source = NodeId;
 	msg.dest = test_ping_targetNodeId;
 	msg.nb_retries = 20;
-	msg.Pid = rf_pid_0x64_test_ping;//No Payload required for Ping
-	p2p_send_message(&msg);
+	BYTE nb_retries = p2p_send_ping(&msg);
+
+	printf("sent ping retries: ");printf_uint(nb_retries);printf_eol();
 
 }
 
@@ -310,11 +161,6 @@ int main( void )
 		{
 			rf_safe_pings(test_ping_targetNodeId);
 			test_ping_start = 0;
-		}
-		if(test_chan_start)
-		{
-			rf_test_Switch_Channel(test_ping_targetNodeId,test_chan_select);
-			test_chan_start = 0;
 		}
 		if(rx_ping)
 		{

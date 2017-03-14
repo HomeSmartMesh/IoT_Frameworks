@@ -59,7 +59,7 @@ void rf_send_pong(BYTE requesterId)
 	txData[0] = rf_pid_0x49_test_pong;
 	txData[1] = NodeId;		//Source
 	txData[2] = requesterId;//Dest
-	nRF_Transmit_Wait_Rx(&txByte,3);
+	nRF_Transmit_Wait_Rx(txData,3);
 }
 
 //Triple redunduncy for a safe channel switching

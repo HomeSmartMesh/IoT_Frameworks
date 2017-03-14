@@ -140,3 +140,5 @@ rgb_leds/rgb_leds_rf/settings/
 mqtt/mqtt_test_cpp/mqtt_test
 mesh_controller_interface/rf_tester/Debug/
 mesh_controller_interface/rf_tester/settings/
+mesh_controller_interface/rf_p2p_tester/Debug/
+mesh_controller_interface/rf_p2p_tester/settings/
