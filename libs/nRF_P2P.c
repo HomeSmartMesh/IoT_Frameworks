@@ -18,6 +18,8 @@
 #include "clock_led.h"
 #include "uart.h"
 
+#include "nRF_Configuration.h"
+
 BYTE p2p_message[31];//size not included
 
 #define p2p_msg_pl (p2p_message+3)

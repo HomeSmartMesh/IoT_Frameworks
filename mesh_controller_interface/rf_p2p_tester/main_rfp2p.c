@@ -52,9 +52,9 @@ void rf_Message_CallBack(BYTE *rxData,BYTE rx_DataSize)
 	Led_Extend = 2;//signal retransmission
 	switch(rxData[0])
 	{
-		case rf_pid_0x79_rgb:
+		case rf_pid_0x64_test_ping:
 			{
-				//set the RGB
+				printf_ln("received ping");
 			}
 			break;
 		default :

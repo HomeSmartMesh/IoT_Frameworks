@@ -68,7 +68,7 @@
 #define rf_pid_0x67_test_switchChan     0x67
 //---Acknowledge [5] = 0
 #define rf_pid_0x41_test_chanAck        0x41
-#define rf_pid_0x49_test_pong           0x49
+#define rf_pid_0x44_test_pong           0x44
 // => Empty response is an Acknowledge => Check Size
 
 
