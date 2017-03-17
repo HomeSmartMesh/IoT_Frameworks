@@ -21,6 +21,7 @@ Complete working samples ready to use on the field
 
 <img src="https://github.com/wassfila/media/blob/master/IoT_Hardware.PNG" height=400>
 
+___
 <img src="https://github.com/wassfila/media/blob/master/IoT_Software.PNG" height=400>
 
 ## Webclient screenshot
