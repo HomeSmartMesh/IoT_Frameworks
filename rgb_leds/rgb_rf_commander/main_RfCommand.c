@@ -57,11 +57,12 @@ int main( void )
 	BYTE txData[6];
     RGBColor_t MyColors[5];
     
-    MyColors[0] = RED;
+    MyColors[0] = BLACK;
     MyColors[1] = WHITE;
-    MyColors[2].R = 37;MyColors[2].G = 55;MyColors[2].B = 255;
+    MyColors[2].R = 7;MyColors[2].G = 10;MyColors[2].B = 5;
     MyColors[3] = GREEN;
-    MyColors[4].R = 255;MyColors[4].G = 137;MyColors[4].B = 20;
+    MyColors[4].R = 1;MyColors[4].G = 2;MyColors[4].B = 4;
+
     RGBColor_t ColorSend = BLACK;
 
     InitialiseSystemClock();
@@ -70,6 +71,7 @@ int main( void )
     Test_Led_Off();
 
     rgb_PIO_Init();
+    
     rgb_SwitchOff_Range(0,NB_LEDS);//(From led id 0, NB_LEDS leds)
     
     uart_init();
@@ -83,14 +85,13 @@ int main( void )
 
     while (1)
     {
-		AliveActiveCounter++;//Why are you counting ?
-		if(AliveActiveCounter == 6)
+		if(AliveActiveCounter == 5)
 		{
 			AliveActiveCounter = 0;
 		}
         ColorSend = MyColors[AliveActiveCounter];
         rgb_FlashColors(0,ColorSend);
-		BYTE TargetNodeID = 18;//3 - 18
+		BYTE TargetNodeID = 3;//3 - 18
 		rgb_rf_get_tx_Color_6B(TargetNodeID,txData,ColorSend);
 		nRF_Transmit(txData,6);
 
@@ -98,5 +99,6 @@ int main( void )
 		delay_ms(100);
 		Test_Led_Off();
 		delay_ms(4900);
+		AliveActiveCounter++;
     }
 }

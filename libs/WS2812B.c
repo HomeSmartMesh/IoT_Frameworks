@@ -17,6 +17,7 @@
 #include "WS2812B.h"
 
 #include <iostm8s103f3.h>
+#include <intrinsics.h>
 
 #include "clock_led.h"
 
@@ -39,17 +40,29 @@ const RGBColor_t WHITE = {255,255,255};
 
 
 //RGBLedPIN has to be defined by the user 0x02 for PIN_A2, 0x03 for PIN_A3
-
-#if(RGBLedPIN_A == 2)
-#define RGBLedPin_Set   "BSET    L:0x5000,      #0x02         \n"
-#define RGBLedPin_ReSet   "BRES    L:0x5000,      #0x02         \n"
+#if(RGB_IO_NEG == 1)
+  #if(RGBLedPIN_A == 2)
+  #define RGBLedPin_Set   "BRES    L:0x5000,      #0x02         \n"
+  #define RGBLedPin_ReSet   "BSET    L:0x5000,      #0x02         \n"
+  #else
+  #define RGBLedPin_Set   "BRES    L:0x5000,      #0x03         \n"
+  #define RGBLedPin_ReSet   "BSET    L:0x5000,      #0x03         \n"
+  #endif
 #else
-#define RGBLedPin_Set   "BSET    L:0x5000,      #0x03         \n"
-#define RGBLedPin_ReSet   "BRES    L:0x5000,      #0x03         \n"
+  #if(RGBLedPIN_A == 2)
+  #define RGBLedPin_Set   "BSET    L:0x5000,      #0x02         \n"
+  #define RGBLedPin_ReSet   "BRES    L:0x5000,      #0x02         \n"
+  #else
+  #define RGBLedPin_Set   "BSET    L:0x5000,      #0x03         \n"
+  #define RGBLedPin_ReSet   "BRES    L:0x5000,      #0x03         \n"
+  #endif
 #endif
+
 
 void rgb_SendArray()
 {
+    BYTE int_state = __get_interrupt_state();
+    __disable_interrupt();
   asm(
         "lb_intiLoop:                          \n"
         "LDW      X,             #0xFFFF       \n"// set -1 in X, so that first inc gets 0, as inc has to be in the beginning of the loop
@@ -380,6 +393,7 @@ void rgb_SendArray()
         "JP      L:lb_begin_loop             \n"//5
         "lb_exit:nop");
   
+    __set_interrupt_state(int_state);
 }
 
 

@@ -5,7 +5,7 @@
     
     
     
-  <CurrentConfigs><Project>pr02_RF_ColorReceiver/Debug</Project><Project>pr01_RF_Color_Sender/Debug</Project><Project>hello_rgb/Debug</Project><Project>rgb_led_bar/Debug</Project><Project>rgb_leds_rf/Debug</Project><Project>rgb_rf_commander/Debug</Project></CurrentConfigs><CurrentProj>rgb_leds_rf</CurrentProj><OverviewSelected>1</OverviewSelected></ConfigDictionary>
+  <CurrentConfigs><Project>hello_rgb/Debug</Project><Project>pr01_RF_Color_Sender/Debug</Project><Project>rgb_rf_commander/Debug</Project><Project>rgb_led_bar/Debug</Project><Project>pr02_RF_ColorReceiver/Debug</Project><Project>rgb_leds_rf/Debug</Project></CurrentConfigs><CurrentProj>rgb_rf_commander</CurrentProj><OverviewSelected>1</OverviewSelected></ConfigDictionary>
   <Desktop>
     <Static>
       <Workspace>
@@ -14,7 +14,7 @@
           
           
           
-        <Column0>358</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
+        <Column0>427</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
       </Workspace>
       <Build>
         
@@ -23,7 +23,7 @@
         
       <ColumnWidth0>20</ColumnWidth0><ColumnWidth1>472</ColumnWidth1><ColumnWidth2>285</ColumnWidth2><ColumnWidth3>71</ColumnWidth3></Build>
       <TerminalIO/>
-    </Static>
+    <Debug-Log><ColumnWidth0>20</ColumnWidth0><ColumnWidth1>1664</ColumnWidth1></Debug-Log></Static>
     <Windows>
       
       
@@ -35,7 +35,7 @@
             <Factory>Workspace</Factory>
             <Session>
               
-            <NodeDict><ExpandedNode>&lt;ws&gt;</ExpandedNode><ExpandedNode>&lt;ws&gt;/pr01_RF_Color_Sender</ExpandedNode><ExpandedNode>&lt;ws&gt;/rgb_leds_rf</ExpandedNode><ExpandedNode>&lt;ws&gt;/rgb_rf_commander</ExpandedNode></NodeDict></Session>
+            <NodeDict><ExpandedNode>&lt;ws&gt;</ExpandedNode><ExpandedNode>&lt;ws&gt;/rgb_leds_rf</ExpandedNode><ExpandedNode>&lt;ws&gt;/rgb_rf_commander</ExpandedNode></NodeDict></Session>
           </Tab>
         </Tabs>
         
@@ -47,7 +47,7 @@
             <Factory>Build</Factory>
             <Session/>
           </Tab>
-        </Tabs>
+        <Tab><Identity>TabID-9188-32397</Identity><TabName>Debug Log</TabName><Factory>Debug-Log</Factory><Session/></Tab></Tabs>
         
       <SelectedTab>0</SelectedTab></Wnd3></Windows>
     <Editor>
@@ -55,14 +55,14 @@
       
       
       
-    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\hello_rgb\mainRGB.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>349</SelStart2><SelEnd2>349</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\hello_rgb\rgb_config.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\libs\WS2812B.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\rgb_led_bar\mainBAR.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\rgb_leds_rf\main_LedRf.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>27</YPos2><SelStart2>1111</SelStart2><SelEnd2>1111</SelEnd2></Tab><ActiveTab>4</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\pr01_RF_Color_Sender\mainTx.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>23</YPos2><SelStart2>1424</SelStart2><SelEnd2>1424</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\rgb_rf_commander\main_RfCommand.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>40</YPos2><SelStart2>957</SelStart2><SelEnd2>957</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\libs\WS2812B.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>615</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\rgb_leds_rf\rgb_config.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>508</SelStart2><SelEnd2>508</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\libs\uart.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>55</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\hello_rgb\mainRGB.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>404</SelStart2><SelEnd2>404</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\hello_rgb\rgb_config.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>499</SelStart2><SelEnd2>506</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\libs\WS2812B.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>10</YPos2><SelStart2>1081</SelStart2><SelEnd2>1094</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\rgb_led_bar\mainBAR.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>9</YPos2><SelStart2>728</SelStart2><SelEnd2>728</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\rgb_leds_rf\main_LedRf.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>39</YPos2><SelStart2>1113</SelStart2><SelEnd2>1113</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\pr01_RF_Color_Sender\mainTx.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>23</YPos2><SelStart2>1424</SelStart2><SelEnd2>1424</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\rgb_rf_commander\main_RfCommand.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>56</YPos2><SelStart2>1812</SelStart2><SelEnd2>1812</SelEnd2></Tab><ActiveTab>6</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\libs\WS2812B.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>33</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\rgb_leds_rf\rgb_config.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>532</SelStart2><SelEnd2>532</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\libs\uart.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>55</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\rgb_leds_rf\uart_config.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>0</SelStart2><SelEnd2>0</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\libs\nRF_IRQ_stm8x.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>211</SelStart2><SelEnd2>211</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.0\stm8\inc\c\intrinsics.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>658</SelStart2><SelEnd2>679</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\libs\nRF_Tx.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>166</SelStart2><SelEnd2>166</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\libs\nRF_SPI.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>257</SelStart2><SelEnd2>257</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\rgb_rf_commander\rgb_config.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>510</SelStart2><SelEnd2>510</SelEnd2></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
     <Positions>
       
       
       
       
       
-    <Top><Row0><Sizes><Toolbar-046F77F8><key>iaridepm.enu1</key></Toolbar-046F77F8></Sizes></Row0><Row1><Sizes/></Row1><Row2><Sizes/></Row2></Top><Left><Row0><Sizes><Wnd2><Rect><Top>-2</Top><Left>-2</Left><Bottom>883</Bottom><Right>432</Right><x>-2</x><y>-2</y><xscreen>200</xscreen><yscreen>200</yscreen><sizeHorzCX>134499</sizeHorzCX><sizeHorzCY>177620</sizeHorzCY><sizeVertCX>291863</sizeVertCX><sizeVertCY>785968</sizeVertCY></Rect></Wnd2></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd3><Rect><Top>-2</Top><Left>-2</Left><Bottom>198</Bottom><Right>1489</Right><x>-2</x><y>-2</y><xscreen>1491</xscreen><yscreen>200</yscreen><sizeHorzCX>1002690</sizeHorzCX><sizeHorzCY>177620</sizeHorzCY><sizeVertCX>134499</sizeVertCX><sizeVertCY>177620</sizeVertCY></Rect></Wnd3></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+    <Top><Row0><Sizes><Toolbar-051591A8><key>iaridepm.enu1</key></Toolbar-051591A8></Sizes></Row0></Top><Left><Row0><Sizes><Wnd2><Rect><Top>-2</Top><Left>-2</Left><Bottom>780</Bottom><Right>501</Right><x>-2</x><y>-2</y><xscreen>232</xscreen><yscreen>179</yscreen><sizeHorzCX>134649</sizeHorzCX><sizeHorzCY>156743</sizeHorzCY><sizeVertCX>291933</sizeVertCX><sizeVertCY>684764</sizeVertCY></Rect></Wnd2></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd3><Rect><Top>-2</Top><Left>-2</Left><Bottom>317</Bottom><Right>1725</Right><x>-2</x><y>-2</y><xscreen>1727</xscreen><yscreen>319</yscreen><sizeHorzCX>1002322</sizeHorzCX><sizeHorzCY>279335</sizeHorzCY><sizeVertCX>134649</sizeVertCX><sizeVertCY>156743</sizeVertCY></Rect></Wnd3></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
   </Desktop>
 </Workspace>
 
