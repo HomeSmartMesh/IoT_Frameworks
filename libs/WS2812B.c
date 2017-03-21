@@ -31,6 +31,8 @@
 unsigned char LedsArray[NB_LEDS*3];
 unsigned int nbLedsBytes = NB_LEDS*3;
 
+extern BYTE NodeId;
+
 
 const RGBColor_t RED = {255,0,0};
 const RGBColor_t GREEN = {0,255,0};
@@ -658,29 +660,22 @@ void rgb_Loop_BlueRedBlue(BYTE nbLeds)
 }
 
 // PID - NodeID - R - G - B - CRC
-void rgb_decode_rf(BYTE Host_NodeId,BYTE *rxData,BYTE rx_DataSize)
+void rgb_decode_rf(BYTE *rxData,BYTE rx_DataSize)
 {
-  if(rxData[0] != rf_pid_0x79_rgb)
+  if(rx_DataSize >= 7)
   {
-    return;
-  }
-  if(rx_DataSize >= 5)
-  {
-    if(rxData[5] == (rxData[0] ^ rxData[1] ^ rxData[2] ^ rxData[3] ^ rxData[4]) )
+    if(rxData[6] == (rxData[1] ^ rxData[2] ^ rxData[3] ^ rxData[4] ^ rxData[5]) )
     {
-      if(Host_NodeId == rxData[1])
-      {
         RGBColor_t ColorRx;
-        ColorRx.R = rxData[2];
-        ColorRx.G = rxData[3];
-        ColorRx.B = rxData[4];
+        ColorRx.R = rxData[3];
+        ColorRx.G = rxData[4];
+        ColorRx.B = rxData[5];
         rgb_SetColors_range(0,NB_LEDS,ColorRx);
         rgb_SendArray();
         delay_ms(1);
         printf("rgb_decode_rf : ");
-        printf_tab(rxData+1,3);
+        printf_tab(rxData+3,3);
         printf_eol();
-      }
     }
     else
     {

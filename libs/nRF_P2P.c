@@ -26,6 +26,8 @@ BYTE p2p_message[31];//size not included
 
 BYTE p2p_ack = 0;
 BYTE p2p_expected_Pid = 0;
+BYTE p2p_nb_retries = 20;
+
 
 extern BYTE NodeId;
 
@@ -80,8 +82,10 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
         {
             if((rxData[0] & P2P_MESSAGE_MASK) == P2P_MESSAGE_MASK)
             {
+                //here should check a generic CRC
                 send_ack(rxData);
                 #if P2P_MESSAGE_CALLBACK == 1
+                rxData[0]&= 0x01F;// clear bit7, bit6, bit5 and keep id
                 rf_Message_CallBack(rxData,rx_DataSize);
                 #endif
             }
@@ -143,9 +147,37 @@ BYTE p2p_send(BYTE *payload,BYTE payload_size,BYTE max_retries)
 
 BYTE p2p_send_ping(rf_message_t *p_msg)
 {
-    p2p_message[0] = rf_pid_0x64_test_ping;     //Pid
+    //This is a message
+    p2p_message[0] = P2P_BIT7_DIRECTED | P2P_BIT6_MSGACK | P2P_BIT5_MESSAGE | rf_pid_ping;     //Pid
     p2p_message[1] = NodeId;                    //source
     p2p_message[2] = p_msg->dest;               //dest
     return p2p_send(p2p_message,3,p_msg->nb_retries);
 }
 
+//Message, requires acknowledge, no response
+BYTE rf_ping(BYTE Dest)
+{
+    p2p_message[0] = P2P_BIT7_DIRECTED | P2P_BIT6_MSGACK | P2P_BIT5_MESSAGE | rf_pid_ping;     //Pid
+    p2p_message[1] = NodeId;                   //source
+    p2p_message[2] = Dest;                     //dest
+    return p2p_send(p2p_message,3,p2p_nb_retries);
+}
+
+//Message, requires acknowledge, no response
+BYTE rf_rgb_set(BYTE Dest,RGBColor_t Color)
+{
+    p2p_message[0] = P2P_BIT7_DIRECTED | P2P_BIT6_MSGACK | P2P_BIT5_MESSAGE | rf_pid_rgb;     //Pid
+    p2p_message[1] = NodeId;
+    p2p_message[2] = Dest;
+    p2p_message[3] = Color.R;
+    p2p_message[4] = Color.G;
+    p2p_message[5] = Color.B;
+    p2p_message[6] = p2p_message[1] ^ p2p_message[2] ^ p2p_message[3] ^ p2p_message[4]^ p2p_message[5];
+    
+    return p2p_send(p2p_message,7,p2p_nb_retries);
+}
+
+void rf_set_retries(BYTE nb_retries)
+{
+    p2p_nb_retries = nb_retries;
+}

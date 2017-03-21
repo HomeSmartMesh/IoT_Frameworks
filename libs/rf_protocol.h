@@ -47,8 +47,8 @@
 //Protocol      : Size BRPid  Src Dest Payload CRC
 //Ping          : Size Pid  SrcId DstId CRC
 //Pong          : Size Pid  SrcId DstId CRC
-//RGB           : Size Pid  TrgId  Payload3 CRC
-//SwitchChan    : Size Pid  TrgId Payload
+//RGB           : Size Pid  SrcId TrgId  Payload3 CRC
+//SwitchChan    : Size Pid  SrcId TrgId Payload
 //ChanAck       : Size Pid  SrcId DstId
 
 //---------------- Broadcast --------------
@@ -63,8 +63,8 @@
 //---------------- P2P --------------
 //---Messages_With_Acknowledge [6] = 1
 //---Messages [5] = 1
-#define rf_pid_0x79_rgb 		        0x79
-#define rf_pid_0x64_test_ping           0x64
+#define rf_pid_rgb 		                0x19
+#define rf_pid_ping                     0x04
 #define rf_pid_0x67_test_switchChan     0x67
 //---Acknowledge [5] = 0
 #define rf_pid_0x41_test_chanAck        0x41
@@ -88,8 +88,3 @@ void rx_light(BYTE *rxData,BYTE rx_DataSize);//Rx 5 Bytes
 //should move to magnet lib
 void rx_magnet(BYTE *rxData,BYTE rx_DataSize);//Rx 4 Bytes
 
-
-//id, GetSet, node, r, g, b, crc
-void rgb_rf_get_tx_Color_7B(BYTE Target_NodeId,BYTE isSet,BYTE *txData,RGBColor_t Color);
-//id, node, r, g, b, crc
-void rgb_rf_get_tx_Color_6B(BYTE Target_NodeId,BYTE *txData,RGBColor_t Color);

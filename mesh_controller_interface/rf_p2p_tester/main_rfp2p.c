@@ -25,6 +25,8 @@
 
 #include "rf_protocol.h"
 
+#include "WS2812B.h"
+
 #include "nRF_P2P.h"
 
 #define EEPROM_Offset 0x4000
@@ -33,16 +35,16 @@ BYTE NodeId;
 
 BYTE Led_Extend = 0;
 
-BYTE test_ping_targetNodeId = 0;
+BYTE test_targetNodeId = 0;
 
 BYTE test_ping_start = 0;
 BYTE test_ping_nb = 0;
+BYTE test_rgb_start = 0;
 
 BYTE test_chan_start = 0;
 BYTE test_chan_select = 0;
 
 BYTE send_pong = 0;
-int16_t rx_ping = 0;
 BYTE rx_pong = 0;
 BYTE rx_chan_ack = 0;
 
@@ -52,9 +54,15 @@ void rf_Message_CallBack(BYTE *rxData,BYTE rx_DataSize)
 	Led_Extend = 2;//signal retransmission
 	switch(rxData[0])
 	{
-		case rf_pid_0x64_test_ping:
+		case rf_pid_ping:
 			{
 				printf_ln("received ping");
+			}
+			break;
+		case rf_pid_rgb:
+			{
+				rgb_decode_rf(rxData,rx_DataSize);
+				printf_ln("received rgb message");
 			}
 			break;
 		default :
@@ -78,9 +86,15 @@ void handle_command(BYTE *buffer,BYTE size)
 	//ping 0x09 0x64 => ping TargetNodeId nbRequests
 	if(strbegins(buffer,"ping") == 0)
 	{
-		test_ping_targetNodeId = get_hex(buffer,5);
+		test_targetNodeId = get_hex(buffer,5);
 		test_ping_nb = get_hex(buffer,10);
 		test_ping_start = 1;
+	}
+	//rgb 0x03 => rgb Dest
+	if(strbegins(buffer,"rgb") == 0)
+	{
+		test_targetNodeId = get_hex(buffer,4);
+		test_rgb_start = 1;
 	}
 	else if(strcmp(buffer,"help") == 0)
 	{
@@ -102,22 +116,19 @@ void uart_rx_user_callback(BYTE *buffer,BYTE size)
 	prompt();
 }
 
-void rf_safe_pings(BYTE test_ping_targetNodeId)
-{
-	rf_message_t msg;
-	msg.dest = test_ping_targetNodeId;
-	msg.nb_retries = 20;
-	BYTE nb_retries = p2p_send_ping(&msg);
-
-	printf("sent ping retries: ");printf_uint(nb_retries);printf_eol();
-
-}
-
 int main( void )
 {
 	
     BYTE AliveActiveCounter = 0;
     NodeId = *EE_NODE_ID;
+    RGBColor_t MyColors[5];
+	BYTE colorId = 0;
+    
+    MyColors[0] = BLACK;
+    MyColors[1] = WHITE;
+    MyColors[2].R = 7;MyColors[2].G = 10;MyColors[2].B = 5;
+    MyColors[3] = GREEN;
+    MyColors[4].R = 1;MyColors[4].G = 2;MyColors[4].B = 4;
 
     InitialiseSystemClock();
 
@@ -143,6 +154,8 @@ int main( void )
     //The RX Mode is independently set from nRF_Config() and can be changed on run time
     nRF_SetMode_RX();
 
+    rgb_PIO_Init();
+	rgb_FlashColors(1,GREEN);
 
     while (1)
     {
@@ -159,20 +172,16 @@ int main( void )
 		delay_ms(100);
 		if(test_ping_start)
 		{
-			rf_safe_pings(test_ping_targetNodeId);
+			rf_ping(test_targetNodeId);
 			test_ping_start = 0;
 		}
-		if(rx_ping)
+		if(test_rgb_start)
 		{
-			int total_rx = 0;
-			//started reception, wait till it's over
-			do
-			{
-				total_rx += rx_ping;
-				rx_ping = 0;	//clear reception
-				delay_ms(70);	//did another reception happen in the meanwhile ?
-			}while(rx_ping != 0);//if yes, then keep looping
-			printf("Rx Pings : ");printf_uint(total_rx);printf_eol();
+			if(colorId == 5)colorId = 0;
+			rf_rgb_set(test_targetNodeId,MyColors[colorId++]);
+			printf("sent RGB to");printf_uint(test_targetNodeId);
+			printf_eol();
+			test_rgb_start = 0;
 		}
     }
 }

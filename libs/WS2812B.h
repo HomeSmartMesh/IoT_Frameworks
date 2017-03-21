@@ -67,6 +67,6 @@ void rgb_TestColors();
 void rgb_Loop_BlueRedBlue(BYTE nbLeds);
 
 //--------------------- RF Protocol handling ----------------------------------------
-void rgb_decode_rf(BYTE Host_NodeId,BYTE *rxData,BYTE rx_DataSize);
+void rgb_decode_rf(BYTE *rxData,BYTE rx_DataSize);
 
 void rgb_rf_get_tx_Color_6B(BYTE Target_NodeId,BYTE *txData,RGBColor_t Color);
