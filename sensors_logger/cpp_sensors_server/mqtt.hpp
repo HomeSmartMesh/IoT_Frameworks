@@ -38,6 +38,13 @@ ________________________________________________________________________________
 #include "utils.hpp"
 #include "serial.hpp"
 
+typedef struct RGB_data
+{
+	int sendCount;
+	int R,G,B;
+	int NodeId;
+}RGB_data_t;
+
 class mqtt_c : public mosqpp::mosquittopp
 {
 	public:
@@ -52,4 +59,6 @@ class mqtt_c : public mosqpp::mosquittopp
         void publish_measures(NodeMap_t &NodesSensorsVals);
 	private:
 	Serial &rfcom;
+	RGB_data_t rgb;
+	
 };

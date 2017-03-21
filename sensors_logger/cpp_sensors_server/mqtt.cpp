@@ -55,6 +55,7 @@ using json = nlohmann::json;
 mqtt_c::mqtt_c(strmap &conf,Serial &l_rfcom) : mosquittopp("streamer"),rfcom(l_rfcom)
 {
     isReady = false;
+    rgb.sendCount = 0;
 	//logfile : log into a file------------------------------------------------------
 	if(utl::exists(conf,"mqtt_host"))
 	{
@@ -82,6 +83,16 @@ mqtt_c::mqtt_c(strmap &conf,Serial &l_rfcom) : mosquittopp("streamer"),rfcom(l_r
 
 };
 
+void mqtt_send_RGB_Status(Serial &l_str,int TargetNodeId,int R,int G,int B)
+{
+	char text[31];
+	int nbWrite = sprintf(text,"rgb 0x%02x 0x%02x 0x%02x 0x%02x\r",TargetNodeId,R,G,B);
+	l_str.send(text,nbWrite);
+	std::string s(text);
+	Log::cout << "ser\t" << s << Log::Debug();
+}
+
+
 void mqtt_c::run()
 {
     if(isReady)
@@ -91,6 +102,11 @@ void mqtt_c::run()
         {
             reconnect();
         }
+        if(rgb.sendCount)
+        {
+            mqtt_send_RGB_Status(rfcom,rgb.NodeId,rgb.R,rgb.G,rgb.B);
+            rgb.sendCount--;
+        }
     }
 }
 
@@ -99,15 +115,6 @@ void mqtt_c::on_connect(int rc)
     Log::cout << "mqtt"<<"\t"<<"connected id(" << rc << ")" << Log::Info();
 
     subscribe(NULL,"Nodes/+/RGB");
-}
-
-void mqtt_send_RGB_Status(Serial &l_str,int TargetNodeId,int R,int G,int B)
-{
-	char text[31];
-	int nbWrite = sprintf(text,"rgb 0x%02x 0x%02x 0x%02x 0x%02x\r",TargetNodeId,R,G,B);
-	l_str.send(text,nbWrite);
-	std::string s(text);
-	Log::cout << "ser\t" << s << Log::Debug();
 }
 
 void mqtt_c::on_message(const struct mosquitto_message *message)
@@ -122,14 +129,14 @@ void mqtt_c::on_message(const struct mosquitto_message *message)
             //the topic is "Node/6/RGB"
             utl::TakeParseTo(Text,'/');//remove first section 
             std::string Id = utl::TakeParseTo(Text,'/');//take the second element
-            int NodeId = std::stoi(Id);
+            rgb.NodeId = std::stoi(Id);
             utl::TakeParseTo(msg,'#');
             unsigned int hxVal = std::stoul(msg, nullptr, 16);
-            int R = ((hxVal >> 16) & 0xFF);
-            int G = ((hxVal >> 8) & 0xFF); 
-            int B = ((hxVal) & 0xFF);
-            Log::cout << "mqtt"<<"\t"<<"=> NodeId:"<< NodeId << " RGB: ("<< R <<","<< G <<","<< B <<")"<< Log::Debug();
-            mqtt_send_RGB_Status(rfcom,NodeId,R,G,B);
+            rgb.R = ((hxVal >> 16) & 0xFF);
+            rgb.G = ((hxVal >> 8) & 0xFF); 
+            rgb.B = ((hxVal) & 0xFF);
+            Log::cout << "mqtt"<<"\t"<<"=> NodeId:"<< rgb.NodeId << " RGB: ("<< rgb.R <<","<< rgb.G <<","<< rgb.B <<")"<< Log::Debug();
+            rgb.sendCount = 10;
         }
     }
     else
