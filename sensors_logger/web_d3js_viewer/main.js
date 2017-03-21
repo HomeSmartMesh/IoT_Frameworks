@@ -60,6 +60,22 @@ var ChartsParamsList =
 		Label : "Bathroom Humidity %RH"
 	},
 	{
+		svgID : "#ChartBlacTemp",
+		scale_x_domain : [start_disp,now],
+		scale_y_domain : [0,35],
+		NodeId : 16,
+		SensorName : "Temperature",
+		Label : "Balcony Temperature °C"
+	},
+	{
+		svgID : "#ChartBalcHum",
+		scale_x_domain : [start_disp,now],
+		scale_y_domain : [0,100],
+		NodeId : 16,
+		SensorName : "Humidity",
+		Label : "Balcony Humidity %RH"
+	},
+	{
 		svgID : "#ChartRoomLight",
 		scale_x_domain : [start_disp,now],
 		scale_y_domain : [0,1800],
