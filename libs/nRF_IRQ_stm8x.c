@@ -50,7 +50,7 @@ void ProcessUserData_inIRQ()
 	BYTE rx_size = RxData[0];			//protocol change to size in the HEAD
 	if(rx_size < RF_MAX_DATASIZE)		//avoid table access overflow
 	{
-		userRxCallBack(RxData+1,rx_size);	//keep the user's data same from first payload data
+		userRxCallBack(RxData,rx_size);	//keep the user's data same from first payload data
 		#if (Enable_Debug_IRQHandler_PortD_nRF == 1)
 			IRQ_Printf("  Received Packet: ");
 			printf_hex(RxData,rx_size);

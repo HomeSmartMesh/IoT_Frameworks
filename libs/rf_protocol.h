@@ -51,6 +51,13 @@
 //SwitchChan    : Size Pid  SrcId TrgId Payload
 //ChanAck       : Size Pid  SrcId DstId
 
+#define rfi_size    0x00
+#define rfi_pid     0x01
+#define rfi_src     0x02
+#define rfi_dst     0x03
+#define rfi_header_size   0x04
+#define rfi_payload_offset 0x04
+
 //---------------- Broadcast --------------
 #define rf_pid_0xB5_temperature	0xB5
 #define rf_pid_0xF5_alive		0xF5

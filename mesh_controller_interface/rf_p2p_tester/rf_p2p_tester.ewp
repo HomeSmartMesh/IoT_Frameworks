@@ -1617,12 +1617,6 @@
       <name>$PROJ_DIR$\..\..\libs\nRF_IRQ_stm8x.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\libs\nRF_P2P.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\libs\nRF_P2P.h</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\..\..\libs\nRF_RegText.c</name>
     </file>
     <file>
@@ -1639,6 +1633,12 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\libs\nRF_Tx.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\libs\rf_messages.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\libs\rf_messages.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\libs\rf_protocol.c</name>

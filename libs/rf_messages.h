@@ -1,4 +1,4 @@
-/** @file nRF_P2P.h
+/** @file rf_messages.h
  *
  * @author Wassim FILALI
  *
@@ -6,6 +6,7 @@
  *
  *
  * $Date: 12.03.2017
+          25.03.2017 - renamed from nRF_P2P.h to rf_messages.h
  * $Revision:
  *
  */
@@ -17,25 +18,7 @@
 
 #include "commonTypes.h"
 
-typedef struct 
-{
-    BYTE source;
-    BYTE dest;
-    BYTE nb_retries;
-    BYTE Pid;
-    BYTE *payload;
-    BYTE payload_size;
-}p2p_info_t;
-
-typedef struct 
-{
-    BYTE *payload;
-    BYTE payload_size;
-    BYTE source;
-    BYTE dest;
-    BYTE nb_retries;
-    BYTE Pid;
-}rf_message_t;
+#define P2P_HEADER_BITS_MASK    0xE0
 
 //bit 7 Broadcast or Directed Message
 #define P2P_BROADCAST_MASK      0x80
@@ -64,12 +47,12 @@ typedef struct
 #define P2P_BIT5_ACK            0x00
 
 //acknowledge transmission
-BYTE p2p_send(BYTE *payload,BYTE payload_size,BYTE nb_retries);
-
-BYTE p2p_send_ping(rf_message_t *p_msg);
+BYTE p2p_send(BYTE payload_size);
 
 BYTE rf_ping(BYTE Dest);
 
 BYTE rf_rgb_set(BYTE Dest,RGBColor_t Color);
 
+
+//------------ configuration functions ------------ 
 void rf_set_retries(BYTE nb_retries);

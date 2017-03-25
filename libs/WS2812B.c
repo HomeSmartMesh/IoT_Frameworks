@@ -660,27 +660,28 @@ void rgb_Loop_BlueRedBlue(BYTE nbLeds)
 }
 
 // PID - NodeID - R - G - B - CRC
-void rgb_decode_rf(BYTE *rxData,BYTE rx_DataSize)
+void rgb_decode_rf(BYTE *rxPayload,BYTE rxPayloadSize)
 {
-  if(rx_DataSize >= 7)
+  if(rxPayloadSize == 3)
   {
-    if(rxData[6] == (rxData[1] ^ rxData[2] ^ rxData[3] ^ rxData[4] ^ rxData[5]) )
-    {
-        RGBColor_t ColorRx;
-        ColorRx.R = rxData[3];
-        ColorRx.G = rxData[4];
-        ColorRx.B = rxData[5];
-        rgb_SetColors_range(0,NB_LEDS,ColorRx);
-        rgb_SendArray();
-        delay_ms(1);
-        printf("rgb_decode_rf : ");
-        printf_tab(rxData+3,3);
-        printf_eol();
-    }
-    else
-    {
-      printf_ln("rgb_decode_rf : CRC Fail");
-    }
+      RGBColor_t ColorRx;
+      ColorRx.R = rxPayload[0];
+      ColorRx.G = rxPayload[1];
+      ColorRx.B = rxPayload[2];
+      rgb_SetColors_range(0,NB_LEDS,ColorRx);
+      rgb_SendArray();
+      delay_ms(1);
+      printf("rgb_decode_rf : ");
+      printf_tab(rxPayload,3);
+      printf_eol();
   }
+}
+
+void rgb_encode_rf(RGBColor_t ColorRx,BYTE *rxPayload,BYTE *p_rxPayloadSize)
+{
+  *p_rxPayloadSize = 3;
+  rxPayload[0] = ColorRx.R;
+  rxPayload[1] = ColorRx.G;
+  rxPayload[2] = ColorRx.B;
 }
 

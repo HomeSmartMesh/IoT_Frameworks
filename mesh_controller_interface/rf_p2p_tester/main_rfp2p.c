@@ -27,7 +27,7 @@
 
 #include "WS2812B.h"
 
-#include "nRF_P2P.h"
+#include "rf_messages.h"
 
 #define EEPROM_Offset 0x4000
 #define EE_NODE_ID       (char *) EEPROM_Offset;
@@ -49,10 +49,10 @@ BYTE rx_pong = 0;
 BYTE rx_chan_ack = 0;
 
 
-void rf_Message_CallBack(BYTE *rxData,BYTE rx_DataSize)
+void rf_Message_CallBack(BYTE* rxHeader,BYTE *rxPayload,BYTE rx_PayloadSize)
 {
 	Led_Extend = 2;//signal retransmission
-	switch(rxData[0])
+	switch(rxHeader[rfi_pid])
 	{
 		case rf_pid_ping:
 			{
@@ -61,8 +61,7 @@ void rf_Message_CallBack(BYTE *rxData,BYTE rx_DataSize)
 			break;
 		case rf_pid_rgb:
 			{
-				rgb_decode_rf(rxData,rx_DataSize);
-				printf_ln("received rgb message");
+				rgb_decode_rf(rxPayload,rx_PayloadSize);
 			}
 			break;
 		default :
