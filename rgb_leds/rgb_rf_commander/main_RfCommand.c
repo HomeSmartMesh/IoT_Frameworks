@@ -29,33 +29,19 @@
 #include "rgb_config.h"
 
 //for rx_pids and callbacks
-#include "rf_protocol.h"
+#include "rf_messages.h"
+
+#define EEPROM_Offset 0x4000
+#define EE_NODE_ID       (char *) EEPROM_Offset;
+unsigned char NodeId;
 
 BYTE Led_Extend = 0;
-
-//User Rx CallBack
-void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
-{
-	Led_Extend = 2;//signal reception
-	switch(rxData[0])
-	{
-		default :
-			{
-				printf("Unknown RF Pid:");
-				printf_hex(rxData[0]);
-				printf_eol();
-				Led_Extend = 1;//shorten the signal
-			}
-			break;
-	}
-}
-
 
 int main( void )
 {
     BYTE AliveActiveCounter = 0;
-	BYTE txData[6];
     RGBColor_t MyColors[5];
+    NodeId = *EE_NODE_ID;
     
     MyColors[0] = BLACK;
     MyColors[1] = WHITE;
@@ -92,8 +78,7 @@ int main( void )
         ColorSend = MyColors[AliveActiveCounter];
         rgb_FlashColors(0,ColorSend);
 		BYTE TargetNodeID = 3;//3 - 18
-		rgb_rf_get_tx_Color_6B(TargetNodeID,txData,ColorSend);
-		nRF_Transmit(txData,6);
+		rf_rgb_set(TargetNodeID,ColorSend);
 
 		Test_Led_On();
 		delay_ms(100);

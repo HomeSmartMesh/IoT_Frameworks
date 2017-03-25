@@ -25,6 +25,8 @@
 
 #include "rf_protocol.h"
 
+#error deprecated on this version to be reworked with rf_messages
+
 #define EEPROM_Offset 0x4000
 #define EE_NODE_ID       (char *) EEPROM_Offset;
 BYTE NodeId;

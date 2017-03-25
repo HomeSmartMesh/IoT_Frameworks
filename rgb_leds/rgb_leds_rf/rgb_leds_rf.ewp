@@ -607,7 +607,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>lnk0t.icf</state>
+          <state>$TOOLKIT_DIR$\config\lnkstm8s103f3.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -671,7 +671,7 @@
         </option>
         <option>
           <name>IlinkProgramEntryLabel</name>
-          <state></state>
+          <state>__iar_program_start</state>
         </option>
         <option>
           <name>DoFill</name>
@@ -1596,6 +1596,12 @@
       <name>$PROJ_DIR$\..\..\libs\clock_led.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\libs\cmdutils.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\libs\cmdutils.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\libs\commonTypes.h</name>
     </file>
     <file>
@@ -1627,6 +1633,12 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\libs\nRF_Tx.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\libs\rf_messages.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\libs\rf_messages.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\libs\rf_protocol.c</name>

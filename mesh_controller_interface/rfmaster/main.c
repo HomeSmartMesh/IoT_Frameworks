@@ -33,6 +33,8 @@
 
 #include "cmdutils.h"
 
+#error deprecated on this version to be reworked with rf_messages
+
 BYTE NodeId;
 
 BYTE rfmaster_LOG = 0;

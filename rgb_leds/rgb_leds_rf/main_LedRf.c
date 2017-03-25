@@ -29,6 +29,8 @@
 //for rx_pids and callbacks
 #include "rf_protocol.h"
 
+#include "rf_messages.h"
+
 
 #define EEPROM_Offset 0x4000
 #define EE_NODE_ID       (char *) EEPROM_Offset;
@@ -36,22 +38,19 @@ unsigned char NodeId;
 
 BYTE Led_Extend = 0;
 
-//User Rx CallBack
-void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
+void rf_Message_CallBack(BYTE* rxHeader,BYTE *rxPayload,BYTE rx_PayloadSize)
 {
-	Led_Extend = 2;//signal reception
-	switch(rxData[0])
+	Led_Extend = 2;//signal retransmission
+	switch(rxHeader[rfi_pid])
 	{
-		case rf_pid_0x79_rgb:
+		case rf_pid_rgb:
 			{
-				rgb_decode_rf(NodeId,rxData,rx_DataSize);
+				rgb_decode_rf(rxPayload,rx_PayloadSize);
 			}
 			break;
 		default :
 			{
-				printf("Unknown RF Pid:");
-				printf_hex(rxData[0]);
-				printf_eol();
+				//do nothing, not concerned, all other RF signals are just noise
 				Led_Extend = 1;//shorten the signal
 			}
 			break;
