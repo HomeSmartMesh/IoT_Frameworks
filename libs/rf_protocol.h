@@ -55,6 +55,7 @@
 #define rfi_pid     0x01
 #define rfi_src     0x02
 #define rfi_dst     0x03
+#define rfi_broadcast_header_size   0x03
 #define rfi_header_size   0x04
 #define rfi_payload_offset 0x04
 
@@ -83,15 +84,15 @@
 
 // Alive RF ping
 void rf_get_tx_alive_3B(BYTE NodeId, BYTE* tx_data);
-void rx_alive(BYTE *rxData,BYTE rx_DataSize);//Rx 3 Bytes
+void rx_alive(BYTE src_NodeId);//Rx 3 Bytes
 
 // Reset
 void rf_get_tx_reset_3B(BYTE NodeId, BYTE* tx_data);
-void rx_reset(BYTE *rxData,BYTE rx_DataSize);//Rx 3 Bytes
+void rx_reset(BYTE src_NodeId);
 
 //should move to max44009 lib
-void rx_light(BYTE *rxData,BYTE rx_DataSize);//Rx 5 Bytes
+void rx_light(BYTE src_NodeId,BYTE *rxPayload,BYTE rx_PayloadSize);
 
 //should move to magnet lib
-void rx_magnet(BYTE *rxData,BYTE rx_DataSize);//Rx 4 Bytes
+void rx_magnet(BYTE src_NodeId,BYTE *rxPayload,BYTE rx_PayloadSize);
 

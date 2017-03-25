@@ -70,6 +70,12 @@
       <name>$PROJ_DIR$\..\..\..\libs\nRF_Tx.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\libs\rf_messages.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\rf_messages.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\libs\rf_protocol.c</name>
     </file>
     <file>

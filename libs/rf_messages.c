@@ -38,7 +38,7 @@ BYTE p2p_nb_retries = 3;
 extern BYTE NodeId;
 
 #if P2P_BROADCAST_CALLBACK == 1
-void rf_Broadcast_CallBack(BYTE *rxData,BYTE rx_DataSize);
+void rf_Broadcast_CallBack(BYTE* rxHeader,BYTE *rxPayload,BYTE rx_PayloadSize);
 #endif
 
 #if P2P_REQUEST_CALLBACK == 1
@@ -78,21 +78,22 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
         printf("rx crc Fail : ");printf_tab(rxData,rx_DataSize+2);printf_eol();
         return;
     }
-    //------------------------ Check the destination ------------------------
-    //printf("msg_received: ");printf_tab(rxData,rx_DataSize);printf_eol();
-    if(rxData[rfi_dst] != NodeId)
-    {
-        return;//as this packet is not directed to us
-    }
-    //check if it's a Broadcast or a P2P
+    //====================== Broadcast ======================
     if((rxData[rfi_pid] & P2P_BROADCAST_MASK) == P2P_BROADCAST_MASK)
     {
         #if P2P_BROADCAST_CALLBACK == 1
-        rf_Broadcast_CallBack(rxData,rx_DataSize);
+        rf_Broadcast_CallBack(rxData,rxData+rfi_broadcast_header_size,rx_DataSize-rfi_broadcast_header_size);
         #endif
     }
+    //====================== Point to Point ======================
     else//it's a P2P protocol
     {
+        //------------------------ Check the destination ------------------------
+        //printf("msg_received: ");printf_tab(rxData,rx_DataSize);printf_eol();
+        if(rxData[rfi_dst] != NodeId)
+        {
+            return;//as this packet is not directed to us
+        }
         if((rxData[rfi_pid] & P2P_PKT_TYPE_MASK) == P2P_PKT_TYPE_MSQ_ACK)
         {
             if((rxData[rfi_pid] & P2P_MESSAGE_MASK) == P2P_MESSAGE_MASK)

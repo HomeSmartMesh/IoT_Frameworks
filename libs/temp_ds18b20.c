@@ -303,24 +303,15 @@ void UARTPrint_DS18B20_Temperature(BYTE * data)
   printf_uint(frac);
 }
 
-void rx_temperature_ds18b20(BYTE *rxData,BYTE rx_DataSize)
+void rx_temperature_ds18b20(BYTE src_NodeId,BYTE *rxPayload,BYTE rx_PayloadSize)
 {
-	BYTE crc = rxData[0];
-	for(int i=1;i<4;i++)
-	{
-	  crc ^= rxData[i];
-	}
-	if(crc == rxData[4])
-	{
+  if(rx_PayloadSize == 2)
+  {
 	  printf("NodeId:");
-	  UARTPrintf_uint(rxData[1]);
+	  printf_uint(src_NodeId);
 	  printf(";Temperature:");
-	  UARTPrint_DS18B20_Temperature(rxData+2);
-	  UARTPrintfLn("");
-	}
-	else
-	{
-	  printf_ln("Pid:Temperature;Error:CRC Fail");
+	  UARTPrint_DS18B20_Temperature(rxPayload);
+	  printf_eol();
 	}
 }
 

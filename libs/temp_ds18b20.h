@@ -36,6 +36,6 @@ BYTE DS18B20_Single_ReadScratchPad(BYTE * sp,BYTE length);
 
 BYTE DS18B20_Single_ReadTemperature(BYTE * data);
 
-void rx_temperature_ds18b20(BYTE *rxData,BYTE rx_DataSize);
+void rx_temperature_ds18b20(BYTE src_NodeId,BYTE *rxPayload,BYTE rx_PayloadSize);
 
 void UARTPrint_DS18B20_Temperature(BYTE * data);

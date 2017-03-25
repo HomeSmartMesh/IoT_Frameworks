@@ -24,6 +24,7 @@
 
 //for rx_pids and callbacks
 #include "rf_protocol.h"
+#include "rf_messages.h"
 
 //for parsing rf bme280 data
 #include "bme280.h"
@@ -42,59 +43,61 @@ BYTE Led_Extend = 0;
 //forward declaration as recurisve call from each other
 void userRxCallBack(BYTE *rxData,BYTE rx_DataSize);
 
-void handle_retransmission(BYTE *rxData,BYTE rx_DataSize)
+void handle_retransmission(BYTE* rxHeader,BYTE *rxPayload,BYTE rx_PayloadSize)
 {
+	/*
 	printf("RTX:");
 	UARTPrintf_uint(rxData[1]);
 	putc(';');
 	userRxCallBack(rxData+2,rx_DataSize-2);
+	*/
 }
 
 //User Rx CallBack
-void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
+void rf_Broadcast_CallBack(BYTE* rxHeader,BYTE *rxPayload,BYTE rx_PayloadSize)
 {
 	Led_Extend = 2;//signal retransmission
-	switch(rxData[0])
+	switch(rxHeader[rfi_pid])
 	{
 		case rf_pid_0xB5_temperature:
 			{
-				rx_temperature_ds18b20(rxData,rx_DataSize);
+				rx_temperature_ds18b20(rxHeader[rfi_src],rxPayload,rx_PayloadSize);
 			}
 			break;
 		case rf_pid_0xF5_alive:
 			{
-				rx_alive(rxData,rx_DataSize);
+				rx_alive(rxHeader[rfi_src]);
 			}
 			break;
 		case rf_pid_0xC9_reset:
 			{
-				rx_reset(rxData,rx_DataSize);
+				rx_reset(rxHeader[rfi_src]);
 			}
 			break;
 		case rf_pid_0xBB_light:
 			{
-				rx_light(rxData,rx_DataSize);
+				rx_light(rxHeader[rfi_src],rxPayload,rx_PayloadSize);
 			}
 			break;
 		case rf_pid_0xC5_magnet:
 			{
-				rx_magnet(rxData,rx_DataSize);
+				rx_magnet(rxHeader[rfi_src],rxPayload,rx_PayloadSize);
 			}
 			break;
 		case rf_pid_0xE2_bme280:
 			{
-				bme280_rx_measures(rxData,rx_DataSize);
+				bme280_rx_measures(rxHeader[rfi_src],rxPayload,rx_PayloadSize);
 			}
 			break;
 		case rf_pid_0xDF_retransmit:
-		{
-			handle_retransmission(rxData,rx_DataSize);
-		}
+			{
+				handle_retransmission(rxHeader,rxPayload,rx_PayloadSize);
+			}
 		break;
 		default :
 			{
 				printf("Unknown Pid:");
-				printf_hex(rxData[0]);
+				printf_hex(rxHeader[rfi_pid]);
 				printf_eol();
 				Led_Extend = 1;//shorten the signal
 			}
@@ -114,7 +117,6 @@ void handle_command(BYTE *buffer,BYTE size)
 	
 	if(strbegins(buffer,"rgb") == 0)
 	{
-		BYTE txData[6];
 		RGBColor_t Color;
 		//rgb NodeId R G B
 		//rgb 0x00 0x00 0x00 0x00
@@ -122,8 +124,7 @@ void handle_command(BYTE *buffer,BYTE size)
 		Color.R = get_hex(buffer,9);
 		Color.G = get_hex(buffer,14);
 		Color.B = get_hex(buffer,19);
-		rgb_rf_get_tx_Color_6B(TargetNodeId,txData,Color);
-		nRF_Transmit_Wait_Rx(txData,6);
+		rf_rgb_set(TargetNodeId,Color);
 		printf("Node (");
 		printf_uint(TargetNodeId);
 		printf(") R ");
