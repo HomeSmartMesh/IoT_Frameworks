@@ -1672,12 +1672,6 @@
     </file>
   </group>
   <file>
-    <name>$PROJ_DIR$\BMP280_API.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$\BMP280_API.h</name>
-  </file>
-  <file>
     <name>$PROJ_DIR$\deviceType.h</name>
   </file>
   <file>

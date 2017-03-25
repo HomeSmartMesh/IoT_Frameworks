@@ -16,11 +16,15 @@
 
 
 #define EEPROM_Offset 0x1000
+#define NODE_HW_CONFIG	EEPROM_Offset+0x10
+#define NODE_FUNCTIONAL_CONFIG	EEPROM_Offset+0x20
+
 #define NODE_ID       (char *) EEPROM_Offset;
-unsigned char NodeId;
+BYTE NodeId;
 
 //to format the tx data
 #include "rf_protocol.h"
+#include "cmdutils.h"
 
 BYTE tx_data[RF_MAX_DATASIZE];
 
@@ -29,31 +33,38 @@ BYTE tx_data[RF_MAX_DATASIZE];
 // - wakeup from RTC, or external/Reset
 
 
+//Magnet B0 is Top
+//Magnet D0 is side
 //------------------------------ Node Config ---------------------------------
-#define NODE_MAGNET_B_SET               1
-#define MAGNET_B_INTERRUPT				0
-#define NODE_MAGNET_D_SET               1
-#define NODE_MAGNET_D_INTERRUPT         0
-#define NODE_I2C_SET                    0
-#define NODE_MAX44009_SET               0
-//----------------------------------------------------------------------------
+#define NODE_MAGNET_B_SET               *(char*)(NODE_HW_CONFIG+0x00)
+#define NODE_MAGNET_B_INTERRUPT			*(char*)(NODE_HW_CONFIG+0x01)
+#define NODE_MAGNET_D_SET               *(char*)(NODE_HW_CONFIG+0x02)
+#define NODE_MAGNET_D_INTERRUPT         *(char*)(NODE_HW_CONFIG+0x03)
+#define NODE_I2C_SET                    *(char*)(NODE_HW_CONFIG+0x04)
+#define NODE_MAX44009_SET               *(char*)(NODE_HW_CONFIG+0x05)
 
+#define SLEEP_PERIOD_SEC				*(char*)(NODE_FUNCTIONAL_CONFIG+0x00)
 
-
-void rf_send_alive()
+void rf_alive_bcast()
 {
-	rf_get_tx_alive_3B(NodeId, tx_data);
-	nRF_Transmit_Wait_Down(tx_data,3);
+    tx_data[rfi_size] = rfi_broadcast_header_size;
+    tx_data[rfi_pid] = rf_pid_0xF5_alive;
+    tx_data[rfi_src] = NodeId;
+    crc_set(tx_data);
+   
+	nRF_Transmit_Wait_Down(tx_data,rfi_broadcast_header_size+crc_size);
 }
 
 void RfSwitch(unsigned char state)
 {
+	/*
       unsigned char Tx_Data[4];
       Tx_Data[0]=0xC5;
       Tx_Data[1]=NodeId;
       Tx_Data[2]=state;
       Tx_Data[3]= Tx_Data[0] ^ NodeId ^ state;
       nRF_Transmit_Wait_Down(Tx_Data,4);
+	  */
 }
 
 
@@ -115,11 +126,10 @@ __interrupt void IRQHandler_Pin0(void)
 {
   if(EXTI_SR1_P0F == 1)
   {
-	#if NODE_MAGNET_B_SET == 1
+	if(NODE_MAGNET_B_SET == 1)
 		RfSwitch(PB_IDR_IDR0);//B0 is Side
-	#elif NODE_MAGNET_D_SET == 1
+	else if(NODE_MAGNET_D_SET == 1)
 		RfSwitch(PD_IDR_IDR0);//D0 is Top
-	#endif
   }
   EXTI_SR1 = 0xFF;//acknowledge all interrupts pins
 }
@@ -147,31 +157,39 @@ void SMT8L_Switch_ToHSI()
 
 void Init_Magnet_PB0()
 {
-#if NODE_MAGNET_B_SET == 1
-    PB_DDR_bit.DDR0 = 0;//  0: Input
-    PB_CR1_bit.C10 = 0; //  0: Floating
-	#if MAGNET_B_INTERRUPT == 1
-    	PB_CR2_bit.C20 = 1; // Exernal interrupt enabled
-    	EXTI_CR1_P0IS = 3;//Rising and Falling edges, interrupt on events - bit 0
-	#else
-    	PB_CR2_bit.C20 = 0; // Exernal interrupt disabled
-	#endif
-#endif
+  if(NODE_MAGNET_B_SET == 1)
+  {
+      PB_DDR_bit.DDR0 = 0;//  0: Input
+      PB_CR1_bit.C10 = 0; //  0: Floating
+          if(NODE_MAGNET_B_INTERRUPT == 1)
+		  {
+			PB_CR2_bit.C20 = 1; // Exernal interrupt enabled
+			EXTI_CR1_P0IS = 3;//Rising and Falling edges, interrupt on events - bit 0
+		  }
+		  else
+		  {
+			PB_CR2_bit.C20 = 0; // Exernal interrupt disabled
+		  }
+  }
     //EXTI_CR3_PBIS = 00;//Falling edge and low level - Port B
 }
 
 void Init_Magnet_PD0()
 {
-#if NODE_MAGNET_B_SET == 1
+  if(NODE_MAGNET_B_SET == 1)
+  {
     PD_DDR_bit.DDR0 = 0;//  0: Input
     PD_CR1_bit.C10 = 0; //  0: Floating
-	#if MAGNET_D_INTERRUPT == 1
+	if(NODE_MAGNET_D_INTERRUPT == 1)
+	{
     	PD_CR2_bit.C20 = 1; // Exernal interrupt enabled
     	EXTI_CR1_P0IS = 3;//Rising and Falling edges, interrupt on events - bit 0
-	#else
+	}
+	else
+	{
    		PD_CR2_bit.C20 = 0; // Exernal interrupt disabled
-	#endif
-#endif
+	}
+  }
 }
 
 
@@ -191,22 +209,6 @@ void GPIO_B3_Low()
     PB_ODR_bit.ODR3 = 0;
 }
 
-void PingColor()
-{
-      unsigned char Tx_Data[5];
-      Tx_Data[0]=128;
-      Tx_Data[1]=255;
-      Tx_Data[2]=100;
-      Tx_Data[3]=0x59;
-      nRF_Transmit(Tx_Data,4);
-}
-void PingUart(unsigned char index)
-{
-      printf("Ping Color STM8L ");
-      UARTPrintf_uint(index);
-      printf(" \n");
-}
-
 void configure_All_PIO()
 {
 	//A0 - SWIM
@@ -223,15 +225,17 @@ void configure_All_PIO()
 	PA_ODR_bit.ODR3 = 0;//Low
 
 	//B0 - Magnet-1 Side
-#if NODE_MAGNET_B_SET != 1
-	PB_DDR_bit.DDR0 = 0;//output
-	PB_ODR_bit.ODR0 = 0;//Low
-#endif
-#if NODE_MAX44009_SET != 1
-      	//B1 - Light-IRQ
-	PB_DDR_bit.DDR1 = 1;//output
-	PB_ODR_bit.ODR1 = 0;//Low
-#endif
+	if(NODE_MAGNET_B_SET != 1)
+	{
+		PB_DDR_bit.DDR0 = 0;//output
+		PB_ODR_bit.ODR0 = 0;//Low
+	}
+	if(NODE_MAX44009_SET != 1)
+	{
+			//B1 - Light-IRQ
+		PB_DDR_bit.DDR1 = 1;//output
+		PB_ODR_bit.ODR1 = 0;//Low
+	}
 	//B2 - unconnected
 	PB_DDR_bit.DDR2 = 1;//output
 	PB_ODR_bit.ODR2 = 0;//Low
@@ -251,14 +255,15 @@ void configure_All_PIO()
 	PB_DDR_bit.DDR7 = 0;//input
 	//PB_ODR_ODR7 = 1;
 
-#if NODE_I2C_SET != 1
-	//C0 - I�C SDA
-	PC_DDR_bit.DDR0 = 1;//output
-	PC_ODR_bit.ODR0 = 0;//Low
-	//C1 - I�C SCL
-	PC_DDR_bit.DDR1 = 1;//output
-	PC_ODR_bit.ODR1 = 0;//Low
-#endif
+	if(NODE_I2C_SET != 1)
+	{
+		//C0 - I�C SDA
+		PC_DDR_bit.DDR0 = 1;//output
+		PC_ODR_bit.ODR0 = 0;//Low
+		//C1 - I�C SCL
+		PC_DDR_bit.DDR1 = 1;//output
+		PC_ODR_bit.ODR1 = 0;//Low
+	}
         //C2-C3 : do not exist
 	//C4 - nRF IRQ
 	PC_DDR_bit.DDR4 = 0;//input
@@ -271,10 +276,11 @@ void configure_All_PIO()
 	PC_ODR_bit.ODR6 = 0;//Low
 
 	//D0 - Magnet-2 Top
-#if NODE_MAGNET_D_SET != 1
-	PD_DDR_bit.DDR0 = 1;//output
-	PD_ODR_bit.ODR0 = 0;//Low
-#endif
+	if(NODE_MAGNET_D_SET != 1)
+	{
+		PD_DDR_bit.DDR0 = 1;//output
+		PD_ODR_bit.ODR0 = 0;//Low
+	}
 
 }
 
@@ -289,8 +295,8 @@ int main( void )
 	Initialise_STM8L_Clock();		//here enable the RTC clock
 
 	//#issue cannot change after first config
-	sleep(10);						//this is a low power halt sleep 
-	Initialise_STM8L_RTC_LowPower(10);//configure the sleep cycle for a period of 30 sec
+	sleep(SLEEP_PERIOD_SEC);						//this is a low power halt sleep 
+	Initialise_STM8L_RTC_LowPower(SLEEP_PERIOD_SEC);//configure the sleep cycle for a period of 30 sec
     
 	//SYSCFG_RMPCR1_USART1TR_REMAP = 1; // Remap 01: USART1_TX on PA2 and USART1_RX on PA3
 	//uart_init();//UART Disabled
@@ -306,7 +312,7 @@ int main( void )
 		__halt();
 
 		//here we wake up from halt
-		rf_send_alive();//using nRF_Transmit_Wait_Down()
+		rf_alive_bcast();//using nRF_Transmit_Wait_Down()
 
     }
 }

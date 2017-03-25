@@ -33,7 +33,10 @@ BYTE * p2p_payload = p2p_message + rfi_header_size;
 BYTE p2p_ack = 0;
 BYTE p2p_expected_Pid = 0;
 BYTE p2p_nb_retries = 3;
+uint16_t p2p_ack_delay = 290;
 
+
+#define EE_RTX_Delay     *(char *) (0x4001);
 
 extern BYTE NodeId;
 
@@ -67,11 +70,89 @@ void send_ack(BYTE *rxData)
 
 }
 
+#if P2P_BRIDGE_RETRANSMISSION == 1
+void retransmit(BYTE timeToLive, BYTE *rxData,BYTE rx_DataSize)
+{
+    BYTE* pData = p2p_message;
+    BYTE delay = EE_RTX_Delay;
+	delay_ms(delay);
+	if(rx_DataSize < 30)//max was 31, now 2 more so <=29
+	{
+		*pData = rf_pid_0xDF_retransmit;
+        pData++;
+		*pData = timeToLive;
+        pData++;
+		for(BYTE i=0;i<rx_DataSize;i++)
+		{
+			(*pData++) = (*rxData++);
+		}
+		nRF_Transmit_Wait_Rx(p2p_message,rx_DataSize+2);
+	}
+	//else not subject to retransmission as size protocol does not allow
+}
+
+BYTE check_bridge_retransmissions(BYTE *rxData,BYTE rx_DataSize)
+{
+    BYTE is_retransmitted = 1;
+    if(rxData[0] == rf_pid_0xDF_retransmit)
+    {
+        if(     ( (rxData[rfi_retransmit_header_size+rfi_pid] & P2P_BROADCAST_MASK) == P2P_BIT7_DIRECTED )
+                &&
+                ( rxData[rfi_retransmit_header_size+rfi_dst] == NodeId )
+        )
+        {
+            is_retransmitted = 0;
+        }
+        else
+        {
+            BYTE ttl = rxData[rfi_rt_ttl];
+            if(ttl>0)
+            {
+                //decrease time to live
+                //remove old ttl header
+                //decrease size by old header of 2 bytes
+                retransmit(ttl-1,rxData+rfi_retransmit_header_size,rx_DataSize-rfi_retransmit_header_size);
+            }
+        }
+    }
+    else//new retransmission
+    {
+        if(     ( (rxData[rfi_pid] & P2P_BROADCAST_MASK) == P2P_BIT7_DIRECTED )
+                &&
+                ( rxData[rfi_dst] == NodeId )
+        )
+        {
+            is_retransmitted = 0;
+        }
+        else
+        {
+            // 0 => no further retransmission
+            //for a single level bridge network
+            BYTE ttl = 0;
+            retransmit(ttl,rxData,rx_DataSize);
+        }
+    }
+    return is_retransmitted;
+}
+#endif
+
 //User Rx CallBack
 void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 {
     BYTE isReturned = 0;
 
+    #if P2P_BRIDGE_RETRANSMISSION == 1
+        if(check_bridge_retransmissions(rxData,rx_DataSize))
+        {
+            return;//it is not directed to this node and just retransmitted
+        }
+    #endif
+
+    if(rxData[0] == rf_pid_0xDF_retransmit)//then just "remove the retransmission header" then "consume it"
+    {
+        rxData+=2;
+        rx_DataSize-=2;
+    }
     //------------------------ Check the CRC --------------------------------
     if(!crc_check(rxData))
     {
@@ -144,7 +225,7 @@ BYTE p2p_send_check_ack(BYTE rf_msg_size)
     p2p_expected_Pid = p2p_message[rfi_pid];//Pid
 	nRF_Transmit_Wait_Rx(p2p_message,rf_msg_size);
     //printf("sent ");printf_tab(p2p_message,rf_msg_size);printf_eol();
-	delay_ms(190);// >>> Timeout important, might depend on Nb briges, and on the ReqResp or just MsgAck
+	delay_ms(p2p_ack_delay);// >>> Timeout important, might depend on Nb briges, and on the ReqResp or just MsgAck
     return p2p_ack;
 }
 
@@ -192,3 +273,9 @@ void rf_set_retries(BYTE nb_retries)
 {
     p2p_nb_retries = nb_retries;
 }
+
+void rf_set_ack_delay(uint16_t delay)
+{
+    p2p_ack_delay = delay;
+}
+

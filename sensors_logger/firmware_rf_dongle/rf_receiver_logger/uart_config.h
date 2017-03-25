@@ -34,7 +34,7 @@
 // 0 : INTERRUPT => The 'uart_rx_user_callback()' will be called from the uart interrupt context
 // Flags dependencies
 // '#define UART_USE_RX_INETRRUPT 1' has to be set to 1
-#define UART_CALLBACK_POLLING 1
+#define UART_CALLBACK_POLLING 0
 
 
 #define UART_FRAME_SIZE 31

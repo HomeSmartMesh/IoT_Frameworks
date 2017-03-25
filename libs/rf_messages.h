@@ -56,3 +56,4 @@ BYTE rf_rgb_set(BYTE Dest,RGBColor_t Color);
 
 //------------ configuration functions ------------ 
 void rf_set_retries(BYTE nb_retries);
+void rf_set_ack_delay(uint16_t delay);

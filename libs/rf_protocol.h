@@ -35,6 +35,15 @@
 // + 1 for CRC
 //MAX Payload Size for P2P is 26 :
 // Broadcast - 1
+//as size is limited to 32 Bytes RF --> [bit7 = retrasnmit bit6..bit0 => size]
+
+//data[0] == 0xDF => retransmit Header
+//data[0] != 0xDF => data size Header
+
+//---------------- Retransmit --------------
+//Retransmit    : RTXPid TTL  PayloadX
+#define rf_pid_0xDF_retransmit  0xDF
+
 //---------------- Broadcast --------------
 //Temperature   : Size Pid  SrcId  Payload2    CRC
 //Alive         : Size Pid  SrcId  CRC
@@ -42,7 +51,6 @@
 //Light         : Size Pid  SrcId  Payload2 CRC
 //Magnet        : Size Pid  SrcId  CRC
 //BME280        : Size Pid  SrcId  Payload7 CRC
-//Retransmit    : Size Pid  TTL    PayloadX
 //---------------- P2P --------------------
 //Protocol      : Size BRPid  Src Dest Payload CRC
 //Ping          : Size Pid  SrcId DstId CRC
@@ -50,11 +58,13 @@
 //RGB           : Size Pid  SrcId TrgId  Payload3 CRC
 //SwitchChan    : Size Pid  SrcId TrgId Payload
 //ChanAck       : Size Pid  SrcId DstId
+#define rfi_rt_ttl  0x01
 
 #define rfi_size    0x00
 #define rfi_pid     0x01
 #define rfi_src     0x02
 #define rfi_dst     0x03
+#define rfi_retransmit_header_size   0x02
 #define rfi_broadcast_header_size   0x03
 #define rfi_header_size   0x04
 #define rfi_payload_offset 0x04
@@ -66,7 +76,6 @@
 #define rf_pid_0xBB_light		0xBB
 #define rf_pid_0xC5_magnet		0xC5
 #define rf_pid_0xE2_bme280		0xE2
-#define rf_pid_0xDF_retransmit  0xDF
 
 //---------------- P2P --------------
 //---Messages_With_Acknowledge [6] = 1

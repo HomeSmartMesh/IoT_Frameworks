@@ -40,14 +40,31 @@
 
 
 BYTE Led_Extend = 0;
-BYTE RTX_Delay = 0;
 
 BYTE tx_data[RF_MAX_DATASIZE];
 
 #define EEPROM_Offset 0x4000
 #define EE_NODE_ID       (char *) EEPROM_Offset;
-#define EE_RTX_Delay     (char *) (EEPROM_Offset+1);
 unsigned char NodeId;
+
+void rf_Message_CallBack(BYTE* rxHeader,BYTE *rxPayload,BYTE rx_PayloadSize)
+{
+	Led_Extend = 2;//signal retransmission
+	switch(rxHeader[rfi_pid])
+	{
+		case rf_pid_rgb:
+			{
+				rgb_decode_rf(rxPayload,rx_PayloadSize);
+			}
+			break;
+		default :
+			{
+				//do nothing, not concerned, all other RF signals are just noise
+				Led_Extend = 1;//shorten the signal
+			}
+			break;
+	}
+}
 
 void rf_send_reset()
 {
@@ -55,64 +72,9 @@ void rf_send_reset()
 	nRF_Transmit(tx_data,3);
 }
 
-
-void retransmit(BYTE timeToLive, BYTE *rxData,BYTE rx_DataSize)
-{
-	delay_ms(RTX_Delay);
-	if(rx_DataSize < 30)//max was 31, now 2 more so <=29
-	{
-		tx_data[0] = rf_pid_0xDF_retransmit;
-		tx_data[1] = timeToLive;
-		BYTE* pData = tx_data+2;
-		for(BYTE i=0;i<rx_DataSize;i++)
-		{
-			(*pData++) = (*rxData++);
-		}
-		nRF_Transmit(tx_data,rx_DataSize+2);
-		nRF_Wait_Transmit();
-		nRF_SetMode_RX();	//back to listening
-		Led_Extend = 2;//signal retransmission
-	}
-	//else not subject to retransmission as size protocol does not allow
-}
-
-//User Rx CallBack
-void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
-{
-	Test_Led_On();
-	if(rxData[0] == rf_pid_0x79_rgb)
-	{
-		rgb_decode_rf(NodeId,rxData,rx_DataSize);
-	}
-
-	if(rxData[0] == rf_pid_0xDF_retransmit)
-	{
-		BYTE ttl = rxData[1];
-		if(rxData[1] == rf_pid_0x79_rgb)
-		{
-			rgb_decode_rf(NodeId,rxData+1,rx_DataSize-1);
-		}
-		if(ttl>0)
-		{
-			//decrease time to live
-			//remove old ttl header
-			//decrease size by old header of 2 bytes
-			retransmit(ttl-1,rxData+2,rx_DataSize-2);
-		}
-	}
-	else//new retransmission
-	{
-		// 0 => no further retransmission
-		//for a single level bridge network
-		BYTE ttl = 0;
-		retransmit(ttl,rxData,rx_DataSize);
-	}
-}
-
 int main( void )
 {
     NodeId = *EE_NODE_ID;
-	RTX_Delay = *EE_RTX_Delay;
     BYTE AliveActiveCounter = 0;
 
     InitialiseSystemClock();

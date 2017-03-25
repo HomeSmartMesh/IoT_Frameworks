@@ -40,19 +40,6 @@ unsigned char NodeId;
 
 BYTE Led_Extend = 0;
 
-//forward declaration as recurisve call from each other
-void userRxCallBack(BYTE *rxData,BYTE rx_DataSize);
-
-void handle_retransmission(BYTE* rxHeader,BYTE *rxPayload,BYTE rx_PayloadSize)
-{
-	/*
-	printf("RTX:");
-	UARTPrintf_uint(rxData[1]);
-	putc(';');
-	userRxCallBack(rxData+2,rx_DataSize-2);
-	*/
-}
-
 //User Rx CallBack
 void rf_Broadcast_CallBack(BYTE* rxHeader,BYTE *rxPayload,BYTE rx_PayloadSize)
 {
@@ -89,11 +76,6 @@ void rf_Broadcast_CallBack(BYTE* rxHeader,BYTE *rxPayload,BYTE rx_PayloadSize)
 				bme280_rx_measures(rxHeader[rfi_src],rxPayload,rx_PayloadSize);
 			}
 			break;
-		case rf_pid_0xDF_retransmit:
-			{
-				handle_retransmission(rxHeader,rxPayload,rx_PayloadSize);
-			}
-		break;
 		default :
 			{
 				printf("Unknown Pid:");
@@ -112,30 +94,22 @@ void prompt()
 	printf_ln(">");
 }
 
+BYTE TargetNodeId;
+RGBColor_t Color;
+BYTE send_rgb = 0;
+
 void handle_command(BYTE *buffer,BYTE size)
 {
 	
 	if(strbegins(buffer,"rgb") == 0)
 	{
-		RGBColor_t Color;
 		//rgb NodeId R G B
 		//rgb 0x00 0x00 0x00 0x00
-		BYTE TargetNodeId = get_hex(buffer,4);
+		TargetNodeId = get_hex(buffer,4);
 		Color.R = get_hex(buffer,9);
 		Color.G = get_hex(buffer,14);
 		Color.B = get_hex(buffer,19);
-		rf_rgb_set(TargetNodeId,Color);
-		printf("Node (");
-		printf_uint(TargetNodeId);
-		printf(") R ");
-		printf_uint(Color.R);
-		printf_eol();
-		printf("  G ");
-		printf_uint(Color.G);
-		printf_eol();
-		printf("  B ");
-		printf_uint(Color.B);
-		printf_eol();
+		send_rgb = 1;
 	}
 	else if(strcmp(buffer,"help") == 0)
 	{
@@ -198,6 +172,25 @@ int main( void )
 		{
 			Test_Led_Off();
 		}
+		//uart_rx_user_poll();
 		delay_ms(100);
+		if(send_rgb)
+		{
+			rf_set_retries(5);
+			rf_set_ack_delay(500);
+			rf_rgb_set(TargetNodeId,Color);
+			printf("Node (");
+			printf_uint(TargetNodeId);
+			printf(") R ");
+			printf_uint(Color.R);
+			printf_eol();
+			printf("  G ");
+			printf_uint(Color.G);
+			printf_eol();
+			printf("  B ");
+			printf_uint(Color.B);
+			printf_eol();
+			send_rgb = 0;
+		}
     }
 }
