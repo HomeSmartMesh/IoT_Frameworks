@@ -30,7 +30,7 @@ BYTE nRF_Transmit(BYTE* payload, BYTE size)
 	//as per definition in http://www.technolab.ddns.net/display/SSN/RF-UART
 	//as long as the length cannot be explicitely retreived
 	//it will be available at the 32nd and last location
-	if(size>=RF_MAX_DATASIZE)
+	if(size>RF_MAX_DATASIZE)//size byte is included in the length
 	{
 		//non supported size, do nothing
 		return 0;

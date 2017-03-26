@@ -66,6 +66,7 @@
 #define rfi_dst     0x03
 #define rfi_retransmit_header_size   0x02
 #define rfi_broadcast_header_size   0x03
+#define rfi_broadcast_payload_offset   0x03
 #define rfi_header_size   0x04
 #define rfi_payload_offset 0x04
 

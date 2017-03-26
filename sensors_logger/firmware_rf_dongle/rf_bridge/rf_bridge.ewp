@@ -489,7 +489,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state></state>
+          <state>rf_bridge.srec</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
@@ -579,7 +579,7 @@
         </option>
         <option>
           <name>IlinkMapFile</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IlinkLogFile</name>

@@ -32,7 +32,7 @@ void bme280_print_measures();
 //void bme280_get_measures(BYTE *measures);
 
 //get the measures from the sensor and format them for tx
-//make sure the tx_data is a pre allocated 10 bytes buffer
-void bme280_get_tx_measures_11B(BYTE NodeId, BYTE *tx_data);
+//make sure the payload is a pre allocated 8 bytes buffer
+void bme280_get_tx_payload_8B(BYTE *payload);
 
 void bme280_rx_measures(BYTE src_NodeId,BYTE *rxPayload,BYTE rx_PayloadSize);//Rx 11 Bytes

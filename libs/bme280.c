@@ -198,18 +198,9 @@ void bme280_print_measures()
 //--------------------------------------------------------------------
 //get the measures from the sensor and format them for tx
 //make sure the tx_data is a pre allocated 10 bytes buffer
-void bme280_get_tx_measures_11B(BYTE NodeId, BYTE *tx_data)
+void bme280_get_tx_payload_8B(BYTE *payload)
 {
-	BYTE i;
-	BYTE CRC = 0;
-	tx_data[0] = rf_pid_0xE2_bme280;
-	tx_data[1] = NodeId;// Byte 1 is Node Id
-	bme280_read_registers(0xF7, 8, &(tx_data[2]));
-	for(i=0;i<10;i++)
-	{
-		CRC ^= tx_data[i];
-	}
-	tx_data[10] = CRC;
+	bme280_read_registers(0xF7, 8, payload);
 }
 
 //--------------------------------------------------------------------

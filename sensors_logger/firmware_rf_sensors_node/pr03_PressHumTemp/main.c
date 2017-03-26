@@ -54,47 +54,46 @@ BYTE tx_data[RF_MAX_DATASIZE];
 //0x1020
 #define SLEEP_PERIOD_SEC				*(char*)(NODE_FUNCTIONAL_CONFIG+0x00)
 #define STARTUP_SEND_CALIB_INFO			*(char*)(NODE_FUNCTIONAL_CONFIG+0x01)
-
-void rf_alive_bcast()
-{
-    tx_data[rfi_size] = rfi_broadcast_header_size;
-    tx_data[rfi_pid] = rf_pid_0xF5_alive;
-    tx_data[rfi_src] = NodeId;
-    crc_set(tx_data);
-   
-	nRF_Transmit_Wait_Down(tx_data,rfi_broadcast_header_size+crc_size);
-}
+#define USE_UART						*(char*)(NODE_FUNCTIONAL_CONFIG+0x02)
 
 void RfSwitch(unsigned char state)
 {
+	/* TO be reworked with new protocol crc
 	tx_data[0]=0xC5;
 	tx_data[1]=NodeId;
 	tx_data[2]=state;
 	tx_data[3]= tx_data[0] ^ NodeId ^ state;
 	nRF_Transmit_Wait_Down(tx_data,4);
+	*/
 }
 
-void rf_send_bme280_measures()
+void rf_bme280_bcast()
 {
-	if(NODE_I2C_SET == 1)
-	{
-		bme280_force_OneMeasure(1,1,1);//Pressure, Temperature, Humidity
-		bme280_wait_measures();
-		//bme280_print_measures();
-		//printf("rf_send---------------\n");
-		bme280_get_tx_measures_11B(NodeId, tx_data);
-		nRF_Transmit_Wait_Down(tx_data,11);
-	}
+	const BYTE bme280_payload_size = 8;
+	bme280_force_OneMeasure(1,1,1);//Pressure, Temperature, Humidity
+	bme280_wait_measures();
+	//bme280_print_measures();
+	//printf("rf_send---------------\n");
+    tx_data[rfi_size] = rfi_broadcast_header_size + bme280_payload_size;//Header + Paloayd
+    tx_data[rfi_pid] = rf_pid_0xE2_bme280;
+    tx_data[rfi_src] = NodeId;
+	bme280_get_tx_payload_8B(tx_data+rfi_broadcast_payload_offset);
+    crc_set(tx_data);
+	BYTE rf_msg_size = rfi_broadcast_header_size + bme280_payload_size + crc_size;
+	nRF_Transmit_Wait_Down(tx_data,rf_msg_size);
+
 }
 
-void rf_send_light()
+void rf_light_bcast()
 {
-	if(NODE_MAX44009_SET == 1)
-	{
-		uint16_t light = max44009_read_light();
-		max44009_get_rf_5B(NodeId, light, tx_data);
-		nRF_Transmit_Wait_Down(tx_data,5);
-	}
+	uint16_t light = max44009_read_light();
+    tx_data[rfi_size] = rfi_broadcast_header_size + 2;//Header + Paloayd
+    tx_data[rfi_pid] = rf_pid_0xBB_light;
+    tx_data[rfi_src] = NodeId;
+	max44009_get_tx_payload_2B(light, tx_data+rfi_broadcast_payload_offset);
+    crc_set(tx_data);
+	BYTE rf_msg_size = rfi_broadcast_header_size + 2 + crc_size;
+	nRF_Transmit_Wait_Down(tx_data,rf_msg_size);
 }
 
 void LogMagnets()
@@ -330,21 +329,13 @@ void configure_All_PIO()
 
 }
 
-int main( void )
+void check_minimal_Power()
 {
-	BYTE counter = 0;
-	NodeId = *NODE_ID;
-
-        configure_All_PIO();//config conditionnal
-        Init_Magnet_PB0();//config conditionnal
-        Init_Magnet_PD0();//config conditionnal
-	
-	Initialise_STM8L_Clock();			//here the RTC clock source is set to LSI
-	Initialise_STM8L_RTC_LowPower(SLEEP_PERIOD_SEC);//sleep period 30 sec
-	
-#ifdef CheckMinimalPower
-	SYSCFG_RMPCR1_USART1TR_REMAP = 1; // Remap 01: USART1_TX on PA2 and USART1_RX on PA3
-	uart_init();//Tx only
+	if(USE_UART)
+	{
+		SYSCFG_RMPCR1_USART1TR_REMAP = 1; // Remap 01: USART1_TX on PA2 and USART1_RX on PA3
+		uart_init();//Tx only
+	}
 	I2C_Init();
 	nRF_Config();
 	nRF_SetMode_PowerDown();
@@ -356,10 +347,32 @@ int main( void )
 	{
 		__halt();
 	}
+}
+
+int main( void )
+{
+	BYTE counter = 0;
+	NodeId = *NODE_ID;
+
+	configure_All_PIO();
+	Init_Magnet_PB0();//conditionned config with flags
+	Init_Magnet_PD0();//conditionned config with flags
+	
+	Initialise_STM8L_Clock();		//here enable the RTC clock
+
+	//#issue cannot change after first config
+	sleep(SLEEP_PERIOD_SEC);						//this is a low power halt sleep 
+	Initialise_STM8L_RTC_LowPower(SLEEP_PERIOD_SEC);//configure the sleep cycle for a period of 30 sec
+	
+#ifdef CheckMinimalPower
+	check_minimal_Power();
 #endif
 
-	SYSCFG_RMPCR1_USART1TR_REMAP = 1; // Remap 01: USART1_TX on PA2 and USART1_RX on PA3
-	uart_init();//Tx only
+	if(USE_UART)
+	{
+		SYSCFG_RMPCR1_USART1TR_REMAP = 1; // Remap 01: USART1_TX on PA2 and USART1_RX on PA3
+		uart_init();//Tx only
+	}
 	if(NODE_I2C_SET == 1)
 		I2C_Init();
 
@@ -375,22 +388,29 @@ int main( void )
 		//Important to set the halt in the beginning so that battery reset do not retransmit directly
 		__halt();
 		//printf("Measure---------------\n");
-		#ifdef STARTUP_SEND_CALIB_INFO
-		if(counter == 1)
+		if(STARTUP_SEND_CALIB_INFO)
 		{
-			//startup info are only sent once after a sleep cycle to avoid continuous restarts
-			//that kill the battery with a lot of uart that drops again and loops in another restart cycle
-			startup_info();
+			if(counter == 1)
+			{
+				//startup info are only sent once after a sleep cycle to avoid continuous restarts
+				//that kill the battery with a lot of uart that drops again and loops in another restart cycle
+				startup_info();
+			}
 		}
-		#endif
 		
 		if(counter % 2 == 0)
 		{
-			rf_send_bme280_measures();//no effect if no i2C
+			if(NODE_I2C_SET == 1)
+			{
+				rf_bme280_bcast();//no effect if no i2C
+			}
 		}
 		else
 		{
-			rf_send_light();//no effect if no NODE_MAX44009_SET
+			if(NODE_MAX44009_SET == 1)
+			{
+				rf_light_bcast();//no effect if no NODE_MAX44009_SET
+			}
 		}
 		
 		

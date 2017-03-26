@@ -76,17 +76,18 @@ void retransmit(BYTE timeToLive, BYTE *rxData,BYTE rx_DataSize)
     BYTE* pData = p2p_message;
     BYTE delay = EE_RTX_Delay;
 	delay_ms(delay);
-	if(rx_DataSize < 30)//max was 31, now 2 more so <=29
+	if(rx_DataSize < 30)//no crc included
 	{
 		*pData = rf_pid_0xDF_retransmit;
         pData++;
 		*pData = timeToLive;
         pData++;
-		for(BYTE i=0;i<rx_DataSize;i++)
+        BYTE prev_rf_msg_size = rx_DataSize+crc_size;//copy the crc as well, even if placeholder
+		for(BYTE i=0;i<prev_rf_msg_size;i++)
 		{
 			(*pData++) = (*rxData++);
 		}
-		nRF_Transmit_Wait_Rx(p2p_message,rx_DataSize+2);
+		nRF_Transmit_Wait_Rx(p2p_message,prev_rf_msg_size+2);
 	}
 	//else not subject to retransmission as size protocol does not allow
 }
@@ -147,9 +148,9 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
             return;//it is not directed to this node and just retransmitted
         }
     #endif
-
     if(rxData[0] == rf_pid_0xDF_retransmit)//then just "remove the retransmission header" then "consume it"
     {
+        printf("RTX:");printf_uint(rxData[1]);printf(";");
         rxData+=2;
         rx_DataSize-=2;
     }

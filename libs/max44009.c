@@ -42,11 +42,8 @@ uint16_t max44009_read_light()
 	return Val;
 }
 
-void max44009_get_rf_5B(BYTE NodeId, uint16_t light, BYTE *tx_data)
+void max44009_get_tx_payload_2B(uint16_t light, BYTE *payload)
 {
-	tx_data[0]= rf_pid_0xBB_light;//Light is 0x3B
-	tx_data[1]= NodeId;
-	tx_data[2]= light>>4;
-	tx_data[3]= light&0x0F;
-	tx_data[4]= tx_data[0] ^ NodeId;
+	payload[0]= light>>4;
+	payload[1]= light&0x0F;
 }

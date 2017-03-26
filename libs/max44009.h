@@ -23,4 +23,4 @@ BYTE max44009_read_reg(BYTE address);
 
 uint16_t max44009_read_light();
 
-void max44009_get_rf_5B(BYTE NodeId, uint16_t light, BYTE *tx_data);
+void max44009_get_tx_payload_2B(uint16_t light, BYTE *payload);
