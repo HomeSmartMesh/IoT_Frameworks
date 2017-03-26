@@ -25,6 +25,12 @@
       <name>$PROJ_DIR$\..\..\..\libs\clock_led.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\libs\cmdutils.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\cmdutils.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\libs\commonTypes.h</name>
     </file>
     <file>

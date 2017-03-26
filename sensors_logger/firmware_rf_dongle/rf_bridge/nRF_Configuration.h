@@ -25,7 +25,7 @@
 #define	Enable_CRC  	0
 
 //----------------------------- nRF Communication Configuration ---------------------------------
-//data size, fixed to 32 bytes and size is at data[31]
+//data size, from 1 till 32 bytes payload
 #define RF_MAX_DATASIZE	32
 //disable auto acknowledgement for all pipes
 #define SPI_Write_Register_EN_AA		0x00
@@ -42,6 +42,12 @@
 #define Enable_Debug_IRQHandler_PortD_nRF 		        0
 #define Enable_Debug_nRF_Config 				1
 #define Enable_Debug_nRF_SetMode_RX				0
+//-------------------------------------------------------------------------------------------------
+#define P2P_BROADCAST_CALLBACK 0
+#define P2P_RESPONSE_CALLBACK 0
+#define P2P_REQUEST_CALLBACK 0
+#define P2P_MESSAGE_CALLBACK 1
+#define P2P_BRIDGE_RETRANSMISSION 1
 //-------------------------------------------------------------------------------------------------
 //-------------------------------- End of User Editable Section -----------------------------------
 //-------------------------------------------------------------------------------------------------

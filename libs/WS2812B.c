@@ -17,6 +17,7 @@
 #include "WS2812B.h"
 
 #include <iostm8s103f3.h>
+#include <intrinsics.h>
 
 #include "clock_led.h"
 
@@ -30,6 +31,8 @@
 unsigned char LedsArray[NB_LEDS*3];
 unsigned int nbLedsBytes = NB_LEDS*3;
 
+extern BYTE NodeId;
+
 
 const RGBColor_t RED = {255,0,0};
 const RGBColor_t GREEN = {0,255,0};
@@ -39,17 +42,29 @@ const RGBColor_t WHITE = {255,255,255};
 
 
 //RGBLedPIN has to be defined by the user 0x02 for PIN_A2, 0x03 for PIN_A3
-
-#if(RGBLedPIN_A == 2)
-#define RGBLedPin_Set   "BSET    L:0x5000,      #0x02         \n"
-#define RGBLedPin_ReSet   "BRES    L:0x5000,      #0x02         \n"
+#if(RGB_IO_NEG == 1)
+  #if(RGBLedPIN_A == 2)
+  #define RGBLedPin_Set   "BRES    L:0x5000,      #0x02         \n"
+  #define RGBLedPin_ReSet   "BSET    L:0x5000,      #0x02         \n"
+  #else
+  #define RGBLedPin_Set   "BRES    L:0x5000,      #0x03         \n"
+  #define RGBLedPin_ReSet   "BSET    L:0x5000,      #0x03         \n"
+  #endif
 #else
-#define RGBLedPin_Set   "BSET    L:0x5000,      #0x03         \n"
-#define RGBLedPin_ReSet   "BRES    L:0x5000,      #0x03         \n"
+  #if(RGBLedPIN_A == 2)
+  #define RGBLedPin_Set   "BSET    L:0x5000,      #0x02         \n"
+  #define RGBLedPin_ReSet   "BRES    L:0x5000,      #0x02         \n"
+  #else
+  #define RGBLedPin_Set   "BSET    L:0x5000,      #0x03         \n"
+  #define RGBLedPin_ReSet   "BRES    L:0x5000,      #0x03         \n"
+  #endif
 #endif
+
 
 void rgb_SendArray()
 {
+    BYTE int_state = __get_interrupt_state();
+    __disable_interrupt();
   asm(
         "lb_intiLoop:                          \n"
         "LDW      X,             #0xFFFF       \n"// set -1 in X, so that first inc gets 0, as inc has to be in the beginning of the loop
@@ -380,6 +395,7 @@ void rgb_SendArray()
         "JP      L:lb_begin_loop             \n"//5
         "lb_exit:nop");
   
+    __set_interrupt_state(int_state);
 }
 
 
@@ -644,34 +660,28 @@ void rgb_Loop_BlueRedBlue(BYTE nbLeds)
 }
 
 // PID - NodeID - R - G - B - CRC
-void rgb_decode_rf(BYTE Host_NodeId,BYTE *rxData,BYTE rx_DataSize)
+void rgb_decode_rf(BYTE *rxPayload,BYTE rxPayloadSize)
 {
-  if(rxData[0] != rf_pid_0x59_rgb)
+  if(rxPayloadSize == 3)
   {
-    return;
+      RGBColor_t ColorRx;
+      ColorRx.R = rxPayload[0];
+      ColorRx.G = rxPayload[1];
+      ColorRx.B = rxPayload[2];
+      rgb_SetColors_range(0,NB_LEDS,ColorRx);
+      rgb_SendArray();
+      delay_ms(1);
+      printf("rgb_decode_rf : ");
+      printf_tab(rxPayload,3);
+      printf_eol();
   }
-  if(rx_DataSize >= 5)
-  {
-    if(rxData[5] == (rxData[0] ^ rxData[1] ^ rxData[2] ^ rxData[3] ^ rxData[4]) )
-    {
-      if(Host_NodeId == rxData[1])
-      {
-        RGBColor_t ColorRx;
-        ColorRx.R = rxData[2];
-        ColorRx.G = rxData[3];
-        ColorRx.B = rxData[4];
-        rgb_SetColors_range(0,NB_LEDS,ColorRx);
-        rgb_SendArray();
-        delay_ms(1);
-        printf("rgb_decode_rf : ");
-        printf_tab(rxData+1,3);
-        printf_eol();
-      }
-    }
-    else
-    {
-      printf_ln("rgb_decode_rf : CRC Fail");
-    }
-  }
+}
+
+void rgb_encode_rf(RGBColor_t ColorRx,BYTE *rxPayload,BYTE *p_rxPayloadSize)
+{
+  *p_rxPayloadSize = 3;
+  rxPayload[0] = ColorRx.R;
+  rxPayload[1] = ColorRx.G;
+  rxPayload[2] = ColorRx.B;
 }
 

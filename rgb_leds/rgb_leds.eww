@@ -5,12 +5,6 @@
     <path>$WS_DIR$\hello_rgb\hello_rgb.ewp</path>
   </project>
   <project>
-    <path>$WS_DIR$\pr01_RF_Color_Sender\pr01_RF_Color_Sender.ewp</path>
-  </project>
-  <project>
-    <path>$WS_DIR$\pr02_RF_ColorReceiver\pr02_RF_ColorReceiver.ewp</path>
-  </project>
-  <project>
     <path>$WS_DIR$\rgb_led_bar\rgb_led_bar.ewp</path>
   </project>
   <project>

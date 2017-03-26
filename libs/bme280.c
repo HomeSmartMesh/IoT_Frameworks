@@ -198,52 +198,27 @@ void bme280_print_measures()
 //--------------------------------------------------------------------
 //get the measures from the sensor and format them for tx
 //make sure the tx_data is a pre allocated 10 bytes buffer
-void bme280_get_tx_measures_11B(BYTE NodeId, BYTE *tx_data)
+void bme280_get_tx_payload_8B(BYTE *payload)
 {
-	BYTE i;
-	BYTE CRC = 0;
-	tx_data[0] = rf_pid_0xE2_bme280;
-	tx_data[1] = NodeId;// Byte 1 is Node Id
-	bme280_read_registers(0xF7, 8, &(tx_data[2]));
-	for(i=0;i<10;i++)
-	{
-		CRC ^= tx_data[i];
-	}
-	tx_data[10] = CRC;
+	bme280_read_registers(0xF7, 8, payload);
 }
 
 //--------------------------------------------------------------------
 
 //Rx 11 Bytes
-void bme280_rx_measures(BYTE* rx_data, BYTE rx_DataSize)
+void bme280_rx_measures(BYTE src_NodeId,BYTE *rxPayload,BYTE rx_PayloadSize)
 {
-	BYTE i;
-	BYTE CRC = 0;
-	if(rx_DataSize != 11)
+	if(rx_PayloadSize != 8)
 	{
-		printf("Pid:BME280;Error:dataSize not 11 but ");
-		printf_uint(rx_DataSize);
+		printf("Pid:BME280;Error:dataSize not 8 but ");
+		printf_uint(rx_PayloadSize);
 		printf_eol();
 		return;
 	}
-	for(i=0;i<11;i++)
-	{
-		CRC ^= rx_data[i];
-	}
-	if(CRC == 0x00)
-	{
-		printf("NodeId:");
-		printf_uint(rx_data[1]);// Byte 1 is Node Id
-		printf(";BME280: ");
-		printf_tab(&(rx_data[2]),rx_DataSize-3);//do not print pId nor NodeId nor CRC
-		printf_eol();
-	}
-	else
-	{
-		printf("Pid:BME280;Error:CRC;");
-		printf("NodeId:");
-		printf_uint(rx_data[1]);// Byte 1 is Node Id
-		printf_eol();
-	}
+    printf("NodeId:");
+    printf_uint(src_NodeId);// Byte 1 is Node Id
+    printf(";BME280: ");
+    printf_tab(rxPayload,rx_PayloadSize);//do not print pId nor NodeId nor CRC
+    printf_eol();
 }
 

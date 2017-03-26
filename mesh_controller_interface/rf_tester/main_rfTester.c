@@ -25,13 +25,15 @@
 
 #include "rf_protocol.h"
 
+#error deprecated on this version to be reworked with rf_messages
+
 #define EEPROM_Offset 0x4000
 #define EE_NODE_ID       (char *) EEPROM_Offset;
 BYTE NodeId;
 
 BYTE Led_Extend = 0;
 
-BYTE test_targetNodeId = 0;
+BYTE test_ping_targetNodeId = 0;
 
 BYTE test_ping_start = 0;
 BYTE test_ping_nb = 0;
@@ -44,27 +46,29 @@ int16_t rx_ping = 0;
 BYTE rx_pong = 0;
 BYTE rx_chan_ack = 0;
 
-void rf_send_ping(BYTE target_id)
+void rf_send_ping(BYTE source_id,BYTE target_id)
 {
-	BYTE txData[2];
-	txData[0] = rf_pid_0x84_test_ping;
-	txData[1] = target_id;
-	//printf_ln("sending ping");
-	nRF_Transmit_Wait_Rx(txData,2);
+	BYTE txData[3];
+	txData[0] = rf_pid_0x64_test_ping;
+	txData[1] = source_id;
+	txData[2] = target_id;
+	nRF_Transmit_Wait_Rx(txData,3);
 }
 
-void rf_send_pong()
+void rf_send_pong(BYTE requesterId)
 {
-	BYTE txByte;
-	txByte = rf_pid_0x89_test_pong;
-	nRF_Transmit_Wait_Rx(&txByte,1);
+	BYTE txData[3];
+	txData[0] = rf_pid_0x49_test_pong;
+	txData[1] = NodeId;		//Source
+	txData[2] = requesterId;//Dest
+	nRF_Transmit_Wait_Rx(txData,3);
 }
 
 //Triple redunduncy for a safe channel switching
 void rf_send_switchChan(BYTE target_id,BYTE channel)
 {
 	BYTE txData[5];
-	txData[0] = rf_pid_0x87_test_switchChan;
+	txData[0] = rf_pid_0x67_test_switchChan;
 	txData[1] = target_id;
 	txData[2] = channel;
 	txData[3] = channel;
@@ -75,7 +79,7 @@ void rf_send_switchChan(BYTE target_id,BYTE channel)
 void rf_send_chanAck()
 {
 	BYTE txByte;
-	txByte = rf_pid_0x81_test_chanAck;
+	txByte = rf_pid_0x41_test_chanAck;
 	//printf("Channel");printf_uint()
 	nRF_Transmit_Wait_Rx(&txByte,1);
 }
@@ -100,32 +104,39 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize)
 	Led_Extend = 2;//signal retransmission
 	switch(rxData[0])
 	{
-		case rf_pid_0x84_test_ping:
+		case rf_pid_0x64_test_ping:
 			{
 				rx_ping++;
 				//what do we do when we receive a ping request, 
 				//check if we're the target, if do => We send a pong back
-				if(rxData[1] == NodeId)
+				if(rxData[2] == NodeId)
 				{
-					rf_send_pong();
+					BYTE requesterId = rxData[1];
+					rf_send_pong(requesterId);
 				}
 			}
 			break;
-		case rf_pid_0x89_test_pong:
+		case rf_pid_0x49_test_pong:
 			{
-				//received a pong
-				rx_pong = 1;
+				if(rxData[2] == NodeId)//if this pong is directed to us
+				{
+					if(rxData[1] == test_ping_targetNodeId)//if it's coming the Node we pinged
+					{
+						//received a pong
+						rx_pong = 1;
+					}
+				}
 			}
 			break;
-		case rf_pid_0x87_test_switchChan:
+		case rf_pid_0x67_test_switchChan:
 			{
-				if(rxData[1] == NodeId)
+				if(rxData[1] == NodeId)//if the request is directed to us
 				{
 					rf_request_setChan(rxData);
 				}
 			}
 			break;
-		case rf_pid_0x81_test_chanAck:
+		case rf_pid_0x41_test_chanAck:
 			{
 				rx_chan_ack = 1;
 			}
@@ -149,7 +160,7 @@ void prompt()
 BYTE rf_ping(BYTE target_id)
 {
 	rx_pong = 0;
-	rf_send_ping(target_id);
+	rf_send_ping(NodeId,target_id);
 	//maximum delay after which there is no statistical difference
 	//in waiting a longer time
 	delay_ms(30);
@@ -238,14 +249,14 @@ void handle_command(BYTE *buffer,BYTE size)
 	//ping 0x09 0x64 => ping TargetNodeId nbRequests
 	if(strbegins(buffer,"ping") == 0)
 	{
-		test_targetNodeId = get_hex(buffer,5);
+		test_ping_targetNodeId = get_hex(buffer,5);
 		test_ping_nb = get_hex(buffer,10);
 		test_ping_start = 1;
 	}
 	//rfch 0x12 0x02 => rfch TargetNodeId ChannelToSet
 	else if(strbegins(buffer,"rfch") == 0)
 	{
-		test_targetNodeId = get_hex(buffer,5);
+		test_ping_targetNodeId = get_hex(buffer,5);
 		test_chan_select = get_hex(buffer,10);
 		if( (test_chan_select > 1 ) && (test_chan_select <= 125 ) )
 		{
@@ -329,12 +340,12 @@ int main( void )
 		delay_ms(100);
 		if(test_ping_start)
 		{
-			rf_test_many_pings(test_targetNodeId,test_ping_nb);
+			rf_test_many_pings(test_ping_targetNodeId,test_ping_nb);
 			test_ping_start = 0;
 		}
 		if(test_chan_start)
 		{
-			rf_test_Switch_Channel(test_targetNodeId,test_chan_select);
+			rf_test_Switch_Channel(test_ping_targetNodeId,test_chan_select);
 			test_chan_start = 0;
 		}
 		if(rx_ping)

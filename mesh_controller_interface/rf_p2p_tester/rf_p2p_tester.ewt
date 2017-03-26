@@ -93,18 +93,12 @@
     <file>
       <name>$PROJ_DIR$\..\..\libs\uart_stm8x.h</name>
     </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\libs\WS2812B.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\libs\WS2812B.h</name>
-    </file>
   </group>
   <file>
     <name>$PROJ_DIR$\deviceType.h</name>
   </file>
   <file>
-    <name>$PROJ_DIR$\main_LedRf.c</name>
+    <name>$PROJ_DIR$\main_rfp2p.c</name>
   </file>
   <file>
     <name>$PROJ_DIR$\nRF_Configuration.h</name>
@@ -114,6 +108,12 @@
   </file>
   <file>
     <name>$PROJ_DIR$\uart_config.h</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\..\..\libs\WS2812B.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\..\..\libs\WS2812B.h</name>
   </file>
 </project>
 

@@ -489,7 +489,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state></state>
+          <state>rf_bridge.srec</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
@@ -579,7 +579,7 @@
         </option>
         <option>
           <name>IlinkMapFile</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IlinkLogFile</name>
@@ -1602,6 +1602,12 @@
       <name>$PROJ_DIR$\..\..\..\libs\clock_led.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\libs\cmdutils.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\cmdutils.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\libs\commonTypes.h</name>
     </file>
     <file>
@@ -1633,6 +1639,12 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\libs\nRF_Tx.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\rf_messages.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\rf_messages.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\libs\rf_protocol.c</name>

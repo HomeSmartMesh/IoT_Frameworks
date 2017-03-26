@@ -3,10 +3,9 @@
 		IoT_Frameworks
 			\sensors_logger
 				\firmware_rf_dongle
-					\rf_receiver_logger
+					\rf_tester
 
-	started	
-	refactored	29.10.2016
+	started		11.03.2017
 	
 */
 
@@ -19,68 +18,55 @@
 //for nRF_Config() nRF_SetMode_RX() 
 #include "nRF.h"
 
-//to parse the RF response with rx_temperature_ds18b20()
-#include "temp_ds18b20.h"
-
-//for rx_pids and callbacks
-#include "rf_protocol.h"
-#include "rf_messages.h"
-
-//for parsing rf bme280 data
-#include "bme280.h"
-
 #include "nRF_Tx.h"
 #include "nRF_RegText.h"
 
 #include "cmdutils.h"
 
+#include "rf_protocol.h"
+
+#include "WS2812B.h"
+
+#include "rf_messages.h"
+
 #define EEPROM_Offset 0x4000
 #define EE_NODE_ID       (char *) EEPROM_Offset;
-unsigned char NodeId;
+BYTE NodeId;
 
 BYTE Led_Extend = 0;
 
-//User Rx CallBack
-void rf_Broadcast_CallBack(BYTE* rxHeader,BYTE *rxPayload,BYTE rx_PayloadSize)
+BYTE test_targetNodeId = 0;
+
+BYTE test_ping_start = 0;
+BYTE test_ping_nb = 0;
+BYTE test_rgb_start = 0;
+
+BYTE test_chan_start = 0;
+BYTE test_chan_select = 0;
+
+BYTE send_pong = 0;
+BYTE rx_pong = 0;
+BYTE rx_chan_ack = 0;
+
+
+void rf_Message_CallBack(BYTE* rxHeader,BYTE *rxPayload,BYTE rx_PayloadSize)
 {
 	Led_Extend = 2;//signal retransmission
 	switch(rxHeader[rfi_pid])
 	{
-		case rf_pid_0xB5_temperature:
+		case rf_pid_ping:
 			{
-				rx_temperature_ds18b20(rxHeader[rfi_src],rxPayload,rx_PayloadSize);
+				printf_ln("received ping");
 			}
 			break;
-		case rf_pid_0xF5_alive:
+		case rf_pid_rgb:
 			{
-				rx_alive(rxHeader[rfi_src]);
-			}
-			break;
-		case rf_pid_0xC9_reset:
-			{
-				rx_reset(rxHeader[rfi_src]);
-			}
-			break;
-		case rf_pid_0xBB_light:
-			{
-				rx_light(rxHeader[rfi_src],rxPayload,rx_PayloadSize);
-			}
-			break;
-		case rf_pid_0xC5_magnet:
-			{
-				rx_magnet(rxHeader[rfi_src],rxPayload,rx_PayloadSize);
-			}
-			break;
-		case rf_pid_0xE2_bme280:
-			{
-				bme280_rx_measures(rxHeader[rfi_src],rxPayload,rx_PayloadSize);
+				rgb_decode_rf(rxPayload,rx_PayloadSize);
 			}
 			break;
 		default :
 			{
-				printf("Unknown Pid:");
-				printf_hex(rxHeader[rfi_pid]);
-				printf_eol();
+				//do nothing, not concerned, all other RF signals are just noise
 				Led_Extend = 1;//shorten the signal
 			}
 			break;
@@ -94,22 +80,20 @@ void prompt()
 	printf_ln(">");
 }
 
-BYTE TargetNodeId;
-RGBColor_t Color;
-BYTE send_rgb = 0;
-
 void handle_command(BYTE *buffer,BYTE size)
 {
-	
+	//ping 0x09 0x64 => ping TargetNodeId nbRequests
+	if(strbegins(buffer,"ping") == 0)
+	{
+		test_targetNodeId = get_hex(buffer,5);
+		test_ping_nb = get_hex(buffer,10);
+		test_ping_start = 1;
+	}
+	//rgb 0x03 => rgb Dest
 	if(strbegins(buffer,"rgb") == 0)
 	{
-		//rgb NodeId R G B
-		//rgb 0x00 0x00 0x00 0x00
-		TargetNodeId = get_hex(buffer,4);
-		Color.R = get_hex(buffer,9);
-		Color.G = get_hex(buffer,14);
-		Color.B = get_hex(buffer,19);
-		send_rgb = 1;
+		test_targetNodeId = get_hex(buffer,4);
+		test_rgb_start = 1;
 	}
 	else if(strcmp(buffer,"help") == 0)
 	{
@@ -131,12 +115,19 @@ void uart_rx_user_callback(BYTE *buffer,BYTE size)
 	prompt();
 }
 
-
 int main( void )
 {
 	
     BYTE AliveActiveCounter = 0;
     NodeId = *EE_NODE_ID;
+    RGBColor_t MyColors[5];
+	BYTE colorId = 0;
+    
+    MyColors[0] = BLACK;
+    MyColors[1] = WHITE;
+    MyColors[2].R = 7;MyColors[2].G = 10;MyColors[2].B = 5;
+    MyColors[3] = GREEN;
+    MyColors[4].R = 1;MyColors[4].G = 2;MyColors[4].B = 4;
 
     InitialiseSystemClock();
 
@@ -146,8 +137,11 @@ int main( void )
 
     uart_init();
 	
-    printf("\r\n__________________________________________________\n\r");
-    printf("sensors_logger\\firmware_rf_dongle\\rf_receiver_logger\\\n\r");
+	printf_eol();
+    printf_ln("__________________________________________________");
+    printf_ln("sensors_logger\\firmware_rf_dongle\\rf_tester\\");
+	printf("Node Id: ");printf_uint(NodeId);printf_eol();
+
 
     //Applies the compile time configured parameters from nRF_Configuration.h
     BYTE status = nRF_Config();
@@ -159,6 +153,8 @@ int main( void )
     //The RX Mode is independently set from nRF_Config() and can be changed on run time
     nRF_SetMode_RX();
 
+    rgb_PIO_Init();
+	rgb_FlashColors(1,GREEN);
 
     while (1)
     {
@@ -172,27 +168,19 @@ int main( void )
 		{
 			Test_Led_Off();
 		}
-		//uart_rx_user_poll();
 		delay_ms(100);
-		if(send_rgb)
+		if(test_ping_start)
 		{
-			rf_set_retries(20);
-			rf_set_ack_delay(400);
-			BYTE success = rf_rgb_set(TargetNodeId,Color);
-			printf("NodeId:");
-			printf_uint(NodeId);
-			printf(";SetRGB_to:");
-			printf_uint(TargetNodeId);
-			printf(";R:");
-			printf_uint(Color.R);
-			printf(";G:");
-			printf_uint(Color.G);
-			printf(";B:");
-			printf_uint(Color.B);
-			printf(";Success:");
-			printf_uint(success);
+			rf_ping(test_targetNodeId);
+			test_ping_start = 0;
+		}
+		if(test_rgb_start)
+		{
+			if(colorId == 5)colorId = 0;
+			rf_rgb_set(test_targetNodeId,MyColors[colorId++]);
+			printf("sent RGB to");printf_uint(test_targetNodeId);
 			printf_eol();
-			send_rgb = 0;
+			test_rgb_start = 0;
 		}
     }
 }

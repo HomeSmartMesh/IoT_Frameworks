@@ -17,7 +17,7 @@
 //the value of 256 == 0 was not tested
 //255 => 75% of RAM
 //#define NB_LEDS 216
-#define NB_LEDS 16
+#define NB_LEDS 1
 
 //reverse the polarity of the PIO when going through a level shifter inverter
 // 1 : invert

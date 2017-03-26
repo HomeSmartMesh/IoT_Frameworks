@@ -147,8 +147,7 @@ BYTE SPI_Write_Buf(BYTE reg, BYTE *pBuf, BYTE size)
 	CSN_Pin_LowSelect();                           
 	status = SPI_RW(reg);                          
 
-	SPI_RW(size);								//protocol with size as first Byte
-	for(byte_ctr=0; byte_ctr<size; byte_ctr++)	//will send size+1 bytes
+	for(byte_ctr=0; byte_ctr<size; byte_ctr++)	//will send size bytes as size is included
 		SPI_RW(*pBuf++);
 
 	CSN_Pin_HighDisable();

@@ -31,6 +31,12 @@
       <name>$PROJ_DIR$\..\..\..\libs\clock_led.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\libs\cmdutils.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\libs\cmdutils.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\libs\commonTypes.h</name>
     </file>
     <file>
@@ -100,12 +106,6 @@
       <name>$PROJ_DIR$\..\..\..\libs\uart_stm8x.h</name>
     </file>
   </group>
-  <file>
-    <name>$PROJ_DIR$\BMP280_API.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$\BMP280_API.h</name>
-  </file>
   <file>
     <name>$PROJ_DIR$\deviceType.h</name>
   </file>

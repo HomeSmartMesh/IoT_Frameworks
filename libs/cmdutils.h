@@ -30,4 +30,12 @@ BYTE line_length(BYTE*rxData,BYTE max_size);
 //for this handle_command() must be instanciated
 void run_eeprom_script();
 
+#define crc_size 2
+
+void crc_set(uint8_t *data);
+// size(size+data) : data : crc
+BYTE crc_check(uint8_t const *data);
+
+uint16_t crc_Fletcher16( uint8_t const *data, uint8_t count );
+
 #endif /*__CMDUTILS__*/

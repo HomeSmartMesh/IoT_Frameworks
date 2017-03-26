@@ -42,15 +42,23 @@ void userRxCallBack(BYTE *rxData,BYTE rx_DataSize);
 
 BYTE RxData[RF_MAX_DATASIZE];
 
-
 //---------------------------------------------------------------------------------------------
 #if(Enable_RX_IRQ == 1)
 void ProcessUserData_inIRQ()
 {
-	BYTE rx_size = RxData[0];			//protocol change to size in the HEAD
+	BYTE rx_size;
+	//have to get into the protocol here
+	if(RxData[0] == 0xDF)//Retransmission
+	{
+		rx_size = RxData[2] + 2;// retransmission header + inside_message without crc
+	}
+	else
+	{
+		rx_size = RxData[0];			//protocol change to size in the HEAD
+	}
 	if(rx_size < RF_MAX_DATASIZE)		//avoid table access overflow
 	{
-		userRxCallBack(RxData+1,rx_size);	//keep the user's data same from first payload data
+		userRxCallBack(RxData,rx_size);	//keep the user's data same from first payload data
 		#if (Enable_Debug_IRQHandler_PortD_nRF == 1)
 			IRQ_Printf("  Received Packet: ");
 			printf_hex(RxData,rx_size);
