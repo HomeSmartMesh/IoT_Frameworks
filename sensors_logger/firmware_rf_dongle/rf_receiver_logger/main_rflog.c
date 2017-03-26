@@ -146,8 +146,11 @@ int main( void )
 
     uart_init();
 	
-    printf("\r\n__________________________________________________\n\r");
-    printf("sensors_logger\\firmware_rf_dongle\\rf_receiver_logger\\\n\r");
+	printf_eol();
+    printf_ln("__________________________________________________");
+    printf_ln("sensors_logger\\firmware_rf_dongle\\rf_receiver_logger\\");
+
+	printf("NodeId:");printf_uint(NodeId);printf_ln(";is:RFLogging");
 
     //Applies the compile time configured parameters from nRF_Configuration.h
     BYTE status = nRF_Config();

@@ -38,6 +38,7 @@
 //for NB_LEDS
 #include "rgb_config.h"
 
+#include "cmdutils.h"
 
 BYTE Led_Extend = 0;
 
@@ -66,10 +67,14 @@ void rf_Message_CallBack(BYTE* rxHeader,BYTE *rxPayload,BYTE rx_PayloadSize)
 	}
 }
 
-void rf_send_reset()
+void rf_reset_bcast()
 {
-	rf_get_tx_reset_3B(NodeId, tx_data);
-	nRF_Transmit(tx_data,3);
+    tx_data[rfi_size] = rfi_broadcast_header_size;
+    tx_data[rfi_pid] = rf_pid_0xC9_reset;
+    tx_data[rfi_src] = NodeId;
+    crc_set(tx_data);
+   
+	nRF_Transmit_Wait_Rx(tx_data,rfi_broadcast_header_size+crc_size);
 }
 
 int main( void )
@@ -97,7 +102,7 @@ int main( void )
 	nRF_PrintInfo();
     printf("__________________________________________________\n\r");
 	//notify that a reset happened
-	rf_send_reset();
+	rf_reset_bcast();
 
     //The RX Mode is independently set from nRF_Config() and can be changed on run time
     nRF_SetMode_RX();
