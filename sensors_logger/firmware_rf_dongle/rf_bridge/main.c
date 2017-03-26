@@ -88,12 +88,17 @@ int main( void )
     Test_Led_Off();
 
     rgb_PIO_Init();
-    rgb_SwitchOff_Range(0,NB_LEDS);//(From led id 0, NB_LEDS leds)
+    //rgb_SwitchOff_Range(0,NB_LEDS);//(From led id 0, NB_LEDS leds)
+	rgb_SendColor(0,0,1);
 
     uart_init();
 	
-    printf("\r\n__________________________________________________\n\r");
-    printf("sensors_logger\\firmware_rf_dongle\\rf_bridge\\\n\r");
+    printf_eol();
+    printf_ln("__________________________________________________");
+    printf_ln("sensors_logger\\firmware_rf_dongle\\rf_bridge\\");
+    
+    printf("NodeId:");printf_uint(NodeId);printf_ln(";is:RFBridging");
+
 
     //Applies the compile time configured parameters from nRF_Configuration.h
     BYTE status = nRF_Config();

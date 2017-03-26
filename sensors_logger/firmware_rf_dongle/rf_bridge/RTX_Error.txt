@@ -1,0 +1,383 @@
+=======================================================
+    TEST CASE 1
+=======================================================
+
+sensors_logger\firmware_rf_dongle\rf_receiver_logger\
+NodeId:10;is:RFLogging
+nRF_Config
+
+Config updated with : 0x30 ; reread 0x30 ; STATUS: 0x0E : No Data Ready i; No Data Sent i; No Max Ret i; Rx Fifo Empty ; Available TX Fifo Locations;
+__________________________________________________
+
+STATUS: 0x0E : No Data Ready i; No Data Sent i; No Max Ret i; Rx Fifo Empty ; Available TX Fifo Locations;
+CONFIG: 0x30 : RX IRQ Active; TX IRQ Masked; Max RT IRQ Masked; CRC Disabled; CRC 1 Bytes; Power Down; P TX Mode;
+ChipEnable Low
+Channel 2 selected : 2402 MHz
+Address Width : 5 bytes
+Rx Address P0: 0xE7
+Tx Address   : 0xE7
+__________________________________________________
+
+rx crc Fail : 0x03 E2 10 4A 63
+RTX:0;NodeId:16;BME280: 0x4A 63 00 7A 57 00 6D A2
+NodeId:14;is:Alive
+RTX:0;NodeId:14;is:Alive
+RTX:0;NodeId:14;is:Alive
+Node0x0A>
+RTX:0;RTX:0;RTX:0;NodeId:10;SetRGB_to:3;R:0;G:1;B:0;Success:1
+NodeId:6;Light:693
+RTX:0;NodeId:6;Light:693
+NodeId:14;is:Alive
+RTX:0;NodeId:14;is:Alive
+RTX:0;NodeId:14;is:Alive
+NodeId:6;BME280: 0x57 34 00 80 48 00 66 4A
+NodeId:14;is:Alive
+RTX:0;NodeId:14;is:Alive
+RTX:0;NodeId:14;is:Alive
+NodeId:16;BME280: 0x4A 67 00 7A 4F 00 6D A8
+RTX:0;NodeId:16;BME280: 0x4A 67 00 7A 4F 00 6D A8
+NodeId:14;is:Alive
+RTX:0;NodeId:14;is:Alive
+RTX:0;NodeId:14;is:Alive
+rx crc Fail : 0x05 BA 06 2B 02 72 F3
+RTX:2;rx crc Fail : 0x05 BB 06 2B 02 63 D3
+RTX:127;rx crc Fail : 0x05 9B 06 A3 02 72 F3
+RTX:126;rx crc Fail : 0x05 9B 06 A3 02 72 F3
+RTX:125;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:124;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:123;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:122;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:121;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:120;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:119;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:118;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:117;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:116;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:115;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:114;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:113;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:112;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:111;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:110;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:109;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:108;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:106;rx crc Fail : 0x05 9A 05 25 16 FF F7
+RTX:107;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:106;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:105;rx crc Fail : 0x05 9A 05 25 16 FF F7
+RTX:104;rx crc Fail : 0x05 9A 05 25 16 FF F7
+RTX:105;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:104;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:103;rx crc Fail : 0x05 9A 05 25 16 FF F7
+RTX:102;rx crc Fail : 0x05 9A 05 25 16 FF F7
+RTX:103;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:102;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:101;rx crc Fail : 0x05 9A 05 25 16 FF F7
+RTX:100;rx crc Fail : 0x05 9A 05 25 16 FF F7
+RTX:101;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:100;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:99;rx crc Fail : 0x05 9A 04 A5 16 FF F7
+RTX:98;rx crc Fail : 0x05 9A 04 A5 16 FF F7
+RTX:99;rx crc Fail : 0x05 9A 05 25 16 FF F7
+RTX:98;rx crc Fail : 0x05 9A 05 25 16 FF F7
+RTX:99;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:98;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:97;rx crc Fail : 0x05 9A 04 A5 16 FF F7
+RTX:96;rx crc Fail : 0x05 9A 04 A5 16 FF F7
+RTX:94;rx crc Fail : 0x05 9A 04 A5 06 FF F7
+RTX:97;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:96;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:95;rx crc Fail : 0x05 9A 04 A5 16 FF F7
+RTX:94;rx crc Fail : 0x05 9A 04 A5 16 FF F7
+RTX:95;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:94;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:93;rx crc Fail : 0x05 9A 04 A5 16 FF F7
+RTX:92;rx crc Fail : 0x05 9A 04 A5 16 FF F7
+RTX:93;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:92;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:91;rx crc Fail : 0x05 9A 04 A5 16 FF F7
+RTX:90;rx crc Fail : 0x05 9A 04 A5 16 FF F7
+RTX:91;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:90;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:88;rx crc Fail : 0x05 9A 05 85 26 FF 77
+RTX:88;rx crc Fail : 0x05 92 04 A5 16 FB F7
+RTX:87;rx crc Fail : 0x05 92 04 A5 16 FB F7
+RTX:89;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:88;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:86;rx crc Fail : 0x05 92 04 A5 16 FB F7
+RTX:85;rx crc Fail : 0x05 92 04 A5 16 FB F7
+RTX:87;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:86;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:84;rx crc Fail : 0x05 92 04 A5 16 FB F7
+RTX:83;rx crc Fail : 0x05 92 04 A5 16 FB F7
+RTX:85;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:84;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:82;rx crc Fail : 0x05 92 04 A5 16 FB F7
+RTX:81;rx crc Fail : 0x05 92 04 A5 16 FB F7
+RTX:79;rx crc Fail : 0x09 96 04 AD 54 FB F7 54 DE AB 6A
+RTX:83;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:82;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:80;rx crc Fail : 0x05 92 04 A5 16 FB F7
+RTX:79;rx crc Fail : 0x05 92 04 A5 16 FB F7
+RTX:81;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:80;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:78;rx crc Fail : 0x05 92 04 A5 16 FB F7
+RTX:77;rx crc Fail : 0x05 92 04 A5 16 FB F7
+RTX:79;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:78;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:76;rx crc Fail : 0x05 92 04 A5 16 FB F7
+RTX:75;rx crc Fail : 0x05 92 04 A5 16 FB F7
+RTX:77;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:76;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:74;rx crc Fail : 0x05 92 04 A5 16 FB F7
+RTX:73;rx crc Fail : 0x05 92 04 A5 16 FB F7
+RTX:75;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:74;rx crc Fail : 0x05 9B 04 A5 16 FF F7
+RTX:72;rx crc Fail : 0x05 92 04 A5 16 FB F7
+RTX:71;rx crc Fail : 0x05 92 04 A5 16 FB F7
+RTX:69;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:70;rx crc Fail : 0x05 92 04 A5 16 FB F7
+RTX:69;rx crc Fail : 0x05 92 04 A5 16 FB F7
+RTX:68;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:67;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:66;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:65;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:64;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:63;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:61;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:62;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:61;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:60;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:59;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:60;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:59;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:58;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:57;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:55;rx crc Fail : 0x01 92 00
+RTX:57;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:56;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:55;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:54;rx crc Fail : 0x01 92 00
+RTX:53;rx crc Fail : 0x01 92 00
+RTX:56;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:55;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:54;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:53;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:52;rx crc Fail : 0x01 92 00
+RTX:51;rx crc Fail : 0x01 92 00
+RTX:54;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:53;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:52;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:51;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:50;rx crc Fail : 0x01 92 00
+RTX:49;rx crc Fail : 0x01 92 00
+RTX:52;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:51;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:50;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:49;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:48;rx crc Fail : 0x01 92 00
+RTX:47;rx crc Fail : 0x01 92 00
+RTX:50;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:49;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:48;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:47;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:46;rx crc Fail : 0x01 92 00
+RTX:45;rx crc Fail : 0x01 92 00
+RTX:48;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:47;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:46;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:45;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:44;rx crc Fail : 0x01 92 00
+RTX:43;rx crc Fail : 0x01 92 00
+RTX:46;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:45;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:44;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:43;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:42;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:41;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:42;rx crc Fail : 0x01 92 00
+RTX:41;rx crc Fail : 0x01 92 00
+RTX:44;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:43;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:42;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:41;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:39;rx crc Fail : 0x05 92 00 41 16 FB 50
+RTX:39;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:40;rx crc Fail : 0x01 92 00
+RTX:39;rx crc Fail : 0x01 92 00
+RTX:42;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:41;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:40;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:39;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:38;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:37;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:38;rx crc Fail : 0x01 92 00
+RTX:37;rx crc Fail : 0x01 92 00
+RTX:40;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:39;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:38;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:37;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:36;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:35;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:36;rx crc Fail : 0x01 92 00
+RTX:35;rx crc Fail : 0x01 92 00
+RTX:38;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:37;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:36;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:35;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:34;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:33;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:34;rx crc Fail : 0x01 92 00
+RTX:33;rx crc Fail : 0x01 92 00
+RTX:31;rx crc Fail : 0x01 92 05
+RTX:35;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:34;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:33;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:32;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:31;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:32;rx crc Fail : 0x01 92 00
+RTX:31;rx crc Fail : 0x01 92 00
+RTX:34;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:33;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:32;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:31;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:30;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:29;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:30;rx crc Fail : 0x01 92 00
+RTX:29;rx crc Fail : 0x01 92 00
+RTX:32;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:31;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:30;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:29;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:28;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:27;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:28;rx crc Fail : 0x01 92 00
+RTX:27;rx crc Fail : 0x01 92 00
+RTX:30;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:29;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:28;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:27;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:26;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:25;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:58;rx crc Fail : 0x02 52 08 AF
+RTX:57;rx crc Fail : 0x02 52 08 AF
+RTX:28;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:27;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:26;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:25;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:24;rx crc Fail : 0x05 92 00 A5 16 F3 54
+RTX:24;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:23;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:56;rx crc Fail : 0x02 52 08 AF
+RTX:55;rx crc Fail : 0x02 52 08 AF
+RTX:26;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:25;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:24;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:23;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:22;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:21;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:54;rx crc Fail : 0x02 52 08 AF
+RTX:53;rx crc Fail : 0x02 52 08 AF
+RTX:24;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:23;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:22;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:21;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:20;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:19;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:52;rx crc Fail : 0x02 52 08 AF
+RTX:22;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:21;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:20;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:19;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:18;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:17;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:20;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:19;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:18;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:17;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:16;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:15;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:18;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:17;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:16;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:15;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:14;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:13;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:12;rx crc Fail : 0x09 B2 11 6A 2C BF 3C 06 D5 7B F2
+RTX:25;rx crc Fail : 0x09 92 10 68 2C 3F 3C 02 94 33 F1
+RTX:24;rx crc Fail : 0x09 92 10 68 2C 3F 3C 02 94 33 F1
+RTX:16;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:15;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:14;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:13;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:12;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:11;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:23;rx crc Fail : 0x09 92 10 68 2C 3F 3C 02 94 33 F1
+RTX:22;rx crc Fail : 0x09 92 10 68 2C 3F 3C 02 94 33 F1
+RTX:14;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:13;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:12;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:11;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:9;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:9;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:21;rx crc Fail : 0x09 92 10 68 2C 3F 3C 02 94 33 F1
+RTX:20;rx crc Fail : 0x09 92 10 68 2C 3F 3C 02 94 33 F1
+RTX:12;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:11;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:10;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:9;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:8;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:7;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:5;rx crc Fail : 0x09 92 10 6A 28 BB 3C 03 D5 33 F1
+RTX:10;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:9;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:8;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:7;rx crc Fail : 0x05 92 00 A5 16 FB 54
+RTX:6;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:5;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:3;rx crc Fail : 0x08 92 10 6A 2C 3F 2C 01 D3 39
+RTX:8;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:7;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:5;rx crc Fail : 0x05 92 00 A5 16 FA 56
+RTX:3;rx crc Fail : 0x05 12 00 A5 16 FA 54
+RTX:4;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:3;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:1;rx crc Fail : 0x08 92 10 6A 2C 3F 2C 01 D3 39
+RTX:1;rx crc Fail : 0x09 92 10 6A 2C BF 3C 03 D5 33 F1
+RTX:0;rx crc Fail : 0x08 92 10 6A 2C 3F 2C 01 D3 39
+RTX:6;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:5;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:2;rx crc Fail : 0x05 12 00 A5 16 FA 54
+RTX:1;rx crc Fail : 0x05 12 00 A5 16 FA 54
+RTX:4;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:3;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:2;rx crc Fail : 0x05 96 07 FF 5F FF 7E
+RTX:1;rx crc Fail : 0x05 92 00 AD 16 FB 56
+RTX:2;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:1;rx crc Fail : 0x05 92 00 A5 16 FB 56
+RTX:0;rx crc Fail : 0x05 92 00 AD 16 FB 56
+RTX:0;rx crc Fail : 0x05 92 00 A5 16 FB 56
+NodeId:14;is:Alive
+RTX:0;NodeId:14;is:Alive
+RTX:0;NodeId:14;is:Alive
+
+
+=======================================================
+    TEST CASE 2
+=======================================================
+
+
+
+RTX:0;rx crc Fail : 0x0B C2 06 21 20 44 93 86 00 55 BF D2 7D
+NodeId:14;is:Alive
+RTX:0;NodeId:14;is:Alive
+RTX:0;NodeId:14;is:Alive
+Node0x0A>
+RTX:0;RTX:0;RTX:0;NodeId:10;SetRGB_to:3;R:0;G:0;B:0;Success:1
+Node0x0A>
+Node0x0A>
+Node0x0A>
+RTX:7;RTX:0;RTX:6;RTX:5;RTX:0;RTX:4;RTX:3;RTX:1;RTX:2;RTX:1;RTX:0;RTX:0;NodeId:10;SetRGB_to:3;R:0;G:0;B:0;Success:1
+NodeId:14;is:Alive
+RTX:0;NodeId:14;is:Alive
+RTX:0;NodeId:14;is:Alive
