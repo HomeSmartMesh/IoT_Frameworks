@@ -176,19 +176,21 @@ int main( void )
 		delay_ms(100);
 		if(send_rgb)
 		{
-			rf_set_retries(5);
-			rf_set_ack_delay(500);
-			rf_rgb_set(TargetNodeId,Color);
-			printf("Node (");
+			rf_set_retries(20);
+			rf_set_ack_delay(400);
+			BYTE success = rf_rgb_set(TargetNodeId,Color);
+			printf("NodeId:");
+			printf_uint(NodeId);
+			printf(";SetRGB_to:");
 			printf_uint(TargetNodeId);
-			printf(") R ");
+			printf(";R:");
 			printf_uint(Color.R);
-			printf_eol();
-			printf("  G ");
+			printf(";G:");
 			printf_uint(Color.G);
-			printf_eol();
-			printf("  B ");
+			printf(";B:");
 			printf_uint(Color.B);
+			printf(";Success:");
+			printf_uint(success);
 			printf_eol();
 			send_rgb = 0;
 		}

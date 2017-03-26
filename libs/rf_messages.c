@@ -245,7 +245,11 @@ BYTE p2p_send(BYTE payload_size)
 		success = p2p_send_check_ack(rf_msg_size);//1 on success, 0 on fail
 		i++;
 	}while((i<p2p_nb_retries) && (success == 0) );
-	return i;//nb_retries
+    if(success == 0)
+    {
+        i = 0;
+    }
+	return i;//nb_retries in case of success otherwise 0
 }
 
 
