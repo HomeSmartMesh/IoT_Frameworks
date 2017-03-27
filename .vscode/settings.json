@@ -2,6 +2,7 @@
     "files.associations": {
         "*hpp*hpparray": "cpp",
         "array": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "utility": "cpp"
     }
 }

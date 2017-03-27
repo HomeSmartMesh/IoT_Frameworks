@@ -13,12 +13,17 @@ var StatusParams =
 		{ x: 300, y: 100, r: 20, color: "Blue", 
 			Temperature : 26, Light : 500,
 			Name : "BathRoom"
+		},
+		{ x: 500, y: 100, r: 20, color: "Blue", 
+			Temperature : 26, Light : 500,
+			Name : "Balcony"
 		}
 	]
 };
 
 var nmap = {6 : 0,
-			7 : 1};
+			7 : 1,
+			16 : 2};
 
 //---------------------------------------------------------------------------
 //					Time Chart
