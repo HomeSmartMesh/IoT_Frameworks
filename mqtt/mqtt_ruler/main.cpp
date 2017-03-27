@@ -79,7 +79,7 @@ void mqtt_c::publish_humidity_status(int NodeId,float humidity)
 	if(NodeId == 7)//bathroom
 	{
 		std::string topic = "Nodes/12/RGB";
-		unsigned char red = 0, green = 0, blue = 0;
+		unsigned char red = 0, green = 0, blue = 5;
 		if(humidity > 50)
 		{
 			float red_f = 255 * (humidity - 50)/50;
