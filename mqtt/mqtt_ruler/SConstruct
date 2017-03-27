@@ -1,0 +1,12 @@
+# - Glob() adds all the files with the extension to the list
+# - CPPPATH define the path where to look for source files which have include dependendcies
+#		so that when these include files change, a recompilation of the source file is triggered
+#		CPPPATH = ['include', '/home/project/inc']
+Program('mqtt_ruler', 
+		Glob('*.cpp'),
+		CPPPATH = ['.'],
+		CCFLAGS = ['-std=c++11'],
+		LIBS=['libmosquittopp'],
+		LIBPATH='/usr/local/lib/',
+		LINKFLAGS=[]
+		)
