@@ -69,8 +69,11 @@ int main( void )
     Test_Led_Off();
 
     rgb_PIO_Init();
-    rgb_SwitchOff_Range(0,NB_LEDS);//(From led id 0, NB_LEDS leds)
-    
+    //rgb_SwitchOff_Range(0,NB_LEDS);//(From led id 0, NB_LEDS leds)
+	//rgb_SetColor_range(0,NB_LEDS,3,0,10);//first values sent are 0, last are 255
+    //rgb_SendArray();
+    rgb_RampColors_range(0,NB_LEDS,1,1,1,0,0,0);//Up, Up, Up, unused,unused,unused
+
     uart_init();
 
     printf_eol();

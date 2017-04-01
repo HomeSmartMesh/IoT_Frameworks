@@ -37,6 +37,7 @@ void rgb_SetColor(BYTE LedId, BYTE R, BYTE G, BYTE B);
 void rgb_SetColors(BYTE LedId,RGBColor_t Color);
 
 void rgb_SetColors_range(BYTE first,BYTE NbLeds,RGBColor_t Color);
+void rgb_SetColor_range(BYTE first,BYTE NbLeds,BYTE R,BYTE G,BYTE B);
 
 //The Function that serialises the RGB bit values from memory into pulses for the LED WS2812B
 //this is used manually by the user in case of complex combination of partial shading of the array
@@ -50,7 +51,11 @@ void rgb_SwitchOff_Range(BYTE first,BYTE NbLeds);
 void rgb_SendColor(BYTE R, BYTE G, BYTE B); // 1st LED Function
 void rgb_SendColors(RGBColor_t Color);      // 1st LED Function
 
+//delay : x255 meas 10 => 2.55 sec for cycle completion
+//XUp : 0 = unmodified, 1 = Up, 2 = Down
+//RGB : used when XUp = 0; unmodified stays at any user provided value
 void rgb_RampColors(BYTE delay,BYTE RUp,BYTE GUp,BYTE BUp,BYTE R,BYTE G,BYTE B);
+void rgb_RampColors_range(BYTE delay,BYTE nbLED,BYTE RUp,BYTE GUp,BYTE BUp,BYTE R,BYTE G,BYTE B);
 
 void rgb_BlinkColors(BYTE R, BYTE G, BYTE B);
 

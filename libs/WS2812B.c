@@ -421,6 +421,14 @@ void rgb_SetColors_range(BYTE first,BYTE NbLeds,RGBColor_t Color)
 	}
 }
 
+void rgb_SetColor_range(BYTE first,BYTE NbLeds,BYTE R,BYTE G,BYTE B)
+{
+	for(BYTE i=first;i<NbLeds;i++)
+	{
+		rgb_SetColor(i,R,G,B);
+	}
+}
+
 void RGBLeds_PIO_Init_A2()
 {
 	PA_DDR_bit.DDR2 = 1;//output
@@ -535,6 +543,68 @@ void rgb_RampColors(BYTE delay,BYTE RUp,BYTE GUp,BYTE BUp,BYTE R,BYTE G,BYTE B)
             B--;
           }
           delay_ms(delay);
+	}
+  
+}
+
+//delay : x255 meas 10 => 2.55 sec for cycle completion
+//XUp : 0 = unmodified, 1 = Up, 2 = Down
+//RGB : used when XUp = 0; unmodified stays at any user provided value
+void rgb_RampColors_range(BYTE delay,BYTE nbLED,BYTE RUp,BYTE GUp,BYTE BUp,BYTE R,BYTE G,BYTE B)
+{
+  if(RUp == 1)
+  {
+    R=0;
+  }
+  else if(RUp == 2)
+  {
+    R=255;
+  }
+  if(GUp == 1)
+  {
+    G=0;
+  }
+  else if(GUp == 2)
+  {
+    G=255;
+  }
+  if(BUp == 1)
+  {
+    B=0;
+  }
+  else if(BUp == 2)
+  {
+    B=255;
+  }
+	for(int ml=0;ml<256;ml++)
+	{
+    rgb_SetColor_range(0,nbLED,R,G,B);//first values sent are 0, last are 255
+    rgb_SendArray();
+    if(RUp == 1)
+    {
+      R++;
+    }
+    else if(RUp == 2)
+    {
+      R--;
+    }
+    if(GUp == 1)
+    {
+      G++;
+    }
+    else if(GUp == 2)
+    {
+      G--;
+    }
+    if(BUp == 1)
+    {
+      B++;
+    }
+    else if(BUp == 2)
+    {
+      B--;
+    }
+    delay_ms(delay);
 	}
   
 }
