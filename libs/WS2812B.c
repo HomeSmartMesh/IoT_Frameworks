@@ -431,9 +431,13 @@ void RGBLeds_PIO_Init_A2()
 void RGBLeds_PIO_Init_A3()
 {
 	PA_DDR_bit.DDR3 = 1;//output
-
-	PA_CR1_bit.C13 = 1;//1:PushPull
+#if(RGBLedPin_A3_OpenDrain == 1)
+	PA_CR1_bit.C13 = 0;//0:OpenDrain
+	//PA_CR2_bit.C23 = 1;//1:up to 10 MHz
+#else
+	PA_CR1_bit.C13 = 1;//1:Push pull
 	PA_CR2_bit.C23 = 1;//1:up to 10 MHz
+#endif
 }
 
 void rgb_PIO_Init()
@@ -636,7 +640,7 @@ void rgb_TestColors()
   rgb_SwitchOff();
 }
 
-void rgb_Loop_BlueRedBlue(BYTE nbLeds)
+void rgb_Loop_BlueRedBlue(BYTE nbLeds,BYTE delay)
 {
     RGBColor_t ColorStart, ColorEnd;
     ColorStart = GREEN;
@@ -647,7 +651,7 @@ void rgb_Loop_BlueRedBlue(BYTE nbLeds)
       ColorEnd = rgb_ColorScale(t,256,BLUE,RED);
       rgb_Shade(0,nbLeds,ColorStart,ColorEnd);
       rgb_SendArray();
-      delay_ms(20);
+      delay_ms(delay);
     }
     for(int t=0;t<256;t++)
     {
@@ -655,7 +659,7 @@ void rgb_Loop_BlueRedBlue(BYTE nbLeds)
       ColorEnd = rgb_ColorScale(t,256,RED,BLUE);
       rgb_Shade(0,nbLeds,ColorStart,ColorEnd);
       rgb_SendArray();
-      delay_ms(20);
+      delay_ms(delay);
     }
 }
 

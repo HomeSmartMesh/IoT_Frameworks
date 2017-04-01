@@ -44,7 +44,11 @@
 #define Enable_Debug_nRF_SetMode_RX				0
 
 //-------------------------------------------------------------------------------------------------
-#define P2P_MESSAGE_CALLBACK 0
+#define P2P_BROADCAST_CALLBACK 0
+#define P2P_RESPONSE_CALLBACK 0
+#define P2P_REQUEST_CALLBACK 0
+#define P2P_MESSAGE_CALLBACK 1
+#define P2P_BRIDGE_RETRANSMISSION 0
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------- End of User Editable Section -----------------------------------

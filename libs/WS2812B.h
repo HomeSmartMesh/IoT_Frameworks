@@ -64,7 +64,7 @@ void rgb_Shade(BYTE LedStart, BYTE LedEnd, RGBColor_t ColorStart, RGBColor_t Col
 //--------------------- Demo functions with animation sequence ----------------------
 void rgb_TestColors();
 
-void rgb_Loop_BlueRedBlue(BYTE nbLeds);
+void rgb_Loop_BlueRedBlue(BYTE nbLeds,BYTE delay);
 
 //--------------------- RF Protocol handling ----------------------------------------
 void rgb_decode_rf(BYTE *rxData,BYTE rx_DataSize);

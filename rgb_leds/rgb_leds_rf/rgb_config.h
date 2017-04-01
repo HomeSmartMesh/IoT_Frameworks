@@ -16,14 +16,15 @@
 //1 - 255 : this parameter has for limit the size of the RAM and the 8bit counter => 255
 //the value of 256 == 0 was not tested
 //255 => 75% of RAM
-//#define NB_LEDS 216
-#define NB_LEDS 16
+#define NB_LEDS 216
+//#define NB_LEDS 16
 
 //reverse the polarity of the PIO when going through a level shifter inverter
 // 1 : invert
 // 0 : do not invert
 #define RGB_IO_NEG 0
 
+#define RGBLedPin_A3_OpenDrain 0
 
 //RGBLedPIN_A : the Port A pin number to be used, supported values for the Fixed Node v2 Target Board :
 // 2 => Not recommended as not High speed
