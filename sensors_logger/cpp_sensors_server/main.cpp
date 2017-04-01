@@ -97,7 +97,7 @@ void help_arguments()
 }
 void localActions(NodeMap_t &measures,webserver_c &l_wbs)
 {
-	const int Rx_NodeId = 10;
+	const int Rx_NodeId = 12;
 	if(measures.find(Rx_NodeId) != measures.end())
 	{
 		if(measures[Rx_NodeId].find("Reset") != measures[Rx_NodeId].end() )

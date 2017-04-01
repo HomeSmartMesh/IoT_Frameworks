@@ -136,7 +136,7 @@ void mqtt_c::on_message(const struct mosquitto_message *message)
             rgb.G = ((hxVal >> 8) & 0xFF); 
             rgb.B = ((hxVal) & 0xFF);
             Log::cout << "mqtt"<<"\t"<<"=> NodeId:"<< rgb.NodeId << " RGB: ("<< rgb.R <<","<< rgb.G <<","<< rgb.B <<")"<< Log::Debug();
-            rgb.sendCount = 10;
+            rgb.sendCount = 1;//retries are on RF Firmware now
         }
     }
     else
