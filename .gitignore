@@ -124,6 +124,7 @@ smartio/firmware/03_io_serial_server/Debug/
 smartio/firmware/03_io_serial_server/settings/
 joystick_servo/10_joy_Multi/Firmware_STM8_IoTNode/Debug/
 joystick_servo/10_joy_Multi/Firmware_STM8_IoTNode/settings/
+joystick_servo/10_joy_Multi/joy
 rgb_leds/hello_rgb/Debug/
 rgb_leds/hello_rgb/settings/
 rgb_leds/pr01_RF_Color_Sender/Debug/
