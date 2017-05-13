@@ -45,18 +45,26 @@ void printf_tab(const char* data, int size)
 	Log::cout << line << Log::Info();
 }
 
+void printf_tab2(const char* data, int size)
+{
+	char line_print[400];
+	sprintf(line_print,"0x %02x %02x\n",data[0],data[1]);
+	std::string line(line_print);
+	Log::cout << line << Log::Info();
+}
+
 void MapAxis(JAxis &axis,char s_id,Serial&ser)
 {
 	if(axis.isUpdated())
 	{
 		int val = 10000*(axis.getValue()+1)/2;//[-1,+1] => [0, 1]
-		std::cout << "(" << val << ")\n";
 		uint8_t data[7];
 		data[0] = 5;	//size is 5
 		data[1] = 'S';	//Protocol 'Servos'
 		data[2] = s_id;	//Servo Id = '1'
 		data[3] = val / 256;	//16 bit val
 		data[4] = val % 256;
+		printf_tab2((const char*)&data[3],2);
 		utl::crc_set(data);
 		//printf_tab((const char*)data,7);
 		ser.send((const char*)(data),5+2);
