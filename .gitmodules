@@ -1,0 +1,3 @@
+[submodule "pilibs"]
+	path = pilibs
+	url = https://github.com/wassfila/pilibs.git
