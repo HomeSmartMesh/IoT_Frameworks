@@ -143,3 +143,4 @@ mesh_controller_interface/rf_tester/Debug/
 mesh_controller_interface/rf_tester/settings/
 mesh_controller_interface/rf_p2p_tester/Debug/
 mesh_controller_interface/rf_p2p_tester/settings/
+joystick_servo/11_Joy_STM32_Protocol/joy

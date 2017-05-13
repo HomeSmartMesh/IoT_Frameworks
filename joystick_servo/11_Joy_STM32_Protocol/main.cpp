@@ -12,6 +12,7 @@
 #include "joystick.hpp"
 #include "serial.hpp"
 #include "log.hpp"
+#include "utils.hpp"
 
 
 #define RESET   "\033[0m"
@@ -36,19 +37,29 @@
 
 //Axis 5 : 1520 - 1950 
 
-void MapAxis(JAxis &axis,char c,int pos1,int pos2,Serial&ser)
+void printf_tab(const char* data, int size)
+{
+	char line_print[400];
+	sprintf(line_print,"0x %02x %02x %02x %02x %02x %02x %02x\n",data[0],data[1],data[2],data[3],data[4],data[5],data[6]);
+	std::string line(line_print);
+	Log::cout << line << Log::Info();
+}
+
+void MapAxis(JAxis &axis,char s_id,Serial&ser)
 {
 	if(axis.isUpdated())
 	{
-		const int s_path = pos2 - pos1;
-		int val = pos1 + s_path/2 + axis.getValue()*s_path/2;
-		std::cout << "(" << val << ")";
-		char data[4];
-		data[0] = 'H';
-		data[3] = c;
-		data[1] = val / 256;
-		data[2] = val % 256;
-		ser.send(data,4);
+		int val = 10000*(axis.getValue()+1)/2;//[-1,+1] => [0, 1]
+		std::cout << "(" << val << ")\n";
+		uint8_t data[7];
+		data[0] = 5;	//size is 5
+		data[1] = 'S';	//Protocol 'Servos'
+		data[2] = s_id;	//Servo Id = '1'
+		data[3] = val / 256;	//16 bit val
+		data[4] = val % 256;
+		utl::crc_set(data);
+		//printf_tab((const char*)data,7);
+		ser.send((const char*)(data),5+2);
 	}
 }
 
@@ -74,12 +85,10 @@ int main( int argc, char** argv )
 		//Update the Joystick input
 		if(joy.update())//multiple events will be filtered, only last would appear afterwards
 		{
-			joy.printUpdates();
+			//joy.printUpdates();
 		}
 		
-		MapAxis(joy.getAxis(5),'1',1050,1950,ser);//Up
-		MapAxis(joy.getAxis(2),'2',1050,1950,ser);//Side
-		MapAxis(joy.getAxis(1),'3',500,2500,ser);//servo
+		MapAxis(joy.getAxis(5),1,ser);//Up
 	
 		joy.consumeAll();
 		
