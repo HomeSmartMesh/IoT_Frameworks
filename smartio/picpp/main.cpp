@@ -71,6 +71,22 @@ void MapAxis(JAxis &axis,char s_id,Serial&ser)
 	}
 }
 
+void TestCom(Serial&ser)
+{
+	int val = 55555;//[-1,+1] => [0, 1]
+	uint8_t data[7];
+	data[0] = 5;	//size is 5
+	data[1] = 'S';	//Protocol 'Servos'
+	data[2] = 1;	//Servo Id = '1'
+	data[3] = val / 256;	//16 bit val
+	data[4] = val % 256;
+	//printf_tab2((const char*)&data[3],2);
+	utl::crc_set(data);
+	printf_tab((const char*)data,7);
+	ser.send((const char*)(data),5+2);
+}
+
+
 int main( int argc, char** argv ) 
 {
 	std::cout << "______________________Config______________________" << std::endl;
@@ -83,22 +99,26 @@ int main( int argc, char** argv )
 
 	Joystick 	joy;
 	
-	joy.start("/dev/input/js0");
+	//joy.start("/dev/input/js0");
 	
 	//std::cout << MAGENTA << "Colored " << CYAN << "Text" << RESET << std::endl;
 	
+	usleep(1000000);
+	TestCom(ser);
+
 	while (1) 
 	{
 		std::cout << CYAN;
 		//Update the Joystick input
+		#if 0
 		if(joy.update())//multiple events will be filtered, only last would appear afterwards
 		{
 			//joy.printUpdates();
 		}
-		
 		MapAxis(joy.getAxis(5),1,ser);//Up
-	
 		joy.consumeAll();
+		#endif
+	
 		
 		std::cout << RESET;
 		//display Received log

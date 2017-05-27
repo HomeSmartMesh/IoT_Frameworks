@@ -4,7 +4,7 @@
 #		CPPPATH = ['include', '/home/project/inc']
 
 env = Environment()
-env.Program(    target='joy',
+env.Program(    target='rfpio',
                 source=[Glob('*.cpp'),
                             [   '../../pilibs/joystick.cpp',
                                 '../../pilibs/serial.cpp',
