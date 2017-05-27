@@ -1,0 +1,20 @@
+#____________________________________________________________________________________________
+# 					! Important ! Format !
+#____________________________________________________________________________________________
+# every variable starts with the beginning of the line, no spaces, no space betweem '=' sign
+#____________________________________________________________________________________________
+
+# -------------- STREAMER -------------- 
+# The "port" parameter, once defined, enables the serial port buffer update
+portname=/dev/ttyUSB0
+portbaud=115200
+
+# -------------- Log -------------- 
+# The "logfile" is optionnal used for persistance
+logfile=/home/pi/share/smartio_picpp.txt
+
+# 'level_out' is for console mode, and the 'level_file' is for the file record
+#Error:1, Warning:2, Info:3, Debug:4
+# default level_out is 
+level_out=3
+level_file=2
