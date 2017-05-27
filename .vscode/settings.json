@@ -3,6 +3,8 @@
         "*hpp*hpparray": "cpp",
         "array": "cpp",
         "xutility": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "xiosbase": "cpp",
+        "xlocale": "cpp"
     }
 }
