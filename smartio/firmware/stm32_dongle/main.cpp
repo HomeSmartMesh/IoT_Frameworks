@@ -29,7 +29,7 @@ uint8_t payload[32];
 
 void uart_message_received(uint8_t *data)
 {
-    rasp.printf("OK message received with %d Bytes\n",data[0]);
+    //rasp.printf("stm32_dongle> OK message received with %d Bytes\n",data[0]);
     uint8_t size = data[0];
     for(int i=0;i<size;i++)
     {
@@ -40,12 +40,12 @@ void uart_message_received(uint8_t *data)
 
 void rf_message_received(uint8_t *data,uint8_t size)
 {
-    rasp.printf("rf>Rx message (%d bytes) unused in dongle\n",size);
+    rasp.printf("stm32_dongle>rf> Rx message (%d bytes) unused in dongle\n",size);
 }
 
 void init()
 {
-    rasp.printf("Hello PIO Dongle\n");
+    rasp.printf("stm32_dongle> Hello PIO Dongle\n");
 
     tick_call.attach(&the_ticker,1);
 
@@ -65,8 +65,10 @@ int main()
 
     while(1) 
     {
+        wait_ms(1);
         if(got_message)
         {
+            rasp.printf("stm32_dongle> start transmission\n");
             mesh.nrf.start_transmission(payload,payload[0]);
             got_message = false;
         }
