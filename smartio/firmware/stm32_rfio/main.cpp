@@ -48,6 +48,8 @@ void rf_message_received(uint8_t *data,uint8_t size)
 
 void init()
 {
+    wait_ms(100);
+    
     msr[0] = &ser_m11;
     msr[1] = &ser_m12;
     msr[2] = &ser_m13;
