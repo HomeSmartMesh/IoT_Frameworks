@@ -9,9 +9,15 @@
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": "",
                 "path": [
-                    "/usr/include"
+                    "/usr/include",
+                    "${workspaceRoot}"
                 ]
-            }
+            },
+            "intelliSenseMode": "clang-x64",
+            "macFrameworkPath": [
+                "/System/Library/Frameworks",
+                "/Library/Frameworks"
+            ]
         },
         {
             "name": "Linux",
@@ -22,9 +28,11 @@
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": "",
                 "path": [
-                    "/usr/include"
+                    "/usr/include",
+                    "${workspaceRoot}"
                 ]
-            }
+            },
+            "intelliSenseMode": "clang-x64"
         },
         {
             "name": "Win32",
@@ -41,9 +49,12 @@
                     "c:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include",
                     "D:/pi/include/c++/4.9",
                     "D:/pi/include/mosquitto",
-                    "C:/Program Files (x86)/IAR Systems/Embedded Workbench 7.0/stm8/inc"
+                    "C:/Program Files (x86)/IAR Systems/Embedded Workbench 7.0/stm8/inc",
+                    "${workspaceRoot}"
                 ]
-            }
+            },
+            "intelliSenseMode": "msvc-x64"
         }
-    ]
+    ],
+    "version": 3
 }
