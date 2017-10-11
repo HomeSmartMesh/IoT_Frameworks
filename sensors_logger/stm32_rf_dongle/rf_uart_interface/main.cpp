@@ -3,53 +3,20 @@
 #include "rfmesh.h"
 #include "suart.h"
 #include "protocol.h"
+#include "utils.h"
+
 
 Serial   rasp(PB_10, PB_11, 115200);
 Proto    prf(&rasp);
 DigitalOut myled(PC_13);
 Ticker tick_call;
 //nRF Modules 1:Gnd, 2:3.3v, 3:ce,  4:csn, 5:sck, 6:mosi, 7:miso, 8:irq 
-RfMesh mesh(&rasp,           PC_15, PA_4, PA_5,   PA_7,  PA_6,    PA_0);
+RfMesh hsm(&rasp,           PC_15, PA_4, PA_5,   PA_7,  PA_6,    PA_0);
 
 suart com(&rasp);
 
 uint8_t payload[32];
 
-uint8_t get_hex_char(uint8_t c)
-{
-	uint8_t res = 0;
-	if(c <= '9')
-	{
-		res = c - '0';
-	}
-	else if(c <= 'F')
-	{
-		res = c - 'A' + 10;
-	}
-	else if(c <= 'f')
-	{
-		res = c - 'a' + 10;
-	}
-	return res;
-}
-
-uint8_t get_hex(uint8_t* buffer,uint8_t pos)
-{
-	uint8_t hex_val;
-	pos+=2;//skip "0x"
-	hex_val = get_hex_char(buffer[pos++]);
-	hex_val <<= 4;
-	hex_val |= get_hex_char(buffer[pos]);
-	return hex_val;
-}
-
-uint8_t strbegins (uint8_t * s1, const char * s2)
-{
-    for(; *s1 == *s2; ++s1, ++s2)
-        if(*s2 == 0)
-            return 0;
-    return (*s2 == 0)?0:1;
-}
 
 void uart_message_received(uint8_t *data,uint8_t size)
 {
@@ -58,18 +25,27 @@ void uart_message_received(uint8_t *data,uint8_t size)
     if(strbegins(buffer,"rgb") == 0)
     {
         //rgb NodeId R G B
-        //rgb 0x00 0x00 0x00 0x00
-        //rgb 0x13 0x55 0x66 0xbb
+        //rgb 0x03 0x00 0x00 0x00
+        //rgb 0x03 0x0F 0x06 0x08
+        //rgb 0x0B 0x55 0x66 0xbb
         uint8_t TargetNodeId = get_hex(buffer,4);
         uint8_t R = get_hex(buffer,9);
         uint8_t G = get_hex(buffer,14);
         uint8_t B = get_hex(buffer,19);
         
 
-        //mesh.nrf.start_transmission(payload,payload[0]);
+		uint8_t nbret = hsm.send_rgb(TargetNodeId,R,G,B);
+		if(nbret == 0)
+		{
+			rasp.printf("send_rgb fail\r");
+		}
+		else
+		{
+			rasp.printf("send_rgb success in %d retries\r",nbret);
+		}
 
         rasp.printf("NodeId:16;NodeDest:%d;R:%u;G:%u;B:%u\r",
-                    TargetNodeId,R,G,B);
+					TargetNodeId,R,G,B);
     }
     else if(strbegins(buffer,"help") == 0)
     {
@@ -81,9 +57,8 @@ void uart_message_received(uint8_t *data,uint8_t size)
     }
 }
 
-void rf_message_received(uint8_t *data,uint8_t size)
+void rf_broadcast_catched(uint8_t *data,uint8_t size)
 {
-
 	switch(data[rfi_pid])
 	{
 		case rf_pid_0xF5_alive:
@@ -140,11 +115,19 @@ void init()
 
     tick_call.attach(&the_ticker,1);
 
-    mesh.init();//left to the user for more flexibility on memory management
+    hsm.init();//left to the user for more flexibility on memory management
 
-    mesh.nrf.selectChannel(2);
+	hsm.nrf.selectChannel(2);
+	
+	hsm.setNodeId(22);
 
-    mesh.attach(&rf_message_received,RfMesh::CallbackType::Message);
+	/*hsm.setRetries(20);
+	hsm.setAckDelay(400);
+	
+	hsm.print_nrf();
+	*/
+
+	hsm.attach(&rf_broadcast_catched,RfMesh::CallbackType::Broadcast);
 
     com.attach(&uart_message_received);
 
@@ -155,7 +138,10 @@ int main()
     init();
 
     //transmission example
-    //mesh.nrf.start_transmission(payload,payload[0]);
+    //hsm.nrf.start_transmission(payload,payload[0]);
+
+	wait_ms(100);
+	hsm.broadcast_reset();
     
     while(1) 
     {

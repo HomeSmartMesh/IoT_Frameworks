@@ -154,6 +154,7 @@ int main( void )
 
     //Applies the compile time configured parameters from nRF_Configuration.h
     BYTE status = nRF_Config();
+    nRF_SelectChannel(10);
 
     printf("__________________________________________________\n\r");
 	nRF_PrintInfo();

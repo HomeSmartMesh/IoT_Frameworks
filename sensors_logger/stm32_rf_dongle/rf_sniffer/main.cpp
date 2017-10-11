@@ -57,6 +57,7 @@ void uart_message_received(uint8_t *data,uint8_t size)
 
 void rf_sniffed(uint8_t *data,uint8_t size)
 {
+	rasp.printf("sniff\r");
 	print_tab(&rasp,data,size);
 }
 
@@ -73,7 +74,7 @@ void init()
 
     hsm.init();//left to the user for more flexibility on memory management
 
-	hsm.nrf.selectChannel(10);
+	hsm.nrf.selectChannel(2);
 	
 	hsm.setNodeId(22);
 
