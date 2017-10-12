@@ -115,7 +115,8 @@ void init()
 
     tick_call.attach(&the_ticker,1);
 
-    hsm.init();//left to the user for more flexibility on memory management
+	hsm.init();//left to the user for more flexibility on memory management
+	rasp.printf("stm32_dongle> Started listening\n");
 
 	hsm.nrf.selectChannel(2);
 	
@@ -137,14 +138,17 @@ int main()
 {
     init();
 
-    //transmission example
-    //hsm.nrf.start_transmission(payload,payload[0]);
+	hsm.print_nrf();
 
-	wait_ms(100);
 	hsm.broadcast_reset();
     
     while(1) 
     {
-        wait_ms(1);
-    }
+		wait_ms(1000);
+		if(hsm.nRFIrq.read() == 0)
+		{
+			rasp.printf("irq pin Low, missed interrupt, re init()\n");
+			hsm.init();
+		}
+	}
 }
