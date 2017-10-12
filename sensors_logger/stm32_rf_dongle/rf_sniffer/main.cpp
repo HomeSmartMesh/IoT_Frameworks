@@ -57,7 +57,7 @@ void uart_message_received(uint8_t *data,uint8_t size)
 
 void rf_sniffed(uint8_t *data,uint8_t size)
 {
-	rasp.printf("sniff\r");
+	rasp.printf("sniff: ");
 	print_tab(&rasp,data,size);
 }
 
