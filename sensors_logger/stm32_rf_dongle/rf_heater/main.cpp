@@ -6,7 +6,7 @@
 
 //------------------------------------- CONFIG -----------------------------------------
 const uint8_t CHANNEL = 10;
-const uint8_t NODEID = 23;
+const uint8_t NODEID = 24;
 //--------------------------------------------------------------------------------------
 
 
@@ -25,10 +25,10 @@ uint8_t heat_val = 0;
 
 void rf_message_to_me(uint8_t *data,uint8_t size)
 {
-	const uint8_t rf_pid_heating = 0x00;//TODO
-	if(data[rfi_pid] == rf_pid_heating)
+	if(data[rfi_pid] == rf_pid_heat)
 	{
-		//TODO handle heating message
+		heat_val = data[4];//heat_val payload : Size Pid  SrcId TrgId  HeatVal CRC
+		rasp.printf("stm32_heater> (From RF) Set Heat Val to %d> ",heat_val);
 	}
 	else
 	{
@@ -87,9 +87,10 @@ void init()
 
 }
 
+const float one_minute = 60;
+
 void run_heater_program()
 {
-	const float one_minute = 60;
 
 	heat_val = 10;
 	rasp.printf("stm32_heater> Level 10 : for 20 min\r");
@@ -127,6 +128,13 @@ int main()
 	
 	while(1) 
     {
-		wait(1);
+		if(heat_val > 0)
+		{
+			heat_val--;
+			hsm.broadcast_heat(heat_val);
+			rasp.printf("stm32_heater> heat_val down to %d\r",heat_val);
+		}
+		rasp.printf("stm32_heater> wait 10 min\r");
+		wait(10 * one_minute);// 10 minutes
 	}
 }
