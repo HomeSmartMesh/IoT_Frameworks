@@ -74,21 +74,56 @@ class mqtt_c : public mosqpp::mosquittopp
 	
 };
 
+unsigned char f2c_sat(float val)
+{
+	if (val > 255)
+	{
+		val = 255;
+	}
+	return static_cast<unsigned char>(val);
+}
+
+void from_50_to_Red(float humidity,	unsigned char &red,
+									unsigned char &green,
+									unsigned char &blue)
+{
+	red = 0, green = 0, blue = 5;
+	if(humidity > 50)
+	{
+		float red_f = 255 * (humidity - 50)/50;
+		red = f2c_sat(red_f);
+	}
+}
+void from_50_Green_to_Blue(float humidity,	unsigned char &red,
+									unsigned char &green,
+									unsigned char &blue)
+{
+	red = 0, green = 5, blue = 0;
+	if(humidity > 60)//60 -> 100
+	{
+		red = 0, green = 50, blue = 0;
+		float factor = (humidity - 60)/40;//0->1
+		float blue_f = 255 * factor;// 0 -> 255
+		blue = f2c_sat(blue_f);
+		float green_f = 50 - 50 * factor;// 50 -> 0
+		green = f2c_sat(green_f);
+	}
+	else if (humidity > 50)//50 -> 60
+	{
+		float factor = (humidity - 50)/10;//0 ->1
+		green = f2c_sat(5 + factor * 45);//5 -> 50
+	}
+}
+
+	
 void mqtt_c::publish_humidity_status(int NodeId,float humidity)
 {
 	if(NodeId == 7)//bathroom
 	{
-		std::string topic = "Nodes/12/RGB";
-		unsigned char red = 0, green = 0, blue = 5;
-		if(humidity > 50)
-		{
-			float red_f = 255 * (humidity - 50)/50;
-			if (red_f > 255)
-			{
-				red_f = 255;
-			}
-			red = static_cast<unsigned char>(red_f);
-		}
+		std::string topic = "Nodes/18/RGB";
+		unsigned char red, green , blue;
+		//from_50_to_Red(humidity,red,green,blue);
+		from_50_Green_to_Blue(humidity,red,green,blue);
 		char value[10];
 		snprintf(value, sizeof value, "#%02x%02x%02x", red, green, blue);
 		int status = publish(NULL,topic.c_str(),7,value);// # + 6 chars
