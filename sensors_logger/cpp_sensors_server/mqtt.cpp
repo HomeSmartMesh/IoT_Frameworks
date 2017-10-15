@@ -92,6 +92,15 @@ void mqtt_send_RGB_Status(Serial &l_str,int TargetNodeId,int R,int G,int B)
 	Log::cout << "ser\t" << s << Log::Debug();
 }
 
+void mqtt_send_HEAT_Value(Serial &l_str,int TargetNodeId,int val)
+{
+	char text[31];
+	int nbWrite = sprintf(text,"heat 0x%02x 0x%02x\r",TargetNodeId,val);
+	l_str.send(text,nbWrite);
+	std::string s(text);
+	Log::cout << "ser\t" << s << Log::Debug();
+}
+
 
 void mqtt_c::run()
 {
