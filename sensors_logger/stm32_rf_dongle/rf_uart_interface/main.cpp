@@ -5,6 +5,11 @@
 #include "protocol.h"
 #include "utils.h"
 
+//------------------------------------- CONFIG -----------------------------------------
+const uint8_t CHANNEL = 2;
+const uint8_t NODEID = 22;
+//--------------------------------------------------------------------------------------
+
 
 Serial   rasp(PB_10, PB_11, 115200);
 Proto    prf(&rasp);
@@ -17,6 +22,8 @@ suart com(&rasp);
 
 uint8_t payload[32];
 
+bool is_rgb_toSend = false;
+uint8_t tab_send_rgb[4];
 
 void uart_message_received(uint8_t *data,uint8_t size)
 {
@@ -28,24 +35,13 @@ void uart_message_received(uint8_t *data,uint8_t size)
         //rgb 0x03 0x00 0x00 0x00
         //rgb 0x03 0x0F 0x06 0x08
         //rgb 0x0B 0x55 0x66 0xbb
-        uint8_t TargetNodeId = get_hex(buffer,4);
-        uint8_t R = get_hex(buffer,9);
-        uint8_t G = get_hex(buffer,14);
-        uint8_t B = get_hex(buffer,19);
-        
+        tab_send_rgb[0] = get_hex(buffer,4);
+        tab_send_rgb[1] = get_hex(buffer,9);
+        tab_send_rgb[2] = get_hex(buffer,14);
+        tab_send_rgb[3] = get_hex(buffer,19);
+		
+		is_rgb_toSend = true;
 
-		uint8_t nbret = hsm.send_rgb(TargetNodeId,R,G,B);
-		if(nbret == 0)
-		{
-			rasp.printf("send_rgb fail\r");
-		}
-		else
-		{
-			rasp.printf("send_rgb success in %d retries\r",nbret);
-		}
-
-        rasp.printf("NodeId:16;NodeDest:%d;R:%u;G:%u;B:%u\r",
-					TargetNodeId,R,G,B);
     }
     else if(strbegins(buffer,"help") == 0)
     {
@@ -106,7 +102,7 @@ void rf_broadcast_catched(uint8_t *data,uint8_t size)
 
 void the_ticker()
 {
-    myled = !myled;
+	myled = !myled;
 }
 
 void init()
@@ -115,18 +111,15 @@ void init()
 
     tick_call.attach(&the_ticker,1);
 
-	hsm.init();//left to the user for more flexibility on memory management
+	hsm.init(CHANNEL);//left to the user for more flexibility on memory management
 	rasp.printf("stm32_dongle> Started listening\n");
 
-	hsm.nrf.selectChannel(2);
-	
-	hsm.setNodeId(22);
+	hsm.setNodeId(NODEID);
 
-	/*hsm.setRetries(20);
+	hsm.setRetries(10);
 	hsm.setAckDelay(400);
 	
-	hsm.print_nrf();
-	*/
+	//hsm.print_nrf();
 
 	hsm.attach(&rf_broadcast_catched,RfMesh::CallbackType::Broadcast);
 
@@ -144,11 +137,29 @@ int main()
     
     while(1) 
     {
-		wait_ms(1000);
+		wait_ms(100);
 		if(hsm.nRFIrq.read() == 0)
 		{
 			rasp.printf("irq pin Low, missed interrupt, re init()\n");
-			hsm.init();
+			hsm.init(CHANNEL);
+		}
+		//send_rgb() is only allowed to be called from main as it uses the wait_ms function which fails from ISRs context
+		//wait_ms() is required to wait for the acknowlege and keep a simple result in the function return
+		if(is_rgb_toSend)
+		{
+			uint8_t nbret = hsm.send_rgb(tab_send_rgb[0],tab_send_rgb[1],tab_send_rgb[2],tab_send_rgb[3]);
+			if(nbret == 0)
+			{
+				rasp.printf("send_rgb fail\r");
+			}
+			else
+			{
+				rasp.printf("send_rgb success in %d retries\r",nbret);
+			}
+			rasp.printf("NodeId:16;NodeDest:%d;R:%u;G:%u;B:%u\r",
+				tab_send_rgb[0],tab_send_rgb[1],tab_send_rgb[2],tab_send_rgb[3]);
+			
+			is_rgb_toSend = false;
 		}
 	}
 }
