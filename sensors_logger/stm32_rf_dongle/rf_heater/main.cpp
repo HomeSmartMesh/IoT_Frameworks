@@ -28,7 +28,7 @@ void rf_message_to_me(uint8_t *data,uint8_t size)
 	if(data[rfi_pid] == rf_pid_heat)
 	{
 		heat_val = data[4];//heat_val payload : Size Pid  SrcId TrgId  HeatVal CRC
-		rasp.printf("stm32_heater> (From RF) Set Heat Val to %d> ",heat_val);
+		rasp.printf("stm32_heater> (From RF) Set Heat Val to %d\r",heat_val);
 	}
 	else
 	{
@@ -122,10 +122,11 @@ int main()
 	hsm.broadcast_reset();
 	
 	
-	run_heater_program();
+	//run_heater_program();
 
-	heat_val = 0;rasp.printf("stm32_heater> Program Over\r");
-	
+	//heat_val = 0;rasp.printf("stm32_heater> Program Over\r");
+	heat_val = 11;
+
 	while(1) 
     {
 		if(heat_val > 0)

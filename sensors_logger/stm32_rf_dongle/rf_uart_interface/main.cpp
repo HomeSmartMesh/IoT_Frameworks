@@ -6,8 +6,8 @@
 #include "utils.h"
 
 //------------------------------------- CONFIG -----------------------------------------
-const uint8_t CHANNEL = 2;
-const uint8_t NODEID = 22;
+const uint8_t CHANNEL = 10;
+const uint8_t NODEID = 23;
 //--------------------------------------------------------------------------------------
 
 
@@ -23,7 +23,8 @@ suart com(&rasp);
 uint8_t payload[32];
 
 bool is_rgb_toSend = false;
-uint8_t tab_send_rgb[4];
+bool is_heat_toSend = false;
+uint8_t tab_send[4];
 
 void uart_message_received(uint8_t *data,uint8_t size)
 {
@@ -35,13 +36,23 @@ void uart_message_received(uint8_t *data,uint8_t size)
         //rgb 0x03 0x00 0x00 0x00
         //rgb 0x03 0x0F 0x06 0x08
         //rgb 0x0B 0x55 0x66 0xbb
-        tab_send_rgb[0] = get_hex(buffer,4);
-        tab_send_rgb[1] = get_hex(buffer,9);
-        tab_send_rgb[2] = get_hex(buffer,14);
-        tab_send_rgb[3] = get_hex(buffer,19);
+        tab_send[0] = get_hex(buffer,4);
+        tab_send[1] = get_hex(buffer,9);
+        tab_send[2] = get_hex(buffer,14);
+        tab_send[3] = get_hex(buffer,19);
 		
 		is_rgb_toSend = true;
-
+    }
+    else if(strbegins(buffer,"heat") == 0)
+    {
+        //heat NodeId val
+        //heat 0x18 0x00
+        //heat 0x18 0x08
+        //heat 0x18 0x0A
+        tab_send[0] = get_hex(buffer,5);
+        tab_send[1] = get_hex(buffer,10);
+		
+		is_heat_toSend = true;
     }
     else if(strbegins(buffer,"help") == 0)
     {
@@ -65,6 +76,11 @@ void rf_broadcast_catched(uint8_t *data,uint8_t size)
 		case rf_pid_0xC9_reset:
 			{
 				rasp.printf("NodeId:%d;was:Reset\r",data[rfi_src]);
+			}
+			break;
+		case (0x80 | rf_pid_heat):
+			{
+				rasp.printf("NodeId:%d;heat:%d\r",data[rfi_src],data[3]);//Heat          : Size Pid  SrcId  heat_val CRC
 			}
 			break;
 		case rf_pid_0xBB_light:
@@ -129,7 +145,13 @@ void init()
 
 int main() 
 {
-    init();
+	uint8_t * p_UID = (uint8_t*) 0x1FFFF7E8;
+	
+	rasp.printf("stm32_dongle> U_ID: ");
+	print_tab(&rasp,p_UID,12);
+	rasp.printf("stm32_dongle> Node ID: %d\r",NODEID);
+
+	init();
 
 	hsm.print_nrf();
 
@@ -147,7 +169,7 @@ int main()
 		//wait_ms() is required to wait for the acknowlege and keep a simple result in the function return
 		if(is_rgb_toSend)
 		{
-			uint8_t nbret = hsm.send_rgb(tab_send_rgb[0],tab_send_rgb[1],tab_send_rgb[2],tab_send_rgb[3]);
+			uint8_t nbret = hsm.send_rgb(tab_send[0],tab_send[1],tab_send[2],tab_send[3]);
 			if(nbret == 0)
 			{
 				rasp.printf("send_rgb fail\r");
@@ -157,9 +179,25 @@ int main()
 				rasp.printf("send_rgb success in %d retries\r",nbret);
 			}
 			rasp.printf("NodeId:16;NodeDest:%d;R:%u;G:%u;B:%u\r",
-				tab_send_rgb[0],tab_send_rgb[1],tab_send_rgb[2],tab_send_rgb[3]);
+				tab_send[0],tab_send[1],tab_send[2],tab_send[3]);
 			
 			is_rgb_toSend = false;
+		}
+		if(is_heat_toSend)
+		{
+			uint8_t nbret = hsm.send_heat(tab_send[0],tab_send[1]);
+			if(nbret == 0)
+			{
+				rasp.printf("send_heat fail\r");
+			}
+			else
+			{
+				rasp.printf("send_heat success in %d retries\r",nbret);
+			}
+			rasp.printf("NodeId:%d;NodeDest:%d;heat_val:%u\r",NODEID,
+				tab_send[0],tab_send[1]);
+			
+			is_heat_toSend = false;
 		}
 	}
 }
