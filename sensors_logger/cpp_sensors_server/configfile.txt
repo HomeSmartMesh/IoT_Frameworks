@@ -25,7 +25,7 @@ level_file=2
 # -------------- MQTT Client -------------- 
 #Optionnal publishing to Mqtt Broquer
 #Enabled when both 'mqtt_host' and 'mqtt_port' are available
-mqtt_host=localhost
+mqtt_host=10.0.0.12
 mqtt_port=1883
 
 # -------------- SELF DATABASE -------------- 
