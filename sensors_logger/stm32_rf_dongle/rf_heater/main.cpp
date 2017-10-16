@@ -21,6 +21,7 @@ const uint8_t HEAT_MAX = 10;
 RfMesh hsm(&rasp,           PC_15, PA_4, PA_5,   PA_7,  PA_6,    PA_0);
 
 uint8_t heat_val = 0;
+uint8_t tick_cycle = 0;
 
 
 void rf_message_to_me(uint8_t *data,uint8_t size)
@@ -28,6 +29,7 @@ void rf_message_to_me(uint8_t *data,uint8_t size)
 	if(data[rfi_pid] == rf_pid_heat)
 	{
 		heat_val = data[4];//heat_val payload : Size Pid  SrcId TrgId  HeatVal CRC
+		tick_cycle = 0;//restart a new cycle for immidiate application
 		rasp.printf("stm32_heater> (From RF) Set Heat Val to %d\r",heat_val);
 	}
 	else
@@ -40,7 +42,6 @@ void rf_message_to_me(uint8_t *data,uint8_t size)
 
 void the_ticker()
 {
-	static uint8_t tick_cycle = 0;
 	static uint8_t l_heat_val = 0;
 
 	if(tick_cycle == 0)
@@ -51,6 +52,10 @@ void the_ticker()
 		{
 			heater = 1;
 		}
+		else
+		{
+			heater = 0;//was forgotten !! important, as next is else only and avoid a tiny pulse in case of val of 0
+		}
 	}
 	else if(tick_cycle == l_heat_val)
 	{
@@ -58,6 +63,8 @@ void the_ticker()
 	}
 
 	myled = !myled;//alive
+
+	//rasp.printf("tick %d ; heat_output %d ; heat val %d\r",tick_cycle,heater.read(),l_heat_val);
 
 	tick_cycle++;
 	if(tick_cycle == HEAT_MAX)

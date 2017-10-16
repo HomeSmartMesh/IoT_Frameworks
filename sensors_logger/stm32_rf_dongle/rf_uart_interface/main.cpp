@@ -47,7 +47,8 @@ void uart_message_received(uint8_t *data,uint8_t size)
     {
         //heat NodeId val
         //heat 0x18 0x00
-        //heat 0x18 0x08
+        //heat 0x18 0x01
+        //heat 0x18 0x09
         //heat 0x18 0x0A
         tab_send[0] = get_hex(buffer,5);
         tab_send[1] = get_hex(buffer,10);
