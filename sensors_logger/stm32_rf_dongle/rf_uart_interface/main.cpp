@@ -24,13 +24,31 @@ uint8_t payload[32];
 
 bool is_rgb_toSend = false;
 bool is_heat_toSend = false;
-uint8_t tab_send[4];
+bool is_msg_toSend = false;
+uint8_t msg_size = 0;
+uint8_t tab_send[32];
 
 void uart_message_received(uint8_t *data,uint8_t size)
 {
     
     uint8_t *buffer = data;
-    if(strbegins(buffer,"rgb") == 0)
+    if(strbegins(buffer,"msg") == 0)
+    {
+        //msg size payload
+        //light from 23 to 15 @ 2000
+		//msg 0x06 0x7B 0x17 0x19 0x07 0xD0
+		uint8_t charpos = 4;
+		msg_size = get_hex(buffer,charpos);
+		tab_send[0] = msg_size;
+		for(int i=1;i<msg_size;i++)
+		{
+			charpos+=5;
+			tab_send[i] = get_hex(buffer,charpos);
+		}
+		
+		is_msg_toSend = true;
+    }
+    else if(strbegins(buffer,"rgb") == 0)
     {
         //rgb NodeId R G B
         //rgb 0x03 0x00 0x00 0x00
@@ -168,6 +186,21 @@ int main()
 		}
 		//send_rgb() is only allowed to be called from main as it uses the wait_ms function which fails from ISRs context
 		//wait_ms() is required to wait for the acknowlege and keep a simple result in the function return
+		if(is_msg_toSend)
+		{
+			uint8_t nbret = hsm.send_msg(tab_send);
+			if(nbret == 0)
+			{
+				rasp.printf("send_msg fail : ");
+			}
+			else
+			{
+				rasp.printf("send_msg success in %d retries : ",nbret);
+			}
+			print_tab(&rasp,tab_send,tab_send[0]);
+			
+			is_msg_toSend = false;
+		}
 		if(is_rgb_toSend)
 		{
 			uint8_t nbret = hsm.send_rgb(tab_send[0],tab_send[1],tab_send[2],tab_send[3]);
