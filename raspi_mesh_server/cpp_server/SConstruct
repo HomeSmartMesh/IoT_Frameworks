@@ -2,11 +2,23 @@
 # - CPPPATH define the path where to look for source files which have include dependendcies
 #		so that when these include files change, a recompilation of the source file is triggered
 #		CPPPATH = ['include', '/home/project/inc']
-Program('streamer', 
-		Glob('*.cpp'),
-		CPPPATH = ['.','/usr/local/include/Poco/'],
-		CCFLAGS = ['-std=c++11'],
-		LIBS=['libmosquittopp','libPocoNet','libPocoUtil','libPocoFoundation'],
-		LIBPATH='/usr/local/lib/',
-		LINKFLAGS=['-lboost_system','-lboost_filesystem']
-		)
+
+
+
+env = Environment()
+env.Program(    target='streamer',
+                source=[Glob('*.cpp'),
+                            [   'pilibs/serial.cpp',
+                                'pilibs/utils.cpp',
+                                'pilibs/mqtt.cpp',
+                                'pilibs/webserver.cpp',
+                                'pilibs/db_mgr.cpp',
+                                'pilibs/log.cpp'
+                            ],
+                        ],
+                CPPPATH = ['.','pilibs/','/usr/local/include/Poco/'],
+                CCFLAGS = ['-std=c++11'],
+				LIBS=['libmosquittopp','libPocoNet','libPocoUtil','libPocoFoundation'],
+				LIBPATH='/usr/local/lib/',
+				LINKFLAGS=['-lboost_system','-lboost_filesystem']
+            )

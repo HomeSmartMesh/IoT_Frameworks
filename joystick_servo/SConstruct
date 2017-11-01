@@ -6,12 +6,12 @@
 env = Environment()
 env.Program(    target='joy',
                 source=[Glob('*.cpp'),
-                            [   '../../pilibs/joystick.cpp',
-                                '../../pilibs/serial.cpp',
-                                '../../pilibs/utils.cpp',
-                                '../../pilibs/log.cpp'
+                            [   'pilibs/joystick.cpp',
+                                'pilibs/serial.cpp',
+                                'pilibs/utils.cpp',
+                                'pilibs/log.cpp'
                             ],
                         ],
-                CPPPATH = ['.','../../pilibs/'],
+                CPPPATH = ['.','pilibs/'],
                 CCFLAGS = ['-std=c++11']
             )
