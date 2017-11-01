@@ -111,11 +111,6 @@ void mqtt_c::run()
         {
             reconnect();
         }
-        if(rgb.sendCount)
-        {
-            mqtt_send_RGB_Status(rfcom,rgb.NodeId,rgb.R,rgb.G,rgb.B);
-            rgb.sendCount--;
-        }
     }
 }
 
@@ -124,6 +119,7 @@ void mqtt_c::on_connect(int rc)
     Log::cout << "mqtt"<<"\t"<<"connected id(" << rc << ")" << Log::Info();
 
     subscribe(NULL,"Nodes/+/RGB");
+    subscribe(NULL,"Nodes/+/Heat");
 }
 
 void mqtt_c::on_message(const struct mosquitto_message *message)
@@ -132,20 +128,33 @@ void mqtt_c::on_message(const struct mosquitto_message *message)
     std::string topic(message->topic);
     if(topic.find("Nodes/") == 0)
     {
-        if(msg.find("#")==0)
+        std::string Text = topic;
+        utl::TakeParseTo(Text,'/');//remove first section "Nodes/"
+        std::string Id = utl::TakeParseTo(Text,'/');//take the second element
+        if(Text.find("RGB")==0)
         {
-            std::string Text = topic;
-            //the topic is "Node/6/RGB"
-            utl::TakeParseTo(Text,'/');//remove first section 
-            std::string Id = utl::TakeParseTo(Text,'/');//take the second element
-            rgb.NodeId = std::stoi(Id);
-            utl::TakeParseTo(msg,'#');
-            unsigned int hxVal = std::stoul(msg, nullptr, 16);
-            rgb.R = ((hxVal >> 16) & 0xFF);
-            rgb.G = ((hxVal >> 8) & 0xFF); 
-            rgb.B = ((hxVal) & 0xFF);
-            Log::cout << "mqtt"<<"\t"<<"=> NodeId:"<< rgb.NodeId << " RGB: ("<< rgb.R <<","<< rgb.G <<","<< rgb.B <<")"<< Log::Debug();
-            rgb.sendCount = 1;//retries are on RF Firmware now
+            if(msg.find("#")==0)
+            {
+                //the topic is "Node/6/RGB"
+                rgb.NodeId = std::stoi(Id);
+                utl::TakeParseTo(msg,'#');
+                unsigned int hxVal = std::stoul(msg, nullptr, 16);
+                rgb.R = ((hxVal >> 16) & 0xFF);
+                rgb.G = ((hxVal >> 8) & 0xFF); 
+                rgb.B = ((hxVal) & 0xFF);
+                Log::cout << "mqtt"<<"\t"<<"=> NodeId:"<< rgb.NodeId << " RGB: ("<< rgb.R <<","<< rgb.G <<","<< rgb.B <<")"<< Log::Debug();
+                mqtt_send_RGB_Status(rfcom,rgb.NodeId,rgb.R,rgb.G,rgb.B);
+            }
+        }
+        else if(Text.find("Heat")==0)
+        {
+            int NodeId = std::stoi(Id);
+            int heat_val = std::stoi(msg);
+            if((heat_val >= 0) && (heat_val<=10))
+            {
+                Log::cout << "mqtt"<<"\t"<<"=> NodeId:"<< NodeId << " Heat: ("<< heat_val <<")"<< Log::Debug();
+                mqtt_send_HEAT_Value(rfcom,NodeId,heat_val);
+            }
         }
     }
     else
