@@ -28,10 +28,18 @@ bool is_msg_toSend = false;
 uint8_t msg_size = 0;
 uint8_t tab_send[32];
 
-void uart_message_received(uint8_t *data,uint8_t size)
+void binary_message_received(uint8_t *data,uint8_t size)
 {
-    
-    uint8_t *buffer = data;
+	rasp.printf("bin:");
+	print_tab(&rasp,data,size);
+	//data[0] : 
+		//0x00 : forward binary frame to RF
+		//0x01 : dimmer, ... (avoid having to know source node id)
+}
+
+void text_message_received(uint8_t *data,uint8_t size)
+{
+	uint8_t *buffer = data;
     if(strbegins(buffer,"msg") == 0)
     {
         //msg size payload
@@ -158,8 +166,9 @@ void init()
 
 	hsm.attach(&rf_broadcast_catched,RfMesh::CallbackType::Broadcast);
 
-    com.attach(&uart_message_received);
-
+    com.attach_txt(&text_message_received);
+    com.attach_bin(&binary_message_received);
+	
 }
 
 int main() 
