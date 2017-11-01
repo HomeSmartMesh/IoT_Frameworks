@@ -13,6 +13,7 @@ env.Program(    target='streamer',
                                 'pilibs/mqtt.cpp',
                                 'pilibs/webserver.cpp',
                                 'pilibs/db_mgr.cpp',
+                                'pilibs/bme280_server.cpp',
                                 'pilibs/log.cpp'
                             ],
                         ],
