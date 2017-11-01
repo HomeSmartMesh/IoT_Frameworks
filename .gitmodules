@@ -1,3 +1,9 @@
-[submodule "pilibs"]
-	path = pilibs
+[submodule "smartio/picpp/pilibs"]
+	path = smartio/picpp/pilibs
+	url = https://github.com/wassfila/pilibs.git
+[submodule "joystick_servo/pilibs"]
+	path = joystick_servo/pilibs
+	url = https://github.com/wassfila/pilibs.git
+[submodule "raspi_mesh_server/cpp_server/pilibs"]
+	path = raspi_mesh_server/cpp_server/pilibs
 	url = https://github.com/wassfila/pilibs.git
