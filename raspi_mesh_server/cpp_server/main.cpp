@@ -112,19 +112,6 @@ void localActions(NodeMap_t &measures,webserver_c &l_wbs)
 	}
 }
 
-void send_RGB_Status(Serial &l_str)
-{
-	char text[31];
-	char TargetNodeId = 0x12;
-	unsigned char R = 20;
-	unsigned char G = 5;
-	unsigned char B = 50;
-	int nbWrite = sprintf(text,"rgb 0x%02x 0x%02x 0x%02x 0x%02x\r",TargetNodeId,R,G,B);
-	l_str.send(text,nbWrite);
-	std::string s(text);
-	std::cout << "rgb> " << s << std::endl;
-}
-
 int main( int argc, char** argv )
 {
 	std::cout << "______________________Config______________________" << std::endl;
@@ -152,10 +139,6 @@ int main( int argc, char** argv )
 	stream.update();
 	
 	std::cout << "______________________Main Loop______________________" << std::endl;
-#ifdef RGB_STATUS_TEST
-	std::cout << "----------> send RGB" << std::endl;
-	send_RGB_Status(stream);
-#endif
 
 	while (1) 
 	{
