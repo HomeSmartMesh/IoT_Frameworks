@@ -1,0 +1,9 @@
+.temp/
+BUILD/
+*.pyc
+mbed-os/
+nrf-mesh/
+crc/
+dimm/
+.settings/
+.vscode/
