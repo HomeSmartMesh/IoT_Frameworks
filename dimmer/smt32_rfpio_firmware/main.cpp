@@ -17,8 +17,9 @@ Ticker tick_call;
 //RFPIO Layout !!!!
 RfMesh hsm(&rasp,           PA_5,  PB_12, PB_13, PB_15, PB_14, PA_4);
 
+//channel from pins A2,A3 could not be assigned to pwm even after changing uart to UART1
 //                rel,  sync,   ch1,2,   3,    4
-Dimm dimmer(&rasp,PB_4,PB_5,   PA_8,PA_9,PA_10,PA_11,   PA_15,PB_3,PA_3,PA_2 );
+Dimm dimmer(&rasp,PB_4,PB_5,   PA_8,PA_9,PA_10,PA_11,   PA_15,PB_3,PB_0,PB_1 );
 
 
 void the_ticker()
@@ -68,6 +69,15 @@ int main()
 
     init();
 
+    dimmer.set_level(0,1000);
+    dimmer.set_level(1,1100);
+    dimmer.set_level(2,1200);
+    dimmer.set_level(3,1300);
+    dimmer.set_level(4,1400);
+    dimmer.set_level(5,1500);
+    dimmer.set_level(6,1600);
+    dimmer.set_level(7,1700);
+    
     while(1) 
     {
         wait(10);
