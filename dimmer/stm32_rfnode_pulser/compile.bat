@@ -1,0 +1,1 @@
+mbed compile -v --profile .\develop_nano.json
