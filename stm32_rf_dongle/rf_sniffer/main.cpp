@@ -5,6 +5,12 @@
 #include "protocol.h"
 #include "utils.h"
 
+//------------------------------------- CONFIG -----------------------------------------
+const uint8_t CHANNEL = 10;
+const uint8_t NODEID = 24;
+//--------------------------------------------------------------------------------------
+DigitalOut debug_rf(PB_13);
+
 Serial   rasp(PB_10, PB_11, 115200);
 Proto    prf(&rasp);
 DigitalOut myled(PC_13);
@@ -57,8 +63,10 @@ void uart_message_received(uint8_t *data,uint8_t size)
 
 void rf_sniffed(uint8_t *data,uint8_t size)
 {
+    debug_rf = 1;
 	rasp.printf("sniff: ");
-	print_tab(&rasp,data,size);
+    print_tab(&rasp,data,size);
+    debug_rf = 0;
 }
 
 void the_ticker()
@@ -68,15 +76,21 @@ void the_ticker()
 
 void init()
 {
+    debug_rf = 0;
+
+    uint8_t * p_UID = (uint8_t*) 0x1FFFF7E8;
+	
+	rasp.printf("stm32 sniffer> U_ID: ");
+	print_tab(&rasp,p_UID,12);
+	rasp.printf("stm32 sniffer> Node ID: %d\r",NODEID);
+
     rasp.printf("stm32 sniffer> Hi\n");
 
     tick_call.attach(&the_ticker,1);
 
-    hsm.init();//left to the user for more flexibility on memory management
-
-	hsm.nrf.selectChannel(2);
-	
-	hsm.setNodeId(22);
+    hsm.init(CHANNEL);
+    rasp.printf("Sniffer listening at channel %d\r",CHANNEL);
+    hsm.setNodeId(NODEID);
 
 	hsm.setRetries(20);
 	hsm.setAckDelay(400);
