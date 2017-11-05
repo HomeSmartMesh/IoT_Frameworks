@@ -9,14 +9,13 @@
 const uint8_t CHANNEL = 10;
 const uint8_t NODEID = 24;
 //--------------------------------------------------------------------------------------
-DigitalOut debug_rf(PB_13);
 
 Serial   rasp(PB_10, PB_11, 115200);
 Proto    prf(&rasp);
 DigitalOut myled(PC_13);
 Ticker tick_call;
 //nRF Modules 1:Gnd, 2:3.3v, 3:ce,  4:csn, 5:sck, 6:mosi, 7:miso, 8:irq 
-RfMesh hsm(&rasp,           PC_15, PA_4, PA_5,   PA_7,  PA_6,    PA_0);
+RfMesh hsm(&rasp,1,           PC_15, PA_4, PA_5,   PA_7,  PA_6,    PA_0);
 
 suart com(&rasp);
 
@@ -63,10 +62,7 @@ void uart_message_received(uint8_t *data,uint8_t size)
 
 void rf_sniffed(uint8_t *data,uint8_t size)
 {
-    debug_rf = 1;
-	rasp.printf("sniff: ");
-    print_tab(&rasp,data,size);
-    debug_rf = 0;
+	//rasp.printf("sniff: ");    print_tab(&rasp,data,size);
 }
 
 void the_ticker()
@@ -76,7 +72,6 @@ void the_ticker()
 
 void init()
 {
-    debug_rf = 0;
 
     uint8_t * p_UID = (uint8_t*) 0x1FFFF7E8;
 	
