@@ -1,0 +1,78 @@
+----------------- Ping 4 B -----------------
+user send -> user rx callback 	: 2.013 ms
+start_tx  -> rx_irq				: 0.917 ms
+chip enable -> rx_irq			:   283 us
+
+send_msg (4B)			: 1.051   ms
+	msg copy (4B) 		:     3.5 us
+	set CRC (4B)  		:     7   us
+	send_retries(0,0)	: 1.04    ms
+
+send_retries()			: 1.042   ms
+	transmit_Rx()		: 1.038   ms
+	
+transmit_Rx()			: 1.041 ms
+	start_transmission():   657 us
+	wait_transmit()		:   182 us
+	setMode()			:   201 us
+	
+start_transmission()	: 	658 us
+	write reg, set mode :   309 us
+	write_buffer()		:   326 us
+	ce pulse			:    23 us
+	
+reception
+	nrf_irq -> rf_message_handler	: 1.06  ms
+	rf_message_handler()			:   787 us
+	rf_message_handler -> exit		:    32 us
+
+rf_message_handler()
+		empty callback 	:   3.5 us
+		--> crc			:   2   us
+		crc check (4B)	:   7.5 us
+		--> send ack	:   4.5 us
+		send_ack()		: 766   us
+	
+----------------- Ping 32 B -----------------
+nrf_irq()			: 1.909 ms
+	readBuffer()	:   901 us
+	crc_check()		:    35 us
+	send_ack()		:   766 us
+
+transmit_Rx()			:  2.312 ms
+	start_transmission():  1.802 ms
+	wait_transmit()		:    302 us
+	setMode()			:    208 us
+	
+start_transmission()	: 1.802 ms
+	write reg, set mode :   311 us
+	write_buffer()		: 1.466 ms
+	ce pulse			:    25 us
+
+----------------- SPI 10MHz Ping 32 B -----------------
+nrf_irq()			:  1.543 ms
+	readBuffer()	:    686 us
+
+	
+start_transmission()
+	write_buffer()		: 1.240 us
+
+----------------- SPI direct write,SPI 10MHz,Ping 32 B -----------------
+transmit_Rx()			: 492 us
+	start_transmission()		: 140 us
+	wait_transmit()				: 315 us
+	setMode()					:  36 us
+
+write_buffer()				:  57 us
+	ce cesn write add		:   8 us
+	buffer reg				:  33 us
+	csn ce wait				:  16 us
+
+without ACK :
+nrf_irq()			:  177 us
+	readBuffer()	:   80 us
+	readbuffer->crc :   40 us
+	crc_check()		:   36 us
+
+
+	
