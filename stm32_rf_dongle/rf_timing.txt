@@ -1,3 +1,23 @@
+----------------- SPI direct write,SPI 10MHz,Ping 32 B -----------------
+transmit_Rx()			: 492 us
+	start_transmission()		: 140 us
+	wait_transmit()				: 315 us
+	setMode()					:  36 us
+
+write_buffer()				:  57 us
+	ce cesn write add		:   8 us
+	buffer reg				:  33 us
+	csn ce wait				:  16 us
+
+without ACK :
+nrf_irq()			:  177 us
+	readBuffer()	:   80 us
+	readbuffer->crc :   40 us
+	crc_check()		:   36 us
+
+
+	
+
 ----------------- Ping 4 B -----------------
 user send -> user rx callback 	: 2.013 ms
 start_tx  -> rx_irq				: 0.917 ms
@@ -57,22 +77,3 @@ nrf_irq()			:  1.543 ms
 start_transmission()
 	write_buffer()		: 1.240 us
 
------------------ SPI direct write,SPI 10MHz,Ping 32 B -----------------
-transmit_Rx()			: 492 us
-	start_transmission()		: 140 us
-	wait_transmit()				: 315 us
-	setMode()					:  36 us
-
-write_buffer()				:  57 us
-	ce cesn write add		:   8 us
-	buffer reg				:  33 us
-	csn ce wait				:  16 us
-
-without ACK :
-nrf_irq()			:  177 us
-	readBuffer()	:   80 us
-	readbuffer->crc :   40 us
-	crc_check()		:   36 us
-
-
-	

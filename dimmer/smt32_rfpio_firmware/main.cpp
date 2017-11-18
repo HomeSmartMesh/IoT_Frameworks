@@ -24,7 +24,7 @@ Dimm dimmer(&rasp,PB_4,PB_5,   PA_8,PA_9,PA_10,PA_11,   PA_15,PB_3,PB_0,PB_1 );
 
 void the_ticker()
 {
-    myled = !myled;
+    //myled = !myled;
 }
 
 void rf_message_received(uint8_t *data,uint8_t size)
@@ -66,20 +66,14 @@ void init()
 
 int main() 
 {
-
+    myled = 1;//turn off
     init();
 
-    dimmer.set_level(0,1000);
-    dimmer.set_level(1,1100);
-    dimmer.set_level(2,1200);
-    dimmer.set_level(3,1300);
-    dimmer.set_level(4,1400);
-    dimmer.set_level(5,1500);
-    dimmer.set_level(6,1600);
-    dimmer.set_level(7,1700);
-    
     while(1) 
     {
+        myled = 0;//on
+        wait_ms(50);
+        myled = 1;//off
         wait(10);
         rasp.printf("Nb int : %d\r",dimmer.intCount);
         dimmer.intCount = 0;
