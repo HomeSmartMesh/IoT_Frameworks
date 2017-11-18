@@ -1,0 +1,6 @@
+.temp/
+BUILD/
+*.pyc
+mbed-os/
+nrf-mesh/
+crc/

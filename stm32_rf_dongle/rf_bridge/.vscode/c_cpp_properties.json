@@ -1,0 +1,105 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "/usr/include",
+                "/usr/local/include",
+                "${workspaceRoot}"
+            ],
+            "defines": [],
+            "intelliSenseMode": "clang-x64",
+            "browse": {
+                "path": [
+                    "/usr/include",
+                    "/usr/local/include",
+                    "${workspaceRoot}"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            },
+            "macFrameworkPath": [
+                "/System/Library/Frameworks",
+                "/Library/Frameworks"
+            ]
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "/usr/include",
+                "/usr/local/include",
+                "${workspaceRoot}"
+            ],
+            "defines": [],
+            "intelliSenseMode": "clang-x64",
+            "browse": {
+                "path": [
+                    "/usr/include",
+                    "/usr/local/include",
+                    "${workspaceRoot}"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
+        },
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceRoot}/mbed-os",
+                "${workspaceRoot}"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE"
+            ],
+            "intelliSenseMode": "msvc-x64",
+            "browse": {
+                "path": [
+                    "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include/*",
+                    "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/atlmfc/include/*",
+                    "C:/Program Files (x86)/Windows Kits/8.1/Include/um",
+                    "C:/Program Files (x86)/Windows Kits/8.1/Include/shared",
+                    "C:/Program Files (x86)/Windows Kits/8.1/Include/winrt",
+                    "${workspaceRoot}"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
+        },
+        {
+            "name": "arm_gcc",
+            "includePath": [
+                "${workspaceRoot}/mbed-os/drivers/Serial.h",
+                "C:/Program Files (x86)/GNU Tools ARM Embedded/6 2017-q1-update/arm-none-eabi/include/c++/6.3.1/arm-none-eabi/thumb/v8-m.main/fpv5/hard",
+                "C:/Program Files (x86)/GNU Tools ARM Embedded/6 2017-q1-update/lib/gcc/arm-none-eabi/6.3.1/include",
+                "${workspaceRoot}/mbed-os",
+                "${workspaceRoot}",
+                "${workspaceRoot}/safe-uart",
+                "${workspaceRoot}/nrf-mesh",
+                "C:/Program Files (x86)/GNU Tools ARM Embedded/6 2017-q1-update/arm-none-eabi/include/c++/6.3.1",
+                "C:/Program Files (x86)/GNU Tools ARM Embedded/6 2017-q1-update/arm-none-eabi/include",
+                "${workspaceRoot}/crc",
+                "${workspaceRoot}/mbed-os/targets/TARGET_STM/TARGET_STM32F1",
+                "${workspaceRoot}/mbed-os/targets/TARGET_STM/TARGET_STM32F1/TARGET_BLUEPILL_F103C8",
+                "${workspaceRoot}/mbed-os/targets/TARGET_STM/TARGET_STM32F1/TARGET_BLUEPILL_F103C8/device",
+                "${workspaceRoot}/mbed-os/cmsis",
+                "${workspaceRoot}/mbed-os/targets/TARGET_STM/TARGET_STM32F1/device",
+                "${workspaceRoot}/mbed-os/targets/TARGET_STM",
+                "${workspaceRoot}/mbed-os/hal"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE"
+            ],
+            "intelliSenseMode": "msvc-x64",
+            "browse": {
+                "path": [
+                    "${workspaceRoot}"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
+        }
+    ],
+    "version": 3
+}
