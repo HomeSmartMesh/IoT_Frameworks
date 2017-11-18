@@ -93,36 +93,36 @@ void text_message_received(uint8_t *data,uint8_t size)
 
 void rf_broadcast_catched(uint8_t *data,uint8_t size)
 {
-	switch(data[rfi_pid])
+	switch(data[rf::ind::pid])
 	{
-		case rf_pid_0xF5_alive:
+		case rf::pid::alive:
 			{
-				rasp.printf("NodeId:%d;is_Alive\r",data[rfi_src]);
+				rasp.printf("NodeId:%d;is_Alive\r",data[rf::ind::source]);
 			}
 			break;
-		case rf_pid_0xC9_reset:
+		case rf::pid::reset:
 			{
-				rasp.printf("NodeId:%d;was:Reset\r",data[rfi_src]);
+				rasp.printf("NodeId:%d;was:Reset\r",data[rf::ind::source]);
 			}
 			break;
-		case (0x80 | rf_pid_heat):
+		case rf::pid::heat:
 			{
-				rasp.printf("NodeId:%d;heat:%d\r",data[rfi_src],data[3]);//Heat          : Size Pid  SrcId  heat_val CRC
+				rasp.printf("NodeId:%d;heat:%d\r",data[rf::ind::source],data[rf::ind::bcst_payload]);
 			}
 			break;
-		case rf_pid_0xBB_light:
+		case rf::pid::light:
 			{
-				prf.rx_light(data[rfi_src],data+rfi_broadcast_payload_offset);
+				prf.rx_light(data[rf::ind::source],data+rf::ind::bcst_payload);
 			}
 			break;
-		case rf_pid_0xC5_magnet:
+		case rf::pid::magnet:
 			{
-				prf.rx_magnet(data[rfi_src],data);
+				prf.rx_magnet(data[rf::ind::source],data);
 			}
 			break;
-		case rf_pid_0xE2_bme280:
+		case rf::pid::bme280:
 			{
-				prf.bme280_rx_measures(data[rfi_src],data+3);
+				prf.bme280_rx_measures(data[rf::ind::source],data+rf::ind::bcst_payload);
 			}
 			break;
 		default :
@@ -160,7 +160,7 @@ void init()
 	hsm.setNodeId(NODEID);
 
 	hsm.setRetries(10);
-	hsm.setAckDelay(400);
+	hsm.setAckDelay(100);
 	
 	//hsm.print_nrf();
 
@@ -183,7 +183,7 @@ int main()
 
 	hsm.print_nrf();
 
-	hsm.broadcast_reset();
+	hsm.broadcast(rf::pid::reset);
     
     while(1) 
     {
