@@ -8,15 +8,22 @@
 //------------------------------------- CONFIG -----------------------------------------
 const uint8_t CHANNEL = 10;
 const uint8_t NODEID = 23;
+#define RF_BOARD_DONGLE 1
+#define RF_BOARD_PIO 	0
 //--------------------------------------------------------------------------------------
-
-
 Serial   rasp(PB_10, PB_11, 115200);
+
+#if (RF_BOARD_DONGLE == 1)
+	uint8_t spi_module = 1;
+	//nRF Modules 1:Gnd, 2:3.3v, 3:ce,  4:csn, 5:sck, 6:mosi, 7:miso, 8:irq 
+	RfMesh hsm(&rasp,spi_module,           PC_15, PA_4, PA_5,   PA_7,  PA_6,    PA_0);
+#elif (RF_BOARD_PIO == 1)
+uint8_t spi_module = 2;
+#endif
+
 Proto    prf(&rasp);
 DigitalOut myled(PC_13);
 Ticker tick_call;
-//nRF Modules 1:Gnd, 2:3.3v, 3:ce,  4:csn, 5:sck, 6:mosi, 7:miso, 8:irq 
-RfMesh hsm(&rasp,           PC_15, PA_4, PA_5,   PA_7,  PA_6,    PA_0);
 
 suart com(&rasp);
 
@@ -93,41 +100,43 @@ void text_message_received(uint8_t *data,uint8_t size)
 
 void rf_broadcast_catched(uint8_t *data,uint8_t size)
 {
+	rasp.printf("NodeId:%d;",data[rf::ind::source]);
+
 	switch(data[rf::ind::pid])
 	{
 		case rf::pid::alive:
 			{
-				rasp.printf("NodeId:%d;is_Alive\r",data[rf::ind::source]);
+				rasp.printf("status:Alive\r");
 			}
 			break;
 		case rf::pid::reset:
 			{
-				rasp.printf("NodeId:%d;was:Reset\r",data[rf::ind::source]);
+				rasp.printf("event:Reset\r");
 			}
 			break;
 		case rf::pid::heat:
 			{
-				rasp.printf("NodeId:%d;heat:%d\r",data[rf::ind::source],data[rf::ind::bcst_payload]);
+				rasp.printf("heat:%d\r",data[rf::ind::bcst_payload]);
 			}
 			break;
 		case rf::pid::light:
 			{
-				prf.rx_light(data[rf::ind::source],data+rf::ind::bcst_payload);
+				prf.print_light(data+rf::ind::bcst_payload);
 			}
 			break;
 		case rf::pid::magnet:
 			{
-				prf.rx_magnet(data[rf::ind::source],data);
+				prf.print_magnet(data+rf::ind::bcst_payload);
 			}
 			break;
 		case rf::pid::bme280:
 			{
-				prf.bme280_rx_measures(data[rf::ind::source],data+rf::ind::bcst_payload);
+				prf.print_bme280(data+rf::ind::bcst_payload);
 			}
 			break;
 		default :
 			{
-                rasp.printf("RX(%d)> ",size);
+                rasp.printf("pid:Unknown;RX(%d)> ",size);
                 for(int i=0;i<size;i++)
                 {
                     rasp.printf("0x%0x ",data[i]);
@@ -155,7 +164,7 @@ void init()
     tick_call.attach(&the_ticker,1);
 
 	hsm.init(CHANNEL);//left to the user for more flexibility on memory management
-	rasp.printf("stm32_dongle> Started listening\n");
+	rasp.printf("stm32_dongle> listening to Mesh 2.0 on channel %d\n",CHANNEL);
 
 	hsm.setNodeId(NODEID);
 
@@ -168,7 +177,6 @@ void init()
 
     com.attach_txt(&text_message_received);
     com.attach_bin(&binary_message_received);
-	
 }
 
 int main() 
@@ -178,10 +186,9 @@ int main()
 	rasp.printf("stm32_dongle> U_ID: ");
 	print_tab(&rasp,p_UID,12);
 	rasp.printf("stm32_dongle> Node ID: %d\r",NODEID);
-
 	init();
 
-	hsm.print_nrf();
+	//hsm.print_nrf();
 
 	hsm.broadcast(rf::pid::reset);
     

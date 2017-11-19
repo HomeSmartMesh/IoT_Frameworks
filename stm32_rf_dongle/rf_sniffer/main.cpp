@@ -62,7 +62,7 @@ void uart_message_received(uint8_t *data,uint8_t size)
 
 void rf_sniffed(uint8_t *data,uint8_t size)
 {
-	//rasp.printf("sniff: ");    print_tab(&rasp,data,size);
+	rasp.printf("sniff: ");    print_tab(&rasp,data,size);
 }
 
 void the_ticker()
@@ -79,12 +79,10 @@ void init()
 	print_tab(&rasp,p_UID,12);
 	rasp.printf("stm32 sniffer> Node ID: %d\r",NODEID);
 
-    rasp.printf("stm32 sniffer> Hi\n");
-
     tick_call.attach(&the_ticker,1);
 
     hsm.init(CHANNEL);
-    rasp.printf("Sniffer listening at channel %d\r",CHANNEL);
+    rasp.printf("stm32 sniffer> listening to Mesh 2.0 at channel %d\r",CHANNEL);
     hsm.setNodeId(NODEID);
 
 	hsm.setRetries(20);
