@@ -5,8 +5,10 @@
 #include "utils.h"
 
 //------------------------------------- CONFIG -----------------------------------------
-const uint8_t CHANNEL = 10;
-const uint8_t NODEID = 24;
+#define FLASH_HEADER	0x0800FFF0
+#define F_NODEID	*(uint8_t *) FLASH_HEADER
+#define F_CHANNEL	*(uint8_t *) (FLASH_HEADER+0x01)
+
 #define RF_BOARD_DONGLE 1
 #define RF_BOARD_PIO 	0
 //--------------------------------------------------------------------------------------
@@ -60,11 +62,11 @@ void init()
 
     tick_call.attach(&the_ticker,0.1);
 
-	hsm.init(CHANNEL);//left to the user for more flexibility on memory management
+	hsm.init(F_CHANNEL);//left to the user for more flexibility on memory management
 	hsm.setBridgeMode();
-	rasp.printf("stm32_bridge> listening to Mesh 2.0 on channel %d in bridge Mode\n",CHANNEL);
+	rasp.printf("stm32_bridge> listening to Mesh 2.0 on channel %d in bridge Mode\n",F_CHANNEL);
 
-	hsm.setNodeId(NODEID);
+	hsm.setNodeId(F_NODEID);
 
     hsm.attach(&rf_sniffed,RfMesh::CallbackType::Sniff);
 
@@ -81,7 +83,7 @@ int main()
 	
 	rasp.printf("stm32_bridge> U_ID: ");
 	print_tab(&rasp,p_UID,12);
-	rasp.printf("stm32_bridge> Node ID: %d\r",NODEID);
+	rasp.printf("stm32_bridge> Node ID: %d\r",F_NODEID);
 
 	init();
 
