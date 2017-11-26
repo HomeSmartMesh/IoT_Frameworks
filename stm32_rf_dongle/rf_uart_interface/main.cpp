@@ -6,8 +6,10 @@
 #include "utils.h"
 
 //------------------------------------- CONFIG -----------------------------------------
-const uint8_t CHANNEL = 10;
-const uint8_t NODEID = 23;
+#define FLASH_HEADER	0x0800FFF0
+#define F_NODEID	*(uint8_t *) FLASH_HEADER
+#define F_CHANNEL	*(uint8_t *) (FLASH_HEADER+0x01)
+
 #define RF_BOARD_DONGLE 1
 #define RF_BOARD_PIO 	0
 //--------------------------------------------------------------------------------------
@@ -163,10 +165,10 @@ void init()
 
     tick_call.attach(&the_ticker,1);
 
-	hsm.init(CHANNEL);//left to the user for more flexibility on memory management
-	rasp.printf("stm32_dongle> listening to Mesh 2.0 on channel %d\n",CHANNEL);
+	hsm.init(F_CHANNEL);//left to the user for more flexibility on memory management
+	rasp.printf("stm32_dongle> listening to Mesh 2.0 on channel %d\n",F_CHANNEL);
 
-	hsm.setNodeId(NODEID);
+	hsm.setNodeId(F_NODEID);
 
 	hsm.setRetries(10);
 	hsm.setAckDelay(100);
@@ -185,7 +187,7 @@ int main()
 	
 	rasp.printf("stm32_dongle> U_ID: ");
 	print_tab(&rasp,p_UID,12);
-	rasp.printf("stm32_dongle> Node ID: %d\r",NODEID);
+	rasp.printf("stm32_dongle> Node ID: %d\r",F_NODEID);
 	init();
 
 	//hsm.print_nrf();
@@ -198,7 +200,7 @@ int main()
 		if(hsm.nRFIrq.read() == 0)
 		{
 			rasp.printf("irq pin Low, missed interrupt, re init()\n");
-			hsm.init(CHANNEL);
+			hsm.init(F_CHANNEL);
 		}
 		//send_rgb() is only allowed to be called from main as it uses the wait_ms function which fails from ISRs context
 		//wait_ms() is required to wait for the acknowlege and keep a simple result in the function return
@@ -244,7 +246,7 @@ int main()
 			{
 				rasp.printf("send_heat success in %d retries\r",nbret);
 			}
-			rasp.printf("NodeId:%d;NodeDest:%d;heat_val:%u\r",NODEID,
+			rasp.printf("NodeId:%d;NodeDest:%d;heat_val:%u\r",F_NODEID,
 				tab_send[0],tab_send[1]);
 			
 			is_heat_toSend = false;
