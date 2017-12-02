@@ -115,20 +115,25 @@ void localActions(NodeMap_t &measures,webserver_c &l_wbs)
 int main( int argc, char** argv )
 {
 	std::cout << "______________________Config______________________" << std::endl;
-	strmap conf;
-	utl::args2map(argc,argv,conf);//here is checked './configfile.txt'
 
-	Log::config(conf);
+	std::ifstream config_file("mesh_config/server_config.json");
+	json config;
+	config_file >> config;
 
-	webserver_c		wbs(conf);	//websocket manager : broadcast() and respond()
+	std::ifstream calib_file("mesh_config/bme280_calibration.json");
+	json calib;
+	calib_file >> calib;
+
+	Log::config(config["log"]);
+	webserver_c		wbs(config);	//websocket manager : broadcast() and respond()
 	
-	Serial 			stream(conf);	// - process serial port stream : - calibrate sensors values
+	Serial 			stream(config["serial"],calib);	// - process serial port stream : - calibrate sensors values
 									// - provides ready to store measures MAP of Nodes.Sensors.Values,Timestamp
 									// - If not configured to be used then the .update() polling is neutral
 
-	mqtt_c			mqtt(conf,stream);	//MQTT client app wrapper, will attempt connection on creation if params provided
-	
-	db_manager_c	dbm(conf);	//adds values to files and memory db, answers requests
+	mqtt_c			mqtt(config["mqtt_client"],stream);	//MQTT client app wrapper, will attempt connection on creation if params provided
+
+	db_manager_c	dbm(config["database"]);	//adds values to files and memory db, answers requests
 	
 	dbm.load();
 	

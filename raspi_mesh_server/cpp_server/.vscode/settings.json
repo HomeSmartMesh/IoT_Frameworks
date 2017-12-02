@@ -1,5 +1,8 @@
 {
     "files.associations": {
-        "xstring": "cpp"
+        "xstring": "cpp",
+        "iosfwd": "cpp",
+        "xtree": "cpp",
+        "xutility": "cpp"
     }
 }
