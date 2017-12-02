@@ -7,3 +7,6 @@
 [submodule "raspi_mesh_server/cpp_server/pilibs"]
 	path = raspi_mesh_server/cpp_server/pilibs
 	url = https://github.com/HomeSmartMesh/pilibs.git
+[submodule "raspi_mesh_server/cpp_server/mesh_config"]
+	path = raspi_mesh_server/cpp_server/mesh_config
+	url = https://github.com/HomeSmartMesh/mesh_config.git
