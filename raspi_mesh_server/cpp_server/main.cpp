@@ -112,15 +112,23 @@ void localActions(NodeMap_t &measures,webserver_c &l_wbs)
 	}
 }
 
-int main( int argc, char** argv )
+int main(int argc, const char *argv[]) 
 {
-	std::cout << "______________________Config______________________" << std::endl;
+	if(argc != 2)
+	{
+		std::cout << "provide config path dude..." << std::endl;
+		return 0;
+	}
+	std::string config_path(argv[1]);
+	std::cout << "________________________________________________________________"<< std::endl;
+	std::cout << "Config from path : "<<config_path << std::endl;
+	std::cout << "________________________________________________________________"<< std::endl;
 
-	std::ifstream config_file("mesh_config/server_config.json");
+	std::ifstream config_file(config_path+"/server_config.json");
 	json config;
 	config_file >> config;
 
-	std::ifstream calib_file("mesh_config/bme280_calibration.json");
+	std::ifstream calib_file(config_path+"/bme280_calibration.json");
 	json calib;
 	calib_file >> calib;
 
@@ -158,7 +166,6 @@ int main( int argc, char** argv )
 				wbs.broadcast(jMeasures);
 				std::string jMeasures2 = utl::stringify2(measures,"update");//data type is "update"
 				wbs.post(jMeasures2);//for another webserver if configured
-
 				mqtt.publish_measures(measures);
 			}
 		}
