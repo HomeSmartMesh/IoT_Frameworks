@@ -58,9 +58,13 @@ void rf_sniffed(uint8_t *data,uint8_t size)
 
 void init()
 {
-    rasp.printf("stm32_bridge> Hello from the RF UART Interface\n");
+	uint8_t * p_UID = (uint8_t*) 0x1FFFF7E8;
+	
+	rasp.printf("stm32_bridge> U_ID: ");
+	print_tab(&rasp,p_UID,12);
+	rasp.printf("stm32_bridge> Node ID: %d\r",F_NODEID);
 
-    tick_call.attach(&the_ticker,0.1);
+	tick_call.attach(&the_ticker,0.1);
 
 	hsm.init(F_CHANNEL);//left to the user for more flexibility on memory management
 	hsm.setBridgeMode();
@@ -73,24 +77,19 @@ void init()
 	hsm.setRetries(10);
 	hsm.setAckDelay(400);
 	
-	hsm.print_nrf();
+	//hsm.print_nrf();
 
 }
 
 int main() 
 {
-	uint8_t * p_UID = (uint8_t*) 0x1FFFF7E8;
-	
-	rasp.printf("stm32_bridge> U_ID: ");
-	print_tab(&rasp,p_UID,12);
-	rasp.printf("stm32_bridge> Node ID: %d\r",F_NODEID);
 
 	init();
 
 
 	hsm.broadcast(rf::pid::reset);
     
-	uint16_t alive_count = 0;
+	uint16_t alive_count = 520;
 
     while(1) 
     {
@@ -98,7 +97,7 @@ int main()
 		if(hsm.nRFIrq.read() == 0)
 		{
 			rasp.printf("irq pin Low, missed interrupt, re init()\n");
-			hsm.init(CHANNEL);
+			hsm.init(F_CHANNEL);
 		}
 		if(alive_count == 0)
 		{
