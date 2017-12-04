@@ -7,15 +7,15 @@ var StatusParams =
 	data  :
 	[
 		{ x: 100, y: 100, r: 20, color: "Blue", 
-			Temperature : 26, Light : 500,
+			temperature : 26, light : 500,
 			Name : "LivingRoom"
 		},
 		{ x: 300, y: 100, r: 20, color: "Blue", 
-			Temperature : 26, Light : 500,
+			temperature : 26, light : 500,
 			Name : "BathRoom"
 		},
 		{ x: 500, y: 100, r: 20, color: "Blue", 
-			Temperature : 26, Light : 500,
+			temperature : 26, light : 500,
 			Name : "Balcony"
 		}
 	]
@@ -37,7 +37,7 @@ var ChartsParamsList =
 		scale_x_domain : [start_disp,now],
 		scale_y_domain : [10,25],
 		NodeId : 6,
-		SensorName : "Temperature",
+		SensorName : "temperature",
 		Label : "Livingroom Temperature °C"
 	},
 	{
@@ -45,7 +45,7 @@ var ChartsParamsList =
 		scale_x_domain : [start_disp,now],
 		scale_y_domain : [0,100],
 		NodeId : 6,
-		SensorName : "Humidity",
+		SensorName : "humidity",
 		Label : "Livingroom Humidity %RH"
 	},
 	{
@@ -53,7 +53,7 @@ var ChartsParamsList =
 		scale_x_domain : [start_disp,now],
 		scale_y_domain : [10,25],
 		NodeId : 7,
-		SensorName : "Temperature",
+		SensorName : "temperature",
 		Label : "Bathroom Temperature °C"
 	},
 	{
@@ -61,7 +61,7 @@ var ChartsParamsList =
 		scale_x_domain : [start_disp,now],
 		scale_y_domain : [0,100],
 		NodeId : 7,
-		SensorName : "Humidity",
+		SensorName : "humidity",
 		Label : "Bathroom Humidity %RH"
 	},
 	{
@@ -69,7 +69,7 @@ var ChartsParamsList =
 		scale_x_domain : [start_disp,now],
 		scale_y_domain : [0,35],
 		NodeId : 16,
-		SensorName : "Temperature",
+		SensorName : "temperature",
 		Label : "Balcony Temperature °C"
 	},
 	{
@@ -77,7 +77,7 @@ var ChartsParamsList =
 		scale_x_domain : [start_disp,now],
 		scale_y_domain : [0,100],
 		NodeId : 16,
-		SensorName : "Humidity",
+		SensorName : "humidity",
 		Label : "Balcony Humidity %RH"
 	},
 	{
@@ -85,7 +85,7 @@ var ChartsParamsList =
 		scale_x_domain : [start_disp,now],
 		scale_y_domain : [0,1800],
 		NodeId : 6,
-		SensorName : "Light",
+		SensorName : "light",
 		Label : "Room Light"
 	},
 	{
@@ -93,7 +93,7 @@ var ChartsParamsList =
 		scale_x_domain : [start_disp,now],
 		scale_y_domain : [0,1800],
 		NodeId : 7,
-		SensorName : "Light",
+		SensorName : "light",
 		Label : "Bathroom Light"
 	}
 ];

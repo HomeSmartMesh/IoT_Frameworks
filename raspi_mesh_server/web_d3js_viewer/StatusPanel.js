@@ -110,7 +110,7 @@ class StatusPanel
 						.style("fill", "White")
 						;
 		TempNodesGroups.append("text")
-						.text("Temperature")
+						.text("temperature")
 						.style("font-size", "12px")
 						.style("font-weight", "bold")
 						.style("fill", "#011a4c")
@@ -126,7 +126,7 @@ class StatusPanel
 						.style("stroke-width", "2px")
 						;
 		LightNodesGroups.append("text")
-						.text("Light")
+						.text("light")
 						.style("font-size", "12px")
 						.style("fill", "#011a4c")
 						.attr('x',-22)
@@ -157,12 +157,12 @@ class StatusPanel
 	{
 		if((id==6) || (id==7))
 		{
-			this.data[nmap[id]].Temperature = Value;
-			this.TempGroupUpdate.select("text")	.text(function(d){return d.Temperature + " °C"})
-											.attr("y",function(d){return TempToPos(d.Temperature)+5});
+			this.data[nmap[id]].temperature = Value;
+			this.TempGroupUpdate.select("text")	.text(function(d){return d.temperature + " °C"})
+											.attr("y",function(d){return TempToPos(d.temperature)+5});
 			//TempGroupUpdate.select("circle").style("fill",TempToColor(Value));
-			this.TempGroupUpdate.select("circle")	.style("fill",function(d){return TempToColor(d.Temperature)})
-												.attr("cy",function(d){return TempToPos(d.Temperature)});
+			this.TempGroupUpdate.select("circle")	.style("fill",function(d){return TempToColor(d.temperature)})
+												.attr("cy",function(d){return TempToPos(d.temperature)});
 			//TempGroupUpdate.select("circle").style("fill","Blue");
 			//console.log(TempGroupUpdate.select("circle"));
 			//TempGroupUpdate.select("circle").style("fill","Blue"));
@@ -173,8 +173,8 @@ class StatusPanel
 	{
 		if((id==6) || (id==7))
 		{
-			this.data[nmap[id]].Light = Value;
-			this.LightGroupUpdate.select("text").text(function(d){return d.Light});
+			this.data[nmap[id]].light = Value;
+			this.LightGroupUpdate.select("text").text(function(d){return d.light});
 		}
 	}
 
@@ -182,8 +182,8 @@ class StatusPanel
 	{
 		if((id==6) || (id==7))
 		{
-			this.data[nmap[id]].Humidity = Value;
-			this.HumGroupUpdate.select("text").text(function(d){return d.Humidity + " %RH"});
+			this.data[nmap[id]].humidity = Value;
+			this.HumGroupUpdate.select("text").text(function(d){return d.humidity + " %RH"});
 		}
 	}
 }

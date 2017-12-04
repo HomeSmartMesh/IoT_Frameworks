@@ -70,28 +70,28 @@ function initWebsocket(reqList,panel,chartlist) {
 				var d = new Date(upjson[nodeid][sk].Times*1000);
 				var dtext = d.getHours() +':'+ d.getMinutes() + ':' + d.getSeconds();
 				message_text += sk + '(' + upjson[nodeid][sk].Values + ' - ' + dtext + ')<br>';
-				if(sk == "Pressure")
+				if(sk == "pressure")
 				{
-					var value = Math.round(upjson[nodeid]["Pressure"].Values);
+					var value = Math.round(upjson[nodeid]["pressure"].Values);
 					//console.log("Press",nodeid, value);
 					//d3_SetPressureValue(nodeid,value);
 				}
-				if(sk == "Temperature")
+				if(sk == "temperature")
 				{
-					var value = Math.round(100*upjson[nodeid]["Temperature"].Values)/100;
+					var value = Math.round(100*upjson[nodeid]["temperature"].Values)/100;
 					//console.log("Temp",nodeid, value);
 					panel.d3_SetTemperatureValue(nodeid,value);
 				}
-				if(sk == "Humidity")
+				if(sk == "humidity")
 				{
-					var value = Math.round(upjson[nodeid]["Humidity"].Values);
+					var value = Math.round(upjson[nodeid]["humidity"].Values);
 					//console.log("Hum",nodeid, value);
 					panel.d3_SetHumidityValue(nodeid,value);
 				}
-				if(sk == "Light")
+				if(sk == "light")
 				{
-					//console.log("Light", nodeid, value);
-					panel.d3_SetLightValue(nodeid,upjson[nodeid]["Light"].Values);
+					//console.log("light", nodeid, value);
+					panel.d3_SetLightValue(nodeid,upjson[nodeid]["light"].Values);
 				}
 			}
 			//message_text += '<br>';
