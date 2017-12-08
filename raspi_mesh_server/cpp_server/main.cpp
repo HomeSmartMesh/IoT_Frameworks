@@ -75,6 +75,9 @@ using json = nlohmann::json;
 
 #include "log.hpp"
 
+#include <boost/filesystem.hpp>
+//using namespace boost::filesystem;
+
 using namespace std;
 
 void help_arguments()
@@ -114,21 +117,37 @@ void localActions(NodeMap_t &measures,webserver_c &l_wbs)
 
 int main(int argc, const char *argv[]) 
 {
-	if(argc != 2)
-	{
-		std::cout << "provide config path dude..." << std::endl;
-		return 0;
-	}
-	std::string config_path(argv[1]);
-	std::cout << "________________________________________________________________"<< std::endl;
-	std::cout << "Config from path : "<<config_path << std::endl;
-	std::cout << "________________________________________________________________"<< std::endl;
+	boost::filesystem::path app_path(argv[0]);
 
-	std::ifstream config_file(config_path+"/server_config.json");
+	std::string config_file_name = app_path.parent_path().string()+"/mesh_config/server_config.json";
+	if (boost::filesystem::exists(config_file_name))
+	{
+		std::cout << "________________________________________________________________"<< std::endl;
+		std::cout << "Config from  : "<<config_file_name << std::endl;
+	}
+	else
+	{
+		std::cout << "Config file not found : "<<config_file_name << std::endl;
+		return 1;
+	}
+	std::ifstream config_file(config_file_name);
+
 	json config;
 	config_file >> config;
 
-	std::ifstream calib_file(config_path+"/bme280_calibration.json");
+	std::string calib_file_name = app_path.parent_path().string()+"/mesh_config/bme280_calibration.json";
+	if (boost::filesystem::exists(calib_file_name))
+	{
+		std::cout << "Calib from  : "<<calib_file_name << std::endl;
+		std::cout << "________________________________________________________________"<< std::endl;
+	}
+	else
+	{
+		std::cout << "Calib file not found : "<<config_file_name << std::endl;
+		return 1;
+	}
+
+	std::ifstream calib_file(calib_file_name);
 	json calib;
 	calib_file >> calib;
 
@@ -152,7 +171,6 @@ int main(int argc, const char *argv[])
 	stream.update();
 	
 	std::cout << "______________________Main Loop______________________" << std::endl;
-
 	while (1) 
 	{
 		if(stream.update())
