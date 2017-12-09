@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Websocket from 'react-websocket';
 
 
-function Sensors(props){
+function SensorsList(props){
         const listitems = props.sensors.map((sensor) =>
         <li key={sensor.type}>{sensor.type} : {sensor.value}</li>
         );
@@ -14,12 +14,53 @@ function Sensors(props){
         );
 }
     
+function SensorsMap(props){
+    const listitems = Object.keys(props.sensors).map((sensor) =>
+        <li key={sensor}>{sensor} : {props.sensors[sensor].Values[0]}</li>
+        );
+
+        return(
+            <div>
+                <ul>{listitems}</ul>
+            </div>
+        );
+}
+
+function NodesList(props){
+    const listitems = props.updatelist.map((node) =>
+    <li key={node.NodeId}>
+        NodeId : {node.NodeId} 
+        <SensorsList sensors={node.sensors} /> 
+    </li>
+    );
+    return(
+            <div>
+                <ul>{listitems}</ul>
+            </div>
+    );
+
+}
+
+function NodesMap(props){
+    const listitems = Object.keys(props.updatemap).map((node) =>
+    <li key={node}>
+        NodeId : {node} 
+        <SensorsMap sensors={props.updatemap[node]} /> 
+    </li>
+    );
+    return(
+            <div>
+                <ul>{listitems}</ul>
+            </div>
+    );
+
+}
 
 class StatusLogger extends Component{
     constructor(props) {
         super(props);
         this.state = {
-            update: [
+            updatelist: [
                 {NodeId:"26",
                     sensors:[
                         {   type:"light",
@@ -50,15 +91,42 @@ class StatusLogger extends Component{
                         }
                     ]
                  },
-            ]
-        };
+            ],
+            updatemap: {
+                "26":{
+                    light:{
+                        Times:[3333],
+                        Values:[20]
+                    },
+                    temperature:{
+                        Times:[3334],
+                        Values:[22]
+                    }
+                },
+                "28":{
+                    light:{
+                        Times:[3333],
+                        Values:[20]
+                    },
+                    temperature:{
+                        Times:[3334],
+                        Values:[22]
+                    }
+                }
+            }
+        }
     }
 
     handleData(data) {
         //console.log(data);
-        let result = JSON.parse(data);
-        console.log(result);
-        //this.setState({update: result.update});
+        let notification = JSON.parse(data);
+        console.log(notification.update);
+        this.setState( (prevState,props) => (
+            {
+                updatemap: Object.assign(prevState.updatemap,notification.update)
+            }
+        )
+        );
     }
     componentWillMount()
     {
@@ -66,17 +134,12 @@ class StatusLogger extends Component{
         //console.log(this.state.update);
     }
     render(){
-        const numbers = this.state.update;
-        const listitems = numbers.map((node) =>
-        <li key={node.NodeId}>
-            NodeId : {node.NodeId} 
-            <Sensors sensors={node.sensors} /> 
-        </li>
-        );
-
     return(
         <div>
-            <ul>{listitems}</ul>
+            <NodesList updatelist={this.state.updatelist}/>
+            <hr/>
+            <NodesMap updatemap={this.state.updatemap}/>
+            <hr/>
             <Websocket  url='ws://10.0.0.12:4348/measures'
                 onMessage={this.handleData.bind(this)}
                 debug={true}
