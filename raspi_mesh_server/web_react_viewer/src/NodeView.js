@@ -25,7 +25,7 @@ function SensorsMap(props){
 class NodeView extends Component{
     render(){
         return(
-        <Panel header={"NodeId : "+this.props.nodeName} bsStyle="primary">
+        <Panel header={this.props.nodeName} bsStyle="primary">
             <SensorsMap sensors={this.props.sensors} /> 
         </Panel>
         );
