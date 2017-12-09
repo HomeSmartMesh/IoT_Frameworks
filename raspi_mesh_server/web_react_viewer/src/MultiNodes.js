@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import Websocket from 'react-websocket';
 import merge from 'deepmerge';
 
+import NodeView from './NodeView';
+
+import {Grid,Row,Col, Clearfix} from 'react-bootstrap';
+
 function mergeSensors(map_old,map_new){
     function overwriteMerge(destinationArray, sourceArray, options) {
         return sourceArray
@@ -11,41 +15,23 @@ function mergeSensors(map_old,map_new){
     return result;
 }
 
-function time_to_text(timestamp){
-    var t = new Date(timestamp * 1000);//as per javascript time in ms and c++ time_t in sec
-    return t.toLocaleTimeString() + " , " + t.toLocaleDateString();
-}
-
-function SensorsMap(props){
-    const listitems = Object.keys(props.sensors).map((sensor) =>
-        <li key={sensor}>
-            {sensor} : {props.sensors[sensor].Values[0].toFixed(2)}  ({time_to_text(props.sensors[sensor].Times[0])})
-        </li>
-        );
-
-        return(
-            <div>
-                <ul>{listitems}</ul>
-            </div>
-        );
-}
-
 function NodesMap(props){
     const listitems = Object.keys(props.updatemap).map((node) =>
-    <li key={node}>
-        NodeId : {node} 
-        <SensorsMap sensors={props.updatemap[node]} /> 
-    </li>
+        <NodeView nodeName={node} sensors={props.updatemap[node]}/>
     );
     return(
-            <div>
-                <ul>{listitems}</ul>
-            </div>
+        <Grid>
+            <Row>
+                <Col xs={10} xsOffset={1}>
+                    {listitems}
+                </Col>
+            </Row>
+        </Grid>
     );
 
 }
 
-class StatusLogger extends Component{
+class MultiNodes extends Component{
     constructor(props) {
         super(props);
         this.state = {
@@ -78,4 +64,4 @@ class StatusLogger extends Component{
 }
 
 
-export default StatusLogger;
+export default MultiNodes;
