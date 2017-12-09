@@ -114,6 +114,24 @@ void localActions(NodeMap_t &measures,webserver_c &l_wbs)
 		}
 	}
 }
+void handle_config(std::string &request,json &config,std::string &response)
+{
+	std::cout << "handle_config> request>" << request << std::endl;
+	json jReq = json::parse(request);//double parsing on getRequestType and here
+	json jResp;
+	try
+	{
+		jResp["response"]["id"] = jReq["request"]["id"];
+		jResp["response"]["type"] = "config";
+		jResp["response"]["config"] = config;
+		response = jResp.dump();
+	}
+	catch(const std::exception& ex)
+	{
+		std::cout << "handle_config> !!! Caught exception \"" << ex.what() << "\"!!!\n";
+	}
+	std::cout << "handle_config> response length: " << response.length() << std::endl;
+}
 
 int main(int argc, const char *argv[]) 
 {
@@ -199,7 +217,24 @@ int main(int argc, const char *argv[])
 		if(!request.empty())
 		{
 			std::string response;
-			dbm.handle_request(request,response);
+			std::string requestType = utl::getRequestType(request);
+			if(requestType.find("Duration") == 0)
+			{
+				dbm.handle_duration(request,response);
+			}
+			else if(requestType.find("update") == 0)
+			{
+				dbm.handle_update(request,response);
+			}
+			else if(requestType.find("config") == 0)
+			{
+				handle_config(request,config,response);
+			}
+			else
+			{
+				std::cout << "main> Error : undefined request type : " << requestType<<std::endl;
+			}
+
 			if(!response.empty())
 			{
 				wbs.respond(response);
