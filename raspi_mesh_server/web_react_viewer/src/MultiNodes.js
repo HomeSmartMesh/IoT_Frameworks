@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import Websocket from 'react-websocket';
 import merge from 'deepmerge';
-
 import NodeView from './NodeView';
 
-import {Grid,Row,Col, Clearfix} from 'react-bootstrap';
+import "./MultiNodes.css"
 
 function mergeSensors(map_old,map_new){
     function overwriteMerge(destinationArray, sourceArray, options) {
@@ -20,13 +19,7 @@ function NodesMap(props){
         <NodeView nodeName={node} sensors={props.updatemap[node]}/>
     );
     return(
-        <Grid>
-            <Row>
-                <Col xs={10} xsOffset={1}>
-                    {listitems}
-                </Col>
-            </Row>
-        </Grid>
+        <div className="NodesMap">{listitems}</div>
     );
 
 }
