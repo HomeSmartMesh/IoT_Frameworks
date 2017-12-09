@@ -114,7 +114,8 @@ void localActions(NodeMap_t &measures,webserver_c &l_wbs)
 		}
 	}
 }
-void handle_config(std::string &request,json &config,std::string &response)
+
+void handle_nodesinfo(std::string &request,json &nodesinfo,std::string &response)
 {
 	std::cout << "handle_config> request>" << request << std::endl;
 	json jReq = json::parse(request);//double parsing on getRequestType and here
@@ -122,52 +123,44 @@ void handle_config(std::string &request,json &config,std::string &response)
 	try
 	{
 		jResp["response"]["id"] = jReq["request"]["id"];
-		jResp["response"]["type"] = "config";
-		jResp["response"]["config"] = config;
+		jResp["response"]["type"] = "nodesinfo";
+		jResp["response"]["nodesinfo"] = nodesinfo;
 		response = jResp.dump();
 	}
 	catch(const std::exception& ex)
 	{
-		std::cout << "handle_config> !!! Caught exception \"" << ex.what() << "\"!!!\n";
+		std::cout << "handle_nodesinfo> !!! Caught exception \"" << ex.what() << "\"!!!\n";
 	}
-	std::cout << "handle_config> response length: " << response.length() << std::endl;
+	std::cout << "handle_nodesinfo> response length: " << response.length() << std::endl;
+}
+
+json read_json(std::string const &filename)
+{
+	if (boost::filesystem::exists(filename))
+	{
+		std::cout << "________________________________________________________________"<< std::endl;
+		std::cout << "Loading : "<< filename << std::endl;
+	}
+	else
+	{
+		std::cout << "File not found : "<< filename << std::endl;
+		exit(1);
+	}
+	std::ifstream data_file(filename);
+	json result;
+	data_file >> result;
+	return result;
 }
 
 int main(int argc, const char *argv[]) 
 {
 	boost::filesystem::path app_path(argv[0]);
 
-	std::string config_file_name = app_path.parent_path().string()+"/mesh_config/server_config.json";
-	if (boost::filesystem::exists(config_file_name))
-	{
-		std::cout << "________________________________________________________________"<< std::endl;
-		std::cout << "Config from  : "<<config_file_name << std::endl;
-	}
-	else
-	{
-		std::cout << "Config file not found : "<<config_file_name << std::endl;
-		return 1;
-	}
-	std::ifstream config_file(config_file_name);
+	json config = read_json(app_path.parent_path().string()+"/mesh_config/server_config.json");
 
-	json config;
-	config_file >> config;
+	json calib = read_json(app_path.parent_path().string()+"/mesh_config/bme280_calibration.json");
 
-	std::string calib_file_name = app_path.parent_path().string()+"/mesh_config/bme280_calibration.json";
-	if (boost::filesystem::exists(calib_file_name))
-	{
-		std::cout << "Calib from  : "<<calib_file_name << std::endl;
-		std::cout << "________________________________________________________________"<< std::endl;
-	}
-	else
-	{
-		std::cout << "Calib file not found : "<<config_file_name << std::endl;
-		return 1;
-	}
-
-	std::ifstream calib_file(calib_file_name);
-	json calib;
-	calib_file >> calib;
+	json nodesinfo = read_json(app_path.parent_path().string()+"/mesh_config/nodes.json");
 
 	Log::config(config["log"]);
 	webserver_c		wbs(config);	//websocket manager : broadcast() and respond()
@@ -226,9 +219,9 @@ int main(int argc, const char *argv[])
 			{
 				dbm.handle_update(request,response);
 			}
-			else if(requestType.find("config") == 0)
+			else if(requestType.find("nodesinfo") == 0)
 			{
-				handle_config(request,config,response);
+				handle_nodesinfo(request,nodesinfo,response);
 			}
 			else
 			{
