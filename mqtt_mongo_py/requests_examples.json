@@ -1,0 +1,15 @@
+[
+    {
+        "request":{
+            "id":"1736",
+            "type":"update"
+        }
+    },
+    {
+        "request":{
+            "id":"1738",
+            "type":"nodesinfo"
+        }
+    }
+    
+]
