@@ -15,18 +15,17 @@ def on_message(client, userdata, msg):
         sensor = topic_parts[2]
         post = {
             "node": nodeid,
-            sensor:str(msg.payload),
+            sensor:float(msg.payload),
             "ts":datetime.datetime.utcnow()
         }
-        post_id = posts.insert_one(post).inserted_id
+        post_id = sensors.insert_one(post).inserted_id
         print msg.topic+" "+str(msg.payload)+" posted @ "+str(post_id)
         
 
 # -------------------- Mongo Client -------------------- 
 client = MongoClient('mongodb://10.0.0.44:27017/')
 db = client.HomeSmartMesh
-collection = db.sensors
-posts = db.posts
+sensors = db.sensors
 
 # -------------------- Mqtt Client -------------------- 
 client = mqtt.Client()
