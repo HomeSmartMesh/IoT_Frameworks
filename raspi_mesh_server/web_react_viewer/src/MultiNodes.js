@@ -53,16 +53,20 @@ class MultiNodes extends Component{
         var tReqUpdate = JSON.stringify(jReqUpdate);
         this.refWebSocket.state.ws.send(tReqUpdate);
     }
+    morefunc(){
+        console.log("morefunc()",this);
+    }
     websocketOpen() {
         //too early still connecting
-        setTimeout(()=>{
-            this.requestNodesInfo();
-        }, 3000);
+        console.log("this from websocketOpen() ",this);
+        this.morefunc();
+        this.requestNodesInfo();
+        //setTimeout(()=>{this.requestNodesInfo();}, 3000);
       }
       
     handleData(data) {
         let server_message = JSON.parse(data);
-        //console.log("server_message: ",server_message);
+        console.log("server_message: ",server_message);
         if(server_message.update)
         {
             this.setState( (prevState,props) => (
@@ -87,7 +91,7 @@ class MultiNodes extends Component{
             <hr/>
             <Websocket  url='ws://10.0.0.12:4348/measures'
                 onMessage={this.handleData.bind(this)}
-                onOpen={this.websocketOpen.bind(this)} websocket still undefined
+                onOpen={this.websocketOpen.bind(this)}
                 debug={true}
                 ref={(websref) => {this.refWebSocket = websref;}  }
             />

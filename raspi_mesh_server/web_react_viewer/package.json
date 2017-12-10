@@ -2,7 +2,7 @@
   "name": "web_react",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://10.0.0.12/status/",
+  "homepage": "http://10.0.0.12/info/",
   "dependencies": {
     "deepmerge": "^2.0.1",
     "react": "^16.2.0",
