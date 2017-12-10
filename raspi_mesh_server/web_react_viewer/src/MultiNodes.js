@@ -43,6 +43,7 @@ class MultiNodes extends Component{
             }
         };
         var tReq = JSON.stringify(jReq);
+        //this.refWebSocket.sendMessage(tReq);//for some reason this throws an function does not exist error
         this.refWebSocket.state.ws.send(tReq);
 		var jReqUpdate = {
             request : {
@@ -53,17 +54,6 @@ class MultiNodes extends Component{
         var tReqUpdate = JSON.stringify(jReqUpdate);
         this.refWebSocket.state.ws.send(tReqUpdate);
     }
-    morefunc(){
-        console.log("morefunc()",this);
-    }
-    websocketOpen() {
-        //too early still connecting
-        console.log("this from websocketOpen() ",this);
-        this.morefunc();
-        this.requestNodesInfo();
-        //setTimeout(()=>{this.requestNodesInfo();}, 3000);
-      }
-      
     handleData(data) {
         let server_message = JSON.parse(data);
         console.log("server_message: ",server_message);
@@ -79,7 +69,6 @@ class MultiNodes extends Component{
         else if(server_message.response.nodesinfo)
         {
             this.setState({nodesinfo:server_message.response.nodesinfo});
-            console.log("nodesinfo: ",server_message.response.nodesinfo);
         }
     }
     render(){
@@ -91,7 +80,7 @@ class MultiNodes extends Component{
             <hr/>
             <Websocket  url='ws://10.0.0.12:4348/measures'
                 onMessage={this.handleData.bind(this)}
-                onOpen={this.websocketOpen.bind(this)}
+                onOpen={this.requestNodesInfo.bind(this)}
                 debug={true}
                 ref={(websref) => {this.refWebSocket = websref;}  }
             />
