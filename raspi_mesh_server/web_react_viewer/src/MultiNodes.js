@@ -56,7 +56,7 @@ class MultiNodes extends Component{
     }
     handleData(data) {
         let server_message = JSON.parse(data);
-        console.log("server_message: ",server_message);
+        //console.log("server_message: ",server_message);
         if(server_message.update)
         {
             this.setState( (prevState,props) => (
