@@ -10,3 +10,6 @@
 [submodule "raspi_mesh_server/cpp_server/mesh_config"]
 	path = raspi_mesh_server/cpp_server/mesh_config
 	url = https://github.com/HomeSmartMesh/mesh_config.git
+[submodule "web_react"]
+	path = web_react
+	url = https://github.com/HomeSmartMesh/web_react.git
