@@ -14,7 +14,7 @@ def on_message(client, userdata, msg):
         nodeid = topic_parts[1]
         sensor = topic_parts[2]
         post = {
-            "node": nodeid,
+            "node": int(nodeid),
             sensor:float(msg.payload),
             "ts":datetime.datetime.utcnow()
         }
