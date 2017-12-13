@@ -16,3 +16,6 @@
 [submodule "raspi_mesh_server/rf_gateway"]
 	path = raspi_mesh_server/rf_gateway
 	url = https://github.com/HomeSmartMesh/rf_gateway.git
+[submodule "raspi_mesh_server/iot_db"]
+	path = raspi_mesh_server/iot_db
+	url = https://github.com/HomeSmartMesh/iot_db.git
