@@ -19,3 +19,6 @@
 [submodule "raspi_mesh_server/iot_db"]
 	path = raspi_mesh_server/iot_db
 	url = https://github.com/HomeSmartMesh/iot_db.git
+[submodule "raspi_mesh_server/py_db_proxy"]
+	path = raspi_mesh_server/py_db_proxy
+	url = https://github.com/HomeSmartMesh/py_db_proxy.git
