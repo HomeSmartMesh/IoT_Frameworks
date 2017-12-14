@@ -40,7 +40,7 @@ uint8_t tab_send[32];
 void binary_message_received(uint8_t *data,uint8_t size)
 {
 	rasp.printf("bin:");
-	print_tab(&rasp,data,size);
+	print_tab(&rasp,data,32);
 	//data[0] : 
 		//0x00 : forward binary frame to RF
 		//0x01 : dimmer, ... (avoid having to know source node id)
@@ -49,6 +49,10 @@ void binary_message_received(uint8_t *data,uint8_t size)
 void text_message_received(uint8_t *data,uint8_t size)
 {
 	uint8_t *buffer = data;
+	buffer[size]='\0';
+	rasp.printf("stm32>%s\r\n",buffer);
+	//print_tab(&rasp,data,32);
+	//rasp.printf("txt:\r\n");
     if(strbegins(buffer,"msg") == 0)
     {
         //msg size payload
@@ -96,7 +100,10 @@ void text_message_received(uint8_t *data,uint8_t size)
     }
     else
     {
-        rasp.printf("Unknown Command, type 'help' for info");
+        rasp.printf("not known Command, type 'help' for info\r\n");
+		rasp.printf("txt:");
+		print_tab(&rasp,data,size);
+        rasp.printf("not known Command, type 'help' for info\r\n");
     }
 }
 
