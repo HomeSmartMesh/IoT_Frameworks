@@ -22,3 +22,6 @@
 [submodule "raspi_mesh_server/py_db_proxy"]
 	path = raspi_mesh_server/py_db_proxy
 	url = https://github.com/HomeSmartMesh/py_db_proxy.git
+[submodule "raspi_mesh_server/py_mqtt_ruler"]
+	path = raspi_mesh_server/py_mqtt_ruler
+	url = https://github.com/HomeSmartMesh/py_mqtt_ruler.git
