@@ -98,7 +98,7 @@ void init()
     hsm.setNodeId(NODEID);
     rasp.printf("Light Dimmer listening at channel %d\r",CHANNEL);
     
-    hsm.print_nrf();
+    //hsm.print_nrf();
 
     hsm.attach(&rf_message_received,RfMesh::CallbackType::Message);
 
@@ -111,10 +111,10 @@ int main()
     init();//dimmer, hsm
 
 
-    rasp.printf("Broadcasting reset\r\r");
+    rasp.printf("Broadcasting reset\r\n");
     hsm.broadcast(rf::pid::reset);
 
-    rasp.printf("starting loop\r\r");
+    rasp.printf("starting loop\r\n");
     while(1) 
     {
         myled = 0;//on
