@@ -1,6 +1,7 @@
 #include "mbed.h"
 
 #include "rfmesh.h"
+#include "protocol.h"
 #include "dimm.h"
 #include "utils.h"
 
@@ -31,9 +32,31 @@ void rf_message_received(uint8_t *data,uint8_t size)
 {
     //rasp.printf("rf>Rx message Handler :");
     //print_tab(&rasp,data,size);
-    if(data[0x01] == 0x1B)//pid : light
+    if(data[rf::ind::pid] == rf::pid::dimmer)
     {
         dimmer.handle_message(data,size);
+    }
+}
+
+void startup_switchon()
+{
+    int vals[8];
+
+    //switch on - still might jitter depending on phase
+    //TODO might think to sync the relay with the ISR
+    dimmer.relay = 0;
+
+    //185 - 9900
+    for(int i=0;i<18000;i++)
+    {
+        for(int j=0;j<8;j++)        
+        {
+            vals[j] = i - (j*1000);//first gets counter, second is shifted by 1000,...
+            //the set level is protected against max so no issues for first overflowing
+            //the set_level is also latch protected, so no influence on change light count
+            dimmer.set_level(j,vals[j]);
+        }
+        //delay if need to slow down
     }
 }
 
@@ -46,13 +69,12 @@ void init()
 	print_tab(&rasp,p_UID,12);
 	rasp.printf("Light Dimmer> Node ID: %d\r",NODEID);
 
-    rasp.printf("Hello Light Dimmer\r");
-
-
     tick_call.attach(&the_ticker,1);
 
 
     dimmer.init();//here irq is enabled
+
+    startup_switchon();
 
     hsm.init(CHANNEL);
     rasp.printf("Light Dimmer listening at channel %d\r",CHANNEL);
@@ -67,7 +89,11 @@ void init()
 int main() 
 {
     myled = 1;//turn off
-    init();
+
+    init();//dimmer, hsm
+
+
+    hsm.broadcast(rf::pid::reset);
 
     while(1) 
     {
