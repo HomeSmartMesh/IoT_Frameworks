@@ -46,13 +46,12 @@ void binary_message_received(uint8_t *data,uint8_t size)
 		//0x01 : dimmer, ... (avoid having to know source node id)
 }
 
+//IMPORTANT !!
+//if you want to send a message that waits for an acknowledge, then it should be in an interruptible wait
+//call from main is working
 void text_message_received(uint8_t *data,uint8_t size)
 {
 	uint8_t *buffer = data;
-	buffer[size]='\0';
-	rasp.printf("stm32>%s\r\n",buffer);
-	//print_tab(&rasp,data,32);
-	//rasp.printf("txt:\r\n");
     if(strbegins(buffer,"msg") == 0)
     {
         //msg size payload
@@ -177,8 +176,9 @@ void init()
 
 	hsm.setNodeId(F_NODEID);
 
-	hsm.setRetries(10);
+	hsm.setRetries(5);
 	hsm.setAckDelay(100);
+	rasp.printf("stm32_dongle> config: 5 retrise, 100 ms wait\r\n");
 	
 	//hsm.print_nrf();
 
@@ -194,7 +194,9 @@ int main()
 	
 	rasp.printf("stm32_dongle> U_ID: ");
 	print_tab(&rasp,p_UID,12);
+	rasp.printf("\r\n");
 	rasp.printf("stm32_dongle> Node ID: %d\r",F_NODEID);
+	rasp.printf("\r\n");
 	init();
 
 	//hsm.print_nrf();
@@ -216,13 +218,14 @@ int main()
 			uint8_t nbret = hsm.send_msg(tab_send);
 			if(nbret == 0)
 			{
-				rasp.printf("send_msg fail : ");
+				rasp.printf("stm32> send_msg fail : ");
+				print_tab(&rasp,tab_send,tab_send[0]+2);
+				rasp.printf("\r\n");
 			}
 			else
 			{
-				rasp.printf("send_msg success in %d retries : ",nbret);
+				rasp.printf("stm32> send_msg success in %d retries\r\n",nbret);
 			}
-			print_tab(&rasp,tab_send,tab_send[0]);
 			
 			is_msg_toSend = false;
 		}
