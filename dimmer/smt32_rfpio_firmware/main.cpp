@@ -48,7 +48,8 @@ void the_ticker()
 
 void rf_message_received(uint8_t *data,uint8_t size)
 {
-    print_tab(&rasp,data,size);
+    //rasp.printf("rf_message_received()\r\n");
+    //print_tab(&rasp,data,size);
     if(data[rf::ind::pid] == rf::pid::dimmer)
     {
         dimmer.handle_message(data,size);
