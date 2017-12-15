@@ -6,17 +6,32 @@
 #include "utils.h"
 
 //------------------------------------- CONFIG -----------------------------------------
-const uint8_t CHANNEL = 10;
+const uint8_t CHANNEL = 2;
 const uint8_t NODEID = 25;
+//TODO use flash config
+
+#define RF_BOARD_DONGLE 0
+#define RF_BOARD_PIO 	1
+
+#define DEBUG_RFPIO 1
+//--------------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------
 
 Serial   rasp(PB_10, PB_11, 115200);
 DigitalOut myled(PC_13);
 
 Ticker tick_call;
-//nRF Modules 1:Gnd, 2:3.3v, 3:ce,  4:csn, 5:sck, 6:mosi, 7:miso, 8:irq 
-//RFPIO Layout !!!!
-RfMesh hsm(&rasp,           PA_5,  PB_12, PB_13, PB_15, PB_14, PA_4);
+
+#if (RF_BOARD_DONGLE == 1)
+	uint8_t spi_module = 1;
+	//nRF Modules 1:Gnd, 2:3.3v, 3:ce,  4:csn, 5:sck, 6:mosi, 7:miso, 8:irq 
+	RfMesh hsm(&rasp,spi_module, PC_15, PA_4, PA_5,   PA_7,  PA_6,    PA_0);
+#elif (RF_BOARD_PIO == 1)
+    uint8_t spi_module = 2;
+    //nRF Modules 1:Gnd, 2:3.3v, 3:ce,  4:csn, 5:sck, 6:mosi, 7:miso, 8:irq 
+    //RFPIO Layout !!!!
+    RfMesh hsm(&rasp, spi_module, PA_5,  PB_12, PB_13, PB_15, PB_14, PA_4);
+#endif
 
 //channel from pins A2,A3 could not be assigned to pwm even after changing uart to UART1
 //                rel,  sync,   ch1,2,   3,    4
@@ -26,12 +41,14 @@ Dimm dimmer(&rasp,PB_4,PB_5,   PA_8,PA_9,PA_10,PA_11,   PA_15,PB_3,PB_0,PB_1 );
 void the_ticker()
 {
     //myled = !myled;
+    #if(DEBUG_RFPIO == 1)
+    //rasp.printf("rf>alive\r\n");
+    #endif
 }
 
 void rf_message_received(uint8_t *data,uint8_t size)
 {
-    //rasp.printf("rf>Rx message Handler :");
-    //print_tab(&rasp,data,size);
+    print_tab(&rasp,data,size);
     if(data[rf::ind::pid] == rf::pid::dimmer)
     {
         dimmer.handle_message(data,size);
@@ -56,7 +73,7 @@ void startup_switchon()
             //the set_level is also latch protected, so no influence on change light count
             dimmer.set_level(j,vals[j]);
         }
-        //delay if need to slow down
+        wait_us(40);// ~ 
     }
 }
 
@@ -77,8 +94,8 @@ void init()
     startup_switchon();
 
     hsm.init(CHANNEL);
-    rasp.printf("Light Dimmer listening at channel %d\r",CHANNEL);
     hsm.setNodeId(NODEID);
+    rasp.printf("Light Dimmer listening at channel %d\r",CHANNEL);
     
     hsm.print_nrf();
 
@@ -93,8 +110,10 @@ int main()
     init();//dimmer, hsm
 
 
+    rasp.printf("Broadcasting reset\r\r");
     hsm.broadcast(rf::pid::reset);
 
+    rasp.printf("starting loop\r\r");
     while(1) 
     {
         myled = 0;//on
