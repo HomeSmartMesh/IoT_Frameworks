@@ -245,9 +245,6 @@ int main()
 			{
 				rasp.printf("send_rgb success in %d retries\r",nbret);
 			}
-			rasp.printf("NodeId:16;NodeDest:%d;R:%u;G:%u;B:%u\r",
-				tab_send[0],tab_send[1],tab_send[2],tab_send[3]);
-			
 			is_rgb_toSend = false;
 		}
 		if(is_heat_toSend)
@@ -261,8 +258,6 @@ int main()
 			{
 				rasp.printf("send_heat success in %d retries\r",nbret);
 			}
-			rasp.printf("NodeId:%d;NodeDest:%d;heat_val:%u\r",F_NODEID,
-				tab_send[0],tab_send[1]);
 			
 			is_heat_toSend = false;
 		}
