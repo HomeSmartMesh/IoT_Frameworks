@@ -52,7 +52,6 @@ uint8_t led_count = 0;
 uint8_t payload[32];
 
 bool is_rgb_toSend = false;
-bool is_heat_toSend = false;
 bool is_msg_toSend = false;
 uint8_t msg_size = 0;
 uint8_t tab_send[32];
@@ -116,28 +115,28 @@ void init()
 
 	#if(USE_APDS_SENSOR == 1)
 		if ( gsensor.ginit() ) {
-			rasp.printf("apds> APDS-9960 initialization complete\n\r");
+			rasp.printf("apds> APDS-9960 initialization complete\r\n");
 		} else {
-			rasp.printf("apds> Something went wrong during APDS-9960 init\n\r");
+			rasp.printf("apds> Something went wrong during APDS-9960 init\r\n");
 		}
 	#endif
 	#if(USE_APDS_GESTURE == 1)
 		// Start running the APDS-9960 gesture sensor engine
 		if ( gsensor.enableGestureSensor(true) )
 		{
-			rasp.printf("apds> Gesture sensor is now running\n\r");
+			rasp.printf("apds> Gesture sensor is now running\r\n");
 		} else 
 		{
-			rasp.printf("apds> Something went wrong during gesture sensor init!\n\r");
+			rasp.printf("apds> Something went wrong during gesture sensor init!\r\n");
 		}
 	#endif
 	#if(USE_APDS_LIGHT == 1)
 		if ( gsensor.enableLightSensor() ) 
 		{
-			rasp.printf("apds> Light sensor is on\n\r");
+			rasp.printf("apds> Light sensor is on\r\n");
 		} else 
 		{
-			rasp.printf("apds> Something went wrong during light sensor init!\n\r");
+			rasp.printf("apds> Something went wrong during light sensor init!\r\n");
 		}
 	#endif
 
@@ -170,6 +169,18 @@ void log_light_colors()
 }
 #endif
 
+#if(USE_APDS_GESTURE == 1)
+uint8_t poll_gesture(uint8_t &gest)
+{
+	gest = rf::gest::none;
+	if ( gsensor.isGestureAvailable() ) 
+	{
+		gest = (uint8_t) gsensor.readGesture();
+	}
+	return gest;
+}
+#endif
+
 int main() 
 {
 
@@ -181,31 +192,38 @@ int main()
     
 	uint16_t alive_count = 520;
 	uint16_t light_count = 86;// ~ 10 s
-
+	uint8_t gest;
     while(1) 
     {
-		wait_ms(100);
+		wait_ms(10);
+		#if(USE_APDS_GESTURE == 1)
+			if(poll_gesture(gest))
+			{
+				hsm.broadcast_byte(rf::pid::gesture,gest);
+				rasp.printf("NodeId:%u;gesture:%u\r\n",F_NODEID,gest);//expected at rx gateway side
+			}
+		#endif
 		if(hsm.nRFIrq.read() == 0)
 		{
 			rasp.printf("irq pin Low, missed interrupt, re init()\n");
 			hsm.init(F_CHANNEL);
 		}
-		if(light_count == 0)
-		{
-			#if(USE_APDS_LIGHT == 1)
-			log_light_colors();
-			#endif
-			light_count = 86;//~10 sec
-		}
-		else
-		{
-			light_count--;
-		}
+		#if(USE_APDS_LIGHT == 1)
+			if(light_count == 0)
+			{
+				log_light_colors();
+				light_count = 860;//~10 sec
+			}
+			else
+			{
+				light_count--;
+			}
+		#endif
 		if(alive_count == 0)
 		{
 			hsm.broadcast(rf::pid::alive);
 			rasp.printf("NodeId:%u;status:Alive\r\n",F_NODEID);//expected at rx gateway side
-			alive_count = 520;//~60 sec
+			alive_count = 5200;//~60 sec
 		}
 		else
 		{

@@ -122,9 +122,9 @@ void rf_broadcast_catched(uint8_t *data,uint8_t size)
 				rasp.printf("event:Reset\r");
 			}
 			break;
-		case rf::pid::heat:
+		case rf::pid::gesture:
 			{
-				rasp.printf("heat:%d\r",data[rf::ind::bcst_payload]);
+				rasp.printf("gesture:%d\r",data[rf::ind::bcst_payload]);
 			}
 			break;
 		case rf::pid::light:
