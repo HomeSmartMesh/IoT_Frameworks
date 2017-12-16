@@ -122,9 +122,9 @@ void rf_broadcast_catched(uint8_t *data,uint8_t size)
 				rasp.printf("event:Reset\r");
 			}
 			break;
-		case rf::pid::heat:
+		case rf::pid::gesture:
 			{
-				rasp.printf("heat:%d\r",data[rf::ind::bcst_payload]);
+				rasp.printf("gesture:%d\r",data[rf::ind::bcst_payload]);
 			}
 			break;
 		case rf::pid::light:
@@ -142,16 +142,21 @@ void rf_broadcast_catched(uint8_t *data,uint8_t size)
 				prf.print_bme280(data+rf::ind::bcst_payload);
 			}
 			break;
+		case rf::pid::light_rgb:
+			{
+				prf.print_light_rgb(data+rf::ind::bcst_payload);
+			}
+			break;
 		default :
 			{
-                rasp.printf("pid:Unknown;RX(%d)> ",size);
+                rasp.printf("pid:Unknown;size:%u:rx:",size);
                 for(int i=0;i<size;i++)
                 {
                     rasp.printf("0x%0x ",data[i]);
                 }
                 if(size < 31)
                 {
-                    rasp.printf(" - 0x%0x 0x%0x",data[size],data[size+1]);
+                    rasp.printf(";crc:0x%0x 0x%0x",data[size],data[size+1]);
                 }
                 rasp.printf("\n");
 			}
@@ -240,9 +245,6 @@ int main()
 			{
 				rasp.printf("send_rgb success in %d retries\r",nbret);
 			}
-			rasp.printf("NodeId:16;NodeDest:%d;R:%u;G:%u;B:%u\r",
-				tab_send[0],tab_send[1],tab_send[2],tab_send[3]);
-			
 			is_rgb_toSend = false;
 		}
 		if(is_heat_toSend)
@@ -256,8 +258,6 @@ int main()
 			{
 				rasp.printf("send_heat success in %d retries\r",nbret);
 			}
-			rasp.printf("NodeId:%d;NodeDest:%d;heat_val:%u\r",F_NODEID,
-				tab_send[0],tab_send[1]);
 			
 			is_heat_toSend = false;
 		}
