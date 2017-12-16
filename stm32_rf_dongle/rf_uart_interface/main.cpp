@@ -142,16 +142,21 @@ void rf_broadcast_catched(uint8_t *data,uint8_t size)
 				prf.print_bme280(data+rf::ind::bcst_payload);
 			}
 			break;
+		case rf::pid::light_rgb:
+			{
+				prf.print_light_rgb(data+rf::ind::bcst_payload);
+			}
+			break;
 		default :
 			{
-                rasp.printf("pid:Unknown;RX(%d)> ",size);
+                rasp.printf("pid:Unknown;size:%u:rx:",size);
                 for(int i=0;i<size;i++)
                 {
                     rasp.printf("0x%0x ",data[i]);
                 }
                 if(size < 31)
                 {
-                    rasp.printf(" - 0x%0x 0x%0x",data[size],data[size+1]);
+                    rasp.printf(";crc:0x%0x 0x%0x",data[size],data[size+1]);
                 }
                 rasp.printf("\n");
 			}
