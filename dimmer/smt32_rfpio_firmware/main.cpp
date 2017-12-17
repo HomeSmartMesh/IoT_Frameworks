@@ -69,12 +69,18 @@ void startup_switchon()
     {
         for(int j=0;j<8;j++)        
         {
-            vals[j] = i - (j*1000);//first gets counter, second is shifted by 1000,...
+            vals[7-j] = i - (j*1000);//first gets counter, second is shifted by 1000,...
+            if(vals[j] < 0)
+            {
+                vals[j] = 0;
+            }
             //the set level is protected against max so no issues for first overflowing
             //the set_level is also latch protected, so no influence on change light count
             dimmer.set_level(j,vals[j]);
+            //if((i%1000) == 0){rasp.printf("%d ",vals[j]);}
         }
-        wait_us(40);// ~ 
+        //if((i%1000) == 0){rasp.printf("\r\n");}
+        wait_us(80);// ~ 
     }
 }
 
