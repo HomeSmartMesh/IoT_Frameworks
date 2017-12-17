@@ -147,6 +147,11 @@ void rf_broadcast_catched(uint8_t *data,uint8_t size)
 				prf.print_light_rgb(data+rf::ind::bcst_payload);
 			}
 			break;
+		case rf::pid::proximity:
+			{
+				rasp.printf("proximity:%u\r",data[rf::ind::bcst_payload]);
+			}
+			break;
 		default :
 			{
                 rasp.printf("pid:Unknown;size:%u:rx:",size);
@@ -249,7 +254,7 @@ int main()
 		}
 		if(is_heat_toSend)
 		{
-			uint8_t nbret = hsm.send_heat(tab_send[0],tab_send[1]);
+			uint8_t nbret = hsm.send_byte(rf::pid::heat,tab_send[0],tab_send[1]);//pid, dest, val
 			if(nbret == 0)
 			{
 				rasp.printf("send_heat fail\r");

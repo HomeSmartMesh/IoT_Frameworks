@@ -16,7 +16,7 @@
 #define USE_APDS_SENSOR 1
 #define USE_APDS_GESTURE 0
 #define USE_APDS_PROXIMITY 1
-#define USE_APDS_LIGHT 0
+#define USE_APDS_LIGHT 1
 //--------------------------------------------------------------------------------------
 //TODO should have a board as a target
 #define RF_BOARD_DONGLE 1
@@ -139,11 +139,11 @@ void init()
 #if(USE_RGB_LED == 1)
 void test_RGB()
 {
-        rgb_led.set(0xFF,0x00,0x00);
+        rgb_led.set(0x0F,0x00,0x00);
         wait(0.3);
-        rgb_led.set(0x00,0xFF,0x00);
+        rgb_led.set(0x00,0x0F,0x00);
         wait(0.3);
-        rgb_led.set(0x00,0x00,0xFF);
+        rgb_led.set(0x00,0x00,0x0F);
         wait(0.3);
         rgb_led.set(0x00,0x00,0x00);
 }
@@ -159,7 +159,7 @@ void apds_poll_gesture()
 		if(gest)
 		{
 			hsm.broadcast_byte(rf::pid::gesture,gest);
-			rasp.printf("NodeId:%u;gesture:%u\r\n",F_NODEID,gest);//expected at rx gateway side
+			//rasp.printf("NodeId:%u;gesture:%u\r\n",F_NODEID,gest);//expected at rx gateway side
 		}
 	}
 }
@@ -168,29 +168,13 @@ void apds_poll_gesture()
 #if(USE_APDS_PROXIMITY == 1)
 void apds_poll_proximity()
 {
-	static uint8_t prev = 0;
-	static bool first = true;
 	uint8_t val;
 	gsensor.readProximity(val);
-	if(val > 20)
+	if(val > 25)
 	{
-		rasp.printf("NodeId:%u;proximity:%u\n",F_NODEID,val);
-		float f = val;
-		f -= 30;
-		//0-235 => 0-255
-		f *= 1.133333;
-		val = trunc(f);
-		if(!first)
-		{
-			rasp.printf("send to 27;r,g,b:%u\n",prev);
-			hsm.send_rgb(27,prev,prev,prev);
-		}
-		prev = val;
-		first = false;
-	}
-	else
-	{
-		first = true;//prepare for next event
+		led_count = 1;
+		//rasp.printf("NodeId:%u;proximity:%u\n",F_NODEID,val);//slows down the 10 ms loop
+		hsm.broadcast_byte(rf::pid::proximity,val);
 	}
 }
 #endif
@@ -209,7 +193,7 @@ void apds_log_light_colors()
 		gsensor.readBlueLight(light_rgb[3]);
 		hsm.broadcast_light_rgb(light_rgb);
 		//expected at rx gateway side
-		rasp.printf("NodeId:%u;light:%u;red:%u,green:%u;blue:%u\r\n",F_NODEID,light_rgb[0],light_rgb[1],light_rgb[2],light_rgb[3]);
+		//rasp.printf("NodeId:%u;light:%u;red:%u,green:%u;blue:%u\r\n",F_NODEID,light_rgb[0],light_rgb[1],light_rgb[2],light_rgb[3]);
 
 		light_count = 860;//~10 sec
 	}
@@ -254,11 +238,12 @@ int main()
 		{
 			rasp.printf("irq pin Low, missed interrupt, re init()\n");
 			hsm.init(F_CHANNEL);
+			hsm.broadcast(rf::pid::reset);//notify if this issue happens
 		}
 		if(alive_count == 0)
 		{
 			hsm.broadcast(rf::pid::alive);
-			rasp.printf("NodeId:%u;status:Alive\r\n",F_NODEID);//expected at rx gateway side
+			//rasp.printf("NodeId:%u;status:Alive\r\n",F_NODEID);//expected at rx gateway side
 			alive_count = 5200;//~60 sec
 		}
 		else
