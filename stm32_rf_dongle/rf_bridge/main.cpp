@@ -11,7 +11,7 @@
 #define F_NODEID	*(uint8_t *) FLASH_HEADER
 #define F_CHANNEL	*(uint8_t *) (FLASH_HEADER+0x01)
 //RGB LED
-#define USE_RGB_LED 1
+#define USE_RGB_LED 0
 //APDS9960 (Colorlight sensor, gesture)
 #define USE_APDS_SENSOR 1
 #define USE_APDS_GESTURE 0
@@ -77,14 +77,16 @@ void rf_sniffed(uint8_t *data,uint8_t size)
 
 void rf_message(uint8_t *data,uint8_t size)
 {
-	if(data[rf::ind::pid] == rf::pid::rgb)
-	{
-		uint8_t red = data[5];
-		uint8_t green = data[6];
-		uint8_t blue = data[7];
-		rgb_led.set(red,green,blue);
-		rasp.printf("R:%u;G:%u;B:%u\r\n",red,green,blue);
-	}
+	#if(USE_RGB_LED == 1)
+		if(data[rf::ind::pid] == rf::pid::rgb)
+		{
+			uint8_t red = data[5];
+			uint8_t green = data[6];
+			uint8_t blue = data[7];
+			rgb_led.set(red,green,blue);
+			rasp.printf("R:%u;G:%u;B:%u\r\n",red,green,blue);
+		}
+	#endif
 }
 
 void init()
@@ -186,13 +188,17 @@ int main()
 
 	init();
 
+	#if(USE_RGB_LED==1)
 	test_RGB();
+	#endif
 
 	hsm.broadcast(rf::pid::reset);
     
 	uint16_t alive_count = 520;
 	uint16_t light_count = 86;// ~ 10 s
-	uint8_t gest;
+	#if(USE_APDS_GESTURE == 1)
+		uint8_t gest;
+	#endif
     while(1) 
     {
 		wait_ms(10);
