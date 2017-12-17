@@ -15,7 +15,8 @@
 //APDS9960 (Colorlight sensor, gesture)
 #define USE_APDS_SENSOR 1
 #define USE_APDS_GESTURE 0
-#define USE_APDS_LIGHT 1
+#define USE_APDS_PROXIMITY 1
+#define USE_APDS_LIGHT 0
 //--------------------------------------------------------------------------------------
 //TODO should have a board as a target
 #define RF_BOARD_DONGLE 1
@@ -115,31 +116,22 @@ void init()
 	
 	//hsm.print_nrf();
 
+	bool res;
 	#if(USE_APDS_SENSOR == 1)
-		if ( gsensor.ginit() ) {
-			rasp.printf("apds> APDS-9960 initialization complete\r\n");
-		} else {
-			rasp.printf("apds> Something went wrong during APDS-9960 init\r\n");
-		}
+		res = gsensor.ginit();
+		rasp.printf("apds> ginit %u\r\n",res);
 	#endif
 	#if(USE_APDS_GESTURE == 1)
-		// Start running the APDS-9960 gesture sensor engine
-		if ( gsensor.enableGestureSensor(true) )
-		{
-			rasp.printf("apds> Gesture sensor is now running\r\n");
-		} else 
-		{
-			rasp.printf("apds> Something went wrong during gesture sensor init!\r\n");
-		}
+		res = gsensor.enableGestureSensor();
+		rasp.printf("apds> Gesture sensor enable: %u\r\n",res);
+	#endif
+	#if(USE_APDS_PROXIMITY == 1)
+		res = gsensor.enableProximitySensor();
+		rasp.printf("apds> Proximity sensor enable: %u\r\n",res);
 	#endif
 	#if(USE_APDS_LIGHT == 1)
-		if ( gsensor.enableLightSensor() ) 
-		{
-			rasp.printf("apds> Light sensor is on\r\n");
-		} else 
-		{
-			rasp.printf("apds> Something went wrong during light sensor init!\r\n");
-		}
+		res = gsensor.enableLightSensor();
+		rasp.printf("apds> Light sensor enable: %u\r\n",res);
 	#endif
 
 }
@@ -157,31 +149,77 @@ void test_RGB()
 }
 #endif
 
-#if(USE_APDS_LIGHT == 1)
-void log_light_colors()
-{
-	uint16_t light_rgb[4];
-	gsensor.readAmbientLight(light_rgb[0]);
-	gsensor.readRedLight(light_rgb[1]);
-	gsensor.readGreenLight(light_rgb[2]);
-	gsensor.readBlueLight(light_rgb[3]);
-	hsm.broadcast_light_rgb(light_rgb);
-	//expected at rx gateway side
-	rasp.printf("NodeId:%u;light:%u;red:%u,green:%u;blue:%u\r\n",F_NODEID,light_rgb[0],light_rgb[1],light_rgb[2],light_rgb[3]);
-}
-#endif
-
 #if(USE_APDS_GESTURE == 1)
-uint8_t poll_gesture(uint8_t &gest)
+void apds_poll_gesture()
 {
-	gest = rf::gest::none;
+	uint8_t gest = rf::gest::none;
 	if ( gsensor.isGestureAvailable() ) 
 	{
 		gest = (uint8_t) gsensor.readGesture();
+		if(gest)
+		{
+			hsm.broadcast_byte(rf::pid::gesture,gest);
+			rasp.printf("NodeId:%u;gesture:%u\r\n",F_NODEID,gest);//expected at rx gateway side
+		}
 	}
-	return gest;
 }
 #endif
+
+#if(USE_APDS_PROXIMITY == 1)
+void apds_poll_proximity()
+{
+	static uint8_t prev = 0;
+	static bool first = true;
+	uint8_t val;
+	gsensor.readProximity(val);
+	if(val > 20)
+	{
+		rasp.printf("NodeId:%u;proximity:%u\n",F_NODEID,val);
+		float f = val;
+		f -= 30;
+		//0-235 => 0-255
+		f *= 1.133333;
+		val = trunc(f);
+		if(!first)
+		{
+			rasp.printf("send to 27;r,g,b:%u\n",prev);
+			hsm.send_rgb(27,prev,prev,prev);
+		}
+		prev = val;
+		first = false;
+	}
+	else
+	{
+		first = true;//prepare for next event
+	}
+}
+#endif
+
+#if(USE_APDS_LIGHT == 1)
+void apds_log_light_colors()
+{
+	static uint16_t light_count = 86;// ~ 10 s
+
+	if(light_count == 0)
+	{
+		uint16_t light_rgb[4];
+		gsensor.readAmbientLight(light_rgb[0]);
+		gsensor.readRedLight(light_rgb[1]);
+		gsensor.readGreenLight(light_rgb[2]);
+		gsensor.readBlueLight(light_rgb[3]);
+		hsm.broadcast_light_rgb(light_rgb);
+		//expected at rx gateway side
+		rasp.printf("NodeId:%u;light:%u;red:%u,green:%u;blue:%u\r\n",F_NODEID,light_rgb[0],light_rgb[1],light_rgb[2],light_rgb[3]);
+
+		light_count = 860;//~10 sec
+	}
+	else
+	{
+		light_count--;
+	}
+}
+#endif
+
 
 int main() 
 {
@@ -195,36 +233,28 @@ int main()
 	hsm.broadcast(rf::pid::reset);
     
 	uint16_t alive_count = 520;
-	uint16_t light_count = 86;// ~ 10 s
-	#if(USE_APDS_GESTURE == 1)
-		uint8_t gest;
-	#endif
+
     while(1) 
     {
 		wait_ms(10);
-		#if(USE_APDS_GESTURE == 1)
-			if(poll_gesture(gest))
-			{
-				hsm.broadcast_byte(rf::pid::gesture,gest);
-				rasp.printf("NodeId:%u;gesture:%u\r\n",F_NODEID,gest);//expected at rx gateway side
-			}
+		
+		#if(USE_APDS_LIGHT == 1)
+			apds_log_light_colors();
 		#endif
+
+		#if(USE_APDS_PROXIMITY == 1)
+			apds_poll_proximity();
+		#endif
+
+		#if(USE_APDS_GESTURE == 1)
+			apds_poll_gesture();
+		#endif
+
 		if(hsm.nRFIrq.read() == 0)
 		{
 			rasp.printf("irq pin Low, missed interrupt, re init()\n");
 			hsm.init(F_CHANNEL);
 		}
-		#if(USE_APDS_LIGHT == 1)
-			if(light_count == 0)
-			{
-				log_light_colors();
-				light_count = 860;//~10 sec
-			}
-			else
-			{
-				light_count--;
-			}
-		#endif
 		if(alive_count == 0)
 		{
 			hsm.broadcast(rf::pid::alive);
