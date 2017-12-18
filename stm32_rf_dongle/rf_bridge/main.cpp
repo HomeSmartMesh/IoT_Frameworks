@@ -16,7 +16,9 @@
 #define USE_APDS_SENSOR 1
 #define USE_APDS_GESTURE 0
 #define USE_APDS_PROXIMITY 1
-#define USE_APDS_LIGHT 1
+#define USE_APDS_LIGHT 0
+
+#define RGB_DEMO 1
 //--------------------------------------------------------------------------------------
 //TODO should have a board as a target
 #define RF_BOARD_DONGLE 1
@@ -174,7 +176,14 @@ void apds_poll_proximity()
 	{
 		led_count = 1;
 		//rasp.printf("NodeId:%u;proximity:%u\n",F_NODEID,val);//slows down the 10 ms loop
-		hsm.broadcast_byte(rf::pid::proximity,val);
+		#if(RGB_DEMO == 1)
+			uint8_t r = val;
+			uint8_t g = 0;
+			uint8_t b = 255-val;
+			hsm.send_rgb(24,r,g,b,false);
+		#else
+			hsm.broadcast_byte(rf::pid::proximity,val);
+		#endif
 	}
 }
 #endif
