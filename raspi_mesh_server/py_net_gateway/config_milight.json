@@ -1,4 +1,4 @@
-{
+{  
     "devices":{
         "LivingRoom":{
             "host":"10.0.0.8",
@@ -42,6 +42,17 @@
         "valueActions":{
             "HeadTopic"     :"Nodes/",
             "actions"   :["dimmer"]
+        }
+    },
+    "log":{
+        "logfile":"/home/pi/share/milight_gateway.log",
+        "level":"20",
+        "levels":{
+            "50":"Critical",
+            "40":"Error",
+            "30":"Warning",
+            "20":"Info",
+            "10":"Debug"
         }
     }
 }

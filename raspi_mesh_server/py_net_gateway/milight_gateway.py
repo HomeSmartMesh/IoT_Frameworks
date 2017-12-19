@@ -1,15 +1,15 @@
 #https://pypi.python.org/pypi/paho-mqtt/1.1
 import paho.mqtt.client as mqtt
 import json
-
 #https://github.com/McSwindler/python-milight
 import milight
 from milight import Command
-
 #just to get host name
 import socket 
-
 from time import sleep
+from math import ceil
+import logging
+
 
 def on_connect(lclient, userdata, flags, rc):
     topic_sub = ml["mqtt_client"]["valueActions"]["HeadTopic"] + "+/dimmer"
@@ -23,20 +23,23 @@ def on_message(client, userdata, msg):
         if(nodeid in ml["mapping"]):
             device_name = ml["mapping"][nodeid]["device"]
             channel = ml["mapping"][nodeid]["channel"]
-            dimm_val = int(msg.payload)
+            dimm_val = int(ceil(float(msg.payload)))
+            if(dimm_val > 100):
+                dimm_val = 100
             print(  "Action to Node: "+nodeid               +
                     " ; through gateway: "+device_name      +
                     " ; on channel: "+str(channel)            +
                     " ; set value: "+str(dimm_val)
                     )
+            controller = ml["devices"][device_name]["controller"]
             if(dimm_val == 0):
-                ml["devices"]["Upstairs"]["controller"].send(light.off(channel))
+                controller.send(light.off(channel))
             elif(dimm_val == 1):
-                ml["devices"]["Upstairs"]["controller"].send(light.off(channel))
+                controller.send(light.off(channel))
                 sleep(0.100)#100 ms
-                ml["devices"]["Upstairs"]["controller"].send(Command(night_mode[channel]))
+                controller.send(Command(night_mode[channel]))
             else:
-                ml["devices"]["Upstairs"]["controller"].send(light.brightness(dimm_val,channel))
+                controller.send(light.brightness(dimm_val,channel))
         else:
             print("Node "+nodeid+" route unknown")
     else:
@@ -45,6 +48,8 @@ def on_message(client, userdata, msg):
 
 ml = json.load(open('config_milight.json'))
 
+# -------------------- logging -------------------- 
+logging.basicConfig(filename=ml["log"]["logfile"],level=ml["log"]["level"])
 
 # -------------------- Milight Client -------------------- 
 for key,device in ml["devices"].items():
