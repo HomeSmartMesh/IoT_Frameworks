@@ -38,7 +38,7 @@
     "mqtt_client":{
         "host":"10.0.0.12",
         "port":1883,
-        "client_id":"python_milight_gateway",
+        "client_id":"python_milight",
         "valueActions":{
             "HeadTopic"     :"Nodes/",
             "actions"   :["dimmer"]
