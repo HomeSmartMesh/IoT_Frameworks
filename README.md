@@ -2,7 +2,8 @@
 
 # Hardware
 ### Wireless Sensor Tag
-  * based on the STM8 IoT Boards [STM8 IoT Boards](https://github.com/HomeSmartMesh/STM8_IoT_Boards)
+  * HW: [STM8 IoT Boards](https://github.com/HomeSmartMesh/STM8_IoT_Boards)
+  * Firmware: [IoT STM8 ](https://github.com/HomeSmartMesh/IoT_STM8/tree/master/firmware_rf_sensors_node)
   * 8 bit Ultra low power & ultralow cost STM8L
   * BME280 (Pressure, Temperature, Humidity), MAX44009 (Ambient Light) and Magnetic switches
   * Custom RF protocol for efficiency and simplicity of the sensors usecase
@@ -10,11 +11,35 @@
 
 ### STM32 IoT Dongle
   * based on the STM32 bluepill
-  * Breadboard for easier RF and sensors modules integration [STM32 IoT Boards](https://github.com/wassfila/STM32_IoT_Boards)
+  * HW: Breadboard for easier RF and sensors modules integration [STM32 IoT Boards](https://github.com/wassfila/STM32_IoT_Boards)
+  * Firmware: [stm32_rf_dongle subdirectory](https://github.com/HomeSmartMesh/IoT_Frameworks/tree/master/stm32_rf_dongle)
   <img src="https://github.com/wassfila/media/blob/master/STM32_Dongle.png" height=300>
 
-# All the software is on the Raspberry pi
+
+# Software running on the Raspberry pi
+  <img src="https://github.com/wassfila/media/blob/master/IoTSoftware_Graf.png" height=300>
+
+### [C++ RF Gateway](https://github.com/HomeSmartMesh/rf_gateway)
+- Serial port line buffer
+- Line parsing and sensor data extraction
+- Adjustment of BME280 measures with provided calibration
+- Publishing to the MQTT broquer
+
+### Python Database proxies
+- scripts in the [submodule py_db_proxy](https://github.com/HomeSmartMesh/py_db_proxy)
+- influx client
+- mongo client
+- json config and loggging
+
+### React D3js webapp
+* current status : 
+** automatic nodes config retriaval 
+** automatic dashboard construction (but still in text mode)
+** d3js still in a separate project, options beeing evaluated (nvd3 and vegas)
+
+### Configuration
 Configuration for the following software is available in the [config subdirectory](https://github.com/HomeSmartMesh/IoT_Frameworks/tree/master/config)
+
  * Mosquitto : MQTT Broquer
  * OpenHAB2 : used only for Wemo switch and other connected devices
  * Node-red : High level sensor to action configuration
@@ -22,11 +47,6 @@ Configuration for the following software is available in the [config subdirector
  * Mongodb : complex documents database
  * Grafana : dashboard for measurements exploration
  * React+d3js : customised webapp
-
-### [C++ RF Gateway](https://github.com/HomeSmartMesh/rf_gateway)
-- Serial port line buffer
-- Line parsing and sensor data extraction
-- Adjustment of BME280 measures with provided calibration
 
 ## Startup Launch on the Raspberry pi
 ```
