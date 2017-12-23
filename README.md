@@ -19,23 +19,25 @@
 # Software running on the Raspberry pi
   <img src="https://github.com/wassfila/media/blob/master/IoTSoftware.png" height=500>
 
-### [C++ RF Gateway](https://github.com/HomeSmartMesh/rf_gateway)
+### C++ RF Gateway
+[submodule rf_gateway](https://github.com/HomeSmartMesh/rf_gateway)
 - Serial port line buffer
 - Line parsing and sensor data extraction
 - Adjustment of BME280 measures with provided calibration
 - Publishing to the MQTT broquer
 
 ### Python Database proxies
-- scripts in the [submodule py_db_proxy](https://github.com/HomeSmartMesh/py_db_proxy)
+scripts in the [submodule py_db_proxy](https://github.com/HomeSmartMesh/py_db_proxy)
 - influx client
 - mongo client
 - json config and loggging
 
 ### React D3js webapp
-* current status : 
-** automatic nodes config retriaval 
-** automatic dashboard construction (but still in text mode)
-** d3js still in a separate project, options beeing evaluated (nvd3 and vegas)
+[submodule web_react](https://github.com/HomeSmartMesh/web_react)
+current status :
+* automatic nodes config retriaval 
+* automatic dashboard construction (but still in text mode)
+* d3js still in a separate project, options beeing evaluated (nvd3 and vegas)
 
 ### Configuration
 Configuration for the following software is available in the [config subdirectory](https://github.com/HomeSmartMesh/IoT_Frameworks/tree/master/config)
