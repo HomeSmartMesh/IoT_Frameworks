@@ -13,6 +13,9 @@
   * based on the STM32 bluepill
   * HW: Breadboard for easier RF and sensors modules integration [STM32 IoT Boards](https://github.com/wassfila/STM32_IoT_Boards)
   * Firmware: [stm32_rf_dongle subdirectory](https://github.com/HomeSmartMesh/IoT_Frameworks/tree/master/stm32_rf_dongle)
+  * RF Mesh repeater: (decrement time to live, recalculate new CRC)
+  * Light intensity, color sensor, proximity and gesture (APDS9960)
+  * RGB status (WS2812B)
   <img src="https://github.com/wassfila/media/blob/master/STM32_Dongle.png" height=300>
 
 
