@@ -4,6 +4,9 @@
 please refer to the original source of info above or to the latest refrence.
 Notes below are just to speedup installs and not considered as complete tutorials
 
+### Dashboards
+- "dashboards" subdirectory provides json files that can be uploaded to a new Grafana install
+
 ### Preparation
 ```
 sudo apt-get install apt-transport-https curl
@@ -28,7 +31,7 @@ sudo systemctl start grafana-server.service
 ```
 ### config
 ```
-/etc/grafana/grafana.ini
+sudo nano /etc/grafana/grafana.ini
 ```
 ### default users
 admin / admin

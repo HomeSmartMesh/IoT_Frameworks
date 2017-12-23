@@ -56,6 +56,9 @@ sudo nano /etc/rc.local
 ```
 then add
 ```
+#influxdb no manual start requierd
+#grafana
+sudo systemctl start grafana-server.service
 #iot_db
 /home/pi/IoT_Frameworks/raspi_mesh_server/iot_db/iot_db &
 #rf_gateway
