@@ -17,7 +17,7 @@
 
 
 # Software running on the Raspberry pi
-  <img src="https://github.com/wassfila/media/blob/master/IoTSoftware_Graf.png" height=300>
+  <img src="https://github.com/wassfila/media/blob/master/IoTSoftware.png" height=300>
 
 ### [C++ RF Gateway](https://github.com/HomeSmartMesh/rf_gateway)
 - Serial port line buffer
