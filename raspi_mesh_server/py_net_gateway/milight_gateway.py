@@ -9,7 +9,7 @@ import socket
 from time import sleep
 from math import ceil
 import logging
-
+import sys,os
 
 def on_connect(lclient, userdata, flags, rc):
     topic_sub = ml["mqtt_client"]["valueActions"]["HeadTopic"] + "+/dimmer"
@@ -45,12 +45,20 @@ def on_message(client, userdata, msg):
     else:
         print("topic: "+msg.topic + "size not matching")
         
-
-ml = json.load(open('config_milight.json'))
+dirname = os.path.dirname(sys.argv[0])
+config_file = dirname+'/config_milight.json'
 
 # -------------------- logging -------------------- 
-logging.basicConfig(filename=ml["log"]["logfile"],level=ml["log"]["level"])
+#logging.basicConfig(filename=ml["log"]["logfile"],level=int(ml["log"]["level"]))
+logging.basicConfig(filename="/home/pi/share/milight_gateway.log",level=10)
 
+logging.info("started milight app service")
+logging.info("running from: "+dirname)
+logging.info("config file: "+config_file)
+
+ml = json.load(open(config_file))
+
+logging.info("loaded config, starting")
 # -------------------- Milight Client -------------------- 
 for key,device in ml["devices"].items():
     device["controller"] = milight.MiLight(device)

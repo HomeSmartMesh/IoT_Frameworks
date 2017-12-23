@@ -1,6 +1,7 @@
-# MQTT to Milight
-- simple MQTT to udp packets generator
+# MQTT client
+###https://pypi.python.org/pypi/paho-mqtt/1.1
+###`sudo pip install paho-mqtt`
 
-# MQTT to Wemo insight
-- simple python to interface wemo devices
-- so that we reduce raspberrypi cpu from the java used by OpenHAB2
+# Milight client
+###https://github.com/McSwindler/python-milight
+### `sudo pip install milight`
