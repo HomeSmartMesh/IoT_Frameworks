@@ -1,13 +1,13 @@
 {  
     "devices":{
-        "TvSet":{},
-        "Bathroom":{}
+        "TvSet":{
+            "node":30
+        },
+        "Bathroom":{
+            "node":37
+        }
     },
-    "mapping":{
-        "30":"TvSet",
-        "37":"Bathroom"
-    },
-    "mqtt_client":{
+    "mqtt":{
         "host":"10.0.0.12",
         "port":1883,
         "client_id":"python_wemo",
@@ -18,13 +18,6 @@
     },
     "log":{
         "logfile":"/home/pi/share/wemo.log",
-        "level":"20",
-        "levels":{
-            "50":"Critical",
-            "40":"Error",
-            "30":"Warning",
-            "20":"Info",
-            "10":"Debug"
-        }
+        "level":"Info"
     }
 }
