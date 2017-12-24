@@ -1,0 +1,23 @@
+{  
+    "devices":{
+        "TvSet":{
+            "node":30
+        },
+        "Bathroom":{
+            "node":37
+        }
+    },
+    "mqtt":{
+        "host":"10.0.0.12",
+        "port":1883,
+        "client_id":"python_wemo",
+        "valuesTopics":{
+            "HeadTopic"     :"Nodes/",
+            "actions"   :["power"]
+        }
+    },
+    "log":{
+        "logfile":"/home/pi/share/wemo.log",
+        "level":"Info"
+    }
+}
