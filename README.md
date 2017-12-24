@@ -54,12 +54,18 @@ Configuration for the following software is available in the [config subdirector
  * React+d3js : customised webapp
 
 ## Startup Launch on the Raspberry pi
+to enable once
+```
+sudo systemctl enable openhab2
+sudo systemctl enable influxdb
+```
+
+Others require manual startup added in
 ```
 sudo nano /etc/rc.local
 ```
-then add
+
 ```
-#influxdb no manual start requierd
 #grafana
 sudo systemctl start grafana-server.service
 #iot_db
@@ -70,5 +76,7 @@ sleep 2 && /home/pi/IoT_Frameworks/raspi_mesh_server/rf_gateway/gateway &
 sleep 15 && sudo systemctl start mongodb.service
 #mqtt_mongo
 sleep 5 && python /home/pi/IoT_Frameworks/raspi_mesh_server/py_db_proxy/mqtt_mongo.py &
+sleep 1 && python /home/pi/IoT_Frameworks/raspi_mesh_server/py_net_gateway/wemo_client.py &
 sleep 5 && python /home/pi/IoT_Frameworks/raspi_mesh_server/py_net_gateway/milight_gateway.py &
+
 ```
