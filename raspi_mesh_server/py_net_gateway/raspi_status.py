@@ -76,7 +76,7 @@ print("raspi client started @ :"+str(datetime.datetime.utcnow()))
 hostname = socket.gethostname()
 
 # -------------------- influxDB client -------------------- 
-clientDB = InfluxDBClient(    "10.0.0.17", 
+clientDB = InfluxDBClient(    "10.0.0.12", 
                             8086, 
                             'root', 'root', 
                             "raspiStatus")
