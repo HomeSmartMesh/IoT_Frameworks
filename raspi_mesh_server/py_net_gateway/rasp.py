@@ -40,4 +40,7 @@ def getUsedDisk():
 def getUsedDiskDir(path):
     p = os.popen("sudo du --summarize "+path)
     line = p.readline()
-    return(line.split()[0])
+    if(len(line)>0):
+        return(line.split()[0])
+    else:
+        return "0"
