@@ -38,6 +38,9 @@ SHOW TAG KEYS FROM "cpu_temp"
 SHOW TAG VALUES FROM "cpu_temp" WITH KEY="host"
 
 SELECT * FROM "cpu_temp" WHERE "host" = 'ioserv'
+
+SELECT "power" FROM "node30" WHERE time > '2017-12-24T12:33:00Z' AND time < '2017-12-24T15:34:10Z'
+DELETE FROM "node37" WHERE time > '2017-12-24T12:33:00Z' AND time < '2017-12-24T15:34:10Z'
 ```
 ### Nodes posts
 ```
