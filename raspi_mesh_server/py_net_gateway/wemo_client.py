@@ -57,11 +57,11 @@ def wemo_start():
 def wemo_loop_forever():
     while(True):
         for name in devices:
-            log.info("%s: bin state: %s",name,devices[name].basicevent.GetBinaryState())
+            log.debug("%s: bin state: %s",name,devices[name].basicevent.GetBinaryState())
             topic = "Nodes/"+str(config["devices"][name]["node"])+"/power"
-            power = devices[name].current_power
+            power = float(devices[name].current_power)/1000
             clientMQTT.publish(topic,power)
-            log.info("%s: %s: %s",name, topic, power)
+            log.debug("%s: %s: %s",name, topic, power)
         sleep(10)
     return
 
