@@ -74,6 +74,6 @@ client.on_connect = on_connect
 client.on_message = on_message
 
 client.connect(host, port)
-print(  "mqtt connected to "+host+":"+str(port)+" with id: "+ client_id )
+print(  "mqtt connected to "+host+":"+str(port)+" with id: "+ cid )
 client.loop_forever()
 
