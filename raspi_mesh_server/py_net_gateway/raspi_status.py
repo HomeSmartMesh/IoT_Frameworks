@@ -14,37 +14,57 @@ def raspi_loop_forever():
                 "time": tnow,
                 "tags":{
                     "host":hostname
-                }
+                },
                 "fields": {
-                    "value": value
+                    "value": float(rasp.getCPU_Avg1min())
                 }
             },
             {
-                "measurement": "disk_space",
+                "measurement": "cpu_temp",
+                "time": tnow,
+                "tags":{
+                    "host":hostname
+                },
+                "fields": {
+                    "value": float(rasp.getCPUtemperature())
+                }
+            },
+            {
+                "measurement": "disk",
                 "time": tnow,
                 "tags":{
                     "host"  :hostname,
-                    "target":"free"
-                }
+                    "target":"total"
+                },
                 "fields": {
-                    "value": value
+                    "value": int(rasp.getUsedDisk())
                 }
             },
             {
-                "measurement": "disk_space",
+                "measurement": "disk",
                 "time": tnow,
                 "tags":{
                     "host"  :hostname,
                     "target":"mongodb"
-                }
+                },
                 "fields": {
-                    "value": value
+                    "value": int(rasp.getUsedDiskDir("/var/lib/mongodb"))
+                }
+            },
+            {
+                "measurement": "ram",
+                "time": tnow,
+                "tags":{
+                    "host"  :hostname
+                },
+                "fields": {
+                    "value": int(rasp.getUsedRAM())
                 }
             }
         ]
-        print(posts)
-        #clientDB.write_points(posts)
-        sleep(10)
+        #print(posts)
+        clientDB.write_points(posts)
+        sleep(60)
     return
 
 # -------------------- main -------------------- 
@@ -59,7 +79,11 @@ clientDB = InfluxDBClient(    "10.0.0.17",
                             "raspiStatus")
 
 #loop forever
-#raspi_loop_forever()
-while(True):
-    print("cpu temp",rasp.getCPUtemperature())
-    sleep(5)
+raspi_loop_forever()
+#while(True):
+    #print("cpu temp",float(rasp.getCPUtemperature()) )
+    #print("used ram",int(rasp.getUsedRAM()) )
+    #print("cpu use",rasp.getCPU_Avg1min() )
+    #print("used disk /",int(rasp.getUsedDisk()) )
+    #print("used disk mongodb /",int(rasp.getUsedDiskDir("/var/lib/mongodb")) )
+    #sleep(5)
