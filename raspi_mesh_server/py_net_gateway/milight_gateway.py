@@ -68,8 +68,8 @@ night_mode = [0xC1, 0xC6, 0xC8, 0xCA, 0xCC]
 # -------------------- Mqtt Client -------------------- 
 host = ml["mqtt_client"]["host"]
 port = ml["mqtt_client"]["port"]
-client_id = ml["mqtt_client"]["client_id"] +"_"+socket.gethostname()
-client = mqtt.Client()
+cid = ml["mqtt_client"]["client_id"] +"_"+socket.gethostname()
+client = mqtt.Client(client_id=cid)
 client.on_connect = on_connect
 client.on_message = on_message
 
