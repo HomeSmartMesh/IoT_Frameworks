@@ -18,7 +18,7 @@
 #define USE_APDS_PROXIMITY 1
 #define USE_APDS_LIGHT 0
 
-#define RGB_DEMO 1
+#define RGB_DEMO 0
 //--------------------------------------------------------------------------------------
 //TODO should have a board as a target
 #define RF_BOARD_DONGLE 1
