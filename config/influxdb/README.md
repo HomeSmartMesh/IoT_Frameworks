@@ -7,15 +7,20 @@ sources:
 ```
 sudo apt install apt-transport-https
 echo "deb https://repos.influxdata.com/debian stretch stable" | sudo tee /etc/apt/sources.list.d/influxdb.list
-sudo apt update
+sudo apt-get update
 
 sudo apt-get install influxdb
 
 ```
 
 ### config
+Default
 ```
 sudo nano /etc/influxdb/influxdb.conf
+```
+directly from the repo
+```
+INFLUXDB_CONFIG_PATH=/home/pi/IoT_Frameworks/config/influxdb/influxdb.conf
 ```
 
 ### start the service
@@ -30,6 +35,8 @@ CREATE DATABASE mydb,
 SHOW DATABASES
 SHOW SERIES on raspiStatus
 USE mydb
+
+DROP DATABASE mydb
 
 cpu,host=serverA,region=us_west value=0.64
 
