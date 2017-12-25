@@ -7,15 +7,20 @@ sources:
 ```
 sudo apt install apt-transport-https
 echo "deb https://repos.influxdata.com/debian stretch stable" | sudo tee /etc/apt/sources.list.d/influxdb.list
-sudo apt update
+sudo apt-get update
 
 sudo apt-get install influxdb
 
 ```
 
 ### config
+Default
 ```
 sudo nano /etc/influxdb/influxdb.conf
+```
+directly from the repo
+```
+INFLUXDB_CONFIG_PATH=/home/pi/IoT_Frameworks/config/influxdb/influxdb.conf
 ```
 
 ### start the service
@@ -31,6 +36,8 @@ SHOW DATABASES
 SHOW SERIES on raspiStatus
 USE mydb
 
+DROP DATABASE mydb
+
 cpu,host=serverA,region=us_west value=0.64
 
 SHOW FIELD KEYS FROM "cpu_temp"
@@ -38,6 +45,9 @@ SHOW TAG KEYS FROM "cpu_temp"
 SHOW TAG VALUES FROM "cpu_temp" WITH KEY="host"
 
 SELECT * FROM "cpu_temp" WHERE "host" = 'ioserv'
+
+SELECT "power" FROM "node30" WHERE time > '2017-12-24T12:33:00Z' AND time < '2017-12-24T15:34:10Z'
+DELETE FROM "node37" WHERE time > '2017-12-24T12:33:00Z' AND time < '2017-12-24T15:34:10Z'
 ```
 ### Nodes posts
 ```

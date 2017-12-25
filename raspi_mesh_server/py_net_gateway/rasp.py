@@ -19,8 +19,10 @@ def getUsedRAM():
 def getCPU_Avg1min():
     p = os.popen("top -b -n1")
     line = p.readline()
-    if(line.find("load average:")!= -1):
-        return(line.split(':')[1].split(',')[0])
+    ind_cpu = line.find("load average:")
+    if(ind_cpu!= -1):
+        cpu_vals = line[ind_cpu+13:]
+        return(cpu_vals.split(',')[0])
     else:
         return "0"
 
