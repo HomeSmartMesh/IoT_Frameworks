@@ -2,6 +2,7 @@ from influxdb import InfluxDBClient
 import datetime
 from time import sleep
 import socket 
+import requests
 import rasp
 
 def raspi_loop_forever():
@@ -62,8 +63,10 @@ def raspi_loop_forever():
                 }
             }
         ]
-        #print(posts)
-        clientDB.write_points(posts)
+        try:
+            clientDB.write_points(posts)
+        except requests.exceptions.ConnectionError:
+            print("ConnectionError sample skipped @ "+str(datetime.datetime.utcnow()))
         sleep(60)
     return
 
