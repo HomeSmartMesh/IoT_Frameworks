@@ -19,7 +19,7 @@ def Sleeproom_Light_Up():
     result = None
     tnow = time()
     delay = tnow - Sleeproom_Light_Up.event_time
-    if(delay > 2):
+    if(delay > 1):
         Sleeproom_Light_Up.event_time = tnow
         log.info("Sleeproom_Light_Up() post after %f",delay)
         result = "100"

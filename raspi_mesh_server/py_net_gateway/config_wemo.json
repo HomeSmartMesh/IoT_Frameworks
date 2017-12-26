@@ -11,7 +11,7 @@
         "host":"10.0.0.12",
         "port":1883,
         "keepalive":60,
-        "client_id":"python_wemo",
+        "client_id":"py_wemo",
         "valuesTopics":{
             "HeadTopic"     :"Nodes/",
             "actions"   :["power"]
