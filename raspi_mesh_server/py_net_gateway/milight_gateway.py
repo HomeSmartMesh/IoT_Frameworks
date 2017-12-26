@@ -32,7 +32,7 @@ def on_message(client, userdata, msg):
                     " ; on channel: "+str(channel)            +
                     " ; set value: "+str(dimm_val)
                     )
-            controller = config["devices"][device_name]["controller"]
+            controller = milight_controllers[device_name]
             if(dimm_val == 0):
                 controller.send(light.off(channel))
             elif(dimm_val == 1):
@@ -67,10 +67,12 @@ cfg.configure_log(config["log"])
 log.info("milight client started")
 
 # -------------------- Milight Client -------------------- 
-for key,device in config["devices"].items():
-    device["controller"] = milight.MiLight(device)
+milight_controllers = {}
+for device_name,device in config["devices"].items():
+    milight_controllers[device_name] = milight.MiLight(device)
 
-light = milight.LightBulb(['rgbw','white','rgb'])
+#light = milight.LightBulb(['rgbw','white','rgb'])
+light = milight.LightBulb(['rgbw'])
 night_mode = [0xC1, 0xC6, 0xC8, 0xCA, 0xCC]
 # -------------------- Mqtt Client -------------------- 
 cid = config["mqtt"]["client_id"] +"_"+socket.gethostname()
