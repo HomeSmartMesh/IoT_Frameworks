@@ -1,0 +1,86 @@
+{
+    "STM8L_v2":{
+        "hardware"      :{
+            "pcb":{
+                "repo":"https://github.com/wassfila/STM8_IoT_Boards.git",
+                "path":"IoT_Node_Mobile_v2",
+                "tool":"Eagle"
+            },
+            "components":{
+                "uc":"STM8L151F3",
+                "magnets":"MRMS211H"
+            },
+            "modules":{
+                "rf":["nRF24"],
+                "sensors":["BME280","MAX44009"]
+            }
+        },
+        "software"      :{
+            "repo"      :"https://github.com/wassfila/IoT_STM8.git",
+            "programs":{
+                "pr01_Node_Alive"   :"firmware_rf_sensors_node/pr01_Node_Alive",
+                "pr03_PressHumTemp" :"firmware_rf_sensors_node/pr03_PressHumTemp"
+            }
+        }
+    },
+    "STM32_Dongle":{
+        "hardware":{
+            "pcb":{
+                "repo":"https://github.com/wassfila/STM32_IoT_Boards.git",
+                "path":"RFNode/design_pcb_eagle",
+                "tool":"Eagle"
+            },
+            "modules":{
+                "uc":"STM32_BluePill",
+                "rf":["nRF24","nRF24_pa_lna"],
+                "sensors":["BME280","MAX44009","APDS9960"]
+            }
+        },
+        "software":{
+            "repo"   :"https://github.com/wassfila/IoT_Frameworks.git",
+            "programs":{
+                "rf_uart_interface" :"stm32_rf_dongle/rf_uart_interface",
+                "rf_bridge"         :"stm32_rf_dongle/rf_bridge",
+                "rf_sniffer"        :"stm32_rf_dongle/rf_sniffer"
+            }
+        }
+    },
+    "STM32_RFPIO":{
+        "hardware":{
+            "pcb":{
+                "repo":"https://github.com/wassfila/STM32_IoT_Boards.git",
+                "path":"RFPIO/design_pcb_eagle",
+                "tool":"Eagle"
+            },
+            "modules":{
+                "uc":"STM32_BluePill",
+                "rf":["nRF24","nRF24_pa_lna"],
+                "components":{
+                    "io_driver":"ULN2804A",
+                    "io_interface": "Servos_Coonectors"
+                }
+            }
+        },
+        "software":{
+            "repo"   :"https://github.com/wassfila/IoT_Frameworks.git",
+            "programs":{
+                "dimmer"    :  "dimmer/smt32_rfpio_firmware",
+                "smartio"   :   "firmware/stm32_rfio"
+            }
+        }
+    },
+    "nRF51_Beacon":{
+        "hardware":{
+            "cots":{
+                "long_name":"NRF51822 Bluetooth 4.0 Wireless Module For iBeacon",
+                "ali":"https://www.aliexpress.com/item/2V-3-3V-NRF51822-Bluetooth-4-0-Wireless-Module-For-iBeacon-Base-Station-Intelligent-Control-System/32824004498.html?spm=a2g0s.9042311.0.0.4clvvB"
+            }
+        },
+        "software":{
+            "repo"  :"local",
+            "programs":{
+                "esb_low_power_ptx":"D:/Projects/NordicRF/nRF5_SDK_14.0.0_3bcc1f7/examples/proprietary_rf/esb_low_power_ptx"
+            }
+        }
+    }
+}
