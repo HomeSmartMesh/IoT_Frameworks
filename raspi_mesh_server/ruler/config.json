@@ -12,7 +12,20 @@
         "Sleeproom_Light_Up":{
             "input":"Nodes/29/proximity",
             "output":"Nodes/34/dimmer",
-            "description":"Increeses the light of the sleeping room on proxy detection"
+            "description":"Increeses the light of the sleeping room on proxy detection",
+            "enable" : true
+        },
+        "RGB_Tester_Single":{
+            "input":"Nodes/28/proximity",
+            "output":"jNodes/24/RGB",
+            "description":"Test the proxymity sensor with an RGB LED",
+            "enable" : true
+        },
+        "RGB_Tester_Burst":{
+            "input":"Nodes/28/proximity",
+            "output":"jNodes/24/RGB",
+            "description":"Test the proxymity sensor with an RGB LED",
+            "enable" : false
         }
     }
 }

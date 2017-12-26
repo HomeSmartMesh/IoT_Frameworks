@@ -62,6 +62,7 @@
                 "uc_uid"        :"0x57 FF 6A 06 49 84 52 50 40 57 06 87"
             },
     "24":   {   "name"          :"Tester RGB dongle",
+                "actions"       :[""],
                 "function"      :"repeater",
                 "board"         :"STM32_Dongle",
                 "program"       :"rf_bridge",

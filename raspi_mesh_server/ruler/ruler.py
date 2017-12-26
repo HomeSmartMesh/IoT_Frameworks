@@ -2,45 +2,32 @@ import paho.mqtt.client as mqtt
 import datetime
 import logging as log
 import cfg
-from time import sleep
+from time import sleep,time
+import json
+import rules
 
 # -------------------- mqtt events -------------------- 
 def on_connect(lclient, userdata, flags, rc):
     log.info("mqtt connected with result code "+str(rc))
     for rule_name,rule in config["rules"].iteritems():
-        log.info(rule_name,rule["input"],rule["output"])
-    #lclient.subscribe("#")
+        log.info("Subscription for rule:%s %s -> %s",rule_name,rule["input"],rule["output"])
+        lclient.subscribe(rule["input"])
 
 def on_message(client, userdata, msg):
     topic_parts = msg.topic.split('/')
-    try:
-        if( (len(topic_parts) == 3) and (topic_parts[0] == "Nodes") ):
-            nodeid = topic_parts[1]
-            sensor = topic_parts[2]
-            measurement = "node"+nodeid
-            value = float(str(msg.payload))
-            post = [
-                {
-                    "measurement": measurement,
-                    "time": datetime.datetime.utcnow(),
-                    "fields": {
-                        sensor: value
-                    }
-                }
-            ]
-            #TODO use post
-            log.debug(msg.topic+" "+str(msg.payload)+" posted")
-    except ValueError:
-        log.error(" ValueError with : "+msg.topic+" "+str(msg.payload))
+    for rule_name,rule in config["rules"].iteritems():
+        if msg.topic == rule["input"]:
+            if(rule["enable"]):
+                #call the Fuction with the same name as the Rule 
+                payload = getattr(rules,rule_name)()
+                if(payload):
+                    clientMQTT.publish(rule["output"],payload)
 
 
 def ruler_loop_forever():
     while(True):
-        topic = "Nodes/10/power"
-        power = 1000
-        #clientMQTT.publish(topic,power)
-        #log.debug("%s: %s: %s",name, topic, power)
         sleep(10)
+        config = cfg.get_local_json("config.json")
     return
 
 def mqtt_start():

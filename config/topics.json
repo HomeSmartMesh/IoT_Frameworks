@@ -1,0 +1,19 @@
+{
+    "Nodes":{
+        "light"         :"sensor",
+        "temperature"   :"sensor",
+        "pressure"      :"sensor",
+        "humidity"      :"sensor",
+        "aliveness"     :"sensor",
+        "proximity"     :"sensor",
+        "dimmer"        :"action",
+        "heat"          :"action",
+        "switch"        :"action"
+},
+    "jNodes":{
+        "dimmer"        :"action",
+        "RGB"           :"action",
+        "MeshRF"        :"message",
+        "RawRF"         :"message"
+    }
+}
