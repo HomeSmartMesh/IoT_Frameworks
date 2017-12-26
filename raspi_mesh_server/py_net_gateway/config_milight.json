@@ -35,24 +35,17 @@
             "channel"   :2
         }
     },
-    "mqtt_client":{
+    "mqtt":{
         "host":"10.0.0.12",
         "port":1883,
+        "keepalive":60,
         "client_id":"python_milight",
-        "valueActions":{
-            "HeadTopic"     :"Nodes/",
-            "actions"   :["dimmer"]
+        "subscribe":{
+            "Nodes"     :["dimmer"]
         }
     },
     "log":{
         "logfile":"/home/pi/share/milight_gateway.log",
-        "level":"20",
-        "levels":{
-            "50":"Critical",
-            "40":"Error",
-            "30":"Warning",
-            "20":"Info",
-            "10":"Debug"
-        }
+        "level":"Info"
     }
 }

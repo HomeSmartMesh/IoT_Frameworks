@@ -4,6 +4,7 @@ import datetime
 import logging as log
 import cfg
 from time import sleep
+import socket
 
 # -------------------- mqtt events -------------------- 
 def on_connect(lclient, userdata, flags, rc):
@@ -65,11 +66,23 @@ def wemo_loop_forever():
         sleep(10)
     return
 
+def mqtt_connect_retries(client):
+    connected = False
+    while(not connected):
+        try:
+            client.connect(config["mqtt"]["host"], config["mqtt"]["port"], config["mqtt"]["keepalive"])
+            connected = True
+        except socket.error:
+            log.error("socket.error will try a reconnection in 10 s")
+        sleep(10)
+    return
+
 def mqtt_start():
-    clientMQTT = mqtt.Client()
+    cid = config["mqtt"]["client_id"] +"_"+socket.gethostname()
+    clientMQTT = mqtt.Client(client_id=cid)
     clientMQTT.on_connect = on_connect
     clientMQTT.on_message = on_message
-    clientMQTT.connect(config["mqtt"]["host"], config["mqtt"]["port"], 3600)
+    mqtt_connect_retries(clientMQTT)
     clientMQTT.loop_start()
     return clientMQTT
 
@@ -78,7 +91,7 @@ config = cfg.get_local_json("config_wemo.json")
 
 cfg.configure_log(config["log"])
 
-log.info("wemo client started @ :"+str(datetime.datetime.utcnow()))
+log.info("wemo client started")
 
 #will start a separate thread for looping
 clientMQTT = mqtt_start()

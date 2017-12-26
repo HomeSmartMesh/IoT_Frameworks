@@ -46,10 +46,10 @@ def raspi_loop_forever():
                 "time": tnow,
                 "tags":{
                     "host"  :hostname,
-                    "target":"mongodb"
+                    "target":"iot_db"
                 },
                 "fields": {
-                    "value": int(rasp.getUsedDiskDir("/var/lib/mongodb"))
+                    "value": int(rasp.getUsedDiskDir("/home/pi/share/2017"))
                 }
             },
             {

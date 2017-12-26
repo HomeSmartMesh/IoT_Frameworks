@@ -8,30 +8,31 @@ from milight import Command
 import socket 
 from time import sleep
 from math import ceil
-import logging
+import logging as log
 import sys,os
+import cfg
 
 def on_connect(lclient, userdata, flags, rc):
-    topic_sub = ml["mqtt_client"]["valueActions"]["HeadTopic"] + "+/dimmer"
+    topic_sub = "Nodes/+/dimmer"
     lclient.subscribe(topic_sub)
-    print("Subscribed to: "+topic_sub)
+    log.info("Subscribed to: "+topic_sub)
 
 def on_message(client, userdata, msg):
     topic_parts = msg.topic.split('/')
-    if(len(topic_parts) == 3): # no need to check 'Actions',...
+    if(len(topic_parts) == 3):
         nodeid = topic_parts[1]
-        if(nodeid in ml["mapping"]):
-            device_name = ml["mapping"][nodeid]["device"]
-            channel = ml["mapping"][nodeid]["channel"]
+        if(nodeid in config["mapping"]):
+            device_name = config["mapping"][nodeid]["device"]
+            channel = config["mapping"][nodeid]["channel"]
             dimm_val = int(ceil(float(msg.payload)))
             if(dimm_val > 100):
                 dimm_val = 100
-            print(  "Action to Node: "+nodeid               +
+            log.debug(  "Action to Node: "+nodeid               +
                     " ; through gateway: "+device_name      +
                     " ; on channel: "+str(channel)            +
                     " ; set value: "+str(dimm_val)
                     )
-            controller = ml["devices"][device_name]["controller"]
+            controller = config["devices"][device_name]["controller"]
             if(dimm_val == 0):
                 controller.send(light.off(channel))
             elif(dimm_val == 1):
@@ -41,39 +42,43 @@ def on_message(client, userdata, msg):
             else:
                 controller.send(light.brightness(dimm_val,channel))
         else:
-            print("Node "+nodeid+" route unknown")
+            log.warning("Node "+nodeid+" route unknown")
     else:
-        print("topic: "+msg.topic + "size not matching")
+        log.error("topic: "+msg.topic + "size not matching")
         
-dirname = os.path.dirname(sys.argv[0])
-config_file = dirname+'/config_milight.json'
 
-# -------------------- logging -------------------- 
-#logging.basicConfig(filename=ml["log"]["logfile"],level=int(ml["log"]["level"]))
-logging.basicConfig(filename="/home/pi/share/milight_gateway.log",level=10)
+def mqtt_connect_retries(client):
+    connected = False
+    while(not connected):
+        try:
+            client.connect(config["mqtt"]["host"], config["mqtt"]["port"], config["mqtt"]["keepalive"])
+            connected = True
+            log.info(  "mqtt connected to "+config["mqtt"]["host"]+":"+str(config["mqtt"]["port"])+" with id: "+ cid )
+        except socket.error:
+            log.error("socket.error will try a reconnection in 10 s")
+        sleep(10)
+    return
 
-logging.info("started milight app service")
-logging.info("running from: "+dirname)
-logging.info("config file: "+config_file)
+# -------------------- main -------------------- 
+config = cfg.get_local_json("config_milight.json")
 
-ml = json.load(open(config_file))
+cfg.configure_log(config["log"])
 
-logging.info("loaded config, starting")
+log.info("milight client started")
+
 # -------------------- Milight Client -------------------- 
-for key,device in ml["devices"].items():
+for key,device in config["devices"].items():
     device["controller"] = milight.MiLight(device)
 
 light = milight.LightBulb(['rgbw','white','rgb'])
 night_mode = [0xC1, 0xC6, 0xC8, 0xCA, 0xCC]
 # -------------------- Mqtt Client -------------------- 
-host = ml["mqtt_client"]["host"]
-port = ml["mqtt_client"]["port"]
-cid = ml["mqtt_client"]["client_id"] +"_"+socket.gethostname()
+cid = config["mqtt"]["client_id"] +"_"+socket.gethostname()
 client = mqtt.Client(client_id=cid)
 client.on_connect = on_connect
 client.on_message = on_message
 
-client.connect(host, port)
-print(  "mqtt connected to "+host+":"+str(port)+" with id: "+ cid )
+mqtt_connect_retries(client)
+
 client.loop_forever()
 
