@@ -87,3 +87,14 @@ sleep 1 && python /home/pi/IoT_Frameworks/raspi_mesh_server/py_net_gateway/wemo_
 sleep 5 && python /home/pi/IoT_Frameworks/raspi_mesh_server/py_net_gateway/milight_gateway.py &
 
 ```
+
+### Protocol helper
+0x05 : Alive
+0x07 : light
+0x0A : bme280
+
+0x06 : 6 - Living room
+0x0F : 15- Workplace
+0x1A : 26- Sleeping room
+0x1D : 29
+0x26 : 38- Rep test
