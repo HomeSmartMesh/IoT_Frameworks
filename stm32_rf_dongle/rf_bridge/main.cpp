@@ -20,7 +20,7 @@
 
 #define RGB_DEMO 0
 
-#define ALIVE_SEC		5200
+#define ALIVE_SEC		5380
 #define LOOP_MS_WAIT	10
 #define LOG_LOGHT_COUNT 860
 //--------------------------------------------------------------------------------------
