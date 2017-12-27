@@ -14,7 +14,7 @@
             "input":"Nodes/7/humidity",
             "output":"jNodes/23/RGB",
             "description":"indicate when the bathroom is humid",
-            "enable" : false
+            "enable" : true
         },
         "Sleeproom_Light_Up":{
             "input":"Nodes/29/proximity",
