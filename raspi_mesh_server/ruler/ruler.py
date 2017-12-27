@@ -5,6 +5,7 @@ import cfg
 from time import sleep,time
 import json
 import rules
+import socket
 
 # -------------------- mqtt events -------------------- 
 def on_connect(lclient, userdata, flags, rc):
@@ -27,14 +28,27 @@ def on_message(client, userdata, msg):
 def ruler_loop_forever():
     while(True):
         sleep(10)
-        config = cfg.get_local_json("config.json")
     return
 
+
 def mqtt_start():
+    def mqtt_connect_retries(client):
+        connected = False
+        while(not connected):
+            try:
+                client.connect(config["mqtt"]["host"], config["mqtt"]["port"], config["mqtt"]["keepalive"])
+                connected = True
+                log.info(  "mqtt connected to "+config["mqtt"]["host"]+":"+str(config["mqtt"]["port"])+" with id: "+ cid )
+            except socket.error:
+                log.error("socket.error will try a reconnection in 10 s")
+            sleep(10)
+        return
+    cid = config["mqtt"]["client_id"] +"_"+socket.gethostname()
+    client = mqtt.Client(client_id=cid)
     clientMQTT = mqtt.Client()
     clientMQTT.on_connect = on_connect
     clientMQTT.on_message = on_message
-    clientMQTT.connect(config["mqtt"]["host"], config["mqtt"]["port"], 3600)
+    mqtt_connect_retries(clientMQTT)
     clientMQTT.loop_start()
     return clientMQTT
 
