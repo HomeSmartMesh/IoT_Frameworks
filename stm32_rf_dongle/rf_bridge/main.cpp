@@ -11,7 +11,7 @@
 #define F_NODEID	*(uint8_t *) FLASH_HEADER
 #define F_CHANNEL	*(uint8_t *) (FLASH_HEADER+0x01)
 //RGB LED
-#define USE_RGB_LED 1
+#define USE_RGB_LED 0
 //APDS9960 (Colorlight sensor, gesture)
 #define USE_APDS_SENSOR 0
 #define USE_APDS_GESTURE 0
@@ -19,6 +19,10 @@
 #define USE_APDS_LIGHT 0
 
 #define RGB_DEMO 0
+
+#define ALIVE_SEC		5200
+#define LOOP_MS_WAIT	10
+#define LOG_LOGHT_COUNT 860
 //--------------------------------------------------------------------------------------
 //TODO should have a board as a target
 #define RF_BOARD_DONGLE 1
@@ -191,7 +195,7 @@ void apds_poll_proximity()
 #if(USE_APDS_LIGHT == 1)
 void apds_log_light_colors()
 {
-	static uint16_t light_count = 86;// ~ 10 s
+	static uint16_t light_count = LOG_LOGHT_COUNT;// ~ 10 s
 
 	if(light_count == 0)
 	{
@@ -204,7 +208,7 @@ void apds_log_light_colors()
 		//expected at rx gateway side
 		//rasp.printf("NodeId:%u;light:%u;red:%u,green:%u;blue:%u\r\n",F_NODEID,light_rgb[0],light_rgb[1],light_rgb[2],light_rgb[3]);
 
-		light_count = 860;//~10 sec
+		light_count = LOG_LOGHT_COUNT;//~10 sec
 	}
 	else
 	{
@@ -225,11 +229,11 @@ int main()
 
 	hsm.broadcast(rf::pid::reset);
     
-	uint16_t alive_count = 520;
+	uint16_t alive_count = ALIVE_SEC;
 
     while(1) 
     {
-		wait_ms(10);
+		wait_ms(LOOP_MS_WAIT);
 		
 		#if(USE_APDS_LIGHT == 1)
 			apds_log_light_colors();
@@ -253,7 +257,7 @@ int main()
 		{
 			hsm.broadcast(rf::pid::alive);
 			//rasp.printf("NodeId:%u;status:Alive\r\n",F_NODEID);//expected at rx gateway side
-			alive_count = 5200;//~60 sec
+			alive_count = ALIVE_SEC;
 		}
 		else
 		{
