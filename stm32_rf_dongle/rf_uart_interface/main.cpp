@@ -108,7 +108,8 @@ void text_message_received(uint8_t *data,uint8_t size)
 
 void rf_broadcast_catched(uint8_t *data,uint8_t size)
 {
-	rasp.printf("NodeId:%d;",data[rf::ind::source]);
+	rasp.printf("NodeId:%u;",data[rf::ind::source]);
+	rasp.printf("ttl:%u;",data[rf::ind::control]&0x0F);
 
 	switch(data[rf::ind::pid])
 	{

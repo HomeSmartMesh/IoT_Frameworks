@@ -18,7 +18,9 @@
 #define USE_APDS_PROXIMITY 0
 #define USE_APDS_LIGHT 0
 
-#define RGB_DEMO 0
+#define SEND_ALIVE  1
+#define BRIDGE_MODE 1
+#define RGB_DEMO 	0
 
 #define ALIVE_SEC		5380
 #define LOOP_MS_WAIT	10
@@ -111,8 +113,12 @@ void init()
     hsm.attach(&rf_sniffed,RfMesh::CallbackType::Sniff);
 	hsm.attach(&rf_message,RfMesh::CallbackType::Message);
 
+#if (BRIDGE_MODE == 1)
 	hsm.setBridgeMode();
 	rasp.printf("stm32_bridge> listening to Mesh 2.0 on channel %d in bridge Mode\n",F_CHANNEL);
+#else
+	rasp.printf("stm32_bridge> Not in bridge Mode !!! Just a node\n",F_CHANNEL);
+#endif
 
 	hsm.setNodeId(F_NODEID);
 
@@ -255,7 +261,9 @@ int main()
 		}
 		if(alive_count == 0)
 		{
+			#if (SEND_ALIVE == 1)
 			hsm.broadcast(rf::pid::alive);
+			#endif
 			//rasp.printf("NodeId:%u;status:Alive\r\n",F_NODEID);//expected at rx gateway side
 			alive_count = ALIVE_SEC;
 		}
@@ -263,5 +271,6 @@ int main()
 		{
 			alive_count--;
 		}
+		rf_bridge_delegate();//cyclic check if bridge has to send from main context
 	}
 }
