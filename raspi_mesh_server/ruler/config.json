@@ -7,9 +7,15 @@
     },
     "log":{
         "logfile":"/home/pi/share/ruler.log",
-        "level":"Info"
+        "level":"Debug"
     },
     "rules":{
+        "Bathroom_Hum_Status":{
+            "input":"Nodes/7/humidity",
+            "output":"jNodes/23/RGB",
+            "description":"indicate when the bathroom is humid",
+            "enable" : false
+        },
         "Sleeproom_Light_Up":{
             "input":"Nodes/29/proximity",
             "output":"Nodes/34/dimmer",

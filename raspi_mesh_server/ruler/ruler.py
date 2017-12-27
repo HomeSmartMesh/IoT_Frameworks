@@ -20,7 +20,7 @@ def on_message(client, userdata, msg):
         if msg.topic == rule["input"]:
             if(rule["enable"]):
                 #call the Fuction with the same name as the Rule 
-                payload = getattr(rules,rule_name)()
+                payload = getattr(rules,rule_name)(msg.payload)
                 if(payload):
                     clientMQTT.publish(rule["output"],payload)
 

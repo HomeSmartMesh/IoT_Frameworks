@@ -9,13 +9,30 @@ def static_vars(**kwargs):
         return func
     return decorate
 
+def Bathroom_Hum_Status(input):
+    red = 0
+    green = 0
+    blue = 0
+    hum = float(input)
 
-def RGB_Tester_Burst():
+    if(hum < 60):
+        green = 15
+    else:
+        green = 0
+    if(hum < 50):
+        blue = 0
+    else:
+        trig = (hum - 50.0) / 50.0
+        blue = 200 * trig
+    jColors = {"Red":red,"Green":green,"Blue":blue}
+    return json.dumps(jColors)
+
+def RGB_Tester_Burst(input):
     log.info("RGB_Tester_Burst() post")
     return "100"
 
 @static_vars(event_time=time())
-def Sleeproom_Light_Up():
+def Sleeproom_Light_Up(input):
     result = None
     tnow = time()
     delay = tnow - Sleeproom_Light_Up.event_time
@@ -28,7 +45,7 @@ def Sleeproom_Light_Up():
     return result
 
 @static_vars(event_time=time())
-def RGB_Tester_Single():
+def RGB_Tester_Single(input):
     result = None
     tnow = time()
     delay = tnow - RGB_Tester_Single.event_time
