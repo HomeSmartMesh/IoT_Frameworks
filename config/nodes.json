@@ -149,7 +149,7 @@
         "commit"        :"",
         "devices"       :["nRF24_pa_lna"],
         "uc_uid"        :"0x55 FF 69 06 48 83 53 52 39 16 05 87"
-    },
+        },
     "39":   {   "name"          :"Test Repeater 2",
         "function"      :"sniffer",
         "board"         :"STM32_Dongle",
@@ -157,5 +157,9 @@
         "commit"        :"",
         "devices"       :["nRF24_pa_lna"],
         "uc_uid"        :"0x35 00 6C 06 31 42 32 38 74 49 22 43"
+        },
+    "40":   {   "name"          :"Workplace Power",
+        "data"   :["power"],
+        "gateway"    :"Wemo"
     }
 }
