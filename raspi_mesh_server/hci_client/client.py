@@ -5,7 +5,11 @@ from time import sleep,time
 import json
 from mqtt_wrapper import mqtt_start
 import socket
-import serial
+import serial_wrapper as ser
+
+def serial_on_line(line):
+    print(line)
+    return
 
 def mqtt_on_message(client, userdata, msg):
     log.info("%s : %s",msg.topic,msg.payload)
@@ -13,14 +17,9 @@ def mqtt_on_message(client, userdata, msg):
 
 def hci_loop_forever():
     while(True):
-        sleep(10)
+        sleep(0.1)
+        ser.read_serial_text()
     return
-
-def serial_start():
-    ser = serial.Serial(config["serial"]["port"])
-    print(ser.name)
-    return
-
 
 # -------------------- main -------------------- 
 config = cfg.get_local_json()
@@ -32,7 +31,7 @@ log.info("hci client started")
 #will start a separate thread for looping
 clientMQTT = mqtt_start(config,mqtt_on_message)
 
-serial_start()
+ser.serial_start(config,serial_on_line)
 
 #loop forever
 hci_loop_forever()

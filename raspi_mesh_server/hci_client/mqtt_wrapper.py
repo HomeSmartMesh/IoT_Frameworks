@@ -31,10 +31,12 @@ def mqtt_start(config,mqtt_on_message):
                 log.error("socket.error will try a reconnection in 10 s")
             sleep(10)
         return
-    cid = config["mqtt"]["client_id"] +"_"+socket.gethostname()
-    clientMQTT = mqtt.Client(client_id=cid,userdata=config)
-    clientMQTT.on_connect = on_connect
-    clientMQTT.on_message = mqtt_on_message
-    mqtt_connect_retries(clientMQTT)
-    clientMQTT.loop_start()
+    clientMQTT = None
+    if(config["mqtt"]["enable"]):
+        cid = config["mqtt"]["client_id"] +"_"+socket.gethostname()
+        clientMQTT = mqtt.Client(client_id=cid,userdata=config)
+        clientMQTT.on_connect = on_connect
+        clientMQTT.on_message = mqtt_on_message
+        mqtt_connect_retries(clientMQTT)
+        clientMQTT.loop_start()
     return clientMQTT

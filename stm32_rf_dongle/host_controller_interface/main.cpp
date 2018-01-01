@@ -39,7 +39,7 @@ uint8_t tab_send[32];
 
 void binary_message_received(uint8_t *data,uint8_t size)
 {
-	rasp.printf("bin:");
+	rasp.printf(" bin:");
 	print_tab(&rasp,data,32);
 }
 
@@ -74,7 +74,29 @@ void text_message_received(uint8_t *data,uint8_t size)
 
 void rf_sniffed(uint8_t *data,uint8_t size)
 {
-	rasp.printf("rf: ");    print_tab(&rasp,data,size);
+	#if(SEND_BINARY == 1)
+		rasp.putc('b');
+		rasp.putc(size+1);//size included
+		for(int i=0;i<size;i++)
+		{
+			rasp.putc(data[i]);//write without callback was protected
+		}
+	#else
+		rasp.printf("bin:");
+		print_tab(&rasp,data,32);
+	#endif
+}
+
+void rf_broadcast(uint8_t *data,uint8_t size)
+{
+	rasp.printf("bcast:");
+	print_tab(&rasp,data,data[0]);
+}
+
+void rf_message(uint8_t *data,uint8_t size)
+{
+	rasp.printf("msg:");
+	print_tab(&rasp,data,data[0]);
 }
 
 void the_ticker()
@@ -95,11 +117,12 @@ void init()
 
 	hsm.setRetries(5);
 	hsm.setAckDelay(100);
-	rasp.printf("stm32_hci> config: 5 retrise, 100 ms wait\r\n");
+	rasp.printf("stm32_hci> config: 5 retrise, 100 ms wait\n");
 	
 	//hsm.print_nrf();
 
-    hsm.attach(&rf_sniffed,RfMesh::CallbackType::Sniff);
+    hsm.attach(&rf_broadcast,RfMesh::CallbackType::Broadcast);
+    hsm.attach(&rf_message,RfMesh::CallbackType::Message);
 
     com.attach_txt(&text_message_received);
     com.attach_bin(&binary_message_received);
@@ -111,8 +134,7 @@ int main()
 	
 	rasp.printf("stm32_hci> U_ID: ");
 	print_tab(&rasp,p_UID,12);
-	rasp.printf("stm32_hci> Node ID: %d\r",F_NODEID);
-	rasp.printf("\r\n");
+	rasp.printf("stm32_hci> Node ID: %d\n",F_NODEID);
 	init();
 
 	//hsm.print_nrf();

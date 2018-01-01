@@ -1,6 +1,7 @@
 {
     "serial":{
-        "port":"COM4"
+        "port":"COM4",
+        "baud":115200
     },
     "mqtt":{
         "host":"10.0.0.12",
@@ -9,7 +10,8 @@
         "client_id":"hci_client",
         "subscriptions":[
             "Nodes/#"
-        ]
+        ],
+        "enable":false
     },
     "log":{
         "logfile":"./hci_client.log",
