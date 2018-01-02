@@ -4,10 +4,12 @@ import binascii
 ser = serial.Serial()
 on_line_function = None
 
-def read_serial_text():
+def run():
     res = None
     line = ser.readline().decode("utf-8")
     if(len(line)):
+        line = line.replace('\r','')
+        line = line.replace('\n','')
         on_line_function(line)
     return res
 
@@ -28,6 +30,21 @@ def read_serial_line():
             #print(line)
     return res
 
+def send(data):
+    msg = bytearray(b'b')
+    print("data:",data)
+    print("type:",type(data))
+    if(isinstance(data,tuple)):
+        msg.append(len(data)+1)
+        for d in data:
+            msg.append(d)
+    else:
+        #in this case it is one byte, so + size = 2
+        msg.append(2)
+        msg.append(data)
+    print(msg)
+    ser.write(msg)         # then comes the data
+    return
 
 def serial_start(config,serial_on_line):
     global on_line_function

@@ -39,8 +39,21 @@ uint8_t tab_send[32];
 
 void binary_message_received(uint8_t *data,uint8_t size)
 {
-	rasp.printf(" bin:");
-	print_tab(&rasp,data,32);
+	uint8_t cmd = data[1];
+	rasp.printf("cmd=%u\r\n",cmd);
+	switch(cmd)
+	{
+		case 0x01:
+		{
+			hsm.print_nrf();
+		}
+		break;
+		default:
+		{
+			rasp.printf(" bin:");
+			print_tab(&rasp,data,data[0]);
+		}
+	}
 }
 
 //IMPORTANT !!
@@ -82,8 +95,11 @@ void rf_sniffed(uint8_t *data,uint8_t size)
 			rasp.putc(data[i]);//write without callback was protected
 		}
 	#else
-		rasp.printf("bin:");
-		print_tab(&rasp,data,32);
+		if(data[0] < 31)
+		{
+			rasp.printf("raw:");
+			print_tab(&rasp,data,data[0]+2);//using size
+		}
 	#endif
 }
 
@@ -121,8 +137,7 @@ void init()
 	
 	//hsm.print_nrf();
 
-    hsm.attach(&rf_broadcast,RfMesh::CallbackType::Broadcast);
-    hsm.attach(&rf_message,RfMesh::CallbackType::Message);
+    hsm.attach(&rf_sniffed,RfMesh::CallbackType::Sniff);
 
     com.attach_txt(&text_message_received);
     com.attach_bin(&binary_message_received);
