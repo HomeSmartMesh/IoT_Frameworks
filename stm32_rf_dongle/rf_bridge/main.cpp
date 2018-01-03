@@ -11,7 +11,7 @@
 #define F_NODEID	*(uint8_t *) FLASH_HEADER
 #define F_CHANNEL	*(uint8_t *) (FLASH_HEADER+0x01)
 //RGB LED
-#define USE_RGB_LED 0
+#define USE_RGB_LED 1
 //APDS9960 (Colorlight sensor, gesture)
 #define USE_APDS_SENSOR 0
 #define USE_APDS_GESTURE 0

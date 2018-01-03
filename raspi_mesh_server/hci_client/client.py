@@ -17,6 +17,17 @@ def hci_loop_forever():
         mesh.run()
     return
 
+def send_RGB_test():
+    mesh.send_msg([8,0x70,0x0B,28,24,1,2,6])
+    return
+def send_ping_test():
+    print("send_ping_test:")
+    mesh.send_msg([5,0x20,0x01,28,24])
+    return
+def set_channel(chan):
+    print("set_channel:")
+    mesh.command("set_channel",[chan])
+    return
 # -------------------- main -------------------- 
 config = cfg.get_local_json()
 
@@ -29,7 +40,13 @@ clientMQTT = mqtt_start(config,mqtt_on_message)
 
 mesh.start(config)
 
-mesh.command("print_test")
-mesh.command("print_nrf")
+#mesh.command("get_status")
+
+#send_RGB_test()
+
+set_channel(10)
+sleep(1)
+send_ping_test()
+
 #loop forever
 hci_loop_forever()

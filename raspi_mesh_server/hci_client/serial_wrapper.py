@@ -32,9 +32,8 @@ def read_serial_line():
 
 def send(data):
     msg = bytearray(b'b')
-    print("data:",data)
-    print("type:",type(data))
-    if(isinstance(data,tuple)):
+    #print("data:",data,"type:",type(data))
+    if(isinstance(data,list)):
         msg.append(len(data)+1)
         for d in data:
             msg.append(d)
@@ -42,7 +41,7 @@ def send(data):
         #in this case it is one byte, so + size = 2
         msg.append(2)
         msg.append(data)
-    print(msg)
+    #print(msg)
     ser.write(msg)         # then comes the data
     return
 

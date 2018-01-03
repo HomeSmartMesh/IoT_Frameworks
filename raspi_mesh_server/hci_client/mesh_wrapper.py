@@ -1,12 +1,24 @@
 import serial_wrapper as ser
 
-RF_ID = {
-    "print_test" :(0x01,0x03),
-    "print_nrf" :0x01
+pid = {
+    "exec_cmd" : 0xEC
 }
 
-RF_CMD = {
-    "print_nrf" : (0x02,RF_ID["print_nrf"])
+exec_cmd = {
+    "status"    : 0x01,
+    "channel"   : 0x04,
+    "send"      : 0x20
+}
+
+msg = {
+    "size":0,
+    "payload":[]
+}
+
+COMMANDS = {
+    "get_status"    :[pid["exec_cmd"],exec_cmd["status"]],
+    "set_channel"   :[pid["exec_cmd"],exec_cmd["channel"]],
+    "send_msg"      :[pid["exec_cmd"],exec_cmd["send"]]
 }
 
 def on_raw(data):
@@ -14,8 +26,12 @@ def on_raw(data):
     print("data>",data)
     return
 
-def command(cmd):
-    ser.send(RF_ID[cmd])
+def command(cmd,params=[]):
+    ser.send(COMMANDS[cmd]+params)
+    return
+
+def send_msg(payload):
+    ser.send(COMMANDS["send_msg"] + payload)
     return
 
 def serial_on_line(line):

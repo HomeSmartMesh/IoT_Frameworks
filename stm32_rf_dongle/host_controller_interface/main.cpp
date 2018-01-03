@@ -37,20 +37,56 @@ bool is_msg_toSend = false;
 uint8_t msg_size = 0;
 uint8_t tab_send[32];
 
-void binary_message_received(uint8_t *data,uint8_t size)
+void handle_cmd(uint8_t cmd,uint8_t param_size,uint8_t *params)
 {
-	uint8_t cmd = data[1];
-	rasp.printf("cmd=%u\r\n",cmd);
 	switch(cmd)
 	{
-		case 0x01:
+		case rf::exec_cmd::status :
 		{
 			hsm.print_nrf();
 		}
 		break;
+		case rf::exec_cmd::send :
+		{
+			for(uint8_t i = 0;i<param_size;i++)
+			{
+				tab_send[i] = params[i];
+			}
+			is_msg_toSend = true;
+		}
+		break;
+		case rf::exec_cmd::channel :
+		{
+			uint8_t chan_to_set = params[0];
+			hsm.nrf.selectChannel(chan_to_set);
+			rasp.printf("channel:%d\n",hsm.nrf.getChannel());
+		}
+		break;
 		default:
 		{
-			rasp.printf(" bin:");
+			rasp.printf("unhandled cmd:0x%X\r\n",cmd);
+		}
+	}
+}
+
+
+void binary_message_received(uint8_t *data,uint8_t size)
+{
+	uint8_t pid = data[1];
+	rasp.printf("pid:0x%X\r\n",pid);
+	switch(pid)
+	{
+		case rf::pid::exec_cmd:
+		{
+			uint8_t param_size = data[0] - 3;
+			uint8_t cmd = data[2];
+			uint8_t *params = &data[3];
+			handle_cmd(cmd,param_size,params);
+		}
+		break;
+		default:
+		{
+			rasp.printf("_bin:");
 			print_tab(&rasp,data,data[0]);
 		}
 	}
@@ -122,18 +158,18 @@ void the_ticker()
 
 void init()
 {
-    rasp.printf("stm32_hci> Hello from the RF Host Controller Interface\n");
+    rasp.printf("startup:Hello from the RF Host Controller Interface\n");
 
     tick_call.attach(&the_ticker,1);
 
 	hsm.init(F_CHANNEL);//left to the user for more flexibility on memory management
-	rasp.printf("stm32_hci> listening to Mesh RF on channel %d\n",F_CHANNEL);
+	rasp.printf("startup:listening to Mesh RF;channel:%d\n",F_CHANNEL);
 
 	hsm.setNodeId(F_NODEID);
 
 	hsm.setRetries(5);
 	hsm.setAckDelay(100);
-	rasp.printf("stm32_hci> config: 5 retrise, 100 ms wait\n");
+	rasp.printf("retries:5;delay:100 ms\n");
 	
 	//hsm.print_nrf();
 
@@ -147,9 +183,9 @@ int main()
 {
 	uint8_t * p_UID = (uint8_t*) 0x1FFFF7E8;
 	
-	rasp.printf("stm32_hci> U_ID: ");
+	rasp.printf("U_ID: ");
 	print_tab(&rasp,p_UID,12);
-	rasp.printf("stm32_hci> Node ID: %d\n",F_NODEID);
+	rasp.printf("NodeID: %d\n",F_NODEID);
 	init();
 
 	//hsm.print_nrf();
@@ -161,7 +197,7 @@ int main()
 		wait_ms(100);
 		if(hsm.nRFIrq.read() == 0)
 		{
-			rasp.printf("irq pin Low, missed interrupt, re init()\n");
+			rasp.printf("stm32_event:irq pin Low, missed interrupt, re init()\n");
 			hsm.init(F_CHANNEL);
 		}
 		//send_rgb() is only allowed to be called from main as it uses the wait_ms function which fails from ISRs context
@@ -171,13 +207,13 @@ int main()
 			uint8_t nbret = hsm.send_msg(tab_send);
 			if(nbret == 0)
 			{
-				rasp.printf("stm32> send_msg fail : ");
+				rasp.printf("send_msg:fail:msg:");
 				print_tab(&rasp,tab_send,tab_send[0]+2);
 				rasp.printf("\r\n");
 			}
 			else
 			{
-				rasp.printf("stm32> send_msg success in %d retries\r\n",nbret);
+				rasp.printf("send_msg:success;retries:%d\r\n",nbret);
 			}
 			
 			is_msg_toSend = false;
