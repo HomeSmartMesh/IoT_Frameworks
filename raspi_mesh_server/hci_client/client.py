@@ -16,6 +16,12 @@ def hci_loop_forever():
         sleep(0.1)
         mesh.run()
     return
+def hci_loop(nb):
+    while(nb > 0):
+        sleep(0.05)
+        mesh.run()
+        nb = nb - 1
+    return
 
 def send_RGB_test():
     mesh.send_msg([8,0x70,0x0B,28,24,1,2,6])
@@ -41,12 +47,13 @@ clientMQTT = mqtt_start(config,mqtt_on_message)
 mesh.start(config)
 
 #mesh.command("get_status")
-
 #send_RGB_test()
 
 set_channel(10)
-sleep(1)
+hci_loop(20)
 send_ping_test()
+hci_loop(20)
+send_RGB_test()
 
 #loop forever
 hci_loop_forever()

@@ -73,7 +73,7 @@ void handle_cmd(uint8_t cmd,uint8_t param_size,uint8_t *params)
 void binary_message_received(uint8_t *data,uint8_t size)
 {
 	uint8_t pid = data[1];
-	rasp.printf("pid:0x%X\r\n",pid);
+	//rasp.printf("pid:0x%X\r\n",pid);
 	switch(pid)
 	{
 		case rf::pid::exec_cmd:
@@ -194,14 +194,12 @@ int main()
     
     while(1) 
     {
-		wait_ms(100);
+		wait_ms(1);
 		if(hsm.nRFIrq.read() == 0)
 		{
 			rasp.printf("stm32_event:irq pin Low, missed interrupt, re init()\n");
 			hsm.init(F_CHANNEL);
 		}
-		//send_rgb() is only allowed to be called from main as it uses the wait_ms function which fails from ISRs context
-		//wait_ms() is required to wait for the acknowlege and keep a simple result in the function return
 		if(is_msg_toSend)
 		{
 			uint8_t nbret = hsm.send_msg(tab_send);
@@ -213,6 +211,7 @@ int main()
 			}
 			else
 			{
+				wait_ms(100);
 				rasp.printf("send_msg:success;retries:%d\r\n",nbret);
 			}
 			
