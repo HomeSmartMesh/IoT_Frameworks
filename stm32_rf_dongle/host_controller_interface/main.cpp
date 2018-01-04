@@ -34,6 +34,7 @@ uint8_t payload[32];
 bool is_rgb_toSend = false;
 bool is_heat_toSend = false;
 bool is_msg_toSend = false;
+bool rf_rx_functions[4] = {false,false,false,false};
 uint8_t msg_size = 0;
 uint8_t tab_send[32];
 
@@ -62,6 +63,20 @@ void handle_cmd(uint8_t cmd,uint8_t param_size,uint8_t *params)
 			rasp.printf("channel:%d\n",hsm.nrf.getChannel());
 		}
 		break;
+		case rf::exec_cmd::set_rx :
+		{
+			uint8_t index = params[0];
+			rf_rx_functions[index] = params[1];
+			rasp.printf("rx_function:%d;status:%u\n",index,rf_rx_functions[index]);
+		}
+		break;
+		case rf::exec_cmd::test_rf :
+		{
+			uint8_t target = params[0];
+			rasp.printf("todo:send_ping\n");
+		}
+		break;
+
 		default:
 		{
 			rasp.printf("unhandled cmd:0x%X\r\n",cmd);
@@ -123,6 +138,8 @@ void text_message_received(uint8_t *data,uint8_t size)
 
 void rf_sniffed(uint8_t *data,uint8_t size)
 {
+	if(!rf_rx_functions[0]) return;
+
 	#if(SEND_BINARY == 1)
 		rasp.putc('b');
 		rasp.putc(size+1);//size included
@@ -141,13 +158,25 @@ void rf_sniffed(uint8_t *data,uint8_t size)
 
 void rf_broadcast(uint8_t *data,uint8_t size)
 {
+	if(!rf_rx_functions[1]) return;
+
 	rasp.printf("bcast:");
 	print_tab(&rasp,data,data[0]);
 }
 
 void rf_message(uint8_t *data,uint8_t size)
 {
+	if(!rf_rx_functions[2]) return;
+
 	rasp.printf("msg:");
+	print_tab(&rasp,data,data[0]);
+}
+
+void rf_response(uint8_t *data,uint8_t size)
+{
+	if(!rf_rx_functions[3]) return;
+
+	rasp.printf("resp:");
 	print_tab(&rasp,data,data[0]);
 }
 
@@ -174,6 +203,9 @@ void init()
 	//hsm.print_nrf();
 
     hsm.attach(&rf_sniffed,RfMesh::CallbackType::Sniff);
+    hsm.attach(&rf_broadcast,RfMesh::CallbackType::Broadcast);
+    hsm.attach(&rf_message,RfMesh::CallbackType::Message);
+    hsm.attach(&rf_response,RfMesh::CallbackType::Response);
 
     com.attach_txt(&text_message_received);
     com.attach_bin(&binary_message_received);

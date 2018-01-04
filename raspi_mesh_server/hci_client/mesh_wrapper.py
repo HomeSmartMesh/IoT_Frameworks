@@ -23,20 +23,16 @@ pid = {
 inv_pid = {v: k for k, v in pid.items()}
 
 exec_cmd = {
-    "status"    : 0x01,
-    "channel"   : 0x04,
-    "send"      : 0x20
+    "get_status"    : 0x01,
+    "set_channel"   : 0x04,
+    "send_msg"      : 0x20,
+    "set_rx"        : 0x30,
+    "test_rf"       : 0x31
 }
 
 msg = {
     "size":0,
     "payload":[]
-}
-
-COMMANDS = {
-    "get_status"    :[pid["exec_cmd"],exec_cmd["status"]],
-    "set_channel"   :[pid["exec_cmd"],exec_cmd["channel"]],
-    "send_msg"      :[pid["exec_cmd"],exec_cmd["send"]]
 }
 
 def parse_pid(byte):
@@ -72,12 +68,13 @@ def parse_control(byte):
     return res
 
 def parse_rf_data(data):
-    rf_data_text =  parse_control(data[1]) + " ; " + parse_pid(data[2]) + \
+    rf_data_text = parse_pid(data[2]) + \
                     "(" + str(data[3]) + " -> "
     if(not parse_is_broadcast(data[1])):
-        rf_data_text += str(data[4]) + ")"
+        rf_data_text += str(data[4]) + ") ; "
     else:
-        rf_data_text += " X)"
+        rf_data_text += " X) ; "
+    rf_data_text +=  parse_control(data[1])
     return rf_data_text
 
 def on_raw(data):
@@ -85,13 +82,17 @@ def on_raw(data):
     print("rf>",parse_rf_data(data))
     return
 
+def on_broadcast(data):
+    print("bcast>",parse_rf_data(data))
+    return
+
 def command(cmd,params=[]):
-    ser.send(COMMANDS[cmd]+params)
+    ser.send([pid["exec_cmd"],exec_cmd[cmd]]+params)
     return
 
 def send_msg(payload):
     print("tx>",parse_rf_data(payload))
-    ser.send(COMMANDS["send_msg"] + payload)
+    ser.send([pid["exec_cmd"],exec_cmd["send_msg"]] + payload)
     return
 
 def serial_on_line(line):
@@ -99,6 +100,10 @@ def serial_on_line(line):
         m_line = line[6:]
         data = bytearray.fromhex(m_line)
         on_raw(data)
+    elif(line.startswith("bcast:0x")):
+        m_line = line[8:]
+        data = bytearray.fromhex(m_line)
+        on_broadcast(data)
     else:
         print("text>",line)
     return

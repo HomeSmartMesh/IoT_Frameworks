@@ -34,6 +34,14 @@ def set_channel(chan):
     print("set_channel:")
     mesh.command("set_channel",[chan])
     return
+def set_broadcast(val):
+    print("set_broadcast:",val)
+    mesh.command("set_rx",[0x01,val])
+    return
+def test_rf(target):
+    print("test_rf:",target)
+    mesh.command("test_rf",[target])
+    return
 # -------------------- main -------------------- 
 config = cfg.get_local_json()
 
@@ -50,10 +58,14 @@ mesh.start(config)
 #send_RGB_test()
 
 set_channel(10)
-hci_loop(20)
+hci_loop(10)
 send_ping_test()
-hci_loop(20)
+hci_loop(10)
 send_RGB_test()
+hci_loop(10)
+set_broadcast(0x01)
+hci_loop(10)
+test_rf(24)
 
 #loop forever
 hci_loop_forever()
