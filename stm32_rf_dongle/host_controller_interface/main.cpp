@@ -31,14 +31,17 @@ suart com(&rasp);
 
 uint8_t payload[32];
 
-bool is_rgb_toSend = false;
-bool is_heat_toSend = false;
-bool is_msg_toSend = false;
 bool rf_rx_functions[4] = {false,false,false,false};
+
+bool is_msg_toSend = false;
 uint8_t msg_size = 0;
 uint8_t tab_send[32];
 
-void handle_cmd(uint8_t cmd,uint8_t param_size,uint8_t *params)
+uint8_t cmd_to_exec;//0 if no command to execute
+uint8_t cmd_params[32];
+uint8_t cmd_params_size;
+
+void handle_cmd(uint8_t cmd)
 {
 	switch(cmd)
 	{
@@ -49,31 +52,54 @@ void handle_cmd(uint8_t cmd,uint8_t param_size,uint8_t *params)
 		break;
 		case rf::exec_cmd::send :
 		{
-			for(uint8_t i = 0;i<param_size;i++)
+			for(uint8_t i = 0;i<cmd_params_size;i++)
 			{
-				tab_send[i] = params[i];
+				tab_send[i] = cmd_params[i];
 			}
 			is_msg_toSend = true;
 		}
 		break;
 		case rf::exec_cmd::channel :
 		{
-			uint8_t chan_to_set = params[0];
+			uint8_t chan_to_set = cmd_params[0];
 			hsm.nrf.selectChannel(chan_to_set);
 			rasp.printf("channel:%d\n",hsm.nrf.getChannel());
 		}
 		break;
 		case rf::exec_cmd::set_rx :
 		{
-			uint8_t index = params[0];
-			rf_rx_functions[index] = params[1];
+			uint8_t index = cmd_params[0];
+			rf_rx_functions[index] = cmd_params[1];
 			rasp.printf("rx_function:%d;status:%u\n",index,rf_rx_functions[index]);
+		}
+		break;
+		case rf::exec_cmd::set_retries :
+		{
+			uint8_t nb_retries = cmd_params[0];
+			hsm.setRetries(nb_retries);
+			rasp.printf("nb_retries:%d\n",nb_retries);
+		}
+		break;
+		case rf::exec_cmd::set_ack_delay :
+		{
+			uint16_t ack_delay = ((uint16_t)cmd_params[0] <<8) + cmd_params[1];
+			hsm.setAckDelay(ack_delay);
+			rasp.printf("ack_delay_ms:%u\n",ack_delay);
 		}
 		break;
 		case rf::exec_cmd::test_rf :
 		{
-			uint8_t target = params[0];
-			rasp.printf("todo:send_ping\n");
+			uint8_t bkp_nbret = hsm.getRetries();
+			hsm.setRetries(1);//important not to forget for ping count
+			uint8_t target = cmd_params[0];
+			uint8_t nb_ping = cmd_params[1];
+			uint8_t nb_success = 0;
+			for(uint8_t i=0;i<nb_ping;i++)
+			{
+				nb_success += hsm.send_pid(rf::pid::ping,target,0);
+			}
+			rasp.printf("nb_ping:%u;nb_success:%u\n",nb_ping,nb_success);
+			hsm.setRetries(bkp_nbret);
 		}
 		break;
 
@@ -93,10 +119,12 @@ void binary_message_received(uint8_t *data,uint8_t size)
 	{
 		case rf::pid::exec_cmd:
 		{
-			uint8_t param_size = data[0] - 3;
-			uint8_t cmd = data[2];
-			uint8_t *params = &data[3];
-			handle_cmd(cmd,param_size,params);
+			cmd_params_size = data[0] - 3;
+			cmd_to_exec = data[2];
+			for(uint8_t i = 0; i< cmd_params_size;i++)
+			{
+				cmd_params[i] = data[3+i]; 
+			}
 		}
 		break;
 		default:
@@ -150,7 +178,7 @@ void rf_sniffed(uint8_t *data,uint8_t size)
 	#else
 		if(data[0] < 31)
 		{
-			rasp.printf("raw:");
+			rasp.printf("sniff:");
 			print_tab(&rasp,data,data[0]+2);//using size
 		}
 	#endif
@@ -231,6 +259,11 @@ int main()
 		{
 			rasp.printf("stm32_event:irq pin Low, missed interrupt, re init()\n");
 			hsm.init(F_CHANNEL);
+		}
+		if(cmd_to_exec)
+		{
+			handle_cmd(cmd_to_exec);
+			cmd_to_exec = 0;
 		}
 		if(is_msg_toSend)
 		{

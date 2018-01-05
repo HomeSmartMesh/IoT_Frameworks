@@ -65,6 +65,64 @@ bool is_msg_toSend = false;
 uint8_t msg_size = 0;
 uint8_t tab_send[32];
 
+uint8_t cmd_to_exec;//0 if no command to execute
+uint8_t cmd_params[32];
+uint8_t cmd_params_size;
+
+void handle_cmd(uint8_t cmd)
+{
+	switch(cmd)
+	{
+		case rf::exec_cmd::send :
+		{
+			for(uint8_t i = 0;i<cmd_params_size;i++)
+			{
+				tab_send[i] = cmd_params[i];
+			}
+			is_msg_toSend = true;
+		}
+		break;
+		case rf::exec_cmd::channel :
+		{
+			uint8_t chan_to_set = cmd_params[0];
+			hsm.nrf.selectChannel(chan_to_set);
+			rasp.printf("channel:%d\n",hsm.nrf.getChannel());
+		}
+		break;
+		case rf::exec_cmd::set_retries :
+		{
+			uint8_t nb_retries = cmd_params[0];
+			hsm.setRetries(nb_retries);
+			rasp.printf("nb_retries:%d\n",nb_retries);
+		}
+		break;
+		case rf::exec_cmd::set_ack_delay :
+		{
+			uint16_t ack_delay = ((uint16_t)cmd_params[0] <<8) + cmd_params[1];
+			hsm.setAckDelay(ack_delay);
+			rasp.printf("ack_delay_ms:%u\n",ack_delay);
+		}
+		break;
+		case rf::exec_cmd::test_rf :
+		{
+			uint8_t target = cmd_params[0];
+			uint8_t nb_ping = cmd_params[1];
+			uint8_t nb_success = 0;
+			for(uint8_t i=0;i<nb_ping;i++)
+			{
+				nb_success += hsm.send_pid(rf::pid::ping,target,0);
+			}
+			rasp.printf("nb_ping:%u;nb:success:%u\n",nb_ping,nb_success);
+		}
+		break;
+
+		default:
+		{
+			rasp.printf("unhandled cmd:0x%X\r\n",cmd);
+		}
+	}
+}
+
 
 void the_ticker()
 {
@@ -96,6 +154,16 @@ void rf_message(uint8_t *data,uint8_t size)
 			rasp.printf("R:%u;G:%u;B:%u\r\n",red,green,blue);
 		}
 	#endif
+	
+	if(data[rf::ind::pid] == rf::pid::exec_cmd)
+	{
+		cmd_params_size = data[rf::ind::size] - rf::ind::p2p_payload;
+		cmd_to_exec = data[rf::ind::p2p_payload];
+		for(uint8_t i = 0; i< cmd_params_size;i++)
+		{
+			cmd_params[i] = data[rf::ind::p2p_payload+1+i];
+		}
+	}
 }
 
 void init()
@@ -240,6 +308,11 @@ int main()
     while(1) 
     {
 		wait_ms(LOOP_MS_WAIT);
+		if(cmd_to_exec)
+		{
+			handle_cmd(cmd_to_exec);
+			cmd_to_exec = 0;
+		}
 		
 		#if(USE_APDS_LIGHT == 1)
 			apds_log_light_colors();

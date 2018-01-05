@@ -27,7 +27,16 @@ exec_cmd = {
     "set_channel"   : 0x04,
     "send_msg"      : 0x20,
     "set_rx"        : 0x30,
-    "test_rf"       : 0x31
+    "test_rf"       : 0x31,
+    "cfg_retries"   : 0x32,
+    "cfg_ack_delay" : 0x33
+}
+
+set_rx = {
+    "sniff" : 0x00,
+    "bcast" : 0x01,
+    "msg"   : 0x02,
+    "resp"  : 0x03
 }
 
 msg = {
@@ -96,14 +105,13 @@ def send_msg(payload):
     return
 
 def serial_on_line(line):
-    if(line.startswith("raw:0x")):
-        m_line = line[6:]
-        data = bytearray.fromhex(m_line)
-        on_raw(data)
-    elif(line.startswith("bcast:0x")):
-        m_line = line[8:]
-        data = bytearray.fromhex(m_line)
-        on_broadcast(data)
+    ind_split = line.find(":0x")
+    line_type = line[0:ind_split]
+    line_data = line[ind_split+3:]
+    if( (line_type == "sniff") or (line_type == "msg") or\
+        (line_type == "resp") or (line_type == "bcast")  ):
+        data = bytearray.fromhex(line_data)
+        print(line_type,">",parse_rf_data(data))
     else:
         print("text>",line)
     return
