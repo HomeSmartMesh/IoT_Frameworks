@@ -23,17 +23,28 @@ def hci_loop(nb):
     return
 
 def send_RGB_test():
-    mesh.send_msg([8,0x70,0x0B,28,24,1,2,6])
+    mesh.send_msg([8,0x70,0x0B,28,24,0,0,3])
+    hci_loop(2)
+    return
+def send_request_ping():
+    print("send_request_ping:")
+    mesh.send_msg([5,0x20,0x01,28,24])
     hci_loop(2)
     return
 def send_msg_ping():
     print("send_msg_ping:")
-    mesh.send_msg([5,0x20,0x01,28,24])
+    mesh.send_msg([5,0x70,0x01,28,24])
     hci_loop(2)
     return
 def set_channel(chan):
-    print("set_channel:")
+    print("set_channel:",chan)
     mesh.command("set_channel",[chan])
+    hci_loop(2)
+    mesh.command("get_channel",[])
+    hci_loop(2)
+    return
+def get_channel():
+    mesh.command("get_channel",[])
     hci_loop(2)
     return
 def set_rx(func,val):
@@ -46,11 +57,7 @@ def set_response(val):
     mesh.command("set_rx",[0x01,val])
     hci_loop(2)
     return
-def test_rf(target,nb_ping):
-    print("test_rf:",target)
-    mesh.command("test_rf",[target,nb_ping])
-    hci_loop(10)
-    return
+
 def config_retries(retries,delay):
     print("config_retries:")
     mesh.command("cfg_retries",[retries])
@@ -70,11 +77,32 @@ def send_msg_set_channel(target,chan):
     hci_loop(2)
     return
 
-def test_target_channel(target,channel,nb_tests):
-    print("----test_target_channel----")
-    send_msg_set_channel(target,channel)
-    set_channel(channel)
-    test_rf(target,nb_tests)
+def test_channel(target,channel,nb_ping=100):
+    """
+    Tests the RF connection between the 'hci' node and another 'target' node
+    sends a single serial request with :
+    - 'target' : the node that will receive the pings and sends back ack
+    - 'channel' : frequency channel, from 0 (2.4 GHz) till 125 (2.525 GHz)
+    - 'nb_ping' : usually 100 for a significant signal quality estimation
+    """
+    print("RF Test O->%d, Chan %d" % (target,channel))
+    mesh.command("test_rf",[target,channel,nb_ping])
+    hci_loop(20)
+    return
+def remote_test_channel(remote,test_target,channel,nb_ping=100):
+    """
+    Tests the RF connection between any 'remote' node and another 'test_target' node
+    sends an RF message to execute an RF test command:
+    - 'remote' : any node from the mesh network that will be sending pings
+    - 'test_target' : receiver of the test pings and sender of ack
+    - 'channel' : frequency channel, from 0 (2.4 GHz) till 125 (2.525 GHz)
+      note that the remote will request the 'test_target' to switch to the test RF and then back
+      condition is that the remote and the test_target are initially in the same channel, as there is no search
+    - 'nb_ping' : usually 100 for a significant signal quality estimation
+    """
+    print("Remote RF Test %d->%d, Chan %d" % (remote,test_target,channel))
+    mesh.send_msg([7,0x70,mesh.pid["exec_cmd"],28,remote,mesh.exec_cmd["test_rf"],test_target,channel,nb_ping])
+    hci_loop(40)
     return
 # -------------------- main -------------------- 
 config = cfg.get_local_json()
@@ -90,19 +118,33 @@ mesh.start(config)
 config_retries(retries=2,delay=2)
 set_channel(10)
 
+#enable to hear feedback of remote test rf request
+set_rx("msg",0x01)
+
+remote_test_channel(remote=24,test_target=28,channel=10,nb_ping=100)
+
 #set_rx("bcast",0x01)
 #set_rx("resp",0x01)
 #send_msg_ping()
 #send_RGB_test()
 #send_msg_set_retries(2)
 
-test_target_channel(target=24,channel=0,nb_tests=100)
-test_target_channel(target=24,channel=40,nb_tests=100)
-test_target_channel(target=24,channel=80,nb_tests=100)
-test_target_channel(target=24,channel=120,nb_tests=100)
+#send_msg_set_channel(24,10)
+#set_channel(10)
+
+#test_channel(target=24,channel=10,nb_ping=10)
+
+#test_channel(target=24,channel=40,nb_ping=10)
+
+#set_channel(10)
+#send_msg_ping()
+
+#set_channel(40)
+#send_msg_ping()
+
 
 #set_channel(10)
 #test_rf(24,10)
 
 #loop forever
-hci_loop_forever()
+#hci_loop_forever()

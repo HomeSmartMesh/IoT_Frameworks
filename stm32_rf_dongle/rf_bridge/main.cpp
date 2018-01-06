@@ -62,6 +62,8 @@ uint8_t payload[32];
 
 bool is_rgb_toSend = false;
 bool is_msg_toSend = false;
+bool is_rf_request = false;
+uint8_t rf_requester = 0;
 uint8_t msg_size = 0;
 uint8_t tab_send[32];
 
@@ -82,10 +84,14 @@ void handle_cmd(uint8_t cmd)
 			is_msg_toSend = true;
 		}
 		break;
-		case rf::exec_cmd::channel :
+		case rf::exec_cmd::set_channel :
 		{
 			uint8_t chan_to_set = cmd_params[0];
 			hsm.nrf.selectChannel(chan_to_set);
+		}
+		break;
+		case rf::exec_cmd::get_channel :
+		{
 			rasp.printf("channel:%d\n",hsm.nrf.getChannel());
 		}
 		break;
@@ -106,16 +112,20 @@ void handle_cmd(uint8_t cmd)
 		case rf::exec_cmd::test_rf :
 		{
 			uint8_t target = cmd_params[0];
-			uint8_t nb_ping = cmd_params[1];
-			uint8_t nb_success = 0;
-			for(uint8_t i=0;i<nb_ping;i++)
+			uint8_t channel = cmd_params[1];
+			uint8_t nb_ping = cmd_params[2];
+			uint8_t nb_success = hsm.test_rf(target,channel,nb_ping);
+			if(is_rf_request)
 			{
-				nb_success += hsm.send_pid(rf::pid::ping,target,0);
+				hsm.send_byte(rf::pid::test_rf_resp,rf_requester,nb_success);
 			}
-			rasp.printf("nb_ping:%u;nb:success:%u\n",nb_ping,nb_success);
+			else
+			{
+				rasp.printf("target:%u;chan:%u;nb_ping;res:%u / %u\n",
+							target,channel,nb_success,nb_ping);
+			}
 		}
 		break;
-
 		default:
 		{
 			rasp.printf("unhandled cmd:0x%X\r\n",cmd);
@@ -159,6 +169,8 @@ void rf_message(uint8_t *data,uint8_t size)
 	{
 		cmd_params_size = data[rf::ind::size] - rf::ind::p2p_payload;
 		cmd_to_exec = data[rf::ind::p2p_payload];
+		is_rf_request = true;
+		rf_requester = data[rf::ind::source];
 		for(uint8_t i = 0; i< cmd_params_size;i++)
 		{
 			cmd_params[i] = data[rf::ind::p2p_payload+1+i];
@@ -312,6 +324,7 @@ int main()
 		{
 			handle_cmd(cmd_to_exec);
 			cmd_to_exec = 0;
+			is_rf_request = false;
 		}
 		
 		#if(USE_APDS_LIGHT == 1)

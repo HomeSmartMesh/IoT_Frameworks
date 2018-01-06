@@ -17,14 +17,16 @@ pid = {
     "dimmer"        : 0x0D,
     "light_rgb"     : 0x0E,
     "gesture"       : 0x0F,
-    "proximity"     : 0x10
+    "proximity"     : 0x10,
+    "test_rf_resp"  : 0x30
 }
 
 inv_pid = {v: k for k, v in pid.items()}
 
 exec_cmd = {
     "get_status"    : 0x01,
-    "set_channel"   : 0x04,
+    "set_channel"   : 0x09,
+    "get_channel"   : 0x0A,
     "send_msg"      : 0x20,
     "set_rx"        : 0x30,
     "test_rf"       : 0x31,
@@ -77,23 +79,16 @@ def parse_control(byte):
     return res
 
 def parse_rf_data(data):
-    rf_data_text = parse_pid(data[2]) + \
-                    "(" + str(data[3]) + " -> "
+    rf_data_text = parse_pid(data[2])
+    if(data[2] == pid["test_rf_resp"]):
+        rf_data_text += " res="+str(data[5])+" "
+    rf_data_text += "(" + str(data[3]) + " -> "
     if(not parse_is_broadcast(data[1])):
         rf_data_text += str(data[4]) + ") ; "
     else:
         rf_data_text += " X) ; "
     rf_data_text +=  parse_control(data[1])
     return rf_data_text
-
-def on_raw(data):
-    """ data received from RF in a size,dataarray Fromat"""
-    print("rf>",parse_rf_data(data))
-    return
-
-def on_broadcast(data):
-    print("bcast>",parse_rf_data(data))
-    return
 
 def command(cmd,params=[]):
     ser.send([pid["exec_cmd"],exec_cmd[cmd]]+params)

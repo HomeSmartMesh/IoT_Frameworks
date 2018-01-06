@@ -59,10 +59,14 @@ void handle_cmd(uint8_t cmd)
 			is_msg_toSend = true;
 		}
 		break;
-		case rf::exec_cmd::channel :
+		case rf::exec_cmd::set_channel :
 		{
 			uint8_t chan_to_set = cmd_params[0];
 			hsm.nrf.selectChannel(chan_to_set);
+		}
+		break;
+		case rf::exec_cmd::get_channel :
+		{
 			rasp.printf("channel:%d\n",hsm.nrf.getChannel());
 		}
 		break;
@@ -89,17 +93,12 @@ void handle_cmd(uint8_t cmd)
 		break;
 		case rf::exec_cmd::test_rf :
 		{
-			uint8_t bkp_nbret = hsm.getRetries();
-			hsm.setRetries(1);//important not to forget for ping count
 			uint8_t target = cmd_params[0];
-			uint8_t nb_ping = cmd_params[1];
-			uint8_t nb_success = 0;
-			for(uint8_t i=0;i<nb_ping;i++)
-			{
-				nb_success += hsm.send_pid(rf::pid::ping,target,0);
-			}
-			rasp.printf("nb_ping:%u;nb_success:%u\n",nb_ping,nb_success);
-			hsm.setRetries(bkp_nbret);
+			uint8_t channel = cmd_params[1];
+			uint8_t nb_ping = cmd_params[2];
+			uint8_t nb_success = hsm.test_rf(target,channel,nb_ping);
+			rasp.printf("target:%u;chan:%u;nb_ping;res:%u / %u\n",
+						target,channel,nb_success,nb_ping);
 		}
 		break;
 
@@ -241,6 +240,7 @@ void init()
 
 int main() 
 {
+	
 	uint8_t * p_UID = (uint8_t*) 0x1FFFF7E8;
 	
 	rasp.printf("U_ID: ");
