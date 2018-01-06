@@ -37,6 +37,9 @@ bool is_msg_toSend = false;
 uint8_t msg_size = 0;
 uint8_t tab_send[32];
 
+bool is_rf_request = false;
+uint8_t rf_requester = 0;
+
 uint8_t cmd_to_exec;//0 if no command to execute
 uint8_t cmd_params[32];
 uint8_t cmd_params_size;
@@ -97,8 +100,15 @@ void handle_cmd(uint8_t cmd)
 			uint8_t channel = cmd_params[1];
 			uint8_t nb_ping = cmd_params[2];
 			uint8_t nb_success = hsm.test_rf(target,channel,nb_ping);
-			rasp.printf("target:%u;chan:%u;nb_ping;res:%u / %u\n",
-						target,channel,nb_success,nb_ping);
+			if(is_rf_request)
+			{
+				hsm.send_byte(rf::pid::test_rf_resp,rf_requester,nb_success);
+			}
+			else
+			{
+				rasp.printf("target:%u;chan:%u;nb_ping;res:%u / %u\n",
+							target,channel,nb_success,nb_ping);
+			}
 		}
 		break;
 
@@ -193,6 +203,19 @@ void rf_broadcast(uint8_t *data,uint8_t size)
 
 void rf_message(uint8_t *data,uint8_t size)
 {
+	//this suction is run independently from giving feedback to the host
+	if(data[rf::ind::pid] == rf::pid::exec_cmd)
+	{
+		cmd_params_size = data[rf::ind::size] - rf::ind::p2p_payload;
+		cmd_to_exec = data[rf::ind::p2p_payload];
+		is_rf_request = true;
+		rf_requester = data[rf::ind::source];
+		for(uint8_t i = 0; i< cmd_params_size;i++)
+		{
+			cmd_params[i] = data[rf::ind::p2p_payload+1+i];
+		}
+	}
+	
 	if(!rf_rx_functions[2]) return;
 
 	rasp.printf("msg:");
@@ -264,6 +287,7 @@ int main()
 		{
 			handle_cmd(cmd_to_exec);
 			cmd_to_exec = 0;
+			is_rf_request = false;
 		}
 		if(is_msg_toSend)
 		{
