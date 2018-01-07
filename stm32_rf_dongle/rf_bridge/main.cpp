@@ -189,15 +189,17 @@ void init()
 	tick_call.attach(&the_ticker,0.1);
 
 	hsm.init(F_CHANNEL);//left to the user for more flexibility on memory management
+	hsm.nrf.setMode(nrf::Mode::Rx);//not set by default as to check power consemption with hci
+	rasp.printf("mode:%d;channel:%d\n",hsm.nrf.getMode(),hsm.nrf.getChannel());
 
     hsm.attach(&rf_sniffed,RfMesh::CallbackType::Sniff);
 	hsm.attach(&rf_message,RfMesh::CallbackType::Message);
 
 #if (BRIDGE_MODE == 1)
 	hsm.setBridgeMode();
-	rasp.printf("stm32_bridge> listening to Mesh 2.0 on channel %d in bridge Mode\n",F_CHANNEL);
+	rasp.printf("stm32_bridge> listening in bridge Mode\n");
 #else
-	rasp.printf("stm32_bridge> Not in bridge Mode !!! Just a node\n",F_CHANNEL);
+	rasp.printf("stm32_bridge> Not in bridge Mode !!! Just a node\n");
 #endif
 
 	hsm.setNodeId(F_NODEID);

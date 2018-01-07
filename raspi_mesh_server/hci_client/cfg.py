@@ -25,6 +25,22 @@ def get_local_json():
             print("Fatal error 'config.json' not found")
     return config
 
+# -------------------- config -------------------- 
+def get_local_nodes(rel_file):
+    """fetches the nodes.json file in the local repository
+    - rel_file : reliative path file
+    """
+    nodes = None
+    dirname = os.path.dirname(sys.argv[0])
+    if(len(dirname) == 0):
+        dirname = "."
+    nodes_file = dirname+'/'+rel_file
+    if(os.path.isfile(nodes_file)):
+        print("loading: ",nodes_file)
+        nodes = json.load(open(nodes_file))
+    else:
+        print("Fatal error %s not found"%(rel_file))
+    return nodes
 
 def configure_log(config):
     log_level_map = {

@@ -142,7 +142,7 @@
                 "data"   :["power"],
                 "gateway"    :"Wemo"
             },
-    "38":   {   "name"          :"Test Repeater 1",
+    "38":   {   "name"          :"Living room Repeater",
         "function"      :"repeater",
         "board"         :"STM32_Dongle",
         "program"       :"rf_bridge",
@@ -150,7 +150,7 @@
         "devices"       :["nRF24_pa_lna"],
         "uc_uid"        :"0x55 FF 69 06 48 83 53 52 39 16 05 87"
         },
-    "39":   {   "name"          :"Test Repeater 2",
+    "39":   {   "name"          :"Commode Repeater",
         "function"      :"sniffer",
         "board"         :"STM32_Dongle",
         "program"       :"rf_bridge",

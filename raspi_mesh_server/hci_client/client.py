@@ -1,3 +1,4 @@
+import sys
 import logging as log
 import cfg
 from time import sleep,time
@@ -31,9 +32,19 @@ def send_request_ping():
     mesh.send_msg([5,0x20,0x01,28,24])
     hci_loop(2)
     return
-def send_msg_ping():
-    print("send_msg_ping:")
-    mesh.send_msg([5,0x70,0x01,28,24])
+def ping(target):
+    print("send msg ping:")
+    mesh.send_msg([5,0x70,0x01,28,target])
+    hci_loop(2)
+    return
+def set_mode(mode_txt):
+    print("set_mode:",mode_txt)
+    mesh.command("set_mode",[mesh.mode[mode_txt]])
+    hci_loop(2)
+    return
+def get_mode():
+    print("get_mode:")
+    mesh.command("get_mode")
     hci_loop(2)
     return
 def set_channel(chan):
@@ -104,6 +115,40 @@ def remote_test_channel(remote,test_target,channel,nb_ping=100):
     mesh.send_msg([7,0x70,mesh.pid["exec_cmd"],28,remote,mesh.exec_cmd["test_rf"],test_target,channel,nb_ping])
     hci_loop(40)
     return
+
+# ------------------------ test examples ----------------------------
+def test1():
+    #enable to hear feedback of remote test rf request
+    set_rx("msg",0x01)
+    set_rx("bcast",0x01)
+    set_rx("resp",0x01)
+    ping(24)
+    send_RGB_test()
+    send_msg_set_retries(2)
+
+    set_channel(10)
+    ping(24)
+
+    send_msg_set_channel(24,10)
+    set_channel(10)
+
+    test_channel(target=24,channel=10,nb_ping=10)
+    test_channel(target=24,channel=40,nb_ping=10)
+
+    remote_test_channel(remote=24,test_target=28,channel=10,nb_ping=100)
+
+    #loop forever
+    hci_loop_forever()
+    return
+def listen(chan):
+    config_retries(retries=2,delay=2)
+    set_channel(chan)
+    set_rx("msg",0x01)
+    set_rx("bcast",0x01)
+    set_rx("resp",0x01)
+    set_mode("rx")
+    hci_loop_forever()
+    return
 # -------------------- main -------------------- 
 config = cfg.get_local_json()
 
@@ -114,37 +159,16 @@ log.info("hci client started")
 #will start a separate thread for looping
 clientMQTT = mqtt_start(config,mqtt_on_message)
 
+if(len(sys.argv)>=2):
+    port = sys.argv[1]
+    config["serial"]["port"] = port
+
 mesh.start(config)
+
+chan = 2
+
+if(len(sys.argv)>=3):
+    chan = sys.argv[2]
+
 config_retries(retries=2,delay=2)
-set_channel(10)
-
-#enable to hear feedback of remote test rf request
-set_rx("msg",0x01)
-
-remote_test_channel(remote=24,test_target=28,channel=10,nb_ping=100)
-
-#set_rx("bcast",0x01)
-#set_rx("resp",0x01)
-#send_msg_ping()
-#send_RGB_test()
-#send_msg_set_retries(2)
-
-#send_msg_set_channel(24,10)
-#set_channel(10)
-
-#test_channel(target=24,channel=10,nb_ping=10)
-
-#test_channel(target=24,channel=40,nb_ping=10)
-
-#set_channel(10)
-#send_msg_ping()
-
-#set_channel(40)
-#send_msg_ping()
-
-
-#set_channel(10)
-#test_rf(24,10)
-
-#loop forever
-#hci_loop_forever()
+listen(chan)

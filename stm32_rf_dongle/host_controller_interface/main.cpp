@@ -48,6 +48,16 @@ void handle_cmd(uint8_t cmd)
 {
 	switch(cmd)
 	{
+		case rf::exec_cmd::set_mode :
+		{
+			hsm.nrf.setMode((nrf::Mode) cmd_params[0]);
+		}
+		break;
+		case rf::exec_cmd::get_mode :
+		{
+			rasp.printf("mode:%d\n",hsm.nrf.getMode());
+		}
+		break;
 		case rf::exec_cmd::status :
 		{
 			hsm.print_nrf();
@@ -242,7 +252,8 @@ void init()
     tick_call.attach(&the_ticker,1);
 
 	hsm.init(F_CHANNEL);//left to the user for more flexibility on memory management
-	rasp.printf("startup:listening to Mesh RF;channel:%d\n",F_CHANNEL);
+	//hsm.nrf.setMode(nrf::Mode::Rx);//not set by default as to check power consemption with hci
+	rasp.printf("mode:%d;channel:%d\n",hsm.nrf.getMode(),hsm.nrf.getChannel());
 
 	hsm.setNodeId(F_NODEID);
 
