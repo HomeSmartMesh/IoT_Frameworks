@@ -61,7 +61,7 @@
                 "devices"       :["APDS9960","nRF24","WS2812B"],
                 "uc_uid"        :"0x57 FF 6A 06 49 84 52 50 40 57 06 87"
             },
-    "24":   {   "name"          :"Tester RGB dongle",
+    "24":   {   "name"          :"Tester RGB",
                 "actions"       :[""],
                 "function"      :"repeater",
                 "board"         :"STM32_Dongle",
@@ -83,7 +83,7 @@
                 "program"       :"pr03_PressHumTemp",
                 "commit"        :"f73aefd25f12840d60c15f40bae60de3b689dd99"
             },
-    "27":   {   "name"          :"Living room repeater",
+    "27":   {   "name"          :"Tester PA Bare",
                 "function"      :"sniffer",
                 "board"         :"STM32_Dongle",
                 "program"       :"rf_sniffer",
@@ -91,7 +91,7 @@
                 "devices"       :["nRF24_pa_lna"],
                 "uc_uid"        :"0x39 00 68 06 31 42 30 38 53 35 03 43"
             },
-    "28":   {   "name"          :"Test Proximity dongle",
+    "28":   {   "name"          :"HCI Tester",
         "function"      :"repeater",
         "board"         :"STM32_Dongle",
         "program"       :"rf_bridge",
@@ -142,7 +142,7 @@
                 "data"   :["power"],
                 "gateway"    :"Wemo"
             },
-    "38":   {   "name"          :"Living room Repeater",
+    "38":   {   "name"          :"Tester PA Alu",
         "function"      :"repeater",
         "board"         :"STM32_Dongle",
         "program"       :"rf_bridge",

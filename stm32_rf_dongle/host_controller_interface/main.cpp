@@ -48,6 +48,20 @@ void handle_cmd(uint8_t cmd)
 {
 	switch(cmd)
 	{
+		case rf::exec_cmd::readreg :
+		{
+			uint8_t reg = cmd_params[0];
+			uint8_t val = hsm.nrf.readRegister(reg);
+			rasp.printf("reg:0x%02X;val:%u\n",reg,val);
+		}
+		break;
+		case rf::exec_cmd::writereg :
+		{
+			uint8_t reg = cmd_params[0];
+			uint8_t val = cmd_params[1];
+			hsm.nrf.writeRegister(reg,val);
+		}
+		break;
 		case rf::exec_cmd::set_mode :
 		{
 			hsm.nrf.setMode((nrf::Mode) cmd_params[0]);

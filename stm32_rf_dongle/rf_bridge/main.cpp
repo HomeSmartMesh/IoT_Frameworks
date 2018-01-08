@@ -121,7 +121,7 @@ void handle_cmd(uint8_t cmd)
 			}
 			else
 			{
-				rasp.printf("target:%u;chan:%u;nb_ping;res:%u / %u\n",
+				rasp.printf("target:%u;chan:%u;res:%u;nbping:%u\n",
 							target,channel,nb_success,nb_ping);
 			}
 		}
@@ -171,10 +171,12 @@ void rf_message(uint8_t *data,uint8_t size)
 		cmd_to_exec = data[rf::ind::p2p_payload];
 		is_rf_request = true;
 		rf_requester = data[rf::ind::source];
+		//rasp.printf("exec_cmd:0x%02X\n",cmd_to_exec);
 		for(uint8_t i = 0; i< cmd_params_size;i++)
 		{
 			cmd_params[i] = data[rf::ind::p2p_payload+1+i];
 		}
+		//print_tab(&rasp,cmd_params,cmd_params_size);
 	}
 }
 

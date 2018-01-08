@@ -11,81 +11,85 @@ def mqtt_on_message(client, userdata, msg):
     log.info("%s : %s",msg.topic,msg.payload)
     return
 
-def hci_loop_forever():
+def loop_forever():
     while(True):
         sleep(0.1)
         mesh.run()
     return
-def hci_loop(nb):
+def loop(nb):
     while(nb > 0):
         sleep(0.05)
         mesh.run()
         nb = nb - 1
     return
+def readreg(reg):
+    mesh.command("readreg",[reg])
+    loop(2)
+    return
+def writereg(reg,val):
+    print("write in reg 0x%02X val:%u"%(reg,val))
+    mesh.command("writereg",[reg,val])
+    loop(2)
+    return
 
 def send_RGB_test():
     mesh.send_msg([8,0x70,0x0B,28,24,0,0,3])
-    hci_loop(2)
+    loop(2)
     return
-def send_request_ping():
-    print("send_request_ping:")
-    mesh.send_msg([5,0x20,0x01,28,24])
-    hci_loop(2)
-    return
+
 def ping(target):
     print("send msg ping:")
     mesh.send_msg([5,0x70,0x01,28,target])
-    hci_loop(2)
+    loop(2)
     return
+
 def set_mode(mode_txt):
     print("set_mode:",mode_txt)
     mesh.command("set_mode",[mesh.mode[mode_txt]])
-    hci_loop(2)
+    loop(2)
     return
 def get_mode():
     print("get_mode:")
     mesh.command("get_mode")
-    hci_loop(2)
+    loop(2)
     return
 def set_channel(chan):
     print("set_channel:",chan)
     mesh.command("set_channel",[chan])
-    hci_loop(2)
+    loop(2)
     mesh.command("get_channel",[])
-    hci_loop(2)
+    loop(2)
     return
 def get_channel():
     mesh.command("get_channel",[])
-    hci_loop(2)
+    loop(2)
     return
+def remote_set_channel(target,chan):
+    print("remote_set_channel:")
+    mesh.send_msg([7,0x70,mesh.pid["exec_cmd"],28,target,mesh.exec_cmd["set_channel"],chan])
+    loop(2)
+    return
+
 def set_rx(func,val):
     print("set_rx:",func,val)
     mesh.command("set_rx",[mesh.set_rx[func],val])
-    hci_loop(2)
-    return
-def set_response(val):
-    print("set_response:",val)
-    mesh.command("set_rx",[0x01,val])
-    hci_loop(2)
+    loop(2)
     return
 
-def config_retries(retries,delay):
-    print("config_retries:")
+def set_retries(retries,delay):
+    print("set_retries:")
     mesh.command("cfg_retries",[retries])
-    hci_loop(2)
+    loop(2)
     print("config_ack_delay:")
     mesh.command("cfg_ack_delay",[0,delay])
-    hci_loop(2)
+    loop(2)
     return
-def send_msg_set_retries(nb):
-    print("send_msg_set_retries:")
-    mesh.send_msg([7,0x70,mesh.pid["exec_cmd"],28,24,mesh.exec_cmd["cfg_retries"],nb])
-    hci_loop(2)
-    return
-def send_msg_set_channel(target,chan):
-    print("send_msg_set_channel:")
-    mesh.send_msg([7,0x70,mesh.pid["exec_cmd"],28,target,mesh.exec_cmd["set_channel"],chan])
-    hci_loop(2)
+def remote_set_retries(remote,retries,delay):
+    print("remote_set_retries:")
+    mesh.send_msg([7,0x70,mesh.pid["exec_cmd"],28,remote,mesh.exec_cmd["cfg_retries"],retries])
+    loop(2)
+    mesh.send_msg([8,0x70,mesh.pid["exec_cmd"],28,remote,mesh.exec_cmd["cfg_ack_delay"],0,delay])
+    loop(2)
     return
 
 def test_channel(target,channel,nb_ping=100):
@@ -98,7 +102,7 @@ def test_channel(target,channel,nb_ping=100):
     """
     print("RF Test O->%d, Chan %d" % (target,channel))
     mesh.command("test_rf",[target,channel,nb_ping])
-    hci_loop(20)
+    loop(20)
     return
 def remote_test_channel(remote,test_target,channel,nb_ping=100):
     """
@@ -112,8 +116,8 @@ def remote_test_channel(remote,test_target,channel,nb_ping=100):
     - 'nb_ping' : usually 100 for a significant signal quality estimation
     """
     print("Remote RF Test %d->%d, Chan %d" % (remote,test_target,channel))
-    mesh.send_msg([7,0x70,mesh.pid["exec_cmd"],28,remote,mesh.exec_cmd["test_rf"],test_target,channel,nb_ping])
-    hci_loop(40)
+    mesh.send_msg([9,0x70,mesh.pid["exec_cmd"],28,remote,mesh.exec_cmd["test_rf"],test_target,channel,nb_ping])
+    loop(40)
     return
 
 # ------------------------ test examples ----------------------------
@@ -138,17 +142,32 @@ def test1():
     remote_test_channel(remote=24,test_target=28,channel=10,nb_ping=100)
 
     #loop forever
-    hci_loop_forever()
+    loop_forever()
     return
 def listen(chan):
-    config_retries(retries=2,delay=2)
+    set_retries(retries=2,delay=2)
     set_channel(chan)
     set_rx("msg",0x01)
     set_rx("bcast",0x01)
     set_rx("resp",0x01)
     set_mode("rx")
-    hci_loop_forever()
+    loop_forever()
     return
+def test_rf_remote():
+    #First select the channel of the remote node, it is assumed to be known
+    #as there is no scan to guess on which channel is the remote listening
+    set_channel(10)
+    #enable the reception of messages logs, particularly the test_rf_resp message
+    set_rx("msg",1)
+    #important as the default delay to wait for ack is designed for mesh ~ 100 ms while 
+    #an a ping ack sent back from the stack on point to point can be achieved with a delay of 2 ms
+    remote_set_retries(remote=24,retries=5,delay=2)
+    #the test will be run between the nodes 'remote' and 'test_target', where 'remote' is
+    #sending pings and 'test_target' sedning acks
+    # the result will be sent back to the test requester node
+    remote_test_channel(remote=24,test_target=27,channel=10)
+    return
+
 # -------------------- main -------------------- 
 config = cfg.get_local_json()
 
@@ -168,7 +187,7 @@ mesh.start(config)
 chan = 2
 
 if(len(sys.argv)>=3):
-    chan = sys.argv[2]
+    chan = int(sys.argv[2])
 
-config_retries(retries=2,delay=2)
-listen(chan)
+#set_retries(retries=2,delay=2)
+#listen(chan)

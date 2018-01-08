@@ -28,6 +28,8 @@ inv_pid = {v: k for k, v in pid.items()}
 
 exec_cmd = {
     "get_status"    : 0x01,
+    "readreg"       : 0x07,
+    "writereg"      : 0x08,
     "set_channel"   : 0x09,
     "get_channel"   : 0x0A,
     "send_msg"      : 0x20,
