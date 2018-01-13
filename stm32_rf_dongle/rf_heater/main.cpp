@@ -5,20 +5,28 @@
 #include "protocol.h"
 
 //------------------------------------- CONFIG -----------------------------------------
-const uint8_t CHANNEL = 10;
-const uint8_t NODEID = 24;
+#define FLASH_HEADER	0x0800FFF0
+#define F_NODEID	*(uint8_t *) FLASH_HEADER
+#define F_CHANNEL	*(uint8_t *) (FLASH_HEADER+0x01)
 //--------------------------------------------------------------------------------------
-
-
+#define RF_BOARD_DONGLE 1
+#define RF_BOARD_PIO 	0
+//--------------------------------------------------------------------------------------
 Serial   rasp(PB_10, PB_11, 115200);
+
+#if (RF_BOARD_DONGLE == 1)
+	uint8_t spi_module = 1;
+	//nRF Modules 1:Gnd, 2:3.3v, 3:ce,  4:csn, 5:sck, 6:mosi, 7:miso, 8:irq 
+	RfMesh hsm(&rasp,spi_module,           PC_15, PA_4, PA_5,   PA_7,  PA_6,    PA_0);
+#elif (RF_BOARD_PIO == 1)
+uint8_t spi_module = 2;
+#endif
+
 DigitalOut myled(PC_13);
 Ticker tick_call;
 
 DigitalOut heater(PB_13);
 const uint8_t HEAT_MAX = 10;
-
-//nRF Modules 1:Gnd, 2:3.3v, 3:ce,  4:csn, 5:sck, 6:mosi, 7:miso, 8:irq 
-RfMesh hsm(&rasp,           PC_15, PA_4, PA_5,   PA_7,  PA_6,    PA_0);
 
 uint8_t heat_val = 0;
 uint8_t tick_cycle = 0;
@@ -26,7 +34,7 @@ uint8_t tick_cycle = 0;
 
 void rf_message_to_me(uint8_t *data,uint8_t size)
 {
-	if(data[rfi_pid] == rf_pid_heat)
+	if(data[rf::ind::pid] == rf::pid::heat)
 	{
 		heat_val = data[4];//heat_val payload : Size Pid  SrcId TrgId  HeatVal CRC
 		tick_cycle = 0;//restart a new cycle for immidiate application
@@ -80,10 +88,12 @@ void init()
 
     tick_call.attach(&the_ticker,1);
 
-	hsm.init(CHANNEL);//left to the user for more flexibility on memory management
-	rasp.printf("stm32_heater> Started listening\n");
+	hsm.init(F_CHANNEL);//left to the user for more flexibility on memory management
+	hsm.nrf.setMode(nrf::Mode::Rx);//not set by default as to check power consemption with hci
+	rasp.printf("mode:%d;channel:%d\n",hsm.nrf.getMode(),hsm.nrf.getChannel());
 
-	hsm.setNodeId(NODEID);
+	hsm.setNodeId(F_NODEID);
+	rasp.printf("stm32_heater> Started listening\n");
 
 	hsm.setRetries(10);
 	hsm.setAckDelay(400);
@@ -100,12 +110,16 @@ void run_heater_program()
 {
 
 	heat_val = 10;
-	rasp.printf("stm32_heater> Level 10 : for 20 min\r");
-	wait(20 * one_minute);
+	rasp.printf("stm32_heater> Level 10 : for 5 min\r");
+	wait(5 * one_minute);
+
+	heat_val = 7;
+	rasp.printf("stm32_heater> Level 10 : for 10 min\r");
+	wait(10 * one_minute);
 
 	heat_val = 5;
-	rasp.printf("stm32_heater> Level 5 : for 10 min\r");
-	wait(10 * one_minute);
+	rasp.printf("stm32_heater> Level 5 : for 30 min\r");
+	wait(30 * one_minute);
 
 	heat_val = 2;
 	rasp.printf("stm32_heater> Level 2 : for 60 min\r");
@@ -119,17 +133,17 @@ int main()
 
 	rasp.printf("stm32_heater> U_ID: ");
 	print_tab(&rasp,p_UID,12);
-	rasp.printf("stm32_heater> Node ID: %d\r",NODEID);
+	rasp.printf("stm32_heater> Node ID: %d\r",F_NODEID);
 	
 
     init();
 
 	hsm.print_nrf();
 
-	hsm.broadcast_reset();
+	hsm.broadcast(rf::pid::reset);
 	
 	
-	//run_heater_program();
+	run_heater_program();
 
 	//heat_val = 0;rasp.printf("stm32_heater> Program Over\r");
 	heat_val = 11;
@@ -139,7 +153,7 @@ int main()
 		if(heat_val > 0)
 		{
 			heat_val--;
-			hsm.broadcast_heat(heat_val);
+			hsm.broadcast_byte(rf::pid::heat,heat_val);
 			rasp.printf("stm32_heater> heat_val down to %d\r",heat_val);
 		}
 		rasp.printf("stm32_heater> wait 10 min\r");
