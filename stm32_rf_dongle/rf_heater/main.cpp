@@ -106,24 +106,21 @@ void init()
 
 const float one_minute = 60;
 
+void set_heat_and_log(uint8_t heat,uint8_t min)
+{
+	heat_val = heat;
+	hsm.broadcast_byte(rf::pid::heat,heat_val);
+	rasp.printf("stm32_heater> Level %u : for %u min\n",heat,min);
+	wait(min * one_minute);
+
+}
+
 void run_heater_program()
 {
-
-	heat_val = 10;
-	rasp.printf("stm32_heater> Level 10 : for 5 min\r");
-	wait(5 * one_minute);
-
-	heat_val = 7;
-	rasp.printf("stm32_heater> Level 10 : for 10 min\r");
-	wait(10 * one_minute);
-
-	heat_val = 5;
-	rasp.printf("stm32_heater> Level 5 : for 30 min\r");
-	wait(30 * one_minute);
-
-	heat_val = 2;
-	rasp.printf("stm32_heater> Level 2 : for 60 min\r");
-	wait(60 * one_minute);
+	set_heat_and_log(10,5);//Level 10 for 5 min
+	set_heat_and_log(7,10);
+	set_heat_and_log(5,30);
+	set_heat_and_log(2,60);
 }
 
 int main() 
@@ -141,7 +138,7 @@ int main()
 	hsm.print_nrf();
 
 	hsm.broadcast(rf::pid::reset);
-	
+	wait(1);
 	
 	run_heater_program();
 
