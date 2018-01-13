@@ -133,6 +133,11 @@ void rf_broadcast_catched(uint8_t *data,uint8_t size)
 				prf.print_light(data+rf::ind::bcst_payload);
 			}
 			break;
+		case rf::pid::heat:
+			{
+				rasp.printf("heat:%u\r",data[rf::ind::bcst_payload]);
+			}
+			break;
 		case rf::pid::magnet:
 			{
 				prf.print_magnet(data+rf::ind::bcst_payload);
