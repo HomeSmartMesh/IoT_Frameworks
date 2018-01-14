@@ -141,19 +141,16 @@ int main()
 	wait(1);
 	
 	run_heater_program();
+	//after the run_heater_program, the heat_cal stays at 2
 
 	//heat_val = 0;rasp.printf("stm32_heater> Program Over\r");
-	heat_val = 11;
 
 	while(1) 
     {
-		if(heat_val > 0)
+		if(heat_val > 2)
 		{
 			heat_val--;
-			hsm.broadcast_byte(rf::pid::heat,heat_val);
-			rasp.printf("stm32_heater> heat_val down to %d\r",heat_val);
 		}
-		rasp.printf("stm32_heater> wait 10 min\r");
-		wait(10 * one_minute);// 10 minutes
+		set_heat_and_log(heat_val,10);//here we wait 10 min
 	}
 }
