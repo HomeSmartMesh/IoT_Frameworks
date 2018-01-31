@@ -6,3 +6,4 @@ nrf-mesh/
 crc/
 APDS_9960/
 ws2812B/
+BME280/
