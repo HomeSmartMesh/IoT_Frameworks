@@ -286,6 +286,19 @@ void init()
     com.attach_bin(&binary_message_received);
 }
 
+void tester()
+{
+	wait_ms(1000);
+
+	hsm.broadcast(rf::pid::reset);
+
+	while(1)
+	{
+		wait(10);
+		hsm.broadcast(rf::pid::alive);
+	}
+}
+
 int main() 
 {
 	
@@ -297,9 +310,10 @@ int main()
 	init();
 
 	//hsm.print_nrf();
+	//tester();
 
 	hsm.broadcast(rf::pid::reset);
-    
+
     while(1) 
     {
 		wait_ms(1);

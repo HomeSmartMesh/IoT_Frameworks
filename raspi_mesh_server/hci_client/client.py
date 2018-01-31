@@ -33,13 +33,13 @@ def writereg(reg,val):
     return
 
 def send_RGB_test():
-    mesh.send_msg([8,0x70,0x0B,28,24,0,0,3])
+    mesh.send_msg([8,0x70,0x0B,node_id,24,0,0,3])
     loop(2)
     return
 
 def ping(target):
     print("send msg ping:")
-    mesh.send_msg([5,0x70,0x01,28,target])
+    mesh.send_msg([5,0x70,0x01,node_id,target])
     loop(2)
     return
 
@@ -66,7 +66,7 @@ def get_channel():
     return
 def remote_set_channel(target,chan):
     print("remote_set_channel:")
-    mesh.send_msg([7,0x70,mesh.pid["exec_cmd"],28,target,mesh.exec_cmd["set_channel"],chan])
+    mesh.send_msg([7,0x70,mesh.pid["exec_cmd"],node_id,target,mesh.exec_cmd["set_channel"],chan])
     loop(2)
     return
 
@@ -86,9 +86,9 @@ def set_retries(retries,delay):
     return
 def remote_set_retries(remote,retries,delay):
     print("remote_set_retries:")
-    mesh.send_msg([7,0x70,mesh.pid["exec_cmd"],28,remote,mesh.exec_cmd["cfg_retries"],retries])
+    mesh.send_msg([7,0x70,mesh.pid["exec_cmd"],node_id,remote,mesh.exec_cmd["cfg_retries"],retries])
     loop(2)
-    mesh.send_msg([8,0x70,mesh.pid["exec_cmd"],28,remote,mesh.exec_cmd["cfg_ack_delay"],0,delay])
+    mesh.send_msg([8,0x70,mesh.pid["exec_cmd"],node_id,remote,mesh.exec_cmd["cfg_ack_delay"],0,delay])
     loop(2)
     return
 
@@ -116,7 +116,7 @@ def remote_test_channel(remote,test_target,channel,nb_ping=100):
     - 'nb_ping' : usually 100 for a significant signal quality estimation
     """
     print("Remote RF Test %d->%d, Chan %d" % (remote,test_target,channel))
-    mesh.send_msg([9,0x70,mesh.pid["exec_cmd"],28,remote,mesh.exec_cmd["test_rf"],test_target,channel,nb_ping])
+    mesh.send_msg([9,0x70,mesh.pid["exec_cmd"],node_id,remote,mesh.exec_cmd["test_rf"],test_target,channel,nb_ping])
     loop(40)
     return
 
@@ -139,7 +139,7 @@ def test1():
     test_channel(target=24,channel=10,nb_ping=10)
     test_channel(target=24,channel=40,nb_ping=10)
 
-    remote_test_channel(remote=24,test_target=28,channel=10,nb_ping=100)
+    remote_test_channel(remote=24,test_target=node_id,channel=10,nb_ping=100)
 
     #loop forever
     loop_forever()
@@ -185,6 +185,8 @@ if(len(sys.argv)>=2):
 mesh.start(config)
 
 chan = 2
+
+node_id = 27
 
 if(len(sys.argv)>=3):
     chan = int(sys.argv[2])
