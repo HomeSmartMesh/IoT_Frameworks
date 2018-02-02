@@ -189,7 +189,9 @@ chan = 2
 node_id = 27
 
 if(len(sys.argv)>=3):
-    chan = int(sys.argv[2])
+    node_id = int(sys.argv[2])
+if(len(sys.argv)>=4):
+    chan = int(sys.argv[3])
 
 #set_retries(retries=2,delay=2)
 #listen(chan)

@@ -21,6 +21,8 @@ pid = {
     "light_rgb"     : 0x0E,
     "gesture"       : 0x0F,
     "proximity"     : 0x10,
+    "humidity"      : 0x11,
+    "pressure"      : 0x12,
     "test_rf_resp"  : 0x30
 }
 
@@ -63,6 +65,16 @@ msg = {
 def parse_pid(byte):
     return inv_pid[byte]
 
+def parse_payload(data):
+    res = ""
+    if( (data[2] == pid["temperature"]) or
+        (data[2] == pid["humidity"]) or
+        (data[2] == pid["pressure"])
+        ):
+        temp = float(int.from_bytes(bytearray(data[4:6]),'big',signed=True)) / 100
+        res = '{:02.2f}'.format(temp)
+    return res
+
 def parse_is_broadcast(byte):
     return (byte & 0x80)
 
@@ -97,6 +109,7 @@ def node_name(byte):
 
 def parse_rf_data(data):
     rf_data_text = parse_pid(data[2])
+    rf_data_text += " : "+parse_payload(data)+" "
     if(data[2] == pid["test_rf_resp"]):
         rf_data_text += " res="+str(data[5])+" "
     rf_data_text += "(" + node_name(data[3]) + " -> "
