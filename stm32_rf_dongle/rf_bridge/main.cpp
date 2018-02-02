@@ -18,7 +18,9 @@
 #define USE_APDS_PROXIMITY 0
 #define USE_APDS_LIGHT 0
 
-#define USE_BME_SENSOR 1
+#define USE_BME_SENSOR 0
+
+#define USE_BME_VI_SENSOR 1
 
 #define SEND_ALIVE  1
 #define BRIDGE_MODE 1
@@ -56,6 +58,12 @@ uint8_t spi_module = 2;
 	#include "BME280.h"
 	BME280 bme(PB_7,PB_6);
 #endif
+#if(USE_BME_VI_SENSOR == 1)
+	#include "bme280.h"
+	I2C i2c(PB_7,PB_6);
+	BME280 bme280(&pc,&i2c);
+#endif
+
 
 DigitalOut debug_pio(PB_13);
 
@@ -274,6 +282,9 @@ void init()
 		pc.printf("apds> Light sensor enable: %u\r\n",res);
 	#endif
 
+	#if(USE_BME_VI_SENSOR == 1)
+		bme280.measure();
+	#endif
 
 }
 
