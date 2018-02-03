@@ -5,30 +5,31 @@
 #include "utils.h"
 
 
+//--------------------------------------------------------------------------------------
+//RGB LED
+#define USE_RGB_LED 			0
+//APDS9960 (Colorlight sensor, gesture)
+#define USE_APDS_SENSOR 		0
+#define USE_APDS_GESTURE 		0
+#define USE_APDS_PROXIMITY 		0
+#define USE_APDS_LIGHT 			0
+
+#define USE_BME_SENSOR 			1
+
+#define SEND_ALIVE  			1
+#define BRIDGE_MODE 			1
+#define RGB_DEMO 				0
+
+#define ALIVE_SEC				5380
+#define LOOP_MS_WAIT			10
+#define LOG_LOGHT_COUNT 		860
+
+
 //------------------------------------- CONFIG -----------------------------------------
 #define FLASH_HEADER	0x0800FFF0
 //RF
 #define F_NODEID	*(uint8_t *) FLASH_HEADER
 #define F_CHANNEL	*(uint8_t *) (FLASH_HEADER+0x01)
-//RGB LED
-#define USE_RGB_LED 1
-//APDS9960 (Colorlight sensor, gesture)
-#define USE_APDS_SENSOR 0
-#define USE_APDS_GESTURE 0
-#define USE_APDS_PROXIMITY 0
-#define USE_APDS_LIGHT 0
-
-#define USE_BME_SENSOR 0
-
-#define USE_BME_VI_SENSOR 1
-
-#define SEND_ALIVE  1
-#define BRIDGE_MODE 1
-#define RGB_DEMO 	0
-
-#define ALIVE_SEC		5380
-#define LOOP_MS_WAIT	10
-#define LOG_LOGHT_COUNT 860
 //--------------------------------------------------------------------------------------
 //TODO should have a board as a target
 #define RF_BOARD_DONGLE 1
@@ -55,10 +56,6 @@ uint8_t spi_module = 2;
 #endif
 
 #if(USE_BME_SENSOR == 1)
-	#include "BME280.h"
-	BME280 bme(PB_7,PB_6);
-#endif
-#if(USE_BME_VI_SENSOR == 1)
 	#include "bme280.h"
 	I2C i2c(PB_7,PB_6);
 	BME280 bme280(&pc,&i2c);
@@ -153,33 +150,23 @@ void handle_cmd(uint8_t cmd)
 #if(USE_BME_SENSOR == 1)
 void bme_send_temperature()
 {
-	float temp = bme.getTemperature();
-	if((temp > -20) && (temp<100))
-	{
-		int16_t temp_i = temp * 100;
-		hsm.broadcast_int16(rf::pid::temperature,temp_i);
-		pc.printf("Temperature:%d\n",temp_i);
-	}
-	else
-	{
-		pc.printf("Temperature out of range\n");
-	}
+	int32_t temperature = bme280.getTemperature();
+	hsm.broadcast_int32(rf::pid::temperature,temperature);
+	pc.printf("Temperature:%ld\n",temperature);
 }
 
 void bme_send_humidity()
 {
-	float hum = bme.getHumidity();
-	int16_t hum_i = hum * 100;
-	hsm.broadcast_int16(rf::pid::humidity,hum_i);
-	pc.printf("Humidity:%d\n",hum_i);
+	int32_t humidity = bme280.getHumidity();
+	hsm.broadcast_int32(rf::pid::humidity,humidity);
+	pc.printf("Humidity:%ld\n",humidity);
 }
 
 void bme_send_pressure()
 {
-	float press = bme.getPressure();
-	int16_t press_i = press * 100;
-	hsm.broadcast_int16(rf::pid::pressure,press_i);
-	pc.printf("Pressure:%d\n",press_i);
+	int32_t pressure = bme280.getPressure();
+	hsm.broadcast_int32(rf::pid::pressure,pressure);
+	pc.printf("Pressure:%ld\n",pressure);
 }
 #endif
 
@@ -264,7 +251,10 @@ void init()
 	
 	//hsm.print_nrf();
 
-	bool res;
+	#if( 	(USE_APDS_SENSOR == 1) || (USE_APDS_GESTURE == 1) || \
+			(USE_APDS_PROXIMITY == 1) || (USE_APDS_LIGHT == 1) )
+		bool res;
+	#endif
 	#if(USE_APDS_SENSOR == 1)
 		res = gsensor.ginit();
 		pc.printf("apds> ginit %u\r\n",res);
@@ -280,10 +270,6 @@ void init()
 	#if(USE_APDS_LIGHT == 1)
 		res = gsensor.enableLightSensor();
 		pc.printf("apds> Light sensor enable: %u\r\n",res);
-	#endif
-
-	#if(USE_BME_VI_SENSOR == 1)
-		bme280.measure();
 	#endif
 
 }
@@ -363,10 +349,19 @@ void apds_log_light_colors()
 }
 #endif
 
+void power_test()
+{
+	myled = 1;
+	hsm.init(F_CHANNEL);
+	hsm.nrf.setMode(nrf::Mode::Rx);
+	while(true);
+	//{		wait(1);	}
+
+}
 
 int main() 
 {
-
+	//power_test();
 	init();
 
 	#if(USE_RGB_LED==1)
@@ -400,14 +395,17 @@ int main()
 		#endif
 
 		#if(USE_BME_SENSOR == 1)
-		//100ms x 100 => 10 s
-		if(!is_sametick)
+		//100ms x 300 => 30 s
+		if((bme280.available) && (!is_sametick))
 		{
 			if(((ticks) % 100) == 0)
 			{
-				bme_send_temperature();
-				bme_send_humidity();
-				bme_send_pressure();
+				bme280.measure();
+				bme_send_temperature();	
+				wait_ms(10);
+				bme_send_humidity();	
+				wait_ms(10);
+				bme_send_pressure();	
 			}
 			is_sametick = true;
 		}
