@@ -184,14 +184,15 @@ if(len(sys.argv)>=2):
 
 mesh.start(config)
 
-chan = 2
+chan = 10
 
-node_id = 27
+node_id = 24
 
 if(len(sys.argv)>=3):
     node_id = int(sys.argv[2])
 if(len(sys.argv)>=4):
     chan = int(sys.argv[3])
 
+print("HCI Node %d on chan %d" % (node_id,chan))
 #set_retries(retries=2,delay=2)
 #listen(chan)
