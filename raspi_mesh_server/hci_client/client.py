@@ -37,9 +37,10 @@ def send_RGB_test():
     loop(2)
     return
 
-def ping(target):
+def ping(target,ttl=0):
     print("send msg ping:")
-    mesh.send_msg([5,0x70,0x01,node_id,target])
+    control = 0x70 | ttl
+    mesh.send_msg([5,control,0x01,node_id,target])
     loop(2)
     return
 
@@ -102,7 +103,7 @@ def test_channel(target,channel,nb_ping=100):
     """
     print("RF Test O->%d, Chan %d" % (target,channel))
     mesh.command("test_rf",[target,channel,nb_ping])
-    loop(20)
+    loop(30)
     return
 def remote_test_channel(remote,test_target,channel,nb_ping=100):
     """

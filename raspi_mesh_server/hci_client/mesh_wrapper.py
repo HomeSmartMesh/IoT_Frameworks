@@ -76,6 +76,12 @@ def parse_payload(data):
     elif(data[2] == pid["pressure"]):
         val = float(int.from_bytes(bytearray(data[4:8]),'big',signed=True)) / (256*100)
         res = '{:02.2f}'.format(val)
+    if(data[2] == pid["light_rgb"]):
+        light = int.from_bytes(bytearray(data[4:6]),'big',signed=False)
+        red   = int.from_bytes(bytearray(data[6:8]),'big',signed=False)
+        green = int.from_bytes(bytearray(data[8:10]),'big',signed=False)
+        blue  = int.from_bytes(bytearray(data[10:12]),'big',signed=False)
+        res = "light:%d , red:%d , green:%d , blue:%d" % (light,red,green,blue)
     return res
 
 def parse_is_broadcast(byte):
