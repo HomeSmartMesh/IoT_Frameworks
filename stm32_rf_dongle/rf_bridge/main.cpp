@@ -7,12 +7,13 @@
 
 //--------------------------------------------------------------------------------------
 //RGB LED
-#define USE_RGB_LED 			0
+#define USE_RGB_LED 			1
+
 //APDS9960 (Colorlight sensor, gesture)
-#define USE_APDS_SENSOR 		0
+#define USE_APDS_SENSOR 		1
+#define USE_APDS_LIGHT 			1
 #define USE_APDS_GESTURE 		0
 #define USE_APDS_PROXIMITY 		0
-#define USE_APDS_LIGHT 			0
 
 #define USE_BME_SENSOR 			1
 
@@ -20,10 +21,18 @@
 #define BRIDGE_MODE 			1
 #define RGB_DEMO 				0
 
-#define ALIVE_SEC				5380
 #define LOOP_MS_WAIT			10
-#define LOG_LOGHT_COUNT 		860
 
+#define ALIVE_PERIOD			300
+#define ALIVE_OFFSET			0
+
+#define LIGHT_PERIOD 			300
+#define LIGHT_OFFSET			100
+
+#define BME_PERIOD				300
+#define BME_OFFSET				200
+
+#define TICKER_SEC 0.1
 
 //------------------------------------- CONFIG -----------------------------------------
 #define FLASH_HEADER	0x0800FFF0
@@ -45,6 +54,7 @@ Serial   pc(PB_10, PB_11, 115200);
 #if(USE_APDS_SENSOR == 1)
 	#include "glibr.h"
 	glibr gsensor(PB_7,PB_6);
+	bool gsensor_available = false;
 #endif
 
 #if (RF_BOARD_DONGLE == 1)
@@ -83,7 +93,7 @@ uint8_t cmd_params[32];
 uint8_t cmd_params_size;
 
 uint32_t ticks = 0;
-bool is_sametick = false;
+bool is_newtick = false;
 
 void handle_cmd(uint8_t cmd)
 {
@@ -174,7 +184,7 @@ void bme_send_pressure()
 void the_ticker()
 {
 	ticks++;
-	is_sametick = false;
+	is_newtick = true;
 	if(led_count != 0)
 	{
 		myled = 0;
@@ -227,7 +237,7 @@ void init()
 	print_tab(&pc,p_UID,12);
 	pc.printf("stm32_bridge> Node ID: %d\r",F_NODEID);
 
-	tick_call.attach(&the_ticker,0.1);
+	tick_call.attach(&the_ticker,TICKER_SEC);
 
 	hsm.init(F_CHANNEL);//left to the user for more flexibility on memory management
 	hsm.nrf.setMode(nrf::Mode::Rx);//not set by default as to check power consemption with hci
@@ -236,12 +246,12 @@ void init()
     hsm.attach(&rf_sniffed,RfMesh::CallbackType::Sniff);
 	hsm.attach(&rf_message,RfMesh::CallbackType::Message);
 
-#if (BRIDGE_MODE == 1)
-	hsm.setBridgeMode();
-	pc.printf("stm32_bridge> listening in bridge Mode\n");
-#else
-	pc.printf("stm32_bridge> Not in bridge Mode !!! Just a node\n");
-#endif
+	#if (BRIDGE_MODE == 1)
+		hsm.setBridgeMode();
+		pc.printf("stm32_bridge> listening in bridge Mode\n");
+	#else
+		pc.printf("stm32_bridge> Not in bridge Mode !!! Just a node\n");
+	#endif
 
 	hsm.setNodeId(F_NODEID);
 
@@ -256,8 +266,8 @@ void init()
 		bool res;
 	#endif
 	#if(USE_APDS_SENSOR == 1)
-		res = gsensor.ginit();
-		pc.printf("apds> ginit %u\r\n",res);
+		gsensor_available = gsensor.ginit();
+		pc.printf("apds> ginit %u\r\n",gsensor_available);
 	#endif
 	#if(USE_APDS_GESTURE == 1)
 		res = gsensor.enableGestureSensor();
@@ -327,9 +337,15 @@ void apds_poll_proximity()
 #if(USE_APDS_LIGHT == 1)
 void apds_log_light_colors()
 {
-	static uint16_t light_count = LOG_LOGHT_COUNT;// ~ 10 s
+	static uint16_t light_count = LIGHT_OFFSET;
 
-	if(light_count == 0)
+	if(light_count != 0)
+	{
+		light_count--;
+		return;
+	}
+
+	if(gsensor_available)
 	{
 		uint16_t light_rgb[4];
 		gsensor.readAmbientLight(light_rgb[0]);
@@ -339,13 +355,9 @@ void apds_log_light_colors()
 		hsm.broadcast_light_rgb(light_rgb);
 		//expected at rx gateway side
 		//pc.printf("NodeId:%u;light:%u;red:%u,green:%u;blue:%u\r\n",F_NODEID,light_rgb[0],light_rgb[1],light_rgb[2],light_rgb[3]);
+	}
 
-		light_count = LOG_LOGHT_COUNT;//~10 sec
-	}
-	else
-	{
-		light_count--;
-	}
+	light_count = LIGHT_PERIOD;
 }
 #endif
 
@@ -359,6 +371,65 @@ void power_test()
 
 }
 
+#if(USE_BME_SENSOR == 1)
+void bme280_log()
+{
+	static uint16_t bme_count = BME_OFFSET;
+	if(bme_count != 0)
+	{
+		bme_count--;
+		return;
+	}
+	if(bme280.available)
+	{
+		bme280.measure();
+		bme_send_temperature();
+		wait_ms(10);
+		bme_send_humidity();	
+		wait_ms(10);
+		bme_send_pressure();	
+	}
+
+	bme_count = BME_PERIOD;
+}
+#endif
+
+void alive_log()
+{
+	static uint16_t alive_count = ALIVE_OFFSET;
+	if(alive_count != 0)
+	{
+		alive_count--;
+		return;
+	}
+
+	hsm.broadcast(rf::pid::alive);
+
+	alive_count = ALIVE_PERIOD;
+}
+
+void cyclic_rf_send()
+{
+	if(!is_newtick)
+	{
+		return;
+	}
+	is_newtick = false;
+
+	#if(USE_APDS_LIGHT == 1)
+		apds_log_light_colors();
+	#endif
+
+	#if(USE_BME_SENSOR == 1)
+		bme280_log();
+	#endif
+
+	#if (SEND_ALIVE == 1)
+		alive_log();
+	#endif
+	
+}
+
 int main() 
 {
 	//power_test();
@@ -370,22 +441,28 @@ int main()
 
 	hsm.broadcast(rf::pid::reset);
     
-	uint16_t alive_count = ALIVE_SEC;
-
     while(1) 
     {
 		wait_ms(LOOP_MS_WAIT);
+
+		rf_bridge_delegate();//cyclic check if bridge has to send from main context
+		
+		if(hsm.nRFIrq.read() == 0)
+		{
+			pc.printf("irq pin Low, missed interrupt, re init()\n");
+			hsm.init(F_CHANNEL);
+			hsm.broadcast(rf::pid::reset);//notify if this issue happens
+		}
+
 		if(cmd_to_exec)
 		{
 			handle_cmd(cmd_to_exec);
 			cmd_to_exec = 0;
 			is_rf_request = false;
 		}
-		
-		#if(USE_APDS_LIGHT == 1)
-			apds_log_light_colors();
-		#endif
 
+		cyclic_rf_send();
+		
 		#if(USE_APDS_PROXIMITY == 1)
 			apds_poll_proximity();
 		#endif
@@ -394,41 +471,5 @@ int main()
 			apds_poll_gesture();
 		#endif
 
-		#if(USE_BME_SENSOR == 1)
-		//100ms x 300 => 30 s
-		if((bme280.available) && (!is_sametick))
-		{
-			if(((ticks) % 100) == 0)
-			{
-				bme280.measure();
-				bme_send_temperature();	
-				wait_ms(10);
-				bme_send_humidity();	
-				wait_ms(10);
-				bme_send_pressure();	
-			}
-			is_sametick = true;
-		}
-		#endif
-
-		if(hsm.nRFIrq.read() == 0)
-		{
-			pc.printf("irq pin Low, missed interrupt, re init()\n");
-			hsm.init(F_CHANNEL);
-			hsm.broadcast(rf::pid::reset);//notify if this issue happens
-		}
-		if(alive_count == 0)
-		{
-			#if (SEND_ALIVE == 1)
-			hsm.broadcast(rf::pid::alive);
-			#endif
-			//pc.printf("NodeId:%u;status:Alive\r\n",F_NODEID);//expected at rx gateway side
-			alive_count = ALIVE_SEC;
-		}
-		else
-		{
-			alive_count--;
-		}
-		rf_bridge_delegate();//cyclic check if bridge has to send from main context
 	}
 }
