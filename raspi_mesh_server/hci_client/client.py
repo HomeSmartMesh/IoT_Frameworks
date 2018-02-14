@@ -41,7 +41,7 @@ def ping(target,ttl=0):
     print("send msg ping:")
     control = 0x70 | ttl
     mesh.send_msg([5,control,0x01,node_id,target])
-    loop(2)
+    loop(10)
     return
 
 def set_mode(mode_txt):
@@ -101,9 +101,10 @@ def test_channel(target,channel,nb_ping=100):
     - 'channel' : frequency channel, from 0 (2.4 GHz) till 125 (2.525 GHz)
     - 'nb_ping' : usually 100 for a significant signal quality estimation
     """
+    set_retries(retries=2,delay=2)
     print("RF Test O->%d, Chan %d" % (target,channel))
     mesh.command("test_rf",[target,channel,nb_ping])
-    loop(30)
+    loop(10)
     return
 def remote_test_channel(remote,test_target,channel,nb_ping=100):
     """

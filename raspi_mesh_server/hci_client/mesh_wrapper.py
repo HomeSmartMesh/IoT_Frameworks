@@ -76,6 +76,11 @@ def parse_payload(data):
     elif(data[2] == pid["pressure"]):
         val = float(int.from_bytes(bytearray(data[4:8]),'big',signed=True)) / (256*100)
         res = '{:02.2f}'.format(val)
+    elif(data[2] == pid["button"]):
+        if(data[4] == 0):
+            res = 'down'
+        else:
+            res = 'up'
     if(data[2] == pid["light_rgb"]):
         light = int.from_bytes(bytearray(data[4:6]),'big',signed=False)
         red   = int.from_bytes(bytearray(data[6:8]),'big',signed=False)
