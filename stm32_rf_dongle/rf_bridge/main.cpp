@@ -19,7 +19,7 @@
 
 #define SEND_ALIVE  			1
 #define BRIDGE_MODE 			1
-#define RGB_DEMO 				0
+#define APDS_SEND_RGB_DEMO 		0
 
 #define LOOP_MS_WAIT			10
 
@@ -31,6 +31,11 @@
 
 #define BME_PERIOD				300
 #define BME_OFFSET				200
+
+#define TEST_CHANNEL 0
+
+#define TEST_PERIOD				100
+#define TEST_OFFSET				 50
 
 #define TICKER_SEC 0.1
 
@@ -322,7 +327,7 @@ void apds_poll_proximity()
 	{
 		led_count = 1;
 		//pc.printf("NodeId:%u;proximity:%u\n",F_NODEID,val);//slows down the 10 ms loop
-		#if(RGB_DEMO == 1)
+		#if(APDS_SEND_RGB_DEMO == 1)
 			uint8_t r = val;
 			uint8_t g = 0;
 			uint8_t b = 255-val;
@@ -430,6 +435,33 @@ void cyclic_rf_send()
 	
 }
 
+void test_channel()
+{
+	#if (TEST_CHANNEL == 1)
+		static uint16_t test_count = TEST_OFFSET;
+
+		if(test_count != 0)
+		{
+			test_count--;
+			return;
+		}
+		pc.printf("testing channel\n");
+		uint8_t nb_success = hsm.test_rf(29,2);
+		pc.printf("nb_success:%d\n",nb_success);
+		float col_g = nb_success;
+		col_g = col_g * 255 / 100;
+		float col_r = 100-nb_success;
+		col_r = col_r * 255 / 100;
+		uint8_t green = col_g;
+		uint8_t red = col_r;
+		pc.printf("colors: red:%u, green:%u\n",red,green);
+        rgb_led.set(col_r,col_g,0x00);
+        wait(1.0);
+        rgb_led.set(0x00,0x00,0x00);
+		test_count = TEST_PERIOD;
+	#endif
+}
+
 int main() 
 {
 	//power_test();
@@ -440,6 +472,8 @@ int main()
 	#endif
 
 	hsm.broadcast(rf::pid::reset);
+
+	pc.printf("main>into the while\n");
     
     while(1) 
     {
@@ -462,6 +496,8 @@ int main()
 		}
 
 		cyclic_rf_send();
+
+		test_channel();
 		
 		#if(USE_APDS_PROXIMITY == 1)
 			apds_poll_proximity();
