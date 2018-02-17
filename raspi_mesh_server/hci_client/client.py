@@ -101,10 +101,12 @@ def test_channel(target,channel,nb_ping=100):
     - 'channel' : frequency channel, from 0 (2.4 GHz) till 125 (2.525 GHz)
     - 'nb_ping' : usually 100 for a significant signal quality estimation
     """
-    set_retries(retries=2,delay=2)
+    set_rx("msg",1)
+    set_rx("bcast",0)
+    set_rx("resp",1)
     print("RF Test O->%d, Chan %d" % (target,channel))
     mesh.command("test_rf",[target,channel,nb_ping])
-    loop(10)
+    loop(20)
     return
 def remote_test_channel(remote,test_target,channel,nb_ping=100):
     """
@@ -117,6 +119,9 @@ def remote_test_channel(remote,test_target,channel,nb_ping=100):
       condition is that the remote and the test_target are initially in the same channel, as there is no search
     - 'nb_ping' : usually 100 for a significant signal quality estimation
     """
+    set_rx("msg",1)
+    set_rx("bcast",0)
+    set_rx("resp",1)
     print("Remote RF Test %d->%d, Chan %d" % (remote,test_target,channel))
     mesh.send_msg([9,0x70,mesh.pid["exec_cmd"],node_id,remote,mesh.exec_cmd["test_rf"],test_target,channel,nb_ping])
     loop(40)
@@ -196,5 +201,8 @@ if(len(sys.argv)>=4):
     chan = int(sys.argv[3])
 
 print("HCI Node %d on chan %d" % (node_id,chan))
-#set_retries(retries=2,delay=2)
+set_rx("msg",0)
+set_rx("bcast",0)
+set_rx("resp",0)
+set_retries(retries=10,delay=20)
 #listen(chan)

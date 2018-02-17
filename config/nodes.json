@@ -83,7 +83,7 @@
                 "program"       :"pr03_PressHumTemp",
                 "commit"        :"f73aefd25f12840d60c15f40bae60de3b689dd99"
             },
-    "27":   {   "name"          :"Tester PA Bare",
+    "27":   {   "name"          :"Sleep room rep new PA",
                 "function"      :"sniffer",
                 "board"         :"STM32_Dongle",
                 "program"       :"rf_sniffer",
@@ -99,7 +99,7 @@
         "devices"       :["nRF24"],
         "uc_uid"        :""
         },
-    "29":   {   "name"          :"Sleeping room Repeater",
+    "29":   {   "name"          :"Printed test bridge",
         "sensors"       :["proximity","light","colorLight"],
         "function"      :"",
         "board"         :"STM32_Dongle",
