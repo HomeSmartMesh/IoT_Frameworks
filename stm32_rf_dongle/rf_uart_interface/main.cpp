@@ -158,6 +158,11 @@ void rf_broadcast_catched(uint8_t *data,uint8_t size)
 				rasp.printf("proximity:%u\r",data[rf::ind::bcst_payload]);
 			}
 			break;
+		case rf::pid::button:
+			{
+				rasp.printf("button:%u\r",data[rf::ind::bcst_payload]);
+			}
+			break;
 		default :
 			{
                 rasp.printf("pid:Unknown;size:%u:rx:",size);
