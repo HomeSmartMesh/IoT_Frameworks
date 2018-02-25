@@ -32,7 +32,9 @@
 #define BME_PERIOD				300
 #define BME_OFFSET				200
 
-#define TEST_CHANNEL 0
+#define TEST_RUN 		0
+#define TEST_TARGET 	27
+#define TEST_CHANNEL 	2
 
 #define TEST_PERIOD				100
 #define TEST_OFFSET				 50
@@ -413,6 +415,33 @@ void alive_log()
 	alive_count = ALIVE_PERIOD;
 }
 
+void test_channel()
+{
+	#if (TEST_RUN == 1)
+		static uint16_t test_count = TEST_OFFSET;
+
+		if(test_count != 0)
+		{
+			test_count--;
+			return;
+		}
+		pc.printf("testing channel\n");
+		uint8_t nb_success = hsm.test_rf(TEST_TARGET,TEST_CHANNEL);
+		pc.printf("nb_success:%d\n",nb_success);
+		float col_g = nb_success;
+		col_g = col_g * 255 / 100;
+		float col_r = 100-nb_success;
+		col_r = col_r * 255 / 100;
+		uint8_t green = col_g;
+		uint8_t red = col_r;
+		pc.printf("colors: red:%u, green:%u\n",red,green);
+        rgb_led.set(col_r,col_g,0x00);
+        wait(1.0);
+        rgb_led.set(0x00,0x00,0x00);
+		test_count = TEST_PERIOD;
+	#endif
+}
+
 void cyclic_rf_send()
 {
 	if(!is_newtick)
@@ -433,32 +462,8 @@ void cyclic_rf_send()
 		alive_log();
 	#endif
 	
-}
-
-void test_channel()
-{
-	#if (TEST_CHANNEL == 1)
-		static uint16_t test_count = TEST_OFFSET;
-
-		if(test_count != 0)
-		{
-			test_count--;
-			return;
-		}
-		pc.printf("testing channel\n");
-		uint8_t nb_success = hsm.test_rf(29,2);
-		pc.printf("nb_success:%d\n",nb_success);
-		float col_g = nb_success;
-		col_g = col_g * 255 / 100;
-		float col_r = 100-nb_success;
-		col_r = col_r * 255 / 100;
-		uint8_t green = col_g;
-		uint8_t red = col_r;
-		pc.printf("colors: red:%u, green:%u\n",red,green);
-        rgb_led.set(col_r,col_g,0x00);
-        wait(1.0);
-        rgb_led.set(0x00,0x00,0x00);
-		test_count = TEST_PERIOD;
+	#if (TEST_RUN == 1)
+		test_channel();
 	#endif
 }
 
@@ -497,8 +502,6 @@ int main()
 
 		cyclic_rf_send();
 
-		test_channel();
-		
 		#if(USE_APDS_PROXIMITY == 1)
 			apds_poll_proximity();
 		#endif

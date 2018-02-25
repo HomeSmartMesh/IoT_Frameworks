@@ -161,20 +161,25 @@
     "40":   {   "name"          :"Workplace Power",
         "data"   :["power"],
         "gateway"    :"Wemo"
-    },
+        },
     "41":   {   "name"          :"Button_2",
         "board"         :"nRF51_Beacon",
         "program"       :"esb_low_power_ptx",
         "uid"           :"?"
-    },
+        },
     "42":   {   "name"          :"Button_3",
         "board"         :"nRF51_Beacon",
         "program"       :"esb_low_power_ptx",
         "uid"           :"?"
-    },
+        },
     "43":   {   "name"          :"Button_4",
         "board"         :"nRF51_Beacon",
         "program"       :"esb_low_power_ptx",
         "uid"           :"?"
-    }
+        },
+    "44":   {   "name"          :"Button_5",
+        "board"         :"nRF51_Beacon",
+        "program"       :"esb_low_power_ptx",
+        "uid"           :"?"
+        }
 }
