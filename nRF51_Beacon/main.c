@@ -156,7 +156,7 @@ uint32_t esb_init( void )
     err_code = nrf_esb_set_prefixes(addr_prefix, 8);
     VERIFY_SUCCESS(err_code);
 
-    err_code = nrf_esb_set_rf_channel(10);
+    err_code = nrf_esb_set_rf_channel(2);
     VERIFY_SUCCESS(err_code);
 
     tx_payload.length  = 8;
@@ -175,7 +175,7 @@ uint32_t esb_tx_button(uint8_t state)
     tx_payload.pipe     = 0;
     
     tx_payload.data[0] = 0x06;//pid
-    tx_payload.data[1] = 21;//source - on_off_tag
+    tx_payload.data[1] = 44;//source - on_off_tag
     tx_payload.data[2] = state;//Up or Down
     
     tx_payload.noack = true;
@@ -309,12 +309,12 @@ int main(void)
     // Check state of all buttons and send an esb packet with the button press if there is exactly one.
     //err_code = gpio_check_and_esb_tx();
     //err_code = esb_tx_alive();
-    esb_tx_button(0);//down
+    esb_tx_button(1);//down - active
 
     while (!(nrf_gpio_pin_read(BUTTON_1) == BTN_RELEASED));
     // Wait for esb completed and all buttons released before going to system off.
     esb_completed = false;//reset the check
-    esb_tx_button(1);//down
+    esb_tx_button(0);//down - passive
 
     while(!esb_completed);
     system_off();

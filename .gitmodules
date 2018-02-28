@@ -22,3 +22,6 @@
 [submodule "raspi_mesh_server/py_db_proxy"]
 	path = raspi_mesh_server/py_db_proxy
 	url = https://github.com/HomeSmartMesh/py_db_proxy.git
+[submodule "nRF51_Beacon/nRF5_SDK_12.3.0_prf"]
+	path = nRF51_Beacon/nRF5_SDK_12.3.0_prf
+	url = https://github.com/nRFMesh/nRF5_SDK_12.3.0_prf.git
