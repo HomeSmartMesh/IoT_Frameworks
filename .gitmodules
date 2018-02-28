@@ -25,3 +25,6 @@
 [submodule "nRF51_Beacon/nRF5_SDK_12.3.0_prf"]
 	path = nRF51_Beacon/nRF5_SDK_12.3.0_prf
 	url = https://github.com/nRFMesh/nRF5_SDK_12.3.0_prf.git
+[submodule "nRF51_Sensors/nRF5_SDK_12.3.0_prf"]
+	path = nRF51_Sensors/nRF5_SDK_12.3.0_prf
+	url = https://github.com/nRFMesh/nRF5_SDK_12.3.0_prf.git
