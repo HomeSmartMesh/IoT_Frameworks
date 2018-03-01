@@ -176,10 +176,15 @@
         "board"         :"nRF51_Beacon",
         "program"       :"esb_low_power_ptx",
         "uid"           :"?"
-        },
+    },
     "44":   {   "name"          :"Button_5",
         "board"         :"nRF51_Beacon",
         "program"       :"esb_low_power_ptx",
+        "uid"           :"?"
+    },
+    "45":   {   "name"          :"nRF_SensorTag_1",
+        "board"         :"nRF51_Sensors",
+        "program"       :"nRF51_Sensors",
         "uid"           :"?"
         }
 }

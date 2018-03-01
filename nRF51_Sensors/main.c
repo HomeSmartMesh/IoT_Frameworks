@@ -52,6 +52,16 @@
 #include "boards.h"
 #include "app_util.h"
 
+//#include "mpu6050.h"
+
+#ifdef NRF_LOG_USES_RTT
+#include "SEGGER_RTT.h"
+#define DEBUG_PRINTF(...)           SEGGER_RTT_printf(0, __VA_ARGS__)
+#else
+    #define DEBUG_PRINTF(...)
+#endif
+
+
 #define RESET_MEMORY_TEST_BYTE  (0x0DUL)        /**< Known sequence written to a special register to check if this wake up is from System OFF. */
 #define RAM_RETENTION_OFF       (0x00000003UL)  /**< The flag used to turn off RAM retention on nRF52. */
 
@@ -67,21 +77,8 @@ static volatile bool esb_completed = false;
 
 void system_off( void )
 {
-    #ifdef NRF51
         NRF_POWER->RAMON |= (POWER_RAMON_OFFRAM0_RAM0Off << POWER_RAMON_OFFRAM0_Pos) |
                             (POWER_RAMON_OFFRAM1_RAM1Off << POWER_RAMON_OFFRAM1_Pos);
-    #endif //NRF51
-    #ifdef NRF52
-        NRF_POWER->RAM[0].POWER = RAM_RETENTION_OFF;
-        NRF_POWER->RAM[1].POWER = RAM_RETENTION_OFF;
-        NRF_POWER->RAM[2].POWER = RAM_RETENTION_OFF;
-        NRF_POWER->RAM[3].POWER = RAM_RETENTION_OFF;
-        NRF_POWER->RAM[4].POWER = RAM_RETENTION_OFF;
-        NRF_POWER->RAM[5].POWER = RAM_RETENTION_OFF;
-        NRF_POWER->RAM[6].POWER = RAM_RETENTION_OFF;
-        NRF_POWER->RAM[7].POWER = RAM_RETENTION_OFF;
-    #endif //NRF52
-
     // Turn off LEDs before sleeping to conserve energy.
     bsp_board_leds_off();
 
@@ -109,7 +106,7 @@ void nrf_esb_event_handler(nrf_esb_evt_t const * p_event)
             // For each LED, set it as indicated in the rx_payload, but invert it for the button
             // which is pressed. This is because the ack payload from the PRX is reflecting the
             // state from before receiving the packet.
-            nrf_gpio_pin_write(LED_1, !( ((rx_payload.data[0] & 0x01) == 0) ^ (button_state_1 == BTN_PRESSED)) );
+            nrf_gpio_pin_write(LED_RGB_GREEN, !( ((rx_payload.data[0] & 0x01) == 0) ^ (button_state_1 == BTN_PRESSED)) );
             break;
     }
 
@@ -175,7 +172,7 @@ uint32_t esb_tx_button(uint8_t state)
     tx_payload.pipe     = 0;
     
     tx_payload.data[0] = 0x06;//pid
-    tx_payload.data[1] = 44;//source - on_off_tag
+    tx_payload.data[1] = 45;//source - on_off_tag
     tx_payload.data[2] = state;//Up or Down
     
     tx_payload.noack = true;
@@ -296,6 +293,7 @@ void recover_state()
 int main(void)
 {
     uint32_t err_code;
+
     // Initialize
     clocks_start();
     err_code = esb_init();
@@ -303,8 +301,12 @@ int main(void)
 
     gpio_init();
 
-    // Recover state if the device was woken from System OFF.
-    recover_state();
+
+    nrf_gpio_pin_write(LED_RGB_BLUE, 0 );
+    nrf_delay_ms(50);
+    nrf_gpio_pin_write(LED_RGB_BLUE, 1 );
+
+    DEBUG_PRINTF("Hello Debug nRF51 sensors\r\n");
 
     // Check state of all buttons and send an esb packet with the button press if there is exactly one.
     //err_code = gpio_check_and_esb_tx();

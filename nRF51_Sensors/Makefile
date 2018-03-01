@@ -2,7 +2,7 @@ PROJECT_NAME     := mesh_sensors_node
 TARGETS          := nrf51822_xxaa
 OUTPUT_DIRECTORY := _build
 
-SDK_ROOT := ./RF5_SDK_12.3.0_prf
+SDK_ROOT := ./nRF5_SDK_12.3.0_prf
 PROJ_DIR := .
 
 $(OUTPUT_DIRECTORY)/nrf51822_xxaa.out: \
@@ -27,6 +27,7 @@ SRC_FILES += \
   $(SDK_ROOT)/components/proprietary_rf/esb/nrf_esb.c \
   $(SDK_ROOT)/components/toolchain/gcc/gcc_startup_nrf51.S \
   $(SDK_ROOT)/components/toolchain/system_nrf51.c \
+#$(SDK_ROOT)/components/drivers_ext/mpu6050/mpu6050.c \
 
 # Include folders common to all targets
 INC_FOLDERS += \
@@ -49,13 +50,14 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/toolchain/cmsis/include \
   $(SDK_ROOT)/components/drivers_nrf/hal \
   $(SDK_ROOT)/components/libraries/log/src \
+  $(SDK_ROOT)/components/drivers_ext/mpu6050 \
 
 # Libraries common to all targets
 LIB_FILES += \
 
 # C flags common to all targets
 CFLAGS += -DNRF51
-CFLAGS += -DBOARD_CUSTBEACON01
+CFLAGS += -DBOARD_SENSOR_TAG
 CFLAGS += -DESB_PRESENT
 CFLAGS += -DNRF51822
 CFLAGS += -DBSP_DEFINES_ONLY
@@ -67,13 +69,15 @@ CFLAGS += -mfloat-abi=soft
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing
 CFLAGS += -fno-builtin --short-enums 
 
+CFLAGS += -DNRF_LOG_USES_RTT=1
+
 # C++ flags common to all targets
 CXXFLAGS += \
 
 # Assembler flags common to all targets
 ASMFLAGS += -x assembler-with-cpp
 ASMFLAGS += -DNRF51
-ASMFLAGS += -DBOARD_CUSTBEACON01
+ASMFLAGS += -DBOARD_SENSOR_TAG
 ASMFLAGS += -DESB_PRESENT
 ASMFLAGS += -DNRF51822
 ASMFLAGS += -DBSP_DEFINES_ONLY
@@ -110,4 +114,4 @@ flash: $(OUTPUT_DIRECTORY)/nrf51822_xxaa.hex
 	nrfjprog --reset -f nrf51
 
 erase:
-	nrfjprog --eraseall -f nrf52
+	nrfjprog --eraseall -f nrf51
