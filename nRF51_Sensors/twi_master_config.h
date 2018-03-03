@@ -45,9 +45,13 @@ extern "C" {
 #endif
 
 #include "boards.h"
+#include "nrf51_bitfields.h"
 
 #define TWI_MASTER_CONFIG_CLOCK_PIN_NUMBER (I2C_SCL)
 #define TWI_MASTER_CONFIG_DATA_PIN_NUMBER (I2C_SDA)
+
+//TWI_FREQUENCY_FREQUENCY_K100 TWI_FREQUENCY_FREQUENCY_K400
+#define TWI_MASTER_CONFIG_FREQ    TWI_FREQUENCY_FREQUENCY_K400
 
 
 #ifdef __cplusplus

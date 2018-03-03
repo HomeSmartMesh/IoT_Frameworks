@@ -52,8 +52,7 @@
 #include "boards.h"
 #include "app_util.h"
 
-#include "twi_master.h"
-#include "mpu6050.h"
+#include "mpu6050_app.h"
 
 #ifdef NRF_LOG_USES_RTT
 #include "SEGGER_RTT.h"
@@ -290,7 +289,6 @@ void recover_state()
     tx_payload.data[1] = loop_count << 4;
 }
 
-
 int main(void)
 {
     uint32_t err_code;
@@ -310,12 +308,16 @@ int main(void)
 
     DEBUG_PRINTF("Hello Debug nRF51 sensors\r\n");
 
-    bool res_twi = twi_master_init();
-    DEBUG_PRINTF("twi_master_init(%d)\r\n",res_twi);
+    mpu_start();
 
-    bool res = mpu6050_init(0x69);//0x69
-    DEBUG_PRINTF("mpu @ 0x69 => %d\r\n",res);
-
+    int8_t x,y,z;
+    while(true)
+    {
+        mpu_get_accell(&x,&y,&z);
+        DEBUG_PRINTF("x(%d) y(%d) z(%d)\r\n",x,y,z);
+        nrf_delay_ms(1000);
+    }
+    mpu_sleep();
 
     // Check state of all buttons and send an esb packet with the button press if there is exactly one.
     //err_code = gpio_check_and_esb_tx();

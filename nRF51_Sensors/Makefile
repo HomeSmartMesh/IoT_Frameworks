@@ -10,6 +10,8 @@ $(OUTPUT_DIRECTORY)/nrf51822_xxaa.out: \
 
 # Source files common to all targets
 SRC_FILES += \
+  $(PROJ_DIR)/main.c \
+  $(PROJ_DIR)/mpu6050_app/mpu6050_app.c \
   $(SDK_ROOT)/components/libraries/log/src/nrf_log_backend_serial.c \
   $(SDK_ROOT)/components/libraries/log/src/nrf_log_frontend.c \
   $(SDK_ROOT)/components/libraries/util/app_error.c \
@@ -20,7 +22,6 @@ SRC_FILES += \
   $(SDK_ROOT)/components/boards/boards.c \
   $(SDK_ROOT)/components/drivers_nrf/common/nrf_drv_common.c \
   $(SDK_ROOT)/components/drivers_nrf/uart/nrf_drv_uart.c \
-  $(PROJ_DIR)/main.c \
   $(SDK_ROOT)/external/segger_rtt/RTT_Syscalls_GCC.c \
   $(SDK_ROOT)/external/segger_rtt/SEGGER_RTT.c \
   $(SDK_ROOT)/external/segger_rtt/SEGGER_RTT_printf.c \
@@ -32,14 +33,14 @@ SRC_FILES += \
 
 # Include folders common to all targets
 INC_FOLDERS += \
+  $(PROJ_DIR) \
+  $(PROJ_DIR)/mpu6050_app \
   $(SDK_ROOT)/components \
   $(SDK_ROOT)/components/libraries/util \
   $(SDK_ROOT)/components/toolchain/gcc \
   $(SDK_ROOT)/components/drivers_nrf/uart \
-  ../config \
   $(SDK_ROOT)/components/drivers_nrf/common \
   $(SDK_ROOT)/components/proprietary_rf/esb \
-  $(PROJ_DIR) \
   $(SDK_ROOT)/external/segger_rtt \
   $(SDK_ROOT)/components/libraries/bsp \
   $(SDK_ROOT)/components/drivers_nrf/nrf_soc_nosd \
@@ -53,6 +54,7 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/log/src \
   $(SDK_ROOT)/components/drivers_ext/mpu6050 \
   $(SDK_ROOT)/components/drivers_nrf/twi_master/deprecated \
+  
 
 # Libraries common to all targets
 LIB_FILES += \
