@@ -30,6 +30,8 @@ SRC_FILES += \
   $(SDK_ROOT)/components/toolchain/system_nrf51.c \
   $(SDK_ROOT)/components/drivers_ext/mpu6050/mpu6050.c \
   $(SDK_ROOT)/components/drivers_nrf/twi_master/deprecated/twi_hw_master.c \
+  $(SDK_ROOT)/components/drivers_nrf/rtc/nrf_drv_rtc.c \
+  $(SDK_ROOT)/components/drivers_nrf/clock/nrf_drv_clock.c \
 
 # Include folders common to all targets
 INC_FOLDERS += \
@@ -54,6 +56,8 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/log/src \
   $(SDK_ROOT)/components/drivers_ext/mpu6050 \
   $(SDK_ROOT)/components/drivers_nrf/twi_master/deprecated \
+  $(SDK_ROOT)/components/drivers_nrf/rtc \
+  $(SDK_ROOT)/components/drivers_nrf/clock \
   
 
 # Libraries common to all targets

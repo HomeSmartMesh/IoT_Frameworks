@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "sdk_common.h": "c",
+        "app_util.h": "c"
+    }
+}

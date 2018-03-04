@@ -51,8 +51,16 @@
 #include "nrf_gpio.h"
 #include "boards.h"
 #include "app_util.h"
+#include "nrf_drv_rtc.h"
+#include "nrf_drv_clock.h"
 
 #include "mpu6050_app.h"
+
+#define NodeId 45
+#define SLEEP_SEC 5
+
+#define Mesh_Pid_Alive 0x05
+#define Mesh_Pid_Reset 0x04
 
 #ifdef NRF_LOG_USES_RTT
 #include "SEGGER_RTT.h"
@@ -69,11 +77,19 @@
 
 /*lint -save -esym(40, BUTTON_1) -esym(40, BUTTON_2) -esym(40, BUTTON_3) -esym(40, BUTTON_4) -esym(40, LED_1) -esym(40, LED_2) -esym(40, LED_3) -esym(40, LED_4) */
 
+const nrf_drv_rtc_t rtc = NRF_DRV_RTC_INSTANCE(0); /**< Declaring an instance of nrf_drv_rtc for RTC0. */
+
 static nrf_esb_payload_t tx_payload = NRF_ESB_CREATE_PAYLOAD(0, 0x01, 0x00);
 static nrf_esb_payload_t rx_payload;
 static uint32_t button_state_1;
 static volatile bool esb_completed = false;
 
+void blink_green()
+{
+    nrf_gpio_pin_write(LED_RGB_GREEN, 0 );
+    nrf_delay_ms(1);
+    nrf_gpio_pin_write(LED_RGB_GREEN, 1 );
+}
 
 void nrf_esb_event_handler(nrf_esb_evt_t const * p_event)
 {
@@ -98,40 +114,24 @@ void nrf_esb_event_handler(nrf_esb_evt_t const * p_event)
     esb_completed = true;
 }
 
-uint32_t esb_tx_button(uint8_t state)
+void mesh_tx_pid(uint8_t pid)
 {
-    uint32_t err_code;
-    tx_payload.length   = 3;//payload + header (crc length not included)
+    esb_completed = false;//reset the check
+
+    tx_payload.length   = 2;//payload + header (crc length not included)
     tx_payload.control = 0x80 | 2;// broadcast | ttl = 2
     tx_payload.noack    = true;//it is a broadcast
     tx_payload.pipe     = 0;
+
+    tx_payload.data[0] = pid;
     
-    tx_payload.data[0] = 0x06;//pid
-    tx_payload.data[1] = 45;//source - on_off_tag
-    tx_payload.data[2] = state;//Up or Down
+    tx_payload.data[1] = NodeId;//source
     
     tx_payload.noack = true;
-    err_code = nrf_esb_write_payload(&tx_payload);
-    VERIFY_SUCCESS(err_code);
+    nrf_esb_write_payload(&tx_payload);
 
-    return NRF_SUCCESS;
-}
-
-uint32_t esb_tx_alive()
-{
-    uint32_t err_code;
-    tx_payload.length   = 1;//payload + header (crc length not included)
-    tx_payload.control = 0xF5;// broadcast | 0x75
-    tx_payload.noack    = true;//it is a broadcast
-    tx_payload.pipe     = 0;
-    
-    tx_payload.data[0] = 0x15;//source
-    
-    tx_payload.noack = true;
-    err_code = nrf_esb_write_payload(&tx_payload);
-    VERIFY_SUCCESS(err_code);
-
-    return NRF_SUCCESS;
+    //wait till the transmission is complete
+    while(!esb_completed);
 }
 
 uint32_t esb_init( void )
@@ -164,7 +164,7 @@ uint32_t esb_init( void )
     err_code = nrf_esb_set_prefixes(addr_prefix, 8);
     VERIFY_SUCCESS(err_code);
 
-    err_code = nrf_esb_set_rf_channel(2);
+    err_code = nrf_esb_set_rf_channel(10);
     VERIFY_SUCCESS(err_code);
 
     tx_payload.length  = 8;
@@ -214,65 +214,107 @@ bool is_power_up_reset()
 
 void clocks_start( void )
 {
-    // Start HFCLK and wait for it to start.
-    NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;
-    NRF_CLOCK->TASKS_HFCLKSTART = 1;
-    while (NRF_CLOCK->EVENTS_HFCLKSTARTED == 0);
-}
+    ret_code_t err_code;
 
-void power_up_init()
-{
-    mpu_start();
+    err_code = nrf_drv_clock_init();
+    if(err_code)
+    {
+        DEBUG_PRINTF("nrf_drv_clock_init() fail\r\n");
+    }
+
+    nrf_drv_clock_hfclk_request(NULL);
+    while(!nrf_drv_clock_hfclk_is_running());
     
-    nrf_delay_ms(300);
-    nrf_gpio_pin_write(LED_RGB_RED, 0 );
-    nrf_delay_ms(300);
-    nrf_gpio_pin_write(LED_RGB_RED, 10 );
 }
 
-void wakeup_init()
+
+void send_accell()
+{
+    //TODO mpu_wakeup();
+    int8_t x,y,z;
+    mpu_get_accell(&x,&y,&z);
+    DEBUG_PRINTF("x(%d) y(%d) z(%d)\r\n",x,y,z);
+    //nrf_delay_ms(1000);
+    mpu_sleep();
+    //TODO mesh_tx_mpu(x,y,z);
+}
+
+static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
+{
+    if (int_type == NRF_DRV_RTC_INT_COMPARE0)
+    {
+        nrf_drv_rtc_counter_clear(&rtc);
+        nrf_drv_rtc_int_enable(&rtc, NRF_RTC_INT_COMPARE0_MASK);
+        DEBUG_PRINTF("rtc_handler(COMPARE)\r\n");
+        blink_green();
+
+        mesh_tx_pid(Mesh_Pid_Alive);
+        DEBUG_PRINTF("Alive()\r\n");
+        //send_accell();
+    }
+}
+/** @brief Function initialization and configuration of RTC driver instance.
+ */
+static void rtc_config(void)
+{
+    uint32_t err_code;
+
+    //Initialize RTC instance
+    nrf_drv_rtc_config_t config = NRF_DRV_RTC_DEFAULT_CONFIG;
+    config.prescaler = 4095;
+    err_code = nrf_drv_rtc_init(&rtc, &config, rtc_handler);
+    if(err_code)
+    {
+        DEBUG_PRINTF("nrf_drv_rtc_init() fail(%d)\r\n",err_code);
+    }
+
+    //Enable tick event & interrupt
+    //nrf_drv_rtc_tick_enable(&rtc,true);
+
+    //Set compare channel to trigger interrupt after COMPARE_COUNTERTIME seconds
+    err_code = nrf_drv_rtc_cc_set(&rtc,0,SLEEP_SEC * 8,true);
+    if(err_code)
+    {
+        DEBUG_PRINTF("nrf_drv_rtc_cc_set() fail(%d)\r\n",err_code);
+    }
+
+    //Power on RTC instance
+    nrf_drv_rtc_enable(&rtc);
+}
+
+void init()
 {
     // Initialize
     clocks_start();
+
+    nrf_gpio_pin_write(LED_RGB_BLUE, 0 );
+    nrf_delay_ms(300);
+    nrf_gpio_pin_write(LED_RGB_BLUE, 1 );
+    nrf_delay_ms(300);
+
     uint32_t err_code = esb_init();
     APP_ERROR_CHECK(err_code);
     gpio_init();
 
-    nrf_gpio_pin_write(LED_RGB_BLUE, 0 );
-    nrf_delay_ms(50);
-    nrf_gpio_pin_write(LED_RGB_BLUE, 1 );
+    //TODO mpu_start();
+
+    nrf_drv_clock_lfclk_request(NULL);
+    rtc_config();
+
 }
 
 int main(void)
 {
-    wakeup_init();
+    init();
 
-    if(is_power_up_reset())
+    DEBUG_PRINTF("=> Hello Debug nRF51 sensors Sleep\r\n");
+
+    mesh_tx_pid(Mesh_Pid_Reset);
+    
+    while(true)
     {
-        power_up_init();
-        DEBUG_PRINTF("=> Power Up - Hello Debug nRF51 sensors\r\n");
+        __SEV();
+        __WFE();
+        __WFE();
     }
-    else
-    {
-        DEBUG_PRINTF("=> Just woke up - Hello\r\n");
-    }
-
-    int8_t x,y,z;
-    for(int i=0;i<10;i++)
-    {
-        mpu_get_accell(&x,&y,&z);
-        DEBUG_PRINTF("x(%d) y(%d) z(%d)\r\n",x,y,z);
-        nrf_delay_ms(1000);
-    }
-    mpu_sleep();
-
-    // Wait for esb completed and all buttons released before going to system off.
-    esb_completed = false;//reset the check
-    esb_tx_button(0);//down - passive
-
-    while(!esb_completed);
-    system_off();
-
-    while(true);
 }
-/*lint -restore */
