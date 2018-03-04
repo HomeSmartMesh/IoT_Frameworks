@@ -63,7 +63,6 @@
 
 
 #define RESET_MEMORY_TEST_BYTE  (0x0DUL)        /**< Known sequence written to a special register to check if this wake up is from System OFF. */
-#define RAM_RETENTION_OFF       (0x00000003UL)  /**< The flag used to turn off RAM retention on nRF52. */
 
 #define BTN_PRESSED     0                       /**< Value of a pressed button. */
 #define BTN_RELEASED    1                       /**< Value of a released button. */
@@ -74,20 +73,6 @@ static nrf_esb_payload_t tx_payload = NRF_ESB_CREATE_PAYLOAD(0, 0x01, 0x00);
 static nrf_esb_payload_t rx_payload;
 static uint32_t button_state_1;
 static volatile bool esb_completed = false;
-
-void system_off( void )
-{
-        NRF_POWER->RAMON |= (POWER_RAMON_OFFRAM0_RAM0Off << POWER_RAMON_OFFRAM0_Pos) |
-                            (POWER_RAMON_OFFRAM1_RAM1Off << POWER_RAMON_OFFRAM1_Pos);
-    // Turn off LEDs before sleeping to conserve energy.
-    bsp_board_leds_off();
-
-    // Set nRF5 into System OFF. Reading out value and looping after setting the register
-    // to guarantee System OFF in nRF52.
-    NRF_POWER->SYSTEMOFF = 0x1;
-    (void) NRF_POWER->SYSTEMOFF;
-    while (true);
-}
 
 
 void nrf_esb_event_handler(nrf_esb_evt_t const * p_event)
@@ -113,15 +98,41 @@ void nrf_esb_event_handler(nrf_esb_evt_t const * p_event)
     esb_completed = true;
 }
 
-
-void clocks_start( void )
+uint32_t esb_tx_button(uint8_t state)
 {
-    // Start HFCLK and wait for it to start.
-    NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;
-    NRF_CLOCK->TASKS_HFCLKSTART = 1;
-    while (NRF_CLOCK->EVENTS_HFCLKSTARTED == 0);
+    uint32_t err_code;
+    tx_payload.length   = 3;//payload + header (crc length not included)
+    tx_payload.control = 0x80 | 2;// broadcast | ttl = 2
+    tx_payload.noack    = true;//it is a broadcast
+    tx_payload.pipe     = 0;
+    
+    tx_payload.data[0] = 0x06;//pid
+    tx_payload.data[1] = 45;//source - on_off_tag
+    tx_payload.data[2] = state;//Up or Down
+    
+    tx_payload.noack = true;
+    err_code = nrf_esb_write_payload(&tx_payload);
+    VERIFY_SUCCESS(err_code);
+
+    return NRF_SUCCESS;
 }
 
+uint32_t esb_tx_alive()
+{
+    uint32_t err_code;
+    tx_payload.length   = 1;//payload + header (crc length not included)
+    tx_payload.control = 0xF5;// broadcast | 0x75
+    tx_payload.noack    = true;//it is a broadcast
+    tx_payload.pipe     = 0;
+    
+    tx_payload.data[0] = 0x15;//source
+    
+    tx_payload.noack = true;
+    err_code = nrf_esb_write_payload(&tx_payload);
+    VERIFY_SUCCESS(err_code);
+
+    return NRF_SUCCESS;
+}
 
 uint32_t esb_init( void )
 {
@@ -163,104 +174,6 @@ uint32_t esb_init( void )
     return NRF_SUCCESS;
 }
 
-uint32_t esb_tx_button(uint8_t state)
-{
-    uint32_t err_code;
-    tx_payload.length   = 3;//payload + header (crc length not included)
-    tx_payload.control = 0x80 | 2;// broadcast | ttl = 2
-    tx_payload.noack    = true;//it is a broadcast
-    tx_payload.pipe     = 0;
-    
-    tx_payload.data[0] = 0x06;//pid
-    tx_payload.data[1] = 45;//source - on_off_tag
-    tx_payload.data[2] = state;//Up or Down
-    
-    tx_payload.noack = true;
-    err_code = nrf_esb_write_payload(&tx_payload);
-    VERIFY_SUCCESS(err_code);
-
-    return NRF_SUCCESS;
-}
-
-uint32_t esb_tx_alive()
-{
-    uint32_t err_code;
-    tx_payload.length   = 1;//payload + header (crc length not included)
-    tx_payload.control = 0xF5;// broadcast | 0x75
-    tx_payload.noack    = true;//it is a broadcast
-    tx_payload.pipe     = 0;
-    
-    tx_payload.data[0] = 0x15;//source
-    
-    tx_payload.noack = true;
-    err_code = nrf_esb_write_payload(&tx_payload);
-    VERIFY_SUCCESS(err_code);
-
-    return NRF_SUCCESS;
-}
-
-uint32_t esb_tx_light_on()
-{
-    uint32_t err_code;
-    tx_payload.length   = 4;//payload + header (crc length not included)
-    tx_payload.control = 0x7B;// light
-    tx_payload.noack    = true;//it is a broadcast
-    tx_payload.pipe     = 0;
-    
-    tx_payload.data[0] = 0x15;//source
-    tx_payload.data[1] = 0x19;//dest
-    tx_payload.data[2] = 0xA0;//msb
-    tx_payload.data[3] = 0x00;//lsb
-    
-    tx_payload.noack = true;
-    err_code = nrf_esb_write_payload(&tx_payload);
-    VERIFY_SUCCESS(err_code);
-
-    return NRF_SUCCESS;
-}
-
-uint32_t esb_tx_light_off()
-{
-    uint32_t err_code;
-    tx_payload.length   = 4;//payload + header (crc length not included)
-    tx_payload.control = 0x7B;// light
-    tx_payload.noack    = true;//it is a broadcast
-    tx_payload.pipe     = 0;
-    
-    tx_payload.data[0] = 0x15;//source
-    tx_payload.data[1] = 0x19;//dest
-    tx_payload.data[2] = 0x00;//msb
-    tx_payload.data[3] = 0x00;//lsb
-    
-    tx_payload.noack = true;
-    err_code = nrf_esb_write_payload(&tx_payload);
-    VERIFY_SUCCESS(err_code);
-
-    return NRF_SUCCESS;
-}
-
-uint32_t gpio_check_and_esb_tx()
-{
-    uint32_t err_code;
-    button_state_1 = nrf_gpio_pin_read(BUTTON_1);
-    if (button_state_1 == BTN_PRESSED)
-    {
-        tx_payload.data[0] |= 1 << 0;
-    }
-    if (button_state_1 == BTN_RELEASED)
-    {
-        tx_payload.noack = false;
-        err_code = nrf_esb_write_payload(&tx_payload);
-        VERIFY_SUCCESS(err_code);
-    }
-    else
-    {
-        esb_completed = true;
-    }
-
-    return NRF_SUCCESS;
-}
-
 
 void gpio_init( void )
 {
@@ -272,46 +185,80 @@ void gpio_init( void )
     bsp_board_leds_init();
 }
 
-
-void recover_state()
+void system_off( void )
 {
-    uint32_t            loop_count = 0;
-    if ((NRF_POWER->GPREGRET >> 4) == RESET_MEMORY_TEST_BYTE)
-    {
-        // Take the loop_count value.
-        loop_count          = (uint8_t)(NRF_POWER->GPREGRET & 0xFUL);
-        NRF_POWER->GPREGRET = 0;
-    }
+        NRF_POWER->RAMON |= (POWER_RAMON_OFFRAM0_RAM0Off << POWER_RAMON_OFFRAM0_Pos) |
+                            (POWER_RAMON_OFFRAM1_RAM1Off << POWER_RAMON_OFFRAM1_Pos);
+    // Turn off LEDs before sleeping to conserve energy.
+    bsp_board_leds_off();
 
-    loop_count++;
-    NRF_POWER->GPREGRET = ( (RESET_MEMORY_TEST_BYTE << 4) | loop_count);
-
-    tx_payload.data[1] = loop_count << 4;
+    // Set nRF5 into System OFF. Reading out value and looping after setting the register
+    // to guarantee System OFF in nRF52.
+    NRF_POWER->SYSTEMOFF = 0x1;
+    (void) NRF_POWER->SYSTEMOFF;
+    while (true);
 }
 
-int main(void)
-{
-    uint32_t err_code;
 
+//power up = on chip reset = (power on reset, brown out reset)
+bool is_power_up_reset()
+{
+    bool is_on_chip = (NRF_POWER->RESETREAS == 0);
+    if(!is_on_chip)
+    {
+        //clear the cumulated reset reasons
+        NRF_POWER->RESETREAS = 0x03000F;//All acknowledged
+    }
+    return is_on_chip;
+}
+
+void clocks_start( void )
+{
+    // Start HFCLK and wait for it to start.
+    NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;
+    NRF_CLOCK->TASKS_HFCLKSTART = 1;
+    while (NRF_CLOCK->EVENTS_HFCLKSTARTED == 0);
+}
+
+void power_up_init()
+{
+    mpu_start();
+    
+    nrf_delay_ms(300);
+    nrf_gpio_pin_write(LED_RGB_RED, 0 );
+    nrf_delay_ms(300);
+    nrf_gpio_pin_write(LED_RGB_RED, 10 );
+}
+
+void wakeup_init()
+{
     // Initialize
     clocks_start();
-    err_code = esb_init();
+    uint32_t err_code = esb_init();
     APP_ERROR_CHECK(err_code);
-
     gpio_init();
-
 
     nrf_gpio_pin_write(LED_RGB_BLUE, 0 );
     nrf_delay_ms(50);
     nrf_gpio_pin_write(LED_RGB_BLUE, 1 );
+}
 
+int main(void)
+{
+    wakeup_init();
 
-    DEBUG_PRINTF("Hello Debug nRF51 sensors\r\n");
-
-    mpu_start();
+    if(is_power_up_reset())
+    {
+        power_up_init();
+        DEBUG_PRINTF("=> Power Up - Hello Debug nRF51 sensors\r\n");
+    }
+    else
+    {
+        DEBUG_PRINTF("=> Just woke up - Hello\r\n");
+    }
 
     int8_t x,y,z;
-    while(true)
+    for(int i=0;i<10;i++)
     {
         mpu_get_accell(&x,&y,&z);
         DEBUG_PRINTF("x(%d) y(%d) z(%d)\r\n",x,y,z);
@@ -319,12 +266,6 @@ int main(void)
     }
     mpu_sleep();
 
-    // Check state of all buttons and send an esb packet with the button press if there is exactly one.
-    //err_code = gpio_check_and_esb_tx();
-    //err_code = esb_tx_alive();
-    esb_tx_button(1);//down - active
-
-    while (!(nrf_gpio_pin_read(BUTTON_1) == BTN_RELEASED));
     // Wait for esb completed and all buttons released before going to system off.
     esb_completed = false;//reset the check
     esb_tx_button(0);//down - passive
