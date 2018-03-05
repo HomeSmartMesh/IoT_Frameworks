@@ -77,7 +77,7 @@ CFLAGS += -mfloat-abi=soft
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing
 CFLAGS += -fno-builtin --short-enums 
 
-CFLAGS += -DNRF_LOG_USES_RTT=1
+#CFLAGS += -DNRF_LOG_USES_RTT=1
 
 # C++ flags common to all targets
 CXXFLAGS += \

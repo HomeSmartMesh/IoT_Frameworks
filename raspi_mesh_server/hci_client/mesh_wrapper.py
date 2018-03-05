@@ -23,6 +23,7 @@ pid = {
     "proximity"     : 0x10,
     "humidity"      : 0x11,
     "pressure"      : 0x12,
+    "acceleration"  : 0x13,
     "test_rf_resp"  : 0x30
 }
 
@@ -76,6 +77,11 @@ def parse_payload(data):
     elif(data[2] == pid["pressure"]):
         val = float(int.from_bytes(bytearray(data[4:8]),'big',signed=True)) / (256*100)
         res = '{:02.2f}'.format(val)
+    elif(data[2] == pid["acceleration"]):
+        accel_x = float(int.from_bytes(bytearray(data[4:6]),'big',signed=True)) / 16384
+        accel_y = float(int.from_bytes(bytearray(data[6:8]),'big',signed=True)) / 16384
+        accel_z = float(int.from_bytes(bytearray(data[8:10]),'big',signed=True)) / 16384
+        res = '(g) X {:02.2f} ; Y {:02.2f} ; Z {:02.2f}'.format(accel_x,accel_y,accel_z)
     elif(data[2] == pid["button"]):
         if(data[4] == 0):
             res = 'release'

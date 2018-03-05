@@ -58,6 +58,7 @@
 
 #define NodeId 45
 #define SLEEP_SEC 5
+#define RF_CHANNEL 10
 
 #define Mesh_Pid_Alive 0x05
 #define Mesh_Pid_Reset 0x04
@@ -114,6 +115,31 @@ void nrf_esb_event_handler(nrf_esb_evt_t const * p_event)
     esb_completed = true;
 }
 
+void mesh_tx_accell(uint8_t * data)
+{
+    esb_completed = false;//reset the check
+
+    tx_payload.length   = 8;//payload + header (crc length not included)
+    tx_payload.control = 0x80 | 2;// broadcast | ttl = 2
+    tx_payload.noack    = true;//it is a broadcast
+    tx_payload.pipe     = 0;
+
+    tx_payload.data[0] = 0x13;//acceleration
+    
+    tx_payload.data[1] = NodeId;//source
+
+    for(int i=0;i<6;i++)
+    {
+        tx_payload.data[i+2]     = data[i];
+    }
+    
+    tx_payload.noack = true;
+    nrf_esb_write_payload(&tx_payload);
+
+    //wait till the transmission is complete
+    while(!esb_completed);
+}
+
 void mesh_tx_pid(uint8_t pid)
 {
     esb_completed = false;//reset the check
@@ -164,7 +190,7 @@ uint32_t esb_init( void )
     err_code = nrf_esb_set_prefixes(addr_prefix, 8);
     VERIFY_SUCCESS(err_code);
 
-    err_code = nrf_esb_set_rf_channel(10);
+    err_code = nrf_esb_set_rf_channel(RF_CHANNEL);
     VERIFY_SUCCESS(err_code);
 
     tx_payload.length  = 8;
@@ -230,13 +256,14 @@ void clocks_start( void )
 
 void send_accell()
 {
-    //TODO mpu_wakeup();
-    int8_t x,y,z;
-    mpu_get_accell(&x,&y,&z);
-    DEBUG_PRINTF("x(%d) y(%d) z(%d)\r\n",x,y,z);
+    //mpu_wakeup();
+    uint8_t accell_data[6];
+    mpu_get_accell_data(accell_data);
+    DEBUG_PRINTF("xh(%d)\r\n",accell_data[0]);
+    //DEBUG_PRINTF("x(%d) y(%d) z(%d)\r\n",x,y,z);
     //nrf_delay_ms(1000);
-    mpu_sleep();
-    //TODO mesh_tx_mpu(x,y,z);
+    //mpu_sleep();
+    mesh_tx_accell(accell_data);//sends and waits tx
 }
 
 static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
@@ -248,9 +275,10 @@ static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
         DEBUG_PRINTF("rtc_handler(COMPARE)\r\n");
         blink_green();
 
-        mesh_tx_pid(Mesh_Pid_Alive);
-        DEBUG_PRINTF("Alive()\r\n");
-        //send_accell();
+        //mesh_tx_pid(Mesh_Pid_Alive);
+        //DEBUG_PRINTF("Alive()\r\n");
+        send_accell();
+        DEBUG_PRINTF("send_accell()\r\n");
     }
 }
 /** @brief Function initialization and configuration of RTC driver instance.
@@ -296,11 +324,10 @@ void init()
     APP_ERROR_CHECK(err_code);
     gpio_init();
 
-    //TODO mpu_start();
-
     nrf_drv_clock_lfclk_request(NULL);
     rtc_config();
 
+    mpu_start();
 }
 
 int main(void)
