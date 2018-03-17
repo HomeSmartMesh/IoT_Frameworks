@@ -43,7 +43,7 @@
                 "data"          : ["temperature","pressure","humidity"],
                 "devices"       :["BME280"]
             },
-    "21":   {   "name"          :"On_Off_Tag",
+    "21":   {   "name"          :"Btn_White",
                 "board"         :"nRF51_Beacon",
                 "program"       :"esb_low_power_ptx",
                 "uid"           :"0x2B B2 9A 9A DD A8 36 5A"
@@ -162,7 +162,7 @@
         "data"   :["power"],
         "gateway"    :"Wemo"
         },
-    "41":   {   "name"          :"Button_2",
+    "41":   {   "name"          :"Btn_White",
         "board"         :"nRF51_Beacon",
         "program"       :"esb_low_power_ptx",
         "uid"           :"?"
@@ -176,15 +176,96 @@
         "board"         :"nRF51_Beacon",
         "program"       :"esb_low_power_ptx",
         "uid"           :"?"
-    },
-    "44":   {   "name"          :"Button_5",
+        },
+    "44":   {   "name"          :"Btn_Angry",
         "board"         :"nRF51_Beacon",
         "program"       :"esb_low_power_ptx",
         "uid"           :"?"
-    },
+        },
     "45":   {   "name"          :"nRF_SensorTag_1",
         "board"         :"nRF51_Sensors",
         "program"       :"nRF51_Sensors",
         "uid"           :"?"
+        },
+    "46":   {   "name"          :"Button_6",
+        "board"         :"nRF51_Beacon",
+        "program"       :"nRF51_Beacon",
+        "uid"           :"?"
+        },
+    "47":   {   "name"          :"Button_7",
+        "board"         :"nRF51_Beacon",
+        "program"       :"nRF51_Beacon",
+        "uid"           :"?"
+        },
+    "48":   {   "name"          :"Button_8",
+        "board"         :"nRF51_Beacon",
+        "program"       :"nRF51_Beacon",
+        "uid"           :"?"
+        },
+    "49":   {   "name"          :"Button_9",
+        "board"         :"nRF51_Beacon",
+        "program"       :"nRF51_Beacon",
+        "uid"           :"?"
+        },
+    "50":   {   "name"          :"Button_10",
+        "board"         :"nRF51_Beacon",
+        "program"       :"nRF51_Beacon",
+        "uid"           :"?"
+        },
+    "51":   {   "name"          :"Button_11",
+        "board"         :"nRF51_Beacon",
+        "program"       :"nRF51_Beacon",
+        "uid"           :"?"
+        },
+    "52":   {   "name"          :"Button_12",
+        "board"         :"nRF51_Beacon",
+        "program"       :"nRF51_Beacon",
+        "uid"           :"?"
+    },
+    "53":   {   "name"          :"Button_13",
+        "board"         :"nRF51_Beacon",
+        "program"       :"nRF51_Beacon",
+        "uid"           :"?"
+        },
+    "54":   {   "name"          :"Button_14",
+        "board"         :"nRF51_Beacon",
+        "program"       :"nRF51_Beacon",
+        "uid"           :"?"
+    },
+    "55":   {   "name"          :"Button_15",
+        "board"         :"nRF51_Beacon",
+        "program"       :"nRF51_Beacon",
+        "uid"           :"?"
+    },
+    "56":   {   "name"          :"IoT bridge 1",
+        "sensors"       :["proximity","light","colorLight"],
+        "board"         :"STM32_Dongle",
+        "devices"       :["nRF24"],
+        "uc_uid"        :""
+    },
+    "57":   {   "name"          :"IoT bridge 2",
+        "sensors"       :["proximity","light","colorLight"],
+        "board"         :"STM32_Dongle",
+        "devices"       :["nRF24"],
+        "uc_uid"        :""
+    },
+    "58":   {   "name"          :"IoT bridge 3",
+        "sensors"       :["proximity","light","colorLight"],
+        "board"         :"STM32_Dongle",
+        "devices"       :["nRF24"],
+        "uc_uid"        :""
+    },
+    "59":   {   "name"          :"IoT bridge 4",
+        "sensors"       :["proximity","light","colorLight"],
+        "board"         :"STM32_Dongle",
+        "devices"       :["nRF24"],
+        "uc_uid"        :""
+    },
+    "60":   {   "name"          :"IoT bridge 5",
+        "sensors"       :["proximity","light","colorLight"],
+        "board"         :"STM32_Dongle",
+        "devices"       :["nRF24"],
+        "uc_uid"        :""
         }
+    
 }
