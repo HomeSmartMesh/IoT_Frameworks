@@ -52,6 +52,13 @@
 #include "boards.h"
 #include "app_util.h"
 
+#define NodeId 50
+#define RF_CHANNEL 2
+
+#define Mesh_Pid_Alive 0x05
+#define Mesh_Pid_Reset 0x04
+
+
 #define RESET_MEMORY_TEST_BYTE  (0x0DUL)        /**< Known sequence written to a special register to check if this wake up is from System OFF. */
 #define RAM_RETENTION_OFF       (0x00000003UL)  /**< The flag used to turn off RAM retention on nRF52. */
 
@@ -156,7 +163,7 @@ uint32_t esb_init( void )
     err_code = nrf_esb_set_prefixes(addr_prefix, 8);
     VERIFY_SUCCESS(err_code);
 
-    err_code = nrf_esb_set_rf_channel(2);
+    err_code = nrf_esb_set_rf_channel(RF_CHANNEL);
     VERIFY_SUCCESS(err_code);
 
     tx_payload.length  = 8;
@@ -175,25 +182,8 @@ uint32_t esb_tx_button(uint8_t state)
     tx_payload.pipe     = 0;
     
     tx_payload.data[0] = 0x06;//pid
-    tx_payload.data[1] = 44;//source - on_off_tag
+    tx_payload.data[1] = NodeId;//source - on_off_tag
     tx_payload.data[2] = state;//Up or Down
-    
-    tx_payload.noack = true;
-    err_code = nrf_esb_write_payload(&tx_payload);
-    VERIFY_SUCCESS(err_code);
-
-    return NRF_SUCCESS;
-}
-
-uint32_t esb_tx_alive()
-{
-    uint32_t err_code;
-    tx_payload.length   = 1;//payload + header (crc length not included)
-    tx_payload.control = 0xF5;// broadcast | 0x75
-    tx_payload.noack    = true;//it is a broadcast
-    tx_payload.pipe     = 0;
-    
-    tx_payload.data[0] = 0x15;//source
     
     tx_payload.noack = true;
     err_code = nrf_esb_write_payload(&tx_payload);
@@ -210,7 +200,7 @@ uint32_t esb_tx_light_on()
     tx_payload.noack    = true;//it is a broadcast
     tx_payload.pipe     = 0;
     
-    tx_payload.data[0] = 0x15;//source
+    tx_payload.data[0] = NodeId;//source
     tx_payload.data[1] = 0x19;//dest
     tx_payload.data[2] = 0xA0;//msb
     tx_payload.data[3] = 0x00;//lsb
@@ -230,7 +220,7 @@ uint32_t esb_tx_light_off()
     tx_payload.noack    = true;//it is a broadcast
     tx_payload.pipe     = 0;
     
-    tx_payload.data[0] = 0x15;//source
+    tx_payload.data[0] = NodeId;//source
     tx_payload.data[1] = 0x19;//dest
     tx_payload.data[2] = 0x00;//msb
     tx_payload.data[3] = 0x00;//lsb

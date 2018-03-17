@@ -110,4 +110,4 @@ flash: $(OUTPUT_DIRECTORY)/nrf51822_xxaa.hex
 	nrfjprog --reset -f nrf51
 
 erase:
-	nrfjprog --eraseall -f nrf52
+	nrfjprog --eraseall -f nrf51
