@@ -91,7 +91,7 @@
                 "devices"       :["nRF24_pa_lna"],
                 "uc_uid"        :"0x39 00 68 06 31 42 30 38 53 35 03 43"
             },
-    "28":   {   "name"          :"HCI Tester",
+    "28":   {   "name"          :"Bed Heater",
         "function"      :"repeater",
         "board"         :"STM32_Dongle",
         "program"       :"rf_bridge",
@@ -142,7 +142,7 @@
                 "data"   :["power"],
                 "gateway"    :"Wemo"
             },
-    "38":   {   "name"          :"Tester PA Alu",
+    "38":   {   "name"          :"Raspi LA gateway",
         "function"      :"repeater",
         "board"         :"STM32_Dongle",
         "program"       :"rf_bridge",
@@ -172,12 +172,12 @@
         "program"       :"esb_low_power_ptx",
         "uid"           :"?"
         },
-    "43":   {   "name"          :"Button_4",
+    "43":   {   "name"          :"Gray Happy",
         "board"         :"nRF51_Beacon",
         "program"       :"esb_low_power_ptx",
         "uid"           :"?"
         },
-    "44":   {   "name"          :"Btn_Angry",
+    "44":   {   "name"          :"Gray Angry",
         "board"         :"nRF51_Beacon",
         "program"       :"esb_low_power_ptx",
         "uid"           :"?"

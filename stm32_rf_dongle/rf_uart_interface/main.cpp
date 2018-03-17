@@ -265,7 +265,7 @@ int main()
 		}
 		if(is_heat_toSend)
 		{
-			uint8_t nbret = hsm.send_byte(rf::pid::heat,tab_send[0],tab_send[1]);//pid, dest, val
+			uint8_t nbret = hsm.send_byte(rf::pid::heat,tab_send[0],tab_send[1],true,0);//pid, dest, val
 			if(nbret == 0)
 			{
 				rasp.printf("send_heat fail\r");

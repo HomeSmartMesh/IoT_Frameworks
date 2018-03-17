@@ -34,16 +34,29 @@ uint8_t tick_cycle = 0;
 
 void rf_message_to_me(uint8_t *data,uint8_t size)
 {
+	rasp.printf("RX(%d)> ",size);
+	print_tab(&rasp,data,size);
 	if(data[rf::ind::pid] == rf::pid::heat)
 	{
-		heat_val = data[4];//heat_val payload : Size Pid  SrcId TrgId  HeatVal CRC
+		uint8_t heat_cmd = data[5];//heat_val payload : Size Control Pid  SrcId TrgId  HeatVal CRC
+		if(heat_cmd == 11)
+		{
+			heat_val += 2;//Up go up quickly, significant step
+		}
+		else if(heat_cmd == 12)
+		{
+			if(heat_val > 0)
+			{
+				heat_val--;//decrease slowly
+			}//else do nothing, already off
+		}
+		else if(heat_cmd <= 10)//direct value order
+		{
+			heat_val = heat_cmd;
+		}
+
 		tick_cycle = 0;//restart a new cycle for immidiate application
 		rasp.printf("stm32_heater> (From RF) Set Heat Val to %d\r",heat_val);
-	}
-	else
-	{
-		rasp.printf("RX(%d)> ",size);
-		print_tab(&rasp,data,size);
 	}
 
 }
