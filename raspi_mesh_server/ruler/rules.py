@@ -57,3 +57,19 @@ def RGB_Tester_Single(input):
     else:
         log.debug("RGB_Tester_Single() skipped sent since %f",delay)
     return result
+
+def Button_To_Heat_Up(input):
+    log.debug("Button_To_Heat_Up>input(%s)",input)
+    if(float(input) == 1.0):
+        result = 11
+    else:
+        result = None # ignored, do nothing
+    return result
+
+def Button_To_Heat_Down(input):
+    log.debug("Button_To_Heat_Down>input(%s)",input)
+    if(float(input) == 1.0):
+        result = 12
+    else:
+        result = None # ignored, do nothing
+    return result
