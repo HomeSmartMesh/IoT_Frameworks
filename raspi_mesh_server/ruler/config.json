@@ -14,7 +14,7 @@
             "input":"Nodes/7/humidity",
             "output":"jNodes/23/RGB",
             "description":"indicate when the bathroom is humid",
-            "enable" : false
+            "enable" : true
         },
         "Sleeproom_Light_Up":{
             "input":"Nodes/29/proximity",
@@ -33,6 +33,18 @@
             "output":"jNodes/24/RGB",
             "description":"Test the proxymity sensor with an RGB LED",
             "enable" : false
+        },
+        "Button_To_Heat_Up":{
+            "input":"Nodes/43/button",
+            "output":"Nodes/28/heat",
+            "description":"Increases the heat Up",
+            "enable" : true
+        },
+        "Button_To_Heat_Down":{
+            "input":"Nodes/44/button",
+            "output":"Nodes/28/heat",
+            "description":"Decrease the heat Down",
+            "enable" : true
         }
     }
 }
