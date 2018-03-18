@@ -106,7 +106,7 @@
         "program"       :"",
         "commit"        :"",
         "devices"       :["nRF24"],
-        "uc_uid"        :"0x48 FF 76 06 51 87 50 49 21 10 12 87"
+        "uc_uid"        :"0x48 FF 6E 06 48 83 52 57 36 29 23 87"
         },
     "30":   {   "name"          :"TV Set Power",
         "function"      :"",
@@ -237,31 +237,31 @@
         "program"       :"nRF51_Beacon",
         "uid"           :"?"
     },
-    "56":   {   "name"          :"IoT bridge 1",
+    "56":   {   "name"          :"IoT action 1 PA",
+        "sensors"       :["proximity","light","colorLight"],
+        "board"         :"STM32_Dongle",
+        "devices"       :["nRF24_pa_lna"],
+        "uc_uid"        :"0x55 FF 6B 06 49 70 49 50 40 53 01 87"
+    },
+    "57":   {   "name"          :"IoT action 2",
         "sensors"       :["proximity","light","colorLight"],
         "board"         :"STM32_Dongle",
         "devices"       :["nRF24"],
-        "uc_uid"        :""
+        "uc_uid"        :"0x52 FF 71 06 49 86 57 48 25 27 11 87"
     },
-    "57":   {   "name"          :"IoT bridge 2",
+    "58":   {   "name"          :"IoT action 3 flat",
+        "sensors"       :["proximity","light","colorLight"],
+        "board"         :"STM32_Dongle_v2",
+        "devices"       :["nRF24"],
+        "uc_uid"        :"0x48 FF 6E 06 50 65 51 51 41 20 03 87"
+    },
+    "59":   {   "name"          :"IoT action 4",
         "sensors"       :["proximity","light","colorLight"],
         "board"         :"STM32_Dongle",
         "devices"       :["nRF24"],
-        "uc_uid"        :""
+        "uc_uid"        :"0x57 FF 74 06 49 85 55 52 45 35 10 87"
     },
-    "58":   {   "name"          :"IoT bridge 3",
-        "sensors"       :["proximity","light","colorLight"],
-        "board"         :"STM32_Dongle",
-        "devices"       :["nRF24"],
-        "uc_uid"        :""
-    },
-    "59":   {   "name"          :"IoT bridge 4",
-        "sensors"       :["proximity","light","colorLight"],
-        "board"         :"STM32_Dongle",
-        "devices"       :["nRF24"],
-        "uc_uid"        :""
-    },
-    "60":   {   "name"          :"IoT bridge 5",
+    "60":   {   "name"          :"IoT action 5",
         "sensors"       :["proximity","light","colorLight"],
         "board"         :"STM32_Dongle",
         "devices"       :["nRF24"],

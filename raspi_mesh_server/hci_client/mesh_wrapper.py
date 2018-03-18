@@ -1,5 +1,7 @@
 import cfg
 import serial_wrapper as ser
+import datetime
+import time
 
 nodes = cfg.get_local_nodes("../../config/nodes.json")
 
@@ -171,7 +173,8 @@ def send_msg(payload):
     return
 
 def serial_on_line(line):
-    line_print = ""
+    line_print = datetime.datetime.now().strftime("%M:%S:")
+    line_print+= str(int(round((time.time() * 1000)%1000))).zfill(3)+' '
     line_parse = parse_rf_text(line)
     if(line_parse):
         line_print += line_parse + " | "
@@ -183,12 +186,14 @@ def serial_on_line_dep(line):
     ind_split = line.find(":0x")
     line_type = line[0:ind_split]
     line_data = line[ind_split+3:]
+    #timestamp = datetime.datetime.fromtimestamp(datetime.time()).strftime('%M:%S ')
+    timestamp = datetime.datetime.now().time()
     if( (line_type == "sniff") or (line_type == "msg") or\
         (line_type == "resp") or (line_type == "bcast")  ):
         data = bytearray.fromhex(line_data)
-        print(line_type,">",parse_rf_data(data))
+        print(timestamp,line_type,">",parse_rf_data(data))
     else:
-        print("text>%s | %s" % (line,parse_rf_text(line)))
+        print("%stext>%s | %s" % (timestamp,line,parse_rf_text(line)))
     return
 
 def run():
