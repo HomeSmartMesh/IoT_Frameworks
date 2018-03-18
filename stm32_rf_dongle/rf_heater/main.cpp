@@ -30,6 +30,7 @@ const uint8_t HEAT_MAX = 10;
 
 uint8_t heat_val = 0;
 uint8_t tick_cycle = 0;
+bool is_user_act = false;
 
 
 void rf_message_to_me(uint8_t *data,uint8_t size)
@@ -42,6 +43,10 @@ void rf_message_to_me(uint8_t *data,uint8_t size)
 		if(heat_cmd == 11)
 		{
 			heat_val += 2;//Up go up quickly, significant step
+			if(heat_val > 10)
+			{
+				heat_val = 10;
+			}
 		}
 		else if(heat_cmd == 12)
 		{
@@ -57,6 +62,7 @@ void rf_message_to_me(uint8_t *data,uint8_t size)
 
 		tick_cycle = 0;//restart a new cycle for immidiate application
 		rasp.printf("stm32_heater> (From RF) Set Heat Val to %d\r",heat_val);
+		is_user_act = true;
 	}
 
 }
@@ -119,21 +125,23 @@ void init()
 
 const float one_minute = 60;
 
-void set_heat_and_log(uint8_t heat,uint8_t min)
+void long_wait(uint8_t min)
 {
-	heat_val = heat;
-	hsm.broadcast_byte(rf::pid::heat,heat_val);
-	rasp.printf("stm32_heater> Level %u : for %u min\n",heat,min);
+	//hsm.broadcast_byte(rf::pid::heat,heat_val);
+	rasp.printf("stm32_heater> Level %u : for %u min\n",heat_val,min);
 	wait(min * one_minute);
-
 }
 
-void run_heater_program()
+void pulse_heat(uint8_t val)
 {
-	set_heat_and_log(10,5);//Level 10 for 5 min
-	set_heat_and_log(7,10);
-	set_heat_and_log(5,30);
-	set_heat_and_log(2,60);
+	heat_val = val;
+	long_wait(5);//Level 10 for 5 min
+	if(heat_val > 3 )heat_val-=3;
+	long_wait(10);//l 7
+	if(heat_val > 2 )heat_val-=2;
+	long_wait(30);//l 5
+	if(heat_val > 2 )heat_val-=3;
+	long_wait(60);//l 2
 }
 
 int main() 
@@ -153,7 +161,7 @@ int main()
 	hsm.broadcast(rf::pid::reset);
 	wait(1);
 	
-	run_heater_program();
+	pulse_heat(10);//friendly to user increase decrease
 	//after the run_heater_program, the heat_cal stays at 2
 
 	//heat_val = 0;rasp.printf("stm32_heater> Program Over\r");
@@ -164,6 +172,6 @@ int main()
 		{
 			heat_val--;
 		}
-		set_heat_and_log(heat_val,10);//here we wait 10 min
+		long_wait(10);//here we wait 10 min
 	}
 }
