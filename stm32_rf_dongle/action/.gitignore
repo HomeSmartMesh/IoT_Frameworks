@@ -4,6 +4,6 @@ BUILD/
 mbed-os/
 nrf-mesh/
 crc/
-APDS_9960/
+APDS9960/
 ws2812B/
 BME280/

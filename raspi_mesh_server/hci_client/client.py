@@ -176,6 +176,7 @@ def test_rf_remote():
     return
 
 # -------------------- main -------------------- 
+#python client.py COM4 22 10
 config = cfg.get_local_json()
 
 cfg.configure_log(config["log"])

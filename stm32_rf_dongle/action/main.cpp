@@ -8,16 +8,16 @@
 //--------------------------------------------------------------------------------------
 //APDS9960 (Colorlight sensor, gesture)
 #define USE_APDS_SENSOR 		1
-#define USE_APDS_LIGHT 			1
+#define USE_APDS_LIGHT 			0
 #define USE_APDS_GESTURE 		0
-#define USE_APDS_PROXIMITY 		0
+#define USE_APDS_PROXIMITY 		1
 
 #define SEND_ALIVE  			1
 #define APDS_SEND_RGB_DEMO 		0
 
-#define LOOP_MS_WAIT			10
+#define LOOP_MS_WAIT			1
 
-#define ALIVE_PERIOD			300
+#define ALIVE_PERIOD			100
 #define ALIVE_OFFSET			0
 
 #define LIGHT_PERIOD 			300
@@ -42,6 +42,8 @@ Serial   pc(PB_10, PB_11, 115200);
 
 #include "ws2812B.h"
 ws2812B rgb_led(PB_13);
+//DigitalOut debug_pin(PB_13);
+
 
 #include "glibr.h"
 glibr gsensor(PB_7,PB_6);
@@ -66,12 +68,121 @@ uint8_t rf_requester = 0;
 uint8_t msg_size = 0;
 uint8_t tab_send[32];
 
-uint8_t cmd_to_exec;//0 if no command to execute
+uint8_t cmd_to_exec = 0;//0 if no command to execute
 uint8_t cmd_params[32];
 uint8_t cmd_params_size;
 
 uint32_t ticks = 0;
 bool is_newtick = false;
+
+namespace talk
+{
+	uint8_t const idle 				= 0x0;
+	uint8_t const speak 			= 0x1;
+	uint8_t const listen 			= 0x2;
+	uint8_t const requesting		= 0x3;
+	uint8_t const requested_from 	= 0x4;
+
+	uint8_t status = idle;
+}
+
+void set_color(uint8_t r,uint8_t g,uint8_t b)
+{
+	uint8_t lr,lg,lb;
+	rgb_led.get(lr,lg,lb);
+	if( (lr != r) || (lg != g) || (lb != b) )
+	{
+		rgb_led.set(r,g,b);//Red
+	}
+}
+
+void set_red()		{	set_color(0x0F,0,0);}
+void set_green()	{	set_color(0,0x0F,0);}
+void set_blue()		{	set_color(0,0,0x0F);}
+void set_yellow()	{	set_color(0x0F,0x0F,0);}
+void set_orange()	{	set_color(0x0F,0x05,0);}
+
+
+void apply_color_status()
+{
+	switch(talk::status)
+	{
+		case talk::idle : 
+			set_blue();
+			break;
+		case talk::speak : 
+			set_green();
+			break;
+		case talk::listen : 
+			set_red();
+			break;
+		case talk::requesting : 
+			set_orange();
+			break;
+		case talk::requested_from : 
+			set_yellow();
+			break;
+	}
+}
+
+void self_acted()
+{
+	switch(talk::status)
+	{
+		case talk::idle : 
+			talk::status = talk::speak;
+			break;
+		case talk::speak : 
+			talk::status = talk::idle;
+			break;
+		case talk::listen : 
+			talk::status = talk::requesting;
+			break;
+		case talk::requesting : 
+			talk::status = talk::listen;
+			break;
+		case talk::requested_from : 
+			talk::status = talk::listen;
+			break;
+	}
+	apply_color_status();
+	pc.printf("Self acted State:%u\r\n",talk::status);
+	wait(2);
+}
+
+void other_acted()
+{
+	switch(talk::status)
+	{
+		case talk::idle : 
+			talk::status = talk::listen;
+			break;
+		case talk::speak :
+			talk::status = talk::requested_from;
+			break;
+		case talk::listen :
+			talk::status = talk::listen;
+			break;
+		case talk::requesting : 
+			talk::status = talk::speak;
+			break;
+		case talk::requested_from :
+			talk::status = talk::requested_from;
+			break;
+	}
+	apply_color_status();
+	pc.printf("Other acted State:%u\r\n",talk::status);
+	wait(2);
+}
+
+void i2c_recover()
+{
+	pc.printf("i2c error - ");
+	gsensor.i2c.stop();
+	gsensor.i2c.frequency(100000);
+	//wait(1);
+	pc.printf("restart__________________________\n");
+}
 
 void handle_cmd(uint8_t cmd)
 {
@@ -153,6 +264,7 @@ void the_ticker()
 
 void rf_message(uint8_t *data,uint8_t size)
 {
+	//debug_pin = 1;
 	
 	if(data[rf::ind::pid] == rf::pid::rgb)
 	{
@@ -176,19 +288,14 @@ void rf_message(uint8_t *data,uint8_t size)
 		}
 		//print_tab(&pc,cmd_params,cmd_params_size);
 	}
+	//debug_pin = 0;
 }
+
 void rf_broadcast(uint8_t *data,uint8_t size)
 {
-	if(F_NODEID == 57)//57 is IoT action 2
+	if(data[rf::ind::pid] == rf::pid::proximity)
 	{
-		if(data[rf::ind::pid] == rf::pid::acceleration)
-		{
-			uint8_t red = data[5];		//from x
-			uint8_t green = data[7];	//from y
-			uint8_t blue = data[9];		//from z
-			rgb_led.set(red,green,blue);
-			pc.printf("R:%u;G:%u;B:%u\r\n",red,green,blue);
-		}
+		other_acted();
 	}
 }
 
@@ -211,10 +318,10 @@ void init()
 
 	hsm.setNodeId(F_NODEID);
 
-	hsm.setRetries(10);
-	hsm.setAckDelay(400);
+	hsm.setRetries(2);
+	hsm.setAckDelay(10);
 	
-	//hsm.print_nrf();
+	hsm.print_nrf();
 
 	#if( 	(USE_APDS_SENSOR == 1) || (USE_APDS_GESTURE == 1) || \
 			(USE_APDS_PROXIMITY == 1) || (USE_APDS_LIGHT == 1) )
@@ -247,7 +354,7 @@ void test_RGB()
         wait(0.3);
         rgb_led.set(0x00,0x00,0x0F);
         wait(0.3);
-        rgb_led.set(0x00,0x00,0x00);
+        rgb_led.set(0x00,0x00,0x08);
 }
 
 #if(USE_APDS_GESTURE == 1)
@@ -266,57 +373,21 @@ void apds_poll_gesture()
 }
 #endif
 
-#if(USE_APDS_PROXIMITY == 1)
 void apds_poll_proximity()
 {
 	uint8_t val;
-	gsensor.readProximity(val);
-	if(val > 25)
+	if(gsensor_available)
 	{
-		led_count = 1;
-		//pc.printf("NodeId:%u;proximity:%u\n",F_NODEID,val);//slows down the 10 ms loop
-		#if(APDS_SEND_RGB_DEMO == 1)
-			uint8_t r = val;
-			uint8_t g = 0;
-			uint8_t b = 255-val;
-			hsm.send_rgb(24,r,g,b,false);
-		#else
-			hsm.broadcast_byte(rf::pid::proximity,val);
-		#endif
-	}
-}
-#endif
-
-#if(USE_APDS_LIGHT == 1)
-void apds_log_light_colors()
-{
-	static uint16_t light_count = LIGHT_OFFSET;
-
-	if(light_count != 0)
-	{
-		light_count--;
-		//do nothing
-	}
-	else
-	{
-		light_count = LIGHT_PERIOD;//refill the counter
-		if(gsensor_available)
+		bool res_ok = gsensor.readProximity(val);
+		if(!res_ok) i2c_recover();
+		if(val > 25)
 		{
-			uint16_t light_rgb[4];
-			gsensor.readAmbientLight(light_rgb[0]);
-			gsensor.readRedLight(light_rgb[1]);
-			gsensor.readGreenLight(light_rgb[2]);
-			gsensor.readBlueLight(light_rgb[3]);
-			hsm.broadcast_light_rgb(light_rgb);
-			//expected at rx gateway side
-			pc.printf("NodeId:%u;light:%u;red:%u,green:%u;blue:%u\r\n",F_NODEID,light_rgb[0],light_rgb[1],light_rgb[2],light_rgb[3]);
-			//59 is IoT action 4
+			led_count = 1;
+			hsm.broadcast_byte(rf::pid::proximity,val);
+			self_acted();
 		}
 	}
-
-
 }
-#endif
 
 void alive_log()
 {
@@ -384,19 +455,35 @@ void poll_colors()
 {
 	if(gsensor_available)
 	{
+		bool res_ok;
 		uint16_t light_rgb[4];
-		gsensor.readRedLight(light_rgb[1]);
-		gsensor.readGreenLight(light_rgb[2]);
-		gsensor.readBlueLight(light_rgb[3]);
-		rgb_led.set(light_rgb[1]>>3,light_rgb[2]>>3,light_rgb[3]>>3);
-		if(F_NODEID == 58)//58 is IoT action 3 flat
+		//pc.printf("X\n");
+		res_ok = gsensor.readRedLight(light_rgb[1]);
+		if(!res_ok) i2c_recover();
+		res_ok = gsensor.readGreenLight(light_rgb[2]);
+		if(!res_ok) i2c_recover();
+		res_ok = gsensor.readBlueLight(light_rgb[3]);
+		if(!res_ok) i2c_recover();
+		if(F_NODEID == 255)//58 is IoT action 3 flat
 		{
-			static int div = 0;
-			if(((div++) % 10) == 0)
+			//static int div = 0;
+			//if(((div++) % 10) == 0)
 			{
-				hsm.send_rgb(59,light_rgb[1]>>3,light_rgb[2]>>3,light_rgb[3]>>3);
-				pc.printf("sending rgb to 59\r\n");
+				uint8_t res = hsm.send_rgb(22,light_rgb[1]>>3,light_rgb[2]>>3,light_rgb[3]>>3);
+						pc.printf("sent rgb to 22(%d),",res);
+						res = hsm.send_rgb(24,light_rgb[1]>>3,light_rgb[2]>>3,light_rgb[3]>>3);
+						pc.printf("24(%d),",res);
+						res = hsm.send_rgb(59,light_rgb[1]>>3,light_rgb[2]>>3,light_rgb[3]>>3);
+						pc.printf("59(%d),",res);
+						res = hsm.send_rgb(57,light_rgb[1]>>3,light_rgb[2]>>3,light_rgb[3]>>3);
+						pc.printf("57(%d),",res);
+						res = hsm.send_rgb(56,light_rgb[1]>>3,light_rgb[2]>>3,light_rgb[3]>>3);
+						pc.printf("56(%d)\r\n",res);
 			}
+		}
+		else
+		{
+			//rgb_led.set(light_rgb[1]>>3,light_rgb[2]>>3,light_rgb[3]>>3);
 		}
 	}
 }
@@ -413,17 +500,21 @@ int main()
     
     while(1) 
     {
+		//pc.printf("m\n");
+		//rgb_led.set(0x0F,0,0);
 		wait_ms(LOOP_MS_WAIT);
-
-		rf_bridge_delegate();//cyclic check if bridge has to send from main context
 		
+		poll_colors();//2.63 ms
+	
 		if(hsm.nRFIrq.read() == 0)
 		{
 			pc.printf("irq pin Low, missed interrupt, re init()\n");
 			hsm.init(F_CHANNEL);
 			hsm.broadcast(rf::pid::reset);//notify if this issue happens
+			hsm.print_nrf();
 			wait(5);//avoid fast cyclic reset
 		}
+		//rgb_led.set(0,0x0F,0);
 
 		if(cmd_to_exec)
 		{
@@ -432,9 +523,9 @@ int main()
 			is_rf_request = false;
 		}
 
-		cyclic_rf_send();
+		//cyclic_rf_send();
 
-		poll_colors();
+		//rgb_led.set(0,0,0x0F);
 
 		#if(USE_APDS_PROXIMITY == 1)
 			apds_poll_proximity();
