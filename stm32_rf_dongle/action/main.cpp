@@ -49,9 +49,15 @@ ws2812B rgb_led(PB_13);
 glibr gsensor(PB_7,PB_6);
 bool gsensor_available = false;
 
+
+
 uint8_t spi_module = 1;
 //nRF Modules 1:Gnd, 2:3.3v, 3:ce,  4:csn, 5:sck, 6:mosi, 7:miso, 8:irq 
 RfMesh hsm(&pc,spi_module,           PC_15, PA_4, PA_5,   PA_7,  PA_6,    PA_0);
+
+
+#include "talk.h"
+talk_node tl(&hsm,&pc,&rgb_led);
 
 Proto    prf(&pc);
 DigitalOut myled(PC_13);
@@ -61,7 +67,6 @@ uint8_t led_count = 0;
 
 uint8_t payload[32];
 
-bool is_rgb_toSend = false;
 bool is_msg_toSend = false;
 bool is_rf_request = false;
 uint8_t rf_requester = 0;
@@ -74,106 +79,6 @@ uint8_t cmd_params_size;
 
 uint32_t ticks = 0;
 bool is_newtick = false;
-
-namespace talk
-{
-	uint8_t const idle 				= 0x0;
-	uint8_t const speak 			= 0x1;
-	uint8_t const listen 			= 0x2;
-	uint8_t const requesting		= 0x3;
-	uint8_t const requested_from 	= 0x4;
-
-	uint8_t status = idle;
-}
-
-void set_color(uint8_t r,uint8_t g,uint8_t b)
-{
-	uint8_t lr,lg,lb;
-	rgb_led.get(lr,lg,lb);
-	if( (lr != r) || (lg != g) || (lb != b) )
-	{
-		rgb_led.set(r,g,b);//Red
-	}
-}
-
-void set_red()		{	set_color(0x0F,0,0);}
-void set_green()	{	set_color(0,0x0F,0);}
-void set_blue()		{	set_color(0,0,0x0F);}
-void set_yellow()	{	set_color(0x0F,0x0F,0);}
-void set_orange()	{	set_color(0x0F,0x05,0);}
-
-
-void apply_color_status()
-{
-	switch(talk::status)
-	{
-		case talk::idle : 
-			set_blue();
-			break;
-		case talk::speak : 
-			set_green();
-			break;
-		case talk::listen : 
-			set_red();
-			break;
-		case talk::requesting : 
-			set_orange();
-			break;
-		case talk::requested_from : 
-			set_yellow();
-			break;
-	}
-}
-
-void self_acted()
-{
-	switch(talk::status)
-	{
-		case talk::idle : 
-			talk::status = talk::speak;
-			break;
-		case talk::speak : 
-			talk::status = talk::idle;
-			break;
-		case talk::listen : 
-			talk::status = talk::requesting;
-			break;
-		case talk::requesting : 
-			talk::status = talk::listen;
-			break;
-		case talk::requested_from : 
-			talk::status = talk::listen;
-			break;
-	}
-	apply_color_status();
-	pc.printf("Self acted State:%u\r\n",talk::status);
-	wait(2);
-}
-
-void other_acted()
-{
-	switch(talk::status)
-	{
-		case talk::idle : 
-			talk::status = talk::listen;
-			break;
-		case talk::speak :
-			talk::status = talk::requested_from;
-			break;
-		case talk::listen :
-			talk::status = talk::listen;
-			break;
-		case talk::requesting : 
-			talk::status = talk::speak;
-			break;
-		case talk::requested_from :
-			talk::status = talk::requested_from;
-			break;
-	}
-	apply_color_status();
-	pc.printf("Other acted State:%u\r\n",talk::status);
-	wait(2);
-}
 
 void i2c_recover()
 {
@@ -266,6 +171,11 @@ void rf_message(uint8_t *data,uint8_t size)
 {
 	//debug_pin = 1;
 	
+	if(data[rf::ind::pid] == rf::pid::talk)
+	{
+		tl.message(data,size);
+	}
+
 	if(data[rf::ind::pid] == rf::pid::rgb)
 	{
 		uint8_t red = data[5];
@@ -293,9 +203,9 @@ void rf_message(uint8_t *data,uint8_t size)
 
 void rf_broadcast(uint8_t *data,uint8_t size)
 {
-	if(data[rf::ind::pid] == rf::pid::proximity)
+	if(data[rf::ind::pid] == rf::pid::talk)
 	{
-		other_acted();
+		tl.broadcast(data,size);
 	}
 }
 
@@ -384,7 +294,7 @@ void apds_poll_proximity()
 		{
 			led_count = 1;
 			hsm.broadcast_byte(rf::pid::proximity,val);
-			self_acted();
+			tl.self_acted();
 		}
 	}
 }
@@ -430,63 +340,7 @@ void test_channel()
 	#endif
 }
 
-void cyclic_rf_send()
-{
-	if(!is_newtick)
-	{
-		return;
-	}
-	is_newtick = false;
 
-	#if(USE_APDS_LIGHT == 1)
-		apds_log_light_colors();
-	#endif
-
-	#if (SEND_ALIVE == 1)
-		alive_log();
-	#endif
-	
-	#if (TEST_RUN == 1)
-		test_channel();
-	#endif
-}
-
-void poll_colors()
-{
-	if(gsensor_available)
-	{
-		bool res_ok;
-		uint16_t light_rgb[4];
-		//pc.printf("X\n");
-		res_ok = gsensor.readRedLight(light_rgb[1]);
-		if(!res_ok) i2c_recover();
-		res_ok = gsensor.readGreenLight(light_rgb[2]);
-		if(!res_ok) i2c_recover();
-		res_ok = gsensor.readBlueLight(light_rgb[3]);
-		if(!res_ok) i2c_recover();
-		if(F_NODEID == 255)//58 is IoT action 3 flat
-		{
-			//static int div = 0;
-			//if(((div++) % 10) == 0)
-			{
-				uint8_t res = hsm.send_rgb(22,light_rgb[1]>>3,light_rgb[2]>>3,light_rgb[3]>>3);
-						pc.printf("sent rgb to 22(%d),",res);
-						res = hsm.send_rgb(24,light_rgb[1]>>3,light_rgb[2]>>3,light_rgb[3]>>3);
-						pc.printf("24(%d),",res);
-						res = hsm.send_rgb(59,light_rgb[1]>>3,light_rgb[2]>>3,light_rgb[3]>>3);
-						pc.printf("59(%d),",res);
-						res = hsm.send_rgb(57,light_rgb[1]>>3,light_rgb[2]>>3,light_rgb[3]>>3);
-						pc.printf("57(%d),",res);
-						res = hsm.send_rgb(56,light_rgb[1]>>3,light_rgb[2]>>3,light_rgb[3]>>3);
-						pc.printf("56(%d)\r\n",res);
-			}
-		}
-		else
-		{
-			//rgb_led.set(light_rgb[1]>>3,light_rgb[2]>>3,light_rgb[3]>>3);
-		}
-	}
-}
 
 int main() 
 {
@@ -504,8 +358,6 @@ int main()
 		//rgb_led.set(0x0F,0,0);
 		wait_ms(LOOP_MS_WAIT);
 		
-		poll_colors();//2.63 ms
-	
 		if(hsm.nRFIrq.read() == 0)
 		{
 			pc.printf("irq pin Low, missed interrupt, re init()\n");
@@ -522,8 +374,6 @@ int main()
 			cmd_to_exec = 0;
 			is_rf_request = false;
 		}
-
-		//cyclic_rf_send();
 
 		//rgb_led.set(0,0,0x0F);
 
