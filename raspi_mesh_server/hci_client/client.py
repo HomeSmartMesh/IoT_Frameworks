@@ -176,7 +176,7 @@ def test_rf_remote():
     return
 
 # -------------------- main -------------------- 
-#python client.py COM4 22 10
+#python client.py COM4 24 10
 config = cfg.get_local_json()
 
 cfg.configure_log(config["log"])
@@ -202,8 +202,8 @@ if(len(sys.argv)>=4):
     chan = int(sys.argv[3])
 
 print("HCI Node %d on chan %d" % (node_id,chan))
-set_rx("msg",0)
-set_rx("bcast",0)
-set_rx("resp",0)
+set_rx("msg",1)
+set_rx("bcast",1)
+set_rx("resp",1)
 set_retries(retries=10,delay=20)
 listen(chan)

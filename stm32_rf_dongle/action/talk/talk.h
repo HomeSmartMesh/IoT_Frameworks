@@ -38,24 +38,30 @@ namespace talk
 	uint8_t const requesting		= 0x4;
 	uint8_t const requested_from 	= 0x5;
 
+	uint8_t const online   		    = 0xF;
 }
 
 
 class talk_node
 {
 public:
-    talk_node(RfMesh* p_mesh,Serial* p_ser,ws2812B *p_led);
+    talk_node(RfMesh* p_mesh,Serial* p_ser,ws2812B *p_led,uint8_t l_id);
     void self_acted();
     void other_acted();
     void broadcast(uint8_t *data,uint8_t size);
     void message(uint8_t *data,uint8_t size);
 
+    void add_node(uint8_t wake_id);
+    void get_nodes(uint8_t *data);
+
 	uint8_t status;
+	uint8_t master;
 
 private:
     RfMesh* mesh;
     Serial* ser;
     ws2812B* led;
+    uint8_t node_id;
     
     void set_color(uint8_t r,uint8_t g,uint8_t b);
     void set_red();

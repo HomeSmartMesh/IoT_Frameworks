@@ -57,7 +57,7 @@ RfMesh hsm(&pc,spi_module,           PC_15, PA_4, PA_5,   PA_7,  PA_6,    PA_0);
 
 
 #include "talk.h"
-talk_node tl(&hsm,&pc,&rgb_led);
+talk_node tl(&hsm,&pc,&rgb_led,F_NODEID);
 
 Proto    prf(&pc);
 DigitalOut myled(PC_13);
@@ -267,23 +267,7 @@ void test_RGB()
         rgb_led.set(0x00,0x00,0x08);
 }
 
-#if(USE_APDS_GESTURE == 1)
-void apds_poll_gesture()
-{
-	uint8_t gest = rf::gest::none;
-	if ( gsensor.isGestureAvailable() ) 
-	{
-		gest = (uint8_t) gsensor.readGesture();
-		if(gest)
-		{
-			hsm.broadcast_byte(rf::pid::gesture,gest);
-			//pc.printf("NodeId:%u;gesture:%u\r\n",F_NODEID,gest);//expected at rx gateway side
-		}
-	}
-}
-#endif
-
-void apds_poll_proximity()
+void check_action()
 {
 	uint8_t val;
 	if(gsensor_available)
@@ -292,55 +276,10 @@ void apds_poll_proximity()
 		if(!res_ok) i2c_recover();
 		if(val > 25)
 		{
-			led_count = 1;
-			hsm.broadcast_byte(rf::pid::proximity,val);
 			tl.self_acted();
 		}
 	}
 }
-
-void alive_log()
-{
-	static uint16_t alive_count = ALIVE_OFFSET;
-	if(alive_count != 0)
-	{
-		alive_count--;
-		return;
-	}
-
-	hsm.broadcast(rf::pid::alive);
-
-	alive_count = ALIVE_PERIOD;
-}
-
-void test_channel()
-{
-	#if (TEST_RUN == 1)
-		static uint16_t test_count = TEST_OFFSET;
-
-		if(test_count != 0)
-		{
-			test_count--;
-			return;
-		}
-		pc.printf("testing channel\n");
-		uint8_t nb_success = hsm.test_rf(TEST_TARGET,TEST_CHANNEL);
-		pc.printf("nb_success:%d\n",nb_success);
-		float col_g = nb_success;
-		col_g = col_g * 255 / 100;
-		float col_r = 100-nb_success;
-		col_r = col_r * 255 / 100;
-		uint8_t green = col_g;
-		uint8_t red = col_r;
-		pc.printf("colors: red:%u, green:%u\n",red,green);
-        rgb_led.set(col_r,col_g,0x00);
-        wait(1.0);
-        rgb_led.set(0x00,0x00,0x00);
-		test_count = TEST_PERIOD;
-	#endif
-}
-
-
 
 int main() 
 {
@@ -348,9 +287,14 @@ int main()
 
 	test_RGB();
 
-	hsm.broadcast(rf::pid::reset);
+	pc.printf("talk>Started in offline mode\n");
+	while(tl.status == talk::offline)
+	{
+		pc.printf("talk>Broadcasting\n");
+		hsm.broadcast_byte(rf::pid::talk,rf::talk::wakeup);
+		wait_ms(500);
+	}
 
-	pc.printf("main>into the while\n");
     
     while(1) 
     {
@@ -375,15 +319,7 @@ int main()
 			is_rf_request = false;
 		}
 
-		//rgb_led.set(0,0,0x0F);
-
-		#if(USE_APDS_PROXIMITY == 1)
-			apds_poll_proximity();
-		#endif
-
-		#if(USE_APDS_GESTURE == 1)
-			apds_poll_gesture();
-		#endif
+		check_action();
 
 	}
 }
