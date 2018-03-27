@@ -53,9 +53,7 @@ public:
 
     void add_node(uint8_t wake_id);
     void get_nodes(uint8_t *data);
-
-	uint8_t status;
-	uint8_t master;
+    uint8_t get_status();
 
 private:
     RfMesh* mesh;
@@ -63,13 +61,17 @@ private:
     ws2812B* led;
     uint8_t node_id;
     
+    void send_list(uint8_t target);
     void set_color(uint8_t r,uint8_t g,uint8_t b);
+    void set_low();
     void set_red();
     void set_green();
     void set_blue();
     void set_yellow();
     void set_orange();
-    void apply_color_status();
+    void set_status(uint8_t st);
+    uint8_t whos_in_state(uint8_t st);
+    void update_node(uint8_t wake_id,uint8_t st);
 
 };
 

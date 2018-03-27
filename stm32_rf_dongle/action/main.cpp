@@ -169,6 +169,7 @@ void the_ticker()
 
 void rf_message(uint8_t *data,uint8_t size)
 {
+	pc.printf("msg:");	print_tab(&pc,data,size);
 	//debug_pin = 1;
 	
 	if(data[rf::ind::pid] == rf::pid::talk)
@@ -203,57 +204,11 @@ void rf_message(uint8_t *data,uint8_t size)
 
 void rf_broadcast(uint8_t *data,uint8_t size)
 {
+	pc.printf("bcst:");	print_tab(&pc,data,size);
 	if(data[rf::ind::pid] == rf::pid::talk)
 	{
 		tl.broadcast(data,size);
 	}
-}
-
-void init()
-{
-	uint8_t * p_UID = (uint8_t*) 0x1FFFF7E8;
-	
-	pc.printf("stm32_action> U_ID: ");
-	print_tab(&pc,p_UID,12);
-	pc.printf("stm32_action> Node ID: %d\r",F_NODEID);
-
-	tick_call.attach(&the_ticker,TICKER_SEC);
-
-	hsm.init(F_CHANNEL);//left to the user for more flexibility on memory management
-	hsm.nrf.setMode(nrf::Mode::Rx);//not set by default as to check power consemption with hci
-	pc.printf("rfmode:%d;channel:%d\n",hsm.nrf.getMode(),hsm.nrf.getChannel());
-
-	hsm.attach(&rf_message,RfMesh::CallbackType::Message);
-	hsm.attach(&rf_broadcast,RfMesh::CallbackType::Broadcast);
-
-	hsm.setNodeId(F_NODEID);
-
-	hsm.setRetries(2);
-	hsm.setAckDelay(10);
-	
-	hsm.print_nrf();
-
-	#if( 	(USE_APDS_SENSOR == 1) || (USE_APDS_GESTURE == 1) || \
-			(USE_APDS_PROXIMITY == 1) || (USE_APDS_LIGHT == 1) )
-		bool res;
-	#endif
-	#if(USE_APDS_SENSOR == 1)
-		gsensor_available = gsensor.ginit();
-		pc.printf("apds> ginit %u\r\n",gsensor_available);
-	#endif
-	#if(USE_APDS_GESTURE == 1)
-		res = gsensor.enableGestureSensor();
-		pc.printf("apds> Gesture sensor enable: %u\r\n",res);
-	#endif
-	#if(USE_APDS_PROXIMITY == 1)
-		res = gsensor.enableProximitySensor();
-		pc.printf("apds> Proximity sensor enable: %u\r\n",res);
-	#endif
-	#if(USE_APDS_LIGHT == 1)
-		res = gsensor.enableLightSensor();
-		pc.printf("apds> Light sensor enable: %u\r\n",res);
-	#endif
-
 }
 
 void test_RGB()
@@ -281,14 +236,61 @@ void check_action()
 	}
 }
 
+void init()
+{
+	uint8_t * p_UID = (uint8_t*) 0x1FFFF7E8;
+	
+	pc.printf("stm32_action> U_ID: ");
+	print_tab(&pc,p_UID,12);
+	pc.printf("stm32_action> Node ID: %d\r",F_NODEID);
+
+	tick_call.attach(&the_ticker,TICKER_SEC);
+
+	hsm.init(F_CHANNEL);//left to the user for more flexibility on memory management
+	hsm.nrf.setMode(nrf::Mode::Rx);//not set by default as to check power consemption with hci
+	pc.printf("rfmode:%d;channel:%d\n",hsm.nrf.getMode(),hsm.nrf.getChannel());
+
+	hsm.attach(&rf_message,RfMesh::CallbackType::Message);
+	hsm.attach(&rf_broadcast,RfMesh::CallbackType::Broadcast);
+
+	hsm.setNodeId(F_NODEID);
+
+	hsm.setRetries(2);
+	hsm.setAckDelay(10);
+	
+	//hsm.print_nrf();
+
+	#if( 	(USE_APDS_SENSOR == 1) || (USE_APDS_GESTURE == 1) || \
+			(USE_APDS_PROXIMITY == 1) || (USE_APDS_LIGHT == 1) )
+		bool res;
+	#endif
+	#if(USE_APDS_SENSOR == 1)
+		gsensor_available = gsensor.ginit();
+		pc.printf("apds> ginit %u\r\n",gsensor_available);
+	#endif
+	#if(USE_APDS_GESTURE == 1)
+		res = gsensor.enableGestureSensor();
+		pc.printf("apds> Gesture sensor enable: %u\r\n",res);
+	#endif
+	#if(USE_APDS_PROXIMITY == 1)
+		res = gsensor.enableProximitySensor();
+		pc.printf("apds> Proximity sensor enable: %u\r\n",res);
+	#endif
+	#if(USE_APDS_LIGHT == 1)
+		res = gsensor.enableLightSensor();
+		pc.printf("apds> Light sensor enable: %u\r\n",res);
+	#endif
+
+}
+
 int main() 
 {
 	init();
 
-	test_RGB();
+	//test_RGB();
 
 	pc.printf("talk>Started in offline mode\n");
-	while(tl.status == talk::offline)
+	while(tl.get_status() == talk::offline)
 	{
 		pc.printf("talk>Broadcasting\n");
 		hsm.broadcast_byte(rf::pid::talk,rf::talk::wakeup);
