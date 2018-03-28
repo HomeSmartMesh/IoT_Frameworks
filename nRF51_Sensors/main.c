@@ -56,8 +56,8 @@
 
 #include "mpu6050_app.h"
 
-#define NodeId 45
-#define SLEEP_SEC 5
+#define NodeId 64
+#define SLEEP_SEC 10
 #define RF_CHANNEL 10
 
 #define Mesh_Pid_Alive 0x05
