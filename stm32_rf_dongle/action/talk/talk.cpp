@@ -7,7 +7,7 @@
 
 partner_t speakers[MAX_NB_NODES];
 
-void print_state(Serial *ps,uint8_t st)
+void print_status(Serial *ps,uint8_t st)
 {
     switch(st)
     {
@@ -30,7 +30,7 @@ void print_speakers(Serial *ps,uint8_t *data=NULL)
             if(speakers[i].status != talk::offline)
             {
                 ps->printf("(%d,%u:",i,speakers[i].id);
-                print_state(ps,speakers[i].status);
+                print_status(ps,speakers[i].status);
                 ps->printf(") ");
             }
         }
@@ -44,7 +44,7 @@ void print_speakers(Serial *ps,uint8_t *data=NULL)
             if(data[2*i+1] != talk::offline)
             {
                 ps->printf("(%d,%u:",i,data[2*i]);
-                print_state(ps,data[2*i+1]);
+                print_status(ps,data[2*i+1]);
                 ps->printf(") ");
             }
         }
@@ -76,82 +76,92 @@ void talk_node::self_acted()
 	switch(status)
 	{
 		case talk::idle : 
+        {
             uint8_t speaker_i = whos_in_state(talk::speak);
             if(speaker_i)
             {
-                //status wish = talk::requesting;
+                set_status(talk::requesting);
                 mesh->send_byte(rf::pid::talk,speakers[speaker_i].id,rf::talk::action_request);
-                wait(2);//slow down the converstation
+                ser->printf("Acted>I'd like to talk but someone is speaking\n");
             }
             else
             {
                 set_status(talk::speak);//here do not wait and apply the status
                 mesh->broadcast_byte(rf::pid::talk,rf::talk::action_started_speaking);
-                wait(2);//slow down the converstation
+                ser->printf("Acted>No one was talking so I started\n");
             }
 			break;
-            /*
-		//case talk::speak : 
-			//status = talk::idle;
-			//break;
-		case talk::listen : 
-            if(whos_in_state(talk::speak))
-            {
-                //status = talk::requesting;
-            }
-            else
-            {
-                //status = talk::speak;
-            }
+        }
+		case talk::speak : 
+        {
+            //no one has requested to speak
+            set_status(talk::idle);
+            mesh->broadcast_byte(rf::pid::talk,rf::talk::action_stopped_speaking);
+            ser->printf("Acted>I was speaking and no one is requesting\n");
 			break;
-		case talk::requesting : 
-            if(whos_in_state(talk::speak))
-            {
-                //status = talk::listen;
-            }
-            else
-            {
-                //status = talk::idle;
-            }
-			break;
+        }
 		case talk::requested_from : 
-			{
-                //status = talk::listen;
+        {
+            uint8_t requester_i = whos_in_state(talk::requesting);
+            //TODO should check the whole list and do some arbitration
+            if(requester_i)
+            {
+                set_status(talk::listen);
+                mesh->send_byte(rf::pid::talk,speakers[requester_i].id,rf::talk::action_give_speach);
+                ser->printf("Acted>Giving the speach away and start listening\n");
             }
-			break;*/
-	}
-	//set_status(status);
-}
-
-void talk_node::other_acted()
-{
-    uint8_t status = speakers[0].status;
-	switch(status)
-	{
-		case talk::idle : 
-			status = talk::listen;
+            else
+            {
+                set_status(talk::idle);
+                mesh->broadcast_byte(rf::pid::talk,rf::talk::action_stopped_speaking);
+                ser->printf("Acted>Weired: I was requested from but no one is requesting\n");
+            }
 			break;
-		case talk::speak :
-			status = talk::requested_from;
-			break;
+        }
 		case talk::listen :
-			status = talk::listen;
+        {
+            uint8_t speaker_i = whos_in_state(talk::speak);
+            if(speaker_i)
+            {
+                set_status(talk::requesting);
+                mesh->send_byte(rf::pid::talk,speakers[speaker_i].id,rf::talk::action_request);
+                ser->printf("Acted>I'd like to talk but someone is speaking\n");
+            }
+            else
+            {
+                set_status(talk::speak);//here do not wait and apply the status
+                mesh->broadcast_byte(rf::pid::talk,rf::talk::action_started_speaking);
+                ser->printf("Acted>Weired: I was listening while no one was speaking\n");
+                print_speakers(ser);
+            }
 			break;
-		case talk::requesting : 
-			status = talk::speak;
+        }
+		case talk::requesting :
+        {
+            uint8_t speaker_i = whos_in_state(talk::speak);
+            if(speaker_i)
+            {
+                mesh->send_byte(rf::pid::talk,speakers[speaker_i].id,rf::talk::action_request_abandoned);
+                set_status(talk::listen);
+                ser->printf("Acted>Changed my mind, don't want to talk\n");
+            }
+            else
+            {
+                set_status(talk::idle);//here do not wait and apply the status
+                mesh->broadcast_byte(rf::pid::talk,rf::talk::action_request_abandoned);
+                ser->printf("Acted>Weired: I was waiting to speak while no one was speaking\n");
+            }
 			break;
-		case talk::requested_from :
-			status = talk::requested_from;
-			break;
+        }
 	}
-	set_status(status);
+    wait(2);//slow down the converstation
 }
 
 //[0] reserved for own state managed with set_status()
 //this update start the search in the table from 1
 void talk_node::update_node(uint8_t wake_id,uint8_t st)
 {
-    ser->printf("update_node>(%d->",wake_id);print_state(ser,st);
+    ser->printf("update_node>(%d->",wake_id);print_status(ser,st);
 
     bool registred = false;
     for(int i=1;(i<MAX_NB_NODES)&&(!registred);i++)
@@ -218,108 +228,189 @@ void talk_node::send_list(uint8_t target)
 void talk_node::broadcast(uint8_t *data,uint8_t size)
 {
     uint8_t sub_pid = data[rf::ind::bcst_payload];
-    if(sub_pid == rf::talk::wakeup)
+    switch(sub_pid)
     {
-        update_node(data[rf::ind::source],talk::idle);
-        send_list(data[rf::ind::source]);
-        ser->printf("Rx bcast : wake> sent:");
-        print_speakers(ser);
-    }
-    else if(sub_pid == rf::talk::action_request)
-    {
-        if(get_status() == talk::speak)
+        case rf::talk::wakeup:
         {
-            ser->printf("Rx Talk Bcast>Wrong: Request to transfer speach (should be message)\n");
-            set_status(talk::requested_from);
+            update_node(data[rf::ind::source],talk::idle);
+            send_list(data[rf::ind::source]);
+            ser->printf("Rx bcast : wake> sent:");
+            print_speakers(ser);
         }
-        else
+        break;
+        case rf::talk::action_request:
         {
-            ser->printf("Rx Talk Bcast>Wrong: Not speaker (and should be message)\n");
-            if(get_status() == talk::idle)
+            update_node(data[rf::ind::source],talk::requesting);
+            if(get_status() == talk::speak)
             {
-                set_status(talk::listen);
-                ser->printf("As idle, Start Listening\n");
+                ser->printf("Rx Talk Bcast>Wrong: Request to transfer speach (should be message)\n");
+                set_status(talk::requested_from);
+            }
+            else
+            {
+                ser->printf("Rx Talk Bcast>Wrong: Not speaker (and should be message)\n");
+                if(get_status() == talk::idle)
+                {
+                    set_status(talk::listen);
+                    ser->printf("As idle, Start Listening\n");
+                }
             }
         }
-    }
-    else if(sub_pid == rf::talk::action_started_speaking)
-    {
-        if(get_status() == talk::speak)
+        break;
+        case rf::talk::action_started_speaking:
         {
-            ser->printf("Rx Talk Bcast>Interrupted !!!! :( \n");
-            set_status(talk::listen);
-        }
-        else
-        {
-            ser->printf("Rx Talk Bcast>Someone started speaking\n");
-            if(get_status() == talk::idle)
+            update_node(data[rf::ind::source],talk::speak);
+            if(get_status() == talk::speak)
             {
+                ser->printf("Rx Talk Bcast>Interrupted !!!! :( \n");
                 set_status(talk::listen);
-                ser->printf("As idle, Start Listening\n");
+            }
+            else
+            {
+                ser->printf("Rx Talk Bcast>Someone started speaking\n");
+                if(get_status() == talk::idle)
+                {
+                    set_status(talk::listen);
+                    ser->printf("As idle, Start Listening\n");
+                }
             }
         }
-    }
-    else
-    {
-        ser->printf("Unhandled Talk Broadcast\n");
+        break;
+        case rf::talk::action_stopped_speaking:
+        {
+            update_node(data[rf::ind::source],talk::idle);//TODO assumption, he could be listening
+            if(get_status() == talk::listen)
+            {
+                ser->printf("Rx Talk Bcast>Stopped Speaking\n");
+                set_status(talk::idle);
+            }
+            else
+            {
+                ser->printf("Rx Talk Bcast>Wrong: Someone stopped speaking, I was not listening was :");
+                print_status(ser,get_status());ser->printf("\n");
+                //TODO recovery
+            }
+        }
+        break;
+        case rf::talk::action_request_abandoned:
+        {
+            update_node(data[rf::ind::source],talk::listen);//Strong assumption that he started listening
+            uint8_t requester_i = whos_in_state(talk::requesting);
+            if(requester_i)
+            {
+                set_status(talk::requested_from);//make sure it stays requested_from
+                ser->printf("Rx Talk Bcast>One of requesters abandoned\n");
+            }
+            else
+            {
+                set_status(talk::speak);
+                ser->printf("Rx Talk Bcast>The last requester abandoned\n");
+            }
+        }
+        break;
+        default:
+        {
+            ser->printf("Unhandled Talk Broadcast id : %u\n",sub_pid);
+        }
+        break;
     }
 }
 
 void talk_node::message(uint8_t *data,uint8_t size)
 {
     uint8_t sub_pid = data[rf::ind::p2p_payload];
-    if(sub_pid == rf::talk::list)//sub-id check
+    switch(sub_pid)
     {
-        ser->printf("Rx Talk Msg list>");
-        uint8_t *p_speakers = data+rf::ind::p2p_payload+1;
-        print_speakers(ser,p_speakers);
-        update_node(p_speakers[0],p_speakers[1]);//id, state of the first element
-        if(whos_in_state(talk::speak))
+        case rf::talk::list:
         {
-            set_status(talk::listen);
-        }
-        else
-        {
-            set_status(talk::idle);
-        }
-    }
-    else if(sub_pid == rf::talk::action_request)
-    {
-        if(get_status() == talk::speak)
-        {
-            ser->printf("Rx Talk Msg>I'm speaking and speach was requested\n");
-            set_status(talk::requested_from);
-        }
-        else
-        {
-            ser->printf("Rx Talk Msg>Wrong: I'm not speaking\n");
-            if(get_status() == talk::idle)
+            ser->printf("Rx Talk Msg list>");
+            uint8_t *p_speakers = data+rf::ind::p2p_payload+1;
+            print_speakers(ser,p_speakers);
+            update_node(p_speakers[0],p_speakers[1]);//id, state of the first element
+            if(whos_in_state(talk::speak))
             {
                 set_status(talk::listen);
-                ser->printf("As idle, Start Listening\n");
             }
-        }
-    }
-    else if(sub_pid == rf::talk::action_started_speaking)
-    {
-        if(get_status() == talk::speak)
-        {
-            ser->printf("Rx Talk Msg>Interrupted !!!! :( \n");
-            set_status(talk::listen);
-        }
-        else
-        {
-            ser->printf("Rx Talk Msg>Someone started speaking\n");
-            if(get_status() == talk::idle)
+            else
             {
-                set_status(talk::listen);
-                ser->printf("As idle, Start Listening\n");
+                set_status(talk::idle);
             }
         }
-    }
-    else
-    {
-        ser->printf("Rx Talk Msg Unknown pid 0x%02X\n",data[rf::ind::p2p_payload]);
+        break;
+        case rf::talk::action_request:
+        {
+            update_node(data[rf::ind::source],talk::requesting);
+            if(get_status() == talk::speak)
+            {
+                ser->printf("Rx Talk Msg>I'm speaking and speach was requested\n");
+                set_status(talk::requested_from);
+            }
+            else
+            {
+                ser->printf("Rx Talk Msg>Wrong: I'm not speaking\n");
+                if(get_status() == talk::idle)
+                {
+                    set_status(talk::listen);
+                    ser->printf("As idle, Start Listening\n");
+                }
+            }
+        }
+        break;
+        case rf::talk::action_started_speaking:
+        {
+            update_node(data[rf::ind::source],talk::speak);
+            if(get_status() == talk::speak)
+            {
+                ser->printf("Rx Talk Msg>Interrupted !!!! :( \n");
+                set_status(talk::listen);
+            }
+            else
+            {
+                ser->printf("Rx Talk Msg>Someone started speaking\n");
+                if(get_status() == talk::idle)
+                {
+                    set_status(talk::listen);
+                    ser->printf("As idle, Start Listening\n");
+                }
+            }
+        }
+        break;
+        case rf::talk::action_give_speach:
+        {
+            update_node(data[rf::ind::source],talk::listen);//Strong assumption that he started listening
+            if(get_status() == talk::requesting)
+            {
+                ser->printf("Rx Talk Msg>Thanks for the speach right\n");
+                set_status(talk::speak);
+                //notify the others
+                mesh->broadcast_byte(rf::pid::talk,rf::talk::action_started_speaking);
+            }
+            else
+            {
+                ser->printf("Rx Talk Msg>Error: I did not ask for speach:");
+                print_status(ser,get_status());ser->printf("\n");
+            }
+        }
+        break;
+        case rf::talk::action_request_abandoned :
+        {
+            update_node(data[rf::ind::source],talk::listen);//Strong assumption that he started listening
+            uint8_t requester_i = whos_in_state(talk::requesting);
+            if(requester_i)
+            {
+                set_status(talk::requested_from);//make sure it stays requested_from
+                ser->printf("Rx Talk Bcast>One of requesters abandoned\n");
+            }
+            else
+            {
+                set_status(talk::speak);
+                ser->printf("Rx Talk Bcast>The last requester abandoned\n");
+            }
+        }
+        break;
+        default:
+            ser->printf("Rx Talk Msg>Unknown sub_pid 0x%02X\n",data[rf::ind::p2p_payload]);
+        break;
     }
 }
 
@@ -337,8 +428,8 @@ void talk_node::set_low()		{	set_color(5,5,5);}
 void talk_node::set_red()		{	set_color(0x0F,0,0);}
 void talk_node::set_green()	    {	set_color(0,0x0F,0);}
 void talk_node::set_blue()		{	set_color(0,0,0x0F);}
-void talk_node::set_yellow()	{	set_color(0x0F,0x0F,0);}
-void talk_node::set_orange()	{	set_color(0x0F,0x05,0);}
+void talk_node::set_yellow()	{	set_color(0x0A,0x12,0);}
+void talk_node::set_orange()	{	set_color(0x12,0x04,0);}
 
 
 void talk_node::set_status(uint8_t st)
@@ -367,7 +458,7 @@ void talk_node::set_status(uint8_t st)
 			break;
 	}
 
-	ser->printf("Set Status => ");print_state(ser,st);ser->printf("\n");
+	ser->printf("Set Status => ");print_status(ser,st);ser->printf("\n");
 	wait(2);
 }
 
