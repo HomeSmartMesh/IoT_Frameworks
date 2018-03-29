@@ -459,7 +459,6 @@ void talk_node::set_status(uint8_t st)
 	}
 
 	ser->printf("Set Status => ");print_status(ser,st);ser->printf("\n");
-	wait(2);
 }
 
 uint8_t talk_node::get_status()

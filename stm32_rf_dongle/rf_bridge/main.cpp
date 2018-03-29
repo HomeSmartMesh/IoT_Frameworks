@@ -10,12 +10,12 @@
 #define USE_RGB_LED 			1
 
 //APDS9960 (Colorlight sensor, gesture)
-#define USE_APDS_SENSOR 		0
-#define USE_APDS_LIGHT 			0
+#define USE_APDS_SENSOR 		1
+#define USE_APDS_LIGHT 			1
 #define USE_APDS_GESTURE 		0
 #define USE_APDS_PROXIMITY 		0
 
-#define USE_BME_SENSOR 			0
+#define USE_BME_SENSOR 			1
 
 #define SEND_ALIVE  			1
 #define BRIDGE_MODE 			1
