@@ -10,12 +10,12 @@
 #define USE_RGB_LED 			1
 
 //APDS9960 (Colorlight sensor, gesture)
-#define USE_APDS_SENSOR 		1
-#define USE_APDS_LIGHT 			1
+#define USE_APDS_SENSOR 		0
+#define USE_APDS_LIGHT 			0
 #define USE_APDS_GESTURE 		0
 #define USE_APDS_PROXIMITY 		0
 
-#define USE_BME_SENSOR 			1
+#define USE_BME_SENSOR 			0
 
 #define SEND_ALIVE  			1
 #define BRIDGE_MODE 			1
@@ -33,11 +33,11 @@
 #define BME_OFFSET				200
 
 #define TEST_RUN 		0
-#define TEST_TARGET 	27
-#define TEST_CHANNEL 	2
+#define TEST_TARGET 	22
+#define TEST_CHANNEL 	10
 
-#define TEST_PERIOD				100
-#define TEST_OFFSET				 50
+#define TEST_PERIOD				20
+#define TEST_OFFSET				10
 
 #define TICKER_SEC 0.1
 
@@ -236,61 +236,6 @@ void rf_message(uint8_t *data,uint8_t size)
 	}
 }
 
-void init()
-{
-	uint8_t * p_UID = (uint8_t*) 0x1FFFF7E8;
-	
-	pc.printf("stm32_bridge> U_ID: ");
-	print_tab(&pc,p_UID,12);
-	pc.printf("stm32_bridge> Node ID: %d\r",F_NODEID);
-
-	tick_call.attach(&the_ticker,TICKER_SEC);
-
-	hsm.init(F_CHANNEL);//left to the user for more flexibility on memory management
-	hsm.nrf.setMode(nrf::Mode::Rx);//not set by default as to check power consemption with hci
-	pc.printf("mode:%d;channel:%d\n",hsm.nrf.getMode(),hsm.nrf.getChannel());
-
-    hsm.attach(&rf_sniffed,RfMesh::CallbackType::Sniff);
-	hsm.attach(&rf_message,RfMesh::CallbackType::Message);
-
-	#if (BRIDGE_MODE == 1)
-		hsm.setBridgeMode();
-		pc.printf("stm32_bridge> listening in bridge Mode\n");
-	#else
-		pc.printf("stm32_bridge> Not in bridge Mode !!! Just a node\n");
-	#endif
-
-	hsm.setNodeId(F_NODEID);
-
-
-	hsm.setRetries(10);
-	hsm.setAckDelay(400);
-	
-	//hsm.print_nrf();
-
-	#if( 	(USE_APDS_SENSOR == 1) || (USE_APDS_GESTURE == 1) || \
-			(USE_APDS_PROXIMITY == 1) || (USE_APDS_LIGHT == 1) )
-		bool res;
-	#endif
-	#if(USE_APDS_SENSOR == 1)
-		gsensor_available = gsensor.ginit();
-		pc.printf("apds> ginit %u\r\n",gsensor_available);
-	#endif
-	#if(USE_APDS_GESTURE == 1)
-		res = gsensor.enableGestureSensor();
-		pc.printf("apds> Gesture sensor enable: %u\r\n",res);
-	#endif
-	#if(USE_APDS_PROXIMITY == 1)
-		res = gsensor.enableProximitySensor();
-		pc.printf("apds> Proximity sensor enable: %u\r\n",res);
-	#endif
-	#if(USE_APDS_LIGHT == 1)
-		res = gsensor.enableLightSensor();
-		pc.printf("apds> Light sensor enable: %u\r\n",res);
-	#endif
-
-}
-
 #if(USE_RGB_LED == 1)
 void test_RGB()
 {
@@ -428,16 +373,37 @@ void test_channel()
 		pc.printf("testing channel\n");
 		uint8_t nb_success = hsm.test_rf(TEST_TARGET,TEST_CHANNEL);
 		pc.printf("nb_success:%d\n",nb_success);
-		float col_g = nb_success;
-		col_g = col_g * 255 / 100;
-		float col_r = 100-nb_success;
-		col_r = col_r * 255 / 100;
-		uint8_t green = col_g;
-		uint8_t red = col_r;
-		pc.printf("colors: red:%u, green:%u\n",red,green);
-        rgb_led.set(col_r,col_g,0x00);
+		uint8_t red,green,blue;
+		if(nb_success == 100)
+		{
+			red = 0;
+			green = 255;
+			blue = 0;
+			pc.printf("colors: green:255\n");
+		}
+		else if(nb_success == 0)
+		{
+			red = 255;
+			green = 0;
+			blue = 0;
+			pc.printf("colors: red:255\n");
+		}
+		else
+		{
+			float col_r = 100-nb_success;
+			col_r = col_r * 255 / 100;
+			float col_g = nb_success;
+			col_g = col_g * 255 / 100;
+			float col_b = nb_success;
+			col_b = col_b * 255 / 100;
+			red = col_r;
+			green = col_g;
+			blue = col_b;
+			pc.printf("colors: red:%u, green:%u, blue:%u\n",red,green,blue);
+		}
+        rgb_led.set(red,green,blue);
         wait(1.0);
-        rgb_led.set(0x00,0x00,0x00);
+        rgb_led.set(0x04,0x04,0x04);
 		test_count = TEST_PERIOD;
 	#endif
 }
@@ -465,6 +431,62 @@ void cyclic_rf_send()
 	#if (TEST_RUN == 1)
 		test_channel();
 	#endif
+}
+
+void init()
+{
+	uint8_t * p_UID = (uint8_t*) 0x1FFFF7E8;
+	
+	pc.printf("stm32_bridge> U_ID: ");
+	print_tab(&pc,p_UID,12);
+	pc.printf("stm32_bridge> Node ID: %d\r",F_NODEID);
+
+	tick_call.attach(&the_ticker,TICKER_SEC);
+
+	hsm.init(F_CHANNEL);//left to the user for more flexibility on memory management
+	hsm.nrf.setMode(nrf::Mode::Rx);//not set by default as to check power consemption with hci
+	pc.printf("mode:%d;channel:%d\n",hsm.nrf.getMode(),hsm.nrf.getChannel());
+
+
+    hsm.attach(&rf_sniffed,RfMesh::CallbackType::Sniff);
+	hsm.attach(&rf_message,RfMesh::CallbackType::Message);
+
+	#if (BRIDGE_MODE == 1)
+		hsm.setBridgeMode();
+		pc.printf("stm32_bridge> listening in bridge Mode\n");
+	#else
+		pc.printf("stm32_bridge> Not in bridge Mode !!! Just a node\n");
+	#endif
+
+	hsm.setNodeId(F_NODEID);
+
+
+	hsm.setRetries(10);
+	hsm.setAckDelay(400);
+	
+	hsm.print_nrf();
+
+	#if( 	(USE_APDS_SENSOR == 1) || (USE_APDS_GESTURE == 1) || \
+			(USE_APDS_PROXIMITY == 1) || (USE_APDS_LIGHT == 1) )
+		bool res;
+	#endif
+	#if(USE_APDS_SENSOR == 1)
+		gsensor_available = gsensor.ginit();
+		pc.printf("apds> ginit %u\r\n",gsensor_available);
+	#endif
+	#if(USE_APDS_GESTURE == 1)
+		res = gsensor.enableGestureSensor();
+		pc.printf("apds> Gesture sensor enable: %u\r\n",res);
+	#endif
+	#if(USE_APDS_PROXIMITY == 1)
+		res = gsensor.enableProximitySensor();
+		pc.printf("apds> Proximity sensor enable: %u\r\n",res);
+	#endif
+	#if(USE_APDS_LIGHT == 1)
+		res = gsensor.enableLightSensor();
+		pc.printf("apds> Light sensor enable: %u\r\n",res);
+	#endif
+
 }
 
 int main() 
