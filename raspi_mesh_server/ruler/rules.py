@@ -33,15 +33,11 @@ def RGB_Tester_Burst(input):
 
 @static_vars(event_time=time())
 def Sleeproom_Light_Up(input):
-    result = None
-    tnow = time()
-    delay = tnow - Sleeproom_Light_Up.event_time
-    if(delay > 1):
-        Sleeproom_Light_Up.event_time = tnow
-        log.info("Sleeproom_Light_Up() post after %f",delay)
+    log.debug("Sleeproom_Light_Up>input(%s)",input)
+    if(float(input) == 1.0):
         result = "100"
     else:
-        log.debug("Sleeproom_Light_Up() skipped sent since %f",delay)
+        result = None # ignored, do nothing
     return result
 
 @static_vars(event_time=time())

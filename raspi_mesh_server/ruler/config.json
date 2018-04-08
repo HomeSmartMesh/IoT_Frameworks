@@ -17,9 +17,9 @@
             "enable" : true
         },
         "Sleeproom_Light_Up":{
-            "input":"Nodes/29/proximity",
+            "input":"Nodes/41/button",
             "output":"Nodes/34/dimmer",
-            "description":"Increeses the light of the sleeping room on proxy detection",
+            "description":"Increeses the light of the sleeping room on button press",
             "enable" : true
         },
         "RGB_Tester_Single":{
