@@ -207,10 +207,6 @@ s8 I2C_routine(void) {
 	return BMP180_INIT_VALUE;
 }
 
-/************** I2C buffer length ******/
-
-#define	I2C_BUFFER_LEN 8
-#define I2C0 5
 /*-------------------------------------------------------------------*
 *	This is a sample code for read and write the data by using I2C
 *	Configure the below code to your I2C driver
@@ -228,14 +224,11 @@ s8 BMP180_I2C_bus_write(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 {
 	s32 iError = BMP180_INIT_VALUE;
 
-    bool res = twi_master_transfer(dev_addr, &reg_addr, 1, TWI_DONT_ISSUE_STOP);
-	if(res)
-	{
-		res = twi_master_transfer(dev_addr, reg_data, cnt, TWI_ISSUE_STOP);
-	}
+    bool res  = twi_master_transfer((dev_addr<<1), &reg_addr, 1, TWI_DONT_ISSUE_STOP);
+		 res &= twi_master_transfer((dev_addr<<1), reg_data, cnt, TWI_ISSUE_STOP);
 	if(!res)
 	{
-		iError = -C_BMP180_ONE_U8X;
+		iError = -1;//-C_BMP180_ONE_U8X; was not defined in bmp180.h
 	}
 	return (s8)iError;
 }
@@ -251,14 +244,11 @@ s8 BMP180_I2C_bus_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 {
 	s32 iError = BMP180_INIT_VALUE;
 
-    bool res = twi_master_transfer(dev_addr, &reg_addr, 1, TWI_DONT_ISSUE_STOP);
-	if(res)
-	{
-		res = twi_master_transfer(dev_addr|TWI_READ_BIT, reg_data, cnt, TWI_ISSUE_STOP);
-	}
+    bool res  = twi_master_transfer((dev_addr<<1), &reg_addr, 1, TWI_DONT_ISSUE_STOP);
+		 res &= twi_master_transfer((dev_addr<<1)|TWI_READ_BIT, reg_data, cnt, TWI_ISSUE_STOP);
 	if(!res)
 	{
-		iError = -C_BMP180_ONE_U8X;
+		iError = -1;//-C_BMP180_ONE_U8X; was not defined in bmp180.h
 	}
 
 	return (s8)iError;
@@ -278,11 +268,19 @@ void bmp_dump_regs()
 }
 
 //calib params are maintained in RAM as long as no power off RAM loss sleep is called
-void bmp_init()
+bool bmp_init()
 {
 	I2C_routine();
 	s32 com_rslt = bmp180_init(&bmp180);
-	s32 com_rslt += bmp180_get_calib_param();
+	    com_rslt += bmp180_get_calib_param();
+	if(com_rslt == 0)
+	{
+		return true;//success
+	}
+	else
+	{
+		return false;//fail
+	}
 }
 
 //should here trigger the measures from BMP180_CTRL_MEAS_REG
@@ -297,7 +295,10 @@ void bmp_measure()
 void bmp_get_temperature(uint8_t *data)
 {
 	u16 v_uncomp_temp_u16 = bmp180_get_uncomp_temperature();
-	sint16_t temperature = bmp180_get_temperature(v_uncomp_temp_u16);
+	int16_t temperature = bmp180_get_temperature(v_uncomp_temp_u16);
+	uint8_t *pData = (uint8_t*)&temperature;
+	data[0] = pData[0];
+	data[1] = pData[1];
 }
 
 //this function is currently triggering an independent measure for the pressure
@@ -305,5 +306,10 @@ void bmp_get_temperature(uint8_t *data)
 void bmp_get_pressure(uint8_t *data)
 {
 	u32 v_uncomp_press_u32 = bmp180_get_uncomp_pressure();
-	sint32_t pressure = bmp180_get_pressure(v_uncomp_press_u32);
+	int32_t pressure = bmp180_get_pressure(v_uncomp_press_u32);
+	uint8_t *pData = (uint8_t*)&pressure;
+	data[0] = pData[0];
+	data[1] = pData[1];
+	data[2] = pData[2];
+	data[3] = pData[3];
 }

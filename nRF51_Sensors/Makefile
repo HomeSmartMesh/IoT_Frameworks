@@ -12,6 +12,8 @@ $(OUTPUT_DIRECTORY)/nrf51822_xxaa.out: \
 SRC_FILES += \
   $(PROJ_DIR)/main.c \
   $(PROJ_DIR)/mpu6050_app/mpu6050_app.c \
+  $(PROJ_DIR)/bmp180/bmp180.c \
+  $(PROJ_DIR)/bmp180/bmp180_app.c \
   $(SDK_ROOT)/components/libraries/log/src/nrf_log_backend_serial.c \
   $(SDK_ROOT)/components/libraries/log/src/nrf_log_frontend.c \
   $(SDK_ROOT)/components/libraries/util/app_error.c \
@@ -36,6 +38,7 @@ SRC_FILES += \
 # Include folders common to all targets
 INC_FOLDERS += \
   $(PROJ_DIR) \
+  $(PROJ_DIR)/bmp180 \
   $(PROJ_DIR)/mpu6050_app \
   $(SDK_ROOT)/components \
   $(SDK_ROOT)/components/libraries/util \
@@ -71,7 +74,8 @@ CFLAGS += -DNRF51822
 CFLAGS += -DBSP_DEFINES_ONLY
 CFLAGS += -mcpu=cortex-m0
 CFLAGS += -mthumb -mabi=aapcs
-CFLAGS +=  -Wall -Werror -O3 -g3
+#CFLAGS +=  -Wall -Werror -O3 -g3
+CFLAGS +=  -Wall -Werror -O0 -g3
 CFLAGS += -mfloat-abi=soft
 # keep every function in separate section, this allows linker to discard unused ones
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing

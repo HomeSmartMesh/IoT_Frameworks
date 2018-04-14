@@ -3,11 +3,11 @@
 
 #include <stdint.h>
 
-void bmp_dump_regs();
+void bmp_dump_regs();//TODO
 
-void bmp_init();
+bool bmp_init();
 
-void bmp_measure();
+void bmp_measure();//TODO
 
 void bmp_get_temperature(uint8_t *data);
 

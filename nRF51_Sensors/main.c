@@ -56,6 +56,8 @@
 
 #include "mpu6050_app.h"
 
+#include "bmp180_app.h"
+
 #define NodeId 64
 #define SLEEP_SEC 10
 #define RF_CHANNEL 10
@@ -315,11 +317,6 @@ void init()
     // Initialize
     clocks_start();
 
-    nrf_gpio_pin_write(LED_RGB_BLUE, 0 );
-    nrf_delay_ms(300);
-    nrf_gpio_pin_write(LED_RGB_BLUE, 1 );
-    nrf_delay_ms(300);
-
     uint32_t err_code = esb_init();
     APP_ERROR_CHECK(err_code);
     gpio_init();
@@ -327,7 +324,37 @@ void init()
     nrf_drv_clock_lfclk_request(NULL);
     rtc_config();
 
-    mpu_start();
+    nrf_gpio_pin_write(LED_RGB_BLUE, 0 );
+    nrf_delay_ms(300);
+    nrf_gpio_pin_write(LED_RGB_BLUE, 1 );
+    nrf_delay_ms(300);
+
+    mpu_start();//intialises the twi
+
+    //test bmp180
+    if(bmp_init())
+    {
+        nrf_gpio_pin_write(LED_RGB_GREEN, 0 );
+        nrf_delay_ms(100);
+        nrf_gpio_pin_write(LED_RGB_GREEN, 1 );
+        nrf_delay_ms(100);
+
+        uint8_t data[4];
+        bmp_get_temperature(data);
+        bmp_get_pressure(data);
+    }
+    else
+    {
+        nrf_gpio_pin_write(LED_RGB_RED, 0 );
+        nrf_delay_ms(100);
+        nrf_gpio_pin_write(LED_RGB_RED, 1 );
+        nrf_delay_ms(100);
+    }
+
+
+
+    DEBUG_PRINTF("=> Hello Debug nRF51 sensors Sleep\r\n");
+
 }
 
 int main(void)
@@ -337,7 +364,7 @@ int main(void)
     DEBUG_PRINTF("=> Hello Debug nRF51 sensors Sleep\r\n");
 
     mesh_tx_pid(Mesh_Pid_Reset);
-    
+
     while(true)
     {
         __SEV();

@@ -32,8 +32,8 @@
 #define BME_PERIOD				300
 #define BME_OFFSET				200
 
-#define TEST_RUN 		0
-#define TEST_TARGET 	22
+#define TEST_RUN 		1
+#define TEST_TARGET 	67
 #define TEST_CHANNEL 	10
 
 #define TEST_PERIOD				20
