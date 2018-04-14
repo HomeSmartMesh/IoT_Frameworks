@@ -94,6 +94,13 @@ void blink_green()
     nrf_gpio_pin_write(LED_RGB_GREEN, 1 );
 }
 
+void blink_blue()
+{
+    nrf_gpio_pin_write(LED_RGB_BLUE, 0 );
+    nrf_delay_ms(1);
+    nrf_gpio_pin_write(LED_RGB_BLUE, 1 );
+}
+
 void nrf_esb_event_handler(nrf_esb_evt_t const * p_event)
 {
     switch (p_event->evt_id)
@@ -121,7 +128,7 @@ void mesh_tx_accell(uint8_t * data)
 {
     esb_completed = false;//reset the check
 
-    tx_payload.length   = 8;//payload + header (crc length not included)
+    tx_payload.length   = 9;//payload + header (crc length not included)
     tx_payload.control = 0x80 | 2;// broadcast | ttl = 2
     tx_payload.noack    = true;//it is a broadcast
     tx_payload.pipe     = 0;
@@ -131,6 +138,32 @@ void mesh_tx_accell(uint8_t * data)
     tx_payload.data[1] = NodeId;//source
 
     for(int i=0;i<6;i++)
+    {
+        tx_payload.data[i+2]     = data[i];
+    }
+    
+    tx_payload.noack = true;
+    nrf_esb_write_payload(&tx_payload);
+
+    //wait till the transmission is complete
+    while(!esb_completed);
+}
+
+//
+void mesh_tx_4B(uint8_t pid,uint8_t * data)
+{
+    esb_completed = false;//reset the check
+
+    tx_payload.length   = 7;//payload + header (crc length not included)
+    tx_payload.control = 0x80 | 2;// broadcast | ttl = 2
+    tx_payload.noack    = true;//it is a broadcast
+    tx_payload.pipe     = 0;
+
+    tx_payload.data[0] = pid;//acceleration
+    
+    tx_payload.data[1] = NodeId;//source
+
+    for(int i=0;i<4;i++)
     {
         tx_payload.data[i+2]     = data[i];
     }
@@ -268,6 +301,20 @@ void send_accell()
     mesh_tx_accell(accell_data);//sends and waits tx
 }
 
+void send_temperature()
+{
+    uint8_t data[2];
+    bmp_get_temperature(data);
+    mesh_tx_4B(0x08,data);//sends and waits tx
+}
+
+void send_pressure()
+{
+    uint8_t data[2];
+    bmp_get_pressure(data);
+    mesh_tx_4B(0x12,data);//sends and waits tx
+}
+
 static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
 {
     if (int_type == NRF_DRV_RTC_INT_COMPARE0)
@@ -275,12 +322,29 @@ static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
         nrf_drv_rtc_counter_clear(&rtc);
         nrf_drv_rtc_int_enable(&rtc, NRF_RTC_INT_COMPARE0_MASK);
         DEBUG_PRINTF("rtc_handler(COMPARE)\r\n");
-        blink_green();
 
-        //mesh_tx_pid(Mesh_Pid_Alive);
-        //DEBUG_PRINTF("Alive()\r\n");
-        send_accell();
-        DEBUG_PRINTF("send_accell()\r\n");
+        static uint8_t send = 1;
+        if(send == 1)
+        {
+            blink_green();
+            send_accell();
+            DEBUG_PRINTF("send_accell()\r\n");
+        }
+        else if(send == 2)
+        {
+            blink_blue();
+            send_temperature();
+        }
+        else if(send == 3)
+        {
+            blink_blue();
+            send_pressure();
+        }
+        else
+        {
+            send = 0;
+        }
+        send++;
     }
 }
 /** @brief Function initialization and configuration of RTC driver instance.
@@ -331,27 +395,7 @@ void init()
 
     mpu_start();//intialises the twi
 
-    //test bmp180
-    if(bmp_init())
-    {
-        nrf_gpio_pin_write(LED_RGB_GREEN, 0 );
-        nrf_delay_ms(100);
-        nrf_gpio_pin_write(LED_RGB_GREEN, 1 );
-        nrf_delay_ms(100);
-
-        uint8_t data[4];
-        bmp_get_temperature(data);
-        bmp_get_pressure(data);
-    }
-    else
-    {
-        nrf_gpio_pin_write(LED_RGB_RED, 0 );
-        nrf_delay_ms(100);
-        nrf_gpio_pin_write(LED_RGB_RED, 1 );
-        nrf_delay_ms(100);
-    }
-
-
+    bmp_init();//twi not initialised here, keep after twi intialisation
 
     DEBUG_PRINTF("=> Hello Debug nRF51 sensors Sleep\r\n");
 

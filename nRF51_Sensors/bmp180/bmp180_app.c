@@ -223,9 +223,16 @@ s8 I2C_routine(void) {
 s8 BMP180_I2C_bus_write(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 {
 	s32 iError = BMP180_INIT_VALUE;
+	if(cnt!=1)
+	{
+		return -1;
+	}
+    uint8_t w2_data[2];
 
-    bool res  = twi_master_transfer((dev_addr<<1), &reg_addr, 1, TWI_DONT_ISSUE_STOP);
-		 res &= twi_master_transfer((dev_addr<<1), reg_data, cnt, TWI_ISSUE_STOP);
+    w2_data[0] = reg_addr;
+    w2_data[1] = reg_data[0];
+
+    bool res  = twi_master_transfer((dev_addr<<1), w2_data, 2, TWI_ISSUE_STOP);
 	if(!res)
 	{
 		iError = -1;//-C_BMP180_ONE_U8X; was not defined in bmp180.h
@@ -267,6 +274,23 @@ void bmp_dump_regs()
 
 }
 
+void bmp_test()
+{
+	u8 reg_data[4];
+	reg_data[0] = 0xB6;
+	BMP180_I2C_bus_write(0xEE>>1, 0xE0,reg_data, 1);//soft reset
+
+	BMP180_I2C_bus_read(0xEE>>1, 0xD0,reg_data, 1);
+	BMP180_I2C_bus_read(0xEE>>1, 0xF4,reg_data, 1);
+	BMP180_I2C_bus_read(0xEE>>1, 0xF6,reg_data, 3);
+	
+	//reg_data[0] = 0x2E;
+	reg_data[0] = 0x74;
+	BMP180_I2C_bus_write(0xEE>>1, 0xF4,reg_data, 1);
+	BMP180_I2C_bus_read(0xEE>>1, 0xF4,reg_data, 1);
+	BMP180_I2C_bus_read(0xEE>>1, 0xF6,reg_data, 3);
+}
+
 //calib params are maintained in RAM as long as no power off RAM loss sleep is called
 bool bmp_init()
 {
@@ -291,14 +315,18 @@ void bmp_measure()
 }
 
 //this function is currently triggering an independent measure for the temperature
-//Return the temperature in steps of 0.1 deg Celsius
+//Return the temperature in steps of 0.01 deg Celsius
+//int16 x100
 void bmp_get_temperature(uint8_t *data)
 {
 	u16 v_uncomp_temp_u16 = bmp180_get_uncomp_temperature();
-	int16_t temperature = bmp180_get_temperature(v_uncomp_temp_u16);
-	uint8_t *pData = (uint8_t*)&temperature;
-	data[0] = pData[0];
-	data[1] = pData[1];
+	int32_t temperature = (int32_t)bmp180_get_temperature(v_uncomp_temp_u16);
+	temperature *= 10;
+	uint8_t *pData = (uint8_t*)&temperature;//from 0.1 to 0.01 format
+	data[0] = pData[3];//reverse to big
+	data[1] = pData[2];
+	data[2] = pData[1];
+	data[3] = pData[0];
 }
 
 //this function is currently triggering an independent measure for the pressure
@@ -307,9 +335,10 @@ void bmp_get_pressure(uint8_t *data)
 {
 	u32 v_uncomp_press_u32 = bmp180_get_uncomp_pressure();
 	int32_t pressure = bmp180_get_pressure(v_uncomp_press_u32);
-	uint8_t *pData = (uint8_t*)&pressure;
-	data[0] = pData[0];
-	data[1] = pData[1];
-	data[2] = pData[2];
-	data[3] = pData[3];
+	pressure *= 256;
+	uint8_t *pData = (uint8_t*)&pressure;//max is ~ 1200
+	data[0] = pData[3];//reverse to big
+	data[1] = pData[2];
+	data[2] = pData[1];
+	data[3] = pData[0];
 }

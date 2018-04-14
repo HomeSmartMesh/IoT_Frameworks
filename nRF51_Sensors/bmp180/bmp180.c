@@ -328,8 +328,7 @@ u16 bmp180_get_uncomp_temperature(void)
 {
 	u16 v_ut_u16 = BMP180_INIT_VALUE;
 	/* Array holding the temperature LSB and MSB data*/
-	u8 v_data_u8[BMP180_TEMPERATURE_DATA_BYTES] = {
-	BMP180_INIT_VALUE, BMP180_INIT_VALUE};
+	u8 v_data_u8[BMP180_TEMPERATURE_DATA_BYTES] = {BMP180_INIT_VALUE, BMP180_INIT_VALUE};
 	u8 v_ctrl_reg_data_u8 = BMP180_INIT_VALUE;
 	/* used to return the bus communication results*/
 	BMP180_RETURN_FUNCTION_TYPE v_com_rslt_s8 = E_BMP_COMM_RES;
@@ -339,17 +338,15 @@ u16 bmp180_get_uncomp_temperature(void)
 	v_wait_time_u8 = BMP180_TEMP_CONVERSION_TIME;
 
 	v_com_rslt_s8 = p_bmp180->BMP180_BUS_WRITE_FUNC(p_bmp180->dev_addr,
-	BMP180_CTRL_MEAS_REG,
-	&v_ctrl_reg_data_u8, BMP180_GEN_READ_WRITE_DATA_LENGTH);
+													BMP180_CTRL_MEAS_REG,
+													&v_ctrl_reg_data_u8, BMP180_GEN_READ_WRITE_DATA_LENGTH);
 	p_bmp180->delay_msec(v_wait_time_u8);
-	v_com_rslt_s8 +=
-	p_bmp180->BMP180_BUS_READ_FUNC(p_bmp180->dev_addr,
-	BMP180_ADC_OUT_MSB_REG, v_data_u8,
-	BMP180_TEMPERATURE_DATA_LENGTH);
-	v_ut_u16 = (u16)((((s32)
-	((s8)v_data_u8[BMP180_TEMPERATURE_MSB_DATA]))
-	<< BMP180_SHIFT_BIT_POSITION_BY_08_BITS)
-	| (v_data_u8[BMP180_TEMPERATURE_LSB_DATA]));
+	v_com_rslt_s8 += p_bmp180->BMP180_BUS_READ_FUNC(p_bmp180->dev_addr,
+													BMP180_ADC_OUT_MSB_REG, v_data_u8,
+													BMP180_TEMPERATURE_DATA_LENGTH);
+													
+	v_ut_u16 = (u16)((((s32)((s8)v_data_u8[BMP180_TEMPERATURE_MSB_DATA]))	<< BMP180_SHIFT_BIT_POSITION_BY_08_BITS)
+							  | (v_data_u8[BMP180_TEMPERATURE_LSB_DATA]));
 	return v_ut_u16;
 }
 /*!
