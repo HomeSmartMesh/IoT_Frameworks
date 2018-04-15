@@ -70,7 +70,10 @@ def parse_pid(byte):
 
 def parse_payload(data):
     res = ""
-    if(data[2] == pid["temperature"]):
+    if(data[2] == pid["light"]):
+        light = int.from_bytes(bytearray(data[4:6]),'big',signed=False)
+        res = "%d" %(light)
+    elif(data[2] == pid["temperature"]):
         val = float(int.from_bytes(bytearray(data[4:8]),'big',signed=True)) / 100
         res = '{:02.2f}'.format(val)
     elif(data[2] == pid["humidity"]):
