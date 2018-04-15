@@ -55,12 +55,12 @@
 #include "nrf_drv_clock.h"
 
 #include "mpu6050_app.h"
-
 #include "bmp180_app.h"
+#include "ap3216c.h"
 
-#define NodeId 64
+#define NodeId 61
 #define SLEEP_SEC 10
-#define RF_CHANNEL 10
+#define RF_CHANNEL 2
 
 #define Mesh_Pid_Alive 0x05
 #define Mesh_Pid_Reset 0x04
@@ -83,8 +83,6 @@
 const nrf_drv_rtc_t rtc = NRF_DRV_RTC_INSTANCE(0); /**< Declaring an instance of nrf_drv_rtc for RTC0. */
 
 static nrf_esb_payload_t tx_payload = NRF_ESB_CREATE_PAYLOAD(0, 0x01, 0x00);
-static nrf_esb_payload_t rx_payload;
-static uint32_t button_state_1;
 static volatile bool esb_completed = false;
 
 void blink_green()
@@ -111,50 +109,18 @@ void nrf_esb_event_handler(nrf_esb_evt_t const * p_event)
             (void) nrf_esb_flush_tx();
             break;
         case NRF_ESB_EVENT_RX_RECEIVED:
-            // Get the most recent element from the RX FIFO.
-            while (nrf_esb_read_rx_payload(&rx_payload) == NRF_SUCCESS) ;
-
-            // For each LED, set it as indicated in the rx_payload, but invert it for the button
-            // which is pressed. This is because the ack payload from the PRX is reflecting the
-            // state from before receiving the packet.
-            nrf_gpio_pin_write(LED_RGB_GREEN, !( ((rx_payload.data[0] & 0x01) == 0) ^ (button_state_1 == BTN_PRESSED)) );
             break;
     }
 
     esb_completed = true;
 }
 
-void mesh_tx_accell(uint8_t * data)
-{
-    esb_completed = false;//reset the check
-
-    tx_payload.length   = 9;//payload + header (crc length not included)
-    tx_payload.control = 0x80 | 2;// broadcast | ttl = 2
-    tx_payload.noack    = true;//it is a broadcast
-    tx_payload.pipe     = 0;
-
-    tx_payload.data[0] = 0x13;//acceleration
-    
-    tx_payload.data[1] = NodeId;//source
-
-    for(int i=0;i<6;i++)
-    {
-        tx_payload.data[i+2]     = data[i];
-    }
-    
-    tx_payload.noack = true;
-    nrf_esb_write_payload(&tx_payload);
-
-    //wait till the transmission is complete
-    while(!esb_completed);
-}
-
 //
-void mesh_tx_4B(uint8_t pid,uint8_t * data)
+void mesh_tx_data(uint8_t pid,uint8_t * data,uint8_t size)
 {
     esb_completed = false;//reset the check
 
-    tx_payload.length   = 7;//payload + header (crc length not included)
+    tx_payload.length   = 3 + size;//payload + header (crc length not included)
     tx_payload.control = 0x80 | 2;// broadcast | ttl = 2
     tx_payload.noack    = true;//it is a broadcast
     tx_payload.pipe     = 0;
@@ -163,7 +129,7 @@ void mesh_tx_4B(uint8_t pid,uint8_t * data)
     
     tx_payload.data[1] = NodeId;//source
 
-    for(int i=0;i<4;i++)
+    for(int i=0;i<size;i++)
     {
         tx_payload.data[i+2]     = data[i];
     }
@@ -298,21 +264,28 @@ void send_accell()
     //DEBUG_PRINTF("x(%d) y(%d) z(%d)\r\n",x,y,z);
     //nrf_delay_ms(1000);
     //mpu_sleep();
-    mesh_tx_accell(accell_data);//sends and waits tx
+    mesh_tx_data(0x13,accell_data,6);//sends and waits tx
 }
 
 void send_temperature()
 {
     uint8_t data[2];
     bmp_get_temperature(data);
-    mesh_tx_4B(0x08,data);//sends and waits tx
+    mesh_tx_data(0x08,data,4);//sends and waits tx
 }
 
 void send_pressure()
 {
     uint8_t data[2];
     bmp_get_pressure(data);
-    mesh_tx_4B(0x12,data);//sends and waits tx
+    mesh_tx_data(0x12,data,4);//sends and waits tx
+}
+
+void send_light()
+{
+    uint8_t data[2];
+    ap_get_light(data);
+    mesh_tx_data(0x07,data,2);//sends and waits tx
 }
 
 static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
@@ -326,9 +299,9 @@ static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
         static uint8_t send = 1;
         if(send == 1)
         {
-            blink_green();
             send_accell();
             DEBUG_PRINTF("send_accell()\r\n");
+            blink_green();
         }
         else if(send == 2)
         {
@@ -337,8 +310,14 @@ static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
         }
         else if(send == 3)
         {
-            blink_blue();
+            //blink_blue();//do not blink not to influence the light measure
             send_pressure();
+            ap_measure_light();//measurement takes 250 ms, so cpu goes in LP
+        }
+        else if(send == 4)
+        {
+            blink_blue();
+            send_light();
         }
         else
         {
@@ -386,7 +365,6 @@ void init()
     gpio_init();
 
     nrf_drv_clock_lfclk_request(NULL);
-    rtc_config();
 
     nrf_gpio_pin_write(LED_RGB_BLUE, 0 );
     nrf_delay_ms(300);
@@ -395,7 +373,12 @@ void init()
 
     mpu_start();//intialises the twi
 
+    ap_reset();
+
     bmp_init();//twi not initialised here, keep after twi intialisation
+
+    //only allow interrupts to start after init is done
+    rtc_config();
 
     DEBUG_PRINTF("=> Hello Debug nRF51 sensors Sleep\r\n");
 

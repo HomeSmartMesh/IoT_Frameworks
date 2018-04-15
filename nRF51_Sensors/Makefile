@@ -14,6 +14,7 @@ SRC_FILES += \
   $(PROJ_DIR)/mpu6050_app/mpu6050_app.c \
   $(PROJ_DIR)/bmp180/bmp180.c \
   $(PROJ_DIR)/bmp180/bmp180_app.c \
+  $(PROJ_DIR)/ap3216c/ap3216c.c \
   $(SDK_ROOT)/components/libraries/log/src/nrf_log_backend_serial.c \
   $(SDK_ROOT)/components/libraries/log/src/nrf_log_frontend.c \
   $(SDK_ROOT)/components/libraries/util/app_error.c \
@@ -40,6 +41,7 @@ INC_FOLDERS += \
   $(PROJ_DIR) \
   $(PROJ_DIR)/bmp180 \
   $(PROJ_DIR)/mpu6050_app \
+  $(PROJ_DIR)/ap3216c \
   $(SDK_ROOT)/components \
   $(SDK_ROOT)/components/libraries/util \
   $(SDK_ROOT)/components/toolchain/gcc \
