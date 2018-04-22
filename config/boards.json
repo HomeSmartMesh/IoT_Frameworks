@@ -33,7 +33,7 @@
             "modules":{
                 "uc":"STM32_BluePill",
                 "rf":["nRF24","nRF24_pa_lna"],
-                "sensors":["BME280","MAX44009","APDS9960"]
+                "sensors":["BME280","APDS9960"]
             }
         },
         "software":{
@@ -77,10 +77,29 @@
             }
         },
         "software":{
-            "repo"  :"local",
+            "repo"   :"https://github.com/wassfila/IoT_Frameworks.git",
             "programs":{
-                "esb_low_power_ptx":"D:/Projects/NordicRF/nRF5_SDK_14.0.0_3bcc1f7/examples/proprietary_rf/esb_low_power_ptx"
+                "nRF51_Beacon" :"nRF51_Beacon"
+            },
+            "uc":"nRF51822_xxAA",
+            "rf":["nRF51"],
+            "sensors":["button"]
+        }
+    },
+    "nRF51_Sensors":{
+        "hardware":{
+            "cots":{
+                "long_name":"NRF51 Sensor Tag"
             }
+        },
+        "software":{
+            "repo"   :"https://github.com/wassfila/IoT_Frameworks.git",
+            "programs":{
+                "nRF51_Sensors" :"nRF51_Sensors"
+            },
+            "uc":"nRF51822_xxAA",
+            "rf":["nRF51"],
+            "sensors":["MPU6050","BMP180","AP3216C"]
         }
     }
 }

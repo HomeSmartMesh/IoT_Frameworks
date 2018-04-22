@@ -175,6 +175,12 @@ void rf_broadcast_catched(uint8_t *data,uint8_t size)
 				rasp.printf("temperature:%d\r",t);
 			}
 			break;
+		case rf::pid::humidity:
+			{
+				int32_t t = prf.get_int32(data+rf::ind::bcst_payload);
+				rasp.printf("humidity:%d\r",t);
+			}
+			break;
 		case rf::pid::pressure:
 			{
 				int32_t p = prf.get_int32(data+rf::ind::bcst_payload);
@@ -183,7 +189,9 @@ void rf_broadcast_catched(uint8_t *data,uint8_t size)
 			break;
 		case rf::pid::acceleration:
 			{
-				prf.print_acceleration(data+rf::ind::bcst_payload);
+				//TODO issue with sign
+				//prf.print_acceleration(data+rf::ind::bcst_payload);
+				rasp.printf("acceleration:0.0\r");
 			}
 			break;
 		default :
