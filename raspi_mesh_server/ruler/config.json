@@ -12,7 +12,7 @@
     "rules":{
         "Bathroom_Hum_Status":{
             "input":"Nodes/7/humidity",
-            "output":"jNodes/23/RGB",
+            "output":"jNodes/56/RGB",
             "description":"indicate when the bathroom is humid",
             "enable" : true
         },
