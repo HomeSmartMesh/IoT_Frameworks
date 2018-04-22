@@ -58,7 +58,7 @@
 #include "bmp180_app.h"
 #include "ap3216c.h"
 
-#define NodeId 61
+#define NodeId 45
 #define SLEEP_SEC 10
 #define RF_CHANNEL 2
 
@@ -120,7 +120,7 @@ void mesh_tx_data(uint8_t pid,uint8_t * data,uint8_t size)
 {
     esb_completed = false;//reset the check
 
-    tx_payload.length   = 3 + size;//payload + header (crc length not included)
+    tx_payload.length   = 2 + size;//length,ctrl payload(pid,source,rf_payload)(crc not included in length)
     tx_payload.control = 0x80 | 2;// broadcast | ttl = 2
     tx_payload.noack    = true;//it is a broadcast
     tx_payload.pipe     = 0;
@@ -285,7 +285,7 @@ void send_light()
 {
     uint8_t data[2];
     ap_get_light(data);
-    mesh_tx_data(0x07,data,2);//sends and waits tx
+    mesh_tx_data(0x14,data,2);//0x14 new light
 }
 
 static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
