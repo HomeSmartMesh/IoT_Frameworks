@@ -134,6 +134,11 @@ void rf_broadcast_catched(uint8_t *data,uint8_t size)
 				prf.print_light(data+rf::ind::bcst_payload);
 			}
 			break;
+		case rf::pid::light_n:
+			{
+				prf.print_new_light(data+rf::ind::bcst_payload);
+			}
+			break;
 		case rf::pid::heat:
 			{
 				rasp.printf("heat:%u\r",data[rf::ind::bcst_payload]);
@@ -162,6 +167,23 @@ void rf_broadcast_catched(uint8_t *data,uint8_t size)
 		case rf::pid::button:
 			{
 				rasp.printf("button:%u\r",data[rf::ind::bcst_payload]);
+			}
+			break;
+		case rf::pid::temperature:
+			{
+				int32_t t = prf.get_int32(data+rf::ind::bcst_payload);
+				rasp.printf("temperature:%d\r",t);
+			}
+			break;
+		case rf::pid::pressure:
+			{
+				int32_t p = prf.get_int32(data+rf::ind::bcst_payload);
+				rasp.printf("perssure:%d\r",p/256);
+			}
+			break;
+		case rf::pid::acceleration:
+			{
+				prf.print_acceleration(data+rf::ind::bcst_payload);
 			}
 			break;
 		default :

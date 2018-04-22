@@ -26,6 +26,7 @@ pid = {
     "humidity"      : 0x11,
     "pressure"      : 0x12,
     "acceleration"  : 0x13,
+    "light_n"       : 0x14,
     "test_rf_resp"  : 0x30
 }
 
@@ -70,8 +71,8 @@ def parse_pid(byte):
 
 def parse_payload(data):
     res = ""
-    if(data[2] == pid["light"]):
-        light = int.from_bytes(bytearray(data[4:6]),'big',signed=False)
+    if(data[2] == pid["light_n"]):
+        light = int.from_bytes(bytearray(data[4:6]),'little',signed=False)
         res = "%d" %(light)
     elif(data[2] == pid["temperature"]):
         val = float(int.from_bytes(bytearray(data[4:8]),'big',signed=True)) / 100
