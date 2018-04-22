@@ -32,7 +32,7 @@
 #define BME_PERIOD				300
 #define BME_OFFSET				200
 
-#define TEST_RUN 		1
+#define TEST_RUN 		0
 #define TEST_TARGET 	67
 #define TEST_CHANNEL 	10
 
@@ -77,6 +77,15 @@ uint8_t spi_module = 2;
 	I2C i2c(PB_7,PB_6);
 	BME280 bme280(&pc,&i2c);
 #endif
+
+void i2c_recover()
+{
+	pc.printf("i2c error - ");
+	gsensor.i2c.stop();
+	gsensor.i2c.frequency(100000);
+	//wait(1);
+	pc.printf("restart__________________________\n");
+}
 
 
 DigitalOut debug_pio(PB_13);
@@ -254,6 +263,7 @@ void apds_poll_gesture()
 {
 	uint8_t gest = rf::gest::none;
 	if ( gsensor.isGestureAvailable() ) 
+	TODO if used recover i2c
 	{
 		gest = (uint8_t) gsensor.readGesture();
 		if(gest)
@@ -270,6 +280,7 @@ void apds_poll_proximity()
 {
 	uint8_t val;
 	gsensor.readProximity(val);
+	TODO if used check bool and recover i2c
 	if(val > 25)
 	{
 		led_count = 1;
@@ -300,10 +311,10 @@ void apds_log_light_colors()
 	if(gsensor_available)
 	{
 		uint16_t light_rgb[4];
-		gsensor.readAmbientLight(light_rgb[0]);
-		gsensor.readRedLight(light_rgb[1]);
-		gsensor.readGreenLight(light_rgb[2]);
-		gsensor.readBlueLight(light_rgb[3]);
+		bool res_ok = gsensor.readAmbientLight(light_rgb[0]);	if(!res_ok) i2c_recover();
+		res_ok = gsensor.readRedLight(light_rgb[1]);			if(!res_ok) i2c_recover();
+		res_ok = gsensor.readGreenLight(light_rgb[2]);			if(!res_ok) i2c_recover();
+		res_ok = gsensor.readBlueLight(light_rgb[3]);			if(!res_ok) i2c_recover();
 		hsm.broadcast_light_rgb(light_rgb);
 		//expected at rx gateway side
 		//pc.printf("NodeId:%u;light:%u;red:%u,green:%u;blue:%u\r\n",F_NODEID,light_rgb[0],light_rgb[1],light_rgb[2],light_rgb[3]);

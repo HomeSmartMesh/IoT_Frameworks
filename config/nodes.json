@@ -238,10 +238,10 @@
         "program"       :"nRF51_Beacon",
         "uid"           :"?"
         },
-    "56":   {   "name"          :"IoT action 1 PA",
-        "sensors"       :["proximity","light","colorLight"],
+    "56":   {   "name"          :"Bathroom repeater",
+        "sensors"       :["light","colorLight","temperature","humidity","pressure"],
         "board"         :"STM32_Dongle",
-        "devices"       :["nRF24_pa_lna"],
+        "devices"       :["nRF24_pa_lna","BME280","APDS9960","WS2812B"],
         "uc_uid"        :"0x55 FF 6B 06 49 70 49 50 40 53 01 87"
         },
     "57":   {   "name"          :"IoT action 2",
@@ -292,10 +292,10 @@
         "uid"           :"0xAB 60 9E 89 29 F4 8F 10",
         "data"          : ["acceleration","temperature","pressure","light"]
         },
-    "65":   {   "name"          :"IoT action 6",
-        "sensors"       :["proximity","light","colorLight"],
+    "65":   {   "name"          :"bedroom repeater",
+        "sensors"       :["light","colorLight","temperature","humidity","pressure"],
         "board"         :"STM32_Dongle",
-        "devices"       :["nRF24"],
+        "devices"       :["nRF24_pa_lna","BME280","APDS9960"],
         "uc_uid"        :"0x50 FF 71 06 49 89 53 51 45 26 19 87"
         },
     "66":   {   "name"          :"IoT action 7",
