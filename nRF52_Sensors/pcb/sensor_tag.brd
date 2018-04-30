@@ -362,7 +362,7 @@ design rules under a new name.</description>
 </autorouter>
 <elements>
 <element name="U$1" library="GY-BMEP" package="GY-BMEP-NOHOLE" value="GY-BMEPGY-BMEP-NOHOLE" x="7.62" y="20.32"/>
-<element name="U$2" library="APDS9960" package="APDS9960-FULL" value="APDS9960_MODULEAPDS9960-FULL" x="2.54" y="7.62"/>
+<element name="U$2" library="APDS9960" package="APDS9960-FULL" value="APDS9960_MODULEAPDS9960-FULL" x="2.54" y="6.35"/>
 <element name="U$3" library="nRF52832_module" package="NRF52832_MOD_SMALL" value="NRF52832_MODULENRF52832_MOD_SMALL" x="25.4" y="17.78"/>
 <element name="U$4" library="cr2032" package="CR2032_SMD" value="CR2032" x="21.59" y="13.208" rot="MR270"/>
 <element name="U$5" library="nrf_tag_debug" package="NRF_TAG_DEBUG" value="NRF_TAG_DEBUG" x="25.4" y="3.81"/>
@@ -398,9 +398,6 @@ design rules under a new name.</description>
 <wire x1="21.59" y1="13.208" x2="20.32" y2="12.7" width="0.6096" layer="16"/>
 <wire x1="2.62" y1="21.59" x2="5.08" y2="21.59" width="0.6096" layer="16"/>
 <wire x1="5.08" y1="21.59" x2="11.43" y2="15.24" width="0.6096" layer="16"/>
-<wire x1="2.54" y1="10.16" x2="1.27" y2="8.89" width="0.6096" layer="16"/>
-<wire x1="1.27" y1="8.89" x2="1.27" y2="1.27" width="0.6096" layer="16"/>
-<wire x1="1.27" y1="1.27" x2="15.24" y2="1.27" width="0.6096" layer="16"/>
 <wire x1="15.24" y1="1.27" x2="15.24" y2="6.35" width="0.6096" layer="16"/>
 <wire x1="15.24" y1="6.35" x2="20.32" y2="11.43" width="0.6096" layer="16"/>
 <wire x1="20.32" y1="11.43" x2="20.32" y2="12.7" width="0.6096" layer="16"/>
@@ -430,7 +427,7 @@ design rules under a new name.</description>
 <contactref element="U$3" pad="VCC"/>
 <contactref element="U$2" pad="VIN"/>
 <contactref element="U$1" pad="VIN"/>
-<wire x1="2.54" y1="12.7" x2="1.3208" y2="13.9192" width="0.6096" layer="1"/>
+<wire x1="2.54" y1="11.43" x2="1.3208" y2="13.9192" width="0.6096" layer="1"/>
 <wire x1="1.3208" y1="13.9192" x2="1.3208" y2="22.86" width="0.6096" layer="1"/>
 <wire x1="1.3208" y1="22.86" x2="2.5908" y2="24.13" width="0.6096" layer="1"/>
 <wire x1="2.5908" y1="24.13" x2="2.62" y2="24.13" width="0.6096" layer="1"/>
@@ -455,8 +452,8 @@ design rules under a new name.</description>
 <signal name="SCL">
 <contactref element="U$1" pad="SCL"/>
 <contactref element="U$2" pad="SCL"/>
-<wire x1="2.54" y1="7.62" x2="5.08" y2="10.16" width="0.6096" layer="16"/>
-<wire x1="5.08" y1="10.16" x2="5.08" y2="17.78" width="0.6096" layer="16"/>
+<wire x1="2.54" y1="6.35" x2="5.08" y2="8.89" width="0.6096" layer="16"/>
+<wire x1="5.08" y1="8.89" x2="5.08" y2="17.78" width="0.6096" layer="16"/>
 <wire x1="3.81" y1="19.05" x2="5.08" y2="17.78" width="0.6096" layer="16"/>
 <wire x1="2.62" y1="19.05" x2="3.81" y2="19.05" width="0.6096" layer="16"/>
 <contactref element="U$3" pad="P0_29"/>
@@ -466,8 +463,8 @@ design rules under a new name.</description>
 <signal name="SDA">
 <contactref element="U$2" pad="SDA"/>
 <contactref element="U$1" pad="SDA"/>
-<wire x1="2.54" y1="5.08" x2="6.35" y2="8.89" width="0.6096" layer="1"/>
-<wire x1="6.35" y1="8.89" x2="6.35" y2="13.97" width="0.6096" layer="1"/>
+<wire x1="2.54" y1="3.81" x2="6.35" y2="7.62" width="0.6096" layer="1"/>
+<wire x1="6.35" y1="7.62" x2="6.35" y2="13.97" width="0.6096" layer="1"/>
 <wire x1="6.35" y1="13.97" x2="3.81" y2="16.51" width="0.6096" layer="1"/>
 <wire x1="2.62" y1="16.51" x2="2.54" y2="16.51" width="0.6096" layer="1"/>
 <wire x1="2.62" y1="16.51" x2="3.81" y2="16.51" width="0.6096" layer="1"/>
@@ -478,8 +475,8 @@ design rules under a new name.</description>
 <signal name="INT">
 <contactref element="U$3" pad="P0_31"/>
 <contactref element="U$2" pad="INT"/>
-<wire x1="2.54" y1="2.54" x2="8.89" y2="8.89" width="0.6096" layer="1"/>
-<wire x1="8.89" y1="8.89" x2="8.89" y2="15.24" width="0.6096" layer="1"/>
+<wire x1="2.54" y1="1.27" x2="8.89" y2="7.62" width="0.6096" layer="1"/>
+<wire x1="8.89" y1="7.62" x2="8.89" y2="15.24" width="0.6096" layer="1"/>
 <wire x1="8.89" y1="15.24" x2="10.52" y2="16.87" width="0.6096" layer="1"/>
 <wire x1="10.52" y1="16.87" x2="17.2" y2="16.87" width="0.6096" layer="1"/>
 </signal>
