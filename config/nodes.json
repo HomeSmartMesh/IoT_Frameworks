@@ -333,11 +333,17 @@
         "program"       :"nRF51_Sensors",
         "uid"           :"0XF2 B4 78 A7 11 00 EE 6A",
         "data"          : ["acceleration","temperature","pressure","light"]
-            },
+    },
     "72":   {   "name"          :"nRF_SensorTag_9",
         "board"         :"nRF51_Sensors",
         "program"       :"nRF51_Sensors",
         "uid"           :"0xD0 E1 5F 7E DB ED B4 E6",
         "data"          : ["acceleration","temperature","pressure","light"]
+    },
+    "73":   {   "name"          :"nRF52_SensorTag_Test1",
+        "board"         :"nRF52_Sensors",
+        "program"       :"nRF52_Sensors",
+        "uid"           :"",
+        "data"          : ["acceleration","temperature","humidity","pressure","light"]
         }
 }
