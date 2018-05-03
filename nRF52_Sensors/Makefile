@@ -57,8 +57,10 @@ INC_FOLDERS += \
 # Libraries common to all targets
 LIB_FILES += \
 
-# Optimization flags
-OPT = -O3 -g3
+# Optimization flags - max optimisation, min debug info
+#OPT = -O3 -g0
+# Optimization flags - min optimisation, max debug info
+OPT = -O0 -g3
 # Uncomment the line below to enable link time optimization
 #OPT += -flto
 

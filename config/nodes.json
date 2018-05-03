@@ -343,7 +343,7 @@
     "73":   {   "name"          :"nRF52_SensorTag_Test1",
         "board"         :"nRF52_Sensors",
         "program"       :"nRF52_Sensors",
-        "uid"           :"",
+        "uid"           :"CA:8B:01:D5:45:CC",
         "data"          : ["acceleration","temperature","humidity","pressure","light"]
         }
 }

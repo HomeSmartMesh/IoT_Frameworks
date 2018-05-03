@@ -445,37 +445,39 @@ small coin cell</text>
 <library name="nrf_tag_debug">
 <packages>
 <package name="NRF_TAG_DEBUG">
-<smd name="VCC" x="0" y="0" dx="2.54" dy="1.27" layer="1" roundness="100" rot="R90"/>
-<smd name="SWDIO" x="2.54" y="0" dx="2.54" dy="1.27" layer="1" roundness="100" rot="R90"/>
-<smd name="SWCLK" x="5.08" y="0" dx="2.54" dy="1.27" layer="1" roundness="100" rot="R90"/>
-<smd name="GND" x="-2.54" y="0" dx="2.54" dy="1.27" layer="1" roundness="100" rot="R90"/>
-<smd name="TX" x="-5.08" y="0" dx="2.54" dy="1.27" layer="1" roundness="100" rot="R90"/>
-<pad name="P$6" x="7.62" y="0" drill="0.75"/>
-<pad name="P$7" x="-7.62" y="0" drill="0.75"/>
 <wire x1="-8.89" y1="2.54" x2="-8.89" y2="-2.54" width="0.127" layer="21"/>
 <wire x1="-8.89" y1="-2.54" x2="8.89" y2="-2.54" width="0.127" layer="21"/>
 <wire x1="8.89" y1="-2.54" x2="8.89" y2="2.54" width="0.127" layer="21"/>
 <wire x1="8.89" y1="2.54" x2="-8.89" y2="2.54" width="0.127" layer="21"/>
 <text x="-8.509" y="1.143" size="1.27" layer="21">Debug</text>
-<text x="-7.62" y="-2.159" size="1.27" layer="21">Tx</text>
-<text x="-4.191" y="-2.286" size="1.27" layer="21">G</text>
-<text x="-1.778" y="-2.159" size="1.27" layer="21">V</text>
-<text x="0.762" y="-2.159" size="1.27" layer="21">D</text>
-<text x="3.302" y="-2.159" size="1.27" layer="21">C</text>
+<text x="-8.509" y="-2.159" size="1.27" layer="21">Tx</text>
+<text x="-0.635" y="-2.159" size="1.27" layer="21">G</text>
+<text x="2.032" y="-2.159" size="1.27" layer="21">V</text>
+<text x="4.572" y="-2.159" size="1.27" layer="21">D</text>
+<text x="7.112" y="-2.159" size="1.27" layer="21">C</text>
+<pad name="TX" x="-7.62" y="0" drill="0.6"/>
+<pad name="RX" x="-5.08" y="0" drill="0.6"/>
+<pad name="GND" x="0" y="0" drill="0.6"/>
+<pad name="VCC" x="2.54" y="0" drill="0.6"/>
+<pad name="SWDIO" x="5.08" y="0" drill="0.6"/>
+<pad name="SWDCLK" x="7.62" y="0" drill="0.6"/>
+<pad name="NC" x="-2.54" y="0" drill="0.6" shape="square"/>
+<text x="-5.969" y="-2.159" size="1.27" layer="21">Rx</text>
 </package>
 </packages>
 <symbols>
 <symbol name="NRF_TAG_DEBUG">
-<pin name="TX" x="-5.08" y="10.16" length="middle"/>
+<pin name="RX" x="-5.08" y="10.16" length="middle"/>
 <pin name="GND" x="-5.08" y="5.08" length="middle"/>
 <pin name="VCC" x="-5.08" y="0" length="middle"/>
 <pin name="SWDIO" x="-5.08" y="-5.08" length="middle"/>
 <pin name="SWCLK" x="-5.08" y="-10.16" length="middle"/>
-<wire x1="-2.54" y1="12.7" x2="-2.54" y2="-12.7" width="0.254" layer="94"/>
+<wire x1="-2.54" y1="17.78" x2="-2.54" y2="-12.7" width="0.254" layer="94"/>
 <wire x1="-2.54" y1="-12.7" x2="17.78" y2="-12.7" width="0.254" layer="94"/>
-<wire x1="17.78" y1="-12.7" x2="17.78" y2="12.7" width="0.254" layer="94"/>
-<wire x1="17.78" y1="12.7" x2="-2.54" y2="12.7" width="0.254" layer="94"/>
+<wire x1="17.78" y1="-12.7" x2="17.78" y2="17.78" width="0.254" layer="94"/>
+<wire x1="17.78" y1="17.78" x2="-2.54" y2="17.78" width="0.254" layer="94"/>
 <text x="6.604" y="7.366" size="2.54" layer="94">Debug</text>
+<pin name="TX" x="-5.08" y="15.24" length="middle"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -487,9 +489,50 @@ small coin cell</text>
 <device name="" package="NRF_TAG_DEBUG">
 <connects>
 <connect gate="G$1" pin="GND" pad="GND"/>
-<connect gate="G$1" pin="SWCLK" pad="SWCLK"/>
+<connect gate="G$1" pin="RX" pad="RX"/>
+<connect gate="G$1" pin="SWCLK" pad="SWDCLK"/>
 <connect gate="G$1" pin="SWDIO" pad="SWDIO"/>
 <connect gate="G$1" pin="TX" pad="TX"/>
+<connect gate="G$1" pin="VCC" pad="VCC"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
+<library name="cr2477">
+<packages>
+<package name="CR2477">
+<pad name="GND" x="0" y="0" drill="0.8"/>
+<pad name="VCC" x="19" y="0" drill="0.8"/>
+<circle x="3.81" y="0" radius="13.2" width="0.127" layer="21"/>
+<wire x1="16.002" y1="5.24" x2="20.32" y2="5.23" width="0.127" layer="21"/>
+<wire x1="20.32" y1="5.23" x2="20.32" y2="-5.23" width="0.127" layer="21"/>
+<wire x1="20.32" y1="-5.23" x2="16.002" y2="-5.24" width="0.127" layer="21"/>
+<text x="-9.144" y="-0.508" size="1.27" layer="21">CR2477</text>
+</package>
+</packages>
+<symbols>
+<symbol name="CR2477">
+<pin name="VCC" x="-12.7" y="5.08" length="middle"/>
+<pin name="GND" x="-12.7" y="-5.08" length="middle"/>
+<text x="-7.366" y="-1.778" size="1.778" layer="94">CR2477
+Big coin cell</text>
+<circle x="0" y="0" radius="13" width="0.254" layer="94"/>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="CR2477">
+<gates>
+<gate name="G$1" symbol="CR2477" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="CR2477">
+<connects>
+<connect gate="G$1" pin="GND" pad="GND"/>
 <connect gate="G$1" pin="VCC" pad="VCC"/>
 </connects>
 <technologies>
@@ -515,6 +558,7 @@ small coin cell</text>
 <part name="U$3" library="nRF52832_module" deviceset="NRF52832_MODULE" device="NRF52832_MOD_SMALL" value="NRF52832_MODULENRF52832_MOD_SMALL"/>
 <part name="U$4" library="cr2032" deviceset="CR2032" device=""/>
 <part name="U$5" library="nrf_tag_debug" deviceset="NRF_TAG_DEBUG" device=""/>
+<part name="U$6" library="cr2477" deviceset="CR2477" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -526,6 +570,7 @@ small coin cell</text>
 <instance part="U$3" gate="G$1" x="-48.26" y="50.8"/>
 <instance part="U$4" gate="G$1" x="-7.62" y="-5.08"/>
 <instance part="U$5" gate="G$1" x="-68.58" y="0" rot="R180"/>
+<instance part="U$6" gate="G$1" x="33.02" y="-17.78"/>
 </instances>
 <busses>
 </busses>
@@ -560,8 +605,13 @@ small coin cell</text>
 <pinref part="U$5" gate="G$1" pin="GND"/>
 <wire x1="-63.5" y1="-5.08" x2="-30.48" y2="-5.08" width="0.1524" layer="91"/>
 <wire x1="-30.48" y1="-5.08" x2="-30.48" y2="-10.16" width="0.1524" layer="91"/>
-<wire x1="-30.48" y1="-10.16" x2="-12.7" y2="-10.16" width="0.1524" layer="91"/>
+<wire x1="-30.48" y1="-10.16" x2="-17.78" y2="-10.16" width="0.1524" layer="91"/>
 <label x="-30.48" y="-10.16" size="1.778" layer="95" rot="R180"/>
+<wire x1="-17.78" y1="-10.16" x2="-12.7" y2="-10.16" width="0.1524" layer="91"/>
+<wire x1="-17.78" y1="-10.16" x2="-17.78" y2="-22.86" width="0.1524" layer="91"/>
+<pinref part="U$6" gate="G$1" pin="GND"/>
+<wire x1="-17.78" y1="-22.86" x2="20.32" y2="-22.86" width="0.1524" layer="91"/>
+<junction x="-17.78" y="-10.16"/>
 </segment>
 <segment>
 <pinref part="U$3" gate="G$1" pin="GND"/>
@@ -583,8 +633,15 @@ small coin cell</text>
 <segment>
 <pinref part="U$4" gate="G$1" pin="VCC"/>
 <pinref part="U$5" gate="G$1" pin="VCC"/>
-<wire x1="-12.7" y1="0" x2="-63.5" y2="0" width="0.1524" layer="91"/>
+<wire x1="-12.7" y1="0" x2="-20.32" y2="0" width="0.1524" layer="91"/>
 <label x="-16.002" y="-1.778" size="1.778" layer="95" rot="R180"/>
+<pinref part="U$6" gate="G$1" pin="VCC"/>
+<wire x1="-20.32" y1="0" x2="-63.5" y2="0" width="0.1524" layer="91"/>
+<wire x1="20.32" y1="-12.7" x2="12.7" y2="-12.7" width="0.1524" layer="91"/>
+<wire x1="12.7" y1="-12.7" x2="12.7" y2="7.62" width="0.1524" layer="91"/>
+<wire x1="12.7" y1="7.62" x2="-20.32" y2="7.62" width="0.1524" layer="91"/>
+<wire x1="-20.32" y1="7.62" x2="-20.32" y2="0" width="0.1524" layer="91"/>
+<junction x="-20.32" y="0"/>
 </segment>
 <segment>
 <pinref part="U$3" gate="G$1" pin="VCC"/>
@@ -652,9 +709,18 @@ small coin cell</text>
 <segment>
 <pinref part="U$3" gate="G$1" pin="P0_06"/>
 <pinref part="U$5" gate="G$1" pin="TX"/>
-<wire x1="-58.42" y1="35.56" x2="-58.42" y2="-10.16" width="0.1524" layer="91"/>
-<wire x1="-58.42" y1="-10.16" x2="-63.5" y2="-10.16" width="0.1524" layer="91"/>
-<label x="-55.88" y="22.606" size="1.778" layer="95"/>
+<wire x1="-58.42" y1="35.56" x2="-58.42" y2="-15.24" width="0.1524" layer="91"/>
+<wire x1="-58.42" y1="-15.24" x2="-63.5" y2="-15.24" width="0.1524" layer="91"/>
+<label x="-60.96" y="22.606" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="RX" class="0">
+<segment>
+<pinref part="U$3" gate="G$1" pin="P0_07"/>
+<wire x1="-53.34" y1="35.56" x2="-53.34" y2="-10.16" width="0.1524" layer="91"/>
+<pinref part="U$5" gate="G$1" pin="RX"/>
+<wire x1="-53.34" y1="-10.16" x2="-63.5" y2="-10.16" width="0.1524" layer="91"/>
+<label x="-52.324" y="21.082" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
