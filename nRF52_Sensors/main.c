@@ -56,6 +56,9 @@
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 
+#include "nrf_drv_twi.h"
+
+#include "bme280.h"
 
 #define NodeId 73
 #define RF_CHANNEL 10
@@ -260,6 +263,63 @@ void recover_state()
     tx_payload.data[1] = loop_count << 4;
 }
 
+/* TWI instance ID. */
+#if TWI0_ENABLED
+#define TWI_INSTANCE_ID     0
+#elif TWI1_ENABLED
+#define TWI_INSTANCE_ID     1
+#endif
+
+ /* Number of possible TWI addresses. */
+ #define TWI_ADDRESSES      127
+
+/* TWI instance. */
+static const nrf_drv_twi_t m_twi = NRF_DRV_TWI_INSTANCE(TWI_INSTANCE_ID);
+
+void twi_init()
+{
+    ret_code_t err_code;
+
+    const nrf_drv_twi_config_t twi_config = {
+       .scl                = I2C_SCL,
+       .sda                = I2C_SDA,
+       .frequency          = NRF_DRV_TWI_FREQ_100K,
+       .interrupt_priority = APP_IRQ_PRIORITY_HIGH,
+       .clear_bus_init     = false
+    };
+
+    err_code = nrf_drv_twi_init(&m_twi, &twi_config, NULL, NULL);
+    APP_ERROR_CHECK(err_code);
+
+    nrf_drv_twi_enable(&m_twi);
+}
+
+//found BME280 @ 0x76
+void twi_scan()
+{
+    ret_code_t err_code;
+    uint8_t address;
+    uint8_t sample_data;
+    bool detected_device = false;
+
+    for (address = 1; address <= TWI_ADDRESSES; address++)
+    {
+        err_code = nrf_drv_twi_rx(&m_twi, address, &sample_data, sizeof(sample_data));
+        if (err_code == NRF_SUCCESS)
+        {
+            detected_device = true;
+            NRF_LOG_INFO("TWI device detected at address 0x%x.", address);
+        }
+        NRF_LOG_FLUSH();
+    }
+
+    if (!detected_device)
+    {
+        NRF_LOG_INFO("No device was found.");
+        NRF_LOG_FLUSH();
+    }
+}
+
 int main(void)
 {
     uint32_t err_code;
@@ -273,17 +333,24 @@ int main(void)
     APP_ERROR_CHECK(err_code);
     NRF_LOG_DEFAULT_BACKENDS_INIT();
 
-
     err_code = esb_init();
     APP_ERROR_CHECK(err_code);
 
     gpio_init();
 
+
+
     // Recover state if the device was woken from System OFF.
     recover_state();
 
     NRF_LOG_RAW_INFO("Hello from nRF52 Sensors\r");
-    NRF_LOG_INFO("Starting...\r");
+    NRF_LOG_INFO("Starting...");
+    NRF_LOG_INFO("Now");
+
+    twi_init();
+    err_code = bme280_init();// - Hangs waiting for event
+    NRF_LOG_RAW_INFO("bme280_init() %d\r",err_code);
+    NRF_LOG_INFO("Done");
 
     // Check state of all buttons and send an esb packet with the button press if there is exactly one.
     //err_code = gpio_check_and_esb_tx();
