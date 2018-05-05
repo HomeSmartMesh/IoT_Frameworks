@@ -673,7 +673,7 @@ Big coin cell</text>
 <wire x1="-78.74" y1="76.2" x2="-78.74" y2="66.04" width="0.1524" layer="91"/>
 <wire x1="-78.74" y1="66.04" x2="-73.66" y2="66.04" width="0.1524" layer="91"/>
 <junction x="15.24" y="58.42"/>
-<label x="15.24" y="60.96" size="1.778" layer="95"/>
+<label x="-83.82" y="66.294" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SDA" class="0">
@@ -685,24 +685,24 @@ Big coin cell</text>
 <wire x1="17.78" y1="5.08" x2="27.94" y2="5.08" width="0.1524" layer="91"/>
 <wire x1="17.78" y1="53.34" x2="7.62" y2="53.34" width="0.1524" layer="91"/>
 <wire x1="7.62" y1="53.34" x2="7.62" y2="73.66" width="0.1524" layer="91"/>
-<wire x1="7.62" y1="73.66" x2="-83.82" y2="73.66" width="0.1524" layer="91"/>
-<wire x1="-83.82" y1="73.66" x2="-83.82" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="7.62" y1="73.66" x2="-86.36" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="-86.36" y1="73.66" x2="-86.36" y2="60.96" width="0.1524" layer="91"/>
 <pinref part="U$3" gate="G$1" pin="P0_30"/>
-<wire x1="-83.82" y1="60.96" x2="-73.66" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="-86.36" y1="60.96" x2="-73.66" y2="60.96" width="0.1524" layer="91"/>
 <junction x="17.78" y="53.34"/>
-<label x="2.54" y="53.34" size="1.778" layer="95"/>
+<label x="-91.694" y="61.976" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="INT" class="0">
 <segment>
 <pinref part="U$3" gate="G$1" pin="P0_31"/>
 <wire x1="-73.66" y1="55.88" x2="-88.9" y2="55.88" width="0.1524" layer="91"/>
-<wire x1="-88.9" y1="55.88" x2="-88.9" y2="30.48" width="0.1524" layer="91"/>
-<wire x1="-88.9" y1="30.48" x2="10.16" y2="30.48" width="0.1524" layer="91"/>
-<wire x1="10.16" y1="30.48" x2="10.16" y2="48.26" width="0.1524" layer="91"/>
+<wire x1="-88.9" y1="55.88" x2="-88.9" y2="15.24" width="0.1524" layer="91"/>
+<wire x1="-88.9" y1="15.24" x2="10.16" y2="15.24" width="0.1524" layer="91"/>
+<wire x1="10.16" y1="15.24" x2="10.16" y2="48.26" width="0.1524" layer="91"/>
 <pinref part="U$2" gate="G$1" pin="INT"/>
 <wire x1="10.16" y1="48.26" x2="27.94" y2="48.26" width="0.1524" layer="91"/>
-<label x="-19.558" y="32.766" size="1.778" layer="95"/>
+<label x="-83.058" y="56.896" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="TX" class="0">
@@ -711,7 +711,7 @@ Big coin cell</text>
 <pinref part="U$5" gate="G$1" pin="TX"/>
 <wire x1="-58.42" y1="35.56" x2="-58.42" y2="-15.24" width="0.1524" layer="91"/>
 <wire x1="-58.42" y1="-15.24" x2="-63.5" y2="-15.24" width="0.1524" layer="91"/>
-<label x="-60.96" y="22.606" size="1.778" layer="95"/>
+<label x="-61.976" y="28.956" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="RX" class="0">
@@ -720,7 +720,7 @@ Big coin cell</text>
 <wire x1="-53.34" y1="35.56" x2="-53.34" y2="-10.16" width="0.1524" layer="91"/>
 <pinref part="U$5" gate="G$1" pin="RX"/>
 <wire x1="-53.34" y1="-10.16" x2="-63.5" y2="-10.16" width="0.1524" layer="91"/>
-<label x="-52.324" y="21.082" size="1.778" layer="95"/>
+<label x="-52.324" y="28.702" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>

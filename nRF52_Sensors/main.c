@@ -51,6 +51,12 @@
 #include "boards.h"
 #include "app_util.h"
 
+//for the log
+#include "nrf_log.h"
+#include "nrf_log_ctrl.h"
+#include "nrf_log_default_backends.h"
+
+
 #define NodeId 73
 #define RF_CHANNEL 10
 
@@ -258,6 +264,12 @@ void recover_state()
 int main(void)
 {
     uint32_t err_code;
+
+    err_code = NRF_LOG_INIT(NULL);
+    APP_ERROR_CHECK(err_code);
+    NRF_LOG_DEFAULT_BACKENDS_INIT();
+
+
     // Initialize
     clocks_start();
     err_code = esb_init();
@@ -267,6 +279,9 @@ int main(void)
 
     // Recover state if the device was woken from System OFF.
     recover_state();
+
+    NRF_LOG_ERROR("Test\r\n");
+    NRF_LOG_INFO("Hello from nRF52 Sensors\r\n");
 
     // Check state of all buttons and send an esb packet with the button press if there is exactly one.
     //err_code = gpio_check_and_esb_tx();

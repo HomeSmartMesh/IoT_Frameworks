@@ -15,3 +15,16 @@
 # Included dependencies
 * nRF SDK 15.0.0_a53641a linked as a submodule and stripped down to the required content
 * nRF SDK size reduced to ~ 2.8 MB instead of the original 693 MB and can thus easily be treated as an always loaded submodule
+
+# uart
+* main.c        : uart_init() -> APP_UART_FIFO_INIT(), app_uart_put(), app_uart_get()
+* app_uart.h    : APP_UART_FIFO_INIT() -> app_uart_init()
+* app_uart.c    : app_uart_init() -> nrf_drv_uart_init() "legacy\nrf_drv_uart.c"
+* nrf_serial.c  : nrf_serial_init(),nrf_serial_write(),nrf_serial_read()
+                  nrf_serial_init() -> nrf_drv_uart_init() "legacy\nrf_drv_uart.c"
+
+# nrf logger module
+* http://infocenter.nordicsemi.com/index.jsp?topic=%2Fcom.nordic.infocenter.sdk5.v15.0.0%2Fgroup__nrf__log.html&cp=4_0_0_6_11_16
+* sdk_config : NRF_LOG + NRF_LOG_BACKEND_UART_XXX
+* NRFX_UARTE, NRFX_UART, UART
+NRFX_UARTE_ENABLED = (UART_ENABLED && NRFX_UARTE0_ENABLED)
