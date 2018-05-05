@@ -260,18 +260,20 @@ void recover_state()
     tx_payload.data[1] = loop_count << 4;
 }
 
-
 int main(void)
 {
     uint32_t err_code;
+
+    // Initialize
+    clocks_start();
+
+    //uart_init();
 
     err_code = NRF_LOG_INIT(NULL);
     APP_ERROR_CHECK(err_code);
     NRF_LOG_DEFAULT_BACKENDS_INIT();
 
 
-    // Initialize
-    clocks_start();
     err_code = esb_init();
     APP_ERROR_CHECK(err_code);
 
@@ -280,8 +282,8 @@ int main(void)
     // Recover state if the device was woken from System OFF.
     recover_state();
 
-    NRF_LOG_ERROR("Test\r\n");
-    NRF_LOG_INFO("Hello from nRF52 Sensors\r\n");
+    NRF_LOG_RAW_INFO("Hello from nRF52 Sensors\r");
+    NRF_LOG_INFO("Starting...\r");
 
     // Check state of all buttons and send an esb packet with the button press if there is exactly one.
     //err_code = gpio_check_and_esb_tx();

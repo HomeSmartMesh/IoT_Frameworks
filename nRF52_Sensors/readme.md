@@ -25,6 +25,15 @@
 
 # nrf logger module
 * http://infocenter.nordicsemi.com/index.jsp?topic=%2Fcom.nordic.infocenter.sdk5.v15.0.0%2Fgroup__nrf__log.html&cp=4_0_0_6_11_16
-* sdk_config : NRF_LOG + NRF_LOG_BACKEND_UART_XXX
-* NRFX_UARTE, NRFX_UART, UART
-NRFX_UARTE_ENABLED = (UART_ENABLED && NRFX_UARTE0_ENABLED)
+## sdk config
+* NRF_LOG + NRF_LOG_BACKEND_UART_XXX
+* NRFX_UARTE_ENABLED 1, NRFX_UARTE0_ENABLED 0
+* NRFX_UART_ENABLED 1, NRFX_UART0_ENABLED 0
+* UART_ENABLED 1
+* NRFX_PRS_ENABLED 1, NRFX_PRS_BOX_4_ENABLED 1
+## user macros
+* NRF_LOG_INSTANCE_REGISTER()
+* NRF_LOG_INFO("Hi\r\n");   
+* NRF_LOG_FLUSH(); must be called if not deferred
+* timestamp only when using app_timer.h
+
