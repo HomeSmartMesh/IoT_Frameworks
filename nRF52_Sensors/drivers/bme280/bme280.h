@@ -47,6 +47,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "nrf_drv_twi.h"
+
 struct comp_params {
 	uint16_t dig_T1;
 	int16_t  dig_T2;
@@ -153,7 +155,7 @@ typedef struct {
 /**
  *  Initialises BME280 in sleep mode, all sensors enabled
  */
-BME280_Ret bme280_init();
+BME280_Ret bme280_init(const nrf_drv_twi_t *l_twi);
 
 /**
  * Set mode of BME280: 

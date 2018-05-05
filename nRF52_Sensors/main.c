@@ -276,7 +276,7 @@ void recover_state()
 /* TWI instance. */
 static const nrf_drv_twi_t m_twi = NRF_DRV_TWI_INSTANCE(TWI_INSTANCE_ID);
 
-void twi_init()
+void twi_init(const nrf_drv_twi_t *p_twi)
 {
     ret_code_t err_code;
 
@@ -288,10 +288,10 @@ void twi_init()
        .clear_bus_init     = false
     };
 
-    err_code = nrf_drv_twi_init(&m_twi, &twi_config, NULL, NULL);
+    err_code = nrf_drv_twi_init(p_twi, &twi_config, NULL, NULL);
     APP_ERROR_CHECK(err_code);
 
-    nrf_drv_twi_enable(&m_twi);
+    nrf_drv_twi_enable(p_twi);
 }
 
 //found BME280 @ 0x76
@@ -343,13 +343,13 @@ int main(void)
     // Recover state if the device was woken from System OFF.
     recover_state();
 
-    NRF_LOG_RAW_INFO("Hello from nRF52 Sensors\r");
-    NRF_LOG_INFO("Starting...");
-    NRF_LOG_INFO("Now");
+    NRF_LOG_RAW_INFO("____________________________\r");
+    NRF_LOG_INFO("Hello from nRF52 Sensors\r");
 
-    twi_init();
-    err_code = bme280_init();// - Hangs waiting for event
-    NRF_LOG_RAW_INFO("bme280_init() %d\r",err_code);
+    twi_init(&m_twi);
+
+    err_code = bme280_init(&m_twi);// - Hangs waiting for event
+    NRF_LOG_INFO("bme280_init() %d\r",err_code);
     NRF_LOG_INFO("Done");
 
     // Check state of all buttons and send an esb packet with the button press if there is exactly one.

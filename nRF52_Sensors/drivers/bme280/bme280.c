@@ -48,11 +48,18 @@
 #include "bme280.h"
 
 
-#include "nrf_drv_twi.h"
+#define NRF_LOG_MODULE_NAME bme
 
-#define NRF_LOG_MODULE_NAME BME280
+#if (BME_CONFIG_LOG_ENABLED == 1)
+#define NRF_LOG_LEVEL BME_CONFIG_LOG_LEVEL
+#define NRF_LOG_INFO_COLOR BME_CONFIG_INFO_COLOR
+#define NRF_LOG_DEBUG_COLOR BME_CONFIG_DEBUG_COLOR
+#else //BME_CONFIG_LOG_ENABLED
+#define NRF_LOG_LEVEL 0
+#endif //BME_CONFIG_LOG_ENABLED
+
 #include "nrf_log.h"
-#include "nrf_log_ctrl.h"
+NRF_LOG_MODULE_REGISTER();
 
 /*#include "nrf.h"
 #include "nrf_drv_timer.h"
@@ -76,9 +83,9 @@ void timer_bme280_event_handler(void* p_context);
 static uint8_t current_mode = BME280_MODE_SLEEP;
 static uint8_t current_interval = BME280_STANDBY_1000_MS;
 
-BME280_Ret bme280_init(nrf_drv_twi_t *l_twi)
+BME280_Ret bme280_init(const nrf_drv_twi_t *l_twi)
 {
-  //NRF_LOG_DEBUG("bme280_init()");
+  NRF_LOG_INFO("bme280_init()");
   //Return error if not in sleep
   if(BME280_MODE_SLEEP != current_mode){ return BME280_RET_ILLEGAL; }
 
@@ -90,11 +97,11 @@ BME280_Ret bme280_init(nrf_drv_twi_t *l_twi)
 	if (BME280_ID_VALUE == reg)
   {
 	  bme280.sensor_available = true;
-    //NRF_LOG_DEBUG("bme280 available");
+    NRF_LOG_INFO("bme280 available");
   }
 	else
   {
-    //NRF_LOG_DEBUG("bme280 not found");
+    NRF_LOG_WARNING("bme280 not found");
     //Assume that 0x00 means no response. Other values are self-test errors (invalid who-am-i).
 		return (0x00 == reg) ? BME280_RET_ERROR : BME280_RET_ERROR_SELFTEST;
   }
@@ -166,7 +173,7 @@ BME280_Ret bme280_set_mode(enum BME280_MODE mode)
     case BME280_MODE_NORMAL:
       status |= bme280_write_reg(BME280REG_CTRL_MEAS, conf);
       //conf = bme280_read_reg(BME280REG_CTRL_MEAS);
-      //NRF_LOG_DEBUG("Mode: %x\r\n", conf);
+      NRF_LOG_DEBUG("Mode: %x\r\n", conf);
       break;
 
     case BME280_MODE_FORCED:
@@ -390,11 +397,11 @@ uint8_t bme280_read_reg(uint8_t reg)
 {
   uint8_t res;
   ret_code_t err_code;
-  err_code = nrf_drv_twi_tx(p_twi, address, &reg, 1,true);//check with no stop
+  err_code = nrf_drv_twi_tx(p_twi, address, &reg, 1,true);
   APP_ERROR_CHECK(err_code);
   err_code = nrf_drv_twi_rx(p_twi, address, &res, 1);
   APP_ERROR_CHECK(err_code);
-  NRF_LOG_DEBUG("@ 0x%02x => 0x%02x", address,res);
+  //NRF_LOG_DEBUG("@ 0x%02x => 0x%02x", reg,res);
 
 	return res;
 }
