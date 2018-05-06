@@ -46,9 +46,6 @@
  *        - safer compensation of the measures after the trigger, read vals in any order multiples times
  */
 
-#include <stdint.h>
-#include <stdbool.h>
-
 #include "bme280.h"
 
 #define NRF_LOG_MODULE_NAME bme
@@ -66,7 +63,7 @@ NRF_LOG_MODULE_REGISTER();
 
 struct bme280_driver bme280; /* global instance */
 
-const uint8_t address = 0x76;
+static const uint8_t address = 0x76;
 
 static const nrf_drv_twi_t *p_twi = NULL;
 

@@ -14,6 +14,7 @@ $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
 SRC_FILES += \
   $(PROJ_DIR)/main.c \
   $(PROJ_DIR)/drivers/bme280/bme280.c \
+  $(PROJ_DIR)/drivers/max44009/max44009.c \
   $(SDK_ROOT)/external/fprintf/nrf_fprintf.c \
   $(SDK_ROOT)/external/fprintf/nrf_fprintf_format.c \
   $(SDK_ROOT)/components/boards/boards.c \
@@ -46,6 +47,7 @@ INC_FOLDERS += \
   $(PROJ_DIR) \
   $(PROJ_DIR)/config \
   $(PROJ_DIR)/drivers/bme280 \
+  $(PROJ_DIR)/drivers/max44009 \
   $(SDK_ROOT)/components \
   $(SDK_ROOT)/components/boards \
   $(SDK_ROOT)/components/drivers_nrf/nrf_soc_nosd \

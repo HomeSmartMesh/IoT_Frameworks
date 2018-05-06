@@ -59,6 +59,7 @@
 #include "nrf_drv_twi.h"
 
 #include "bme280.h"
+#include "max44009.h"
 
 #define NodeId 73
 #define RF_CHANNEL 10
@@ -287,7 +288,8 @@ void twi_init(const nrf_drv_twi_t *p_twi)
     nrf_drv_twi_enable(p_twi);
 }
 
-//found BME280 @ 0x76
+//found BME280  @ 0x76
+//found MX44009 @ 0x4A
 void twi_scan()
 {
     ret_code_t err_code;
@@ -314,6 +316,11 @@ void twi_scan()
 }
 void bme_measures_log()
 {
+    uint32_t err_code;
+    err_code = bme280_init(&m_twi);
+    APP_ERROR_CHECK(err_code);
+    NRF_LOG_INFO("bme280_init() done");
+
     bme280_measure();
     float temperature = (float)bme280_get_temperature();
     NRF_LOG_INFO("temperature = "NRF_LOG_FLOAT_MARKER,NRF_LOG_FLOAT(temperature/100));
@@ -347,11 +354,16 @@ int main(void)
 
     twi_init(&m_twi);
 
-    err_code = bme280_init(&m_twi);
-    APP_ERROR_CHECK(err_code);
-    NRF_LOG_INFO("bme280_init() done");
-    
-    bme_measures_log();
+    //twi_scan();
+
+    for(int i=0;i<10;i++)
+    {
+        uint16_t light = max44009_read_light(&m_twi);
+        NRF_LOG_INFO("light = %u",light);
+        nrf_delay_ms(1000);
+    }
+
+    //bme_measures_log();
 
 
     // Check state of all buttons and send an esb packet with the button press if there is exactly one.
