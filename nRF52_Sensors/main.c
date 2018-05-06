@@ -356,10 +356,13 @@ int main(void)
 
     //twi_scan();
 
+    //max44009_test();
+
     for(int i=0;i<10;i++)
     {
-        uint16_t light = max44009_read_light(&m_twi);
-        NRF_LOG_INFO("light = %u",light);
+        uint32_t light = max44009_read_light(&m_twi);
+        float light_f = light;
+        NRF_LOG_INFO("light = "NRF_LOG_FLOAT_MARKER,NRF_LOG_FLOAT(light_f/1000));
         nrf_delay_ms(1000);
     }
 
