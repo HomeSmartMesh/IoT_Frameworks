@@ -77,6 +77,9 @@ struct bme280_driver {
 	int32_t adc_p;		///< RAW pressure
 	int32_t t_fine;		///< calibrated temp
 	struct comp_params cp;	///< calibration data
+	int32_t  temperature;	//finalised temp in 0.01° steps
+	uint32_t pressure;		//finalised hum in x256 x100 hPa
+	uint32_t humidity;		//finalised hum in  x1024
 };
 
 extern struct bme280_driver bme280;
@@ -134,7 +137,7 @@ typedef enum
 
 #define BME280_INTERVAL_MASK     (0xE0)
 
-#define BME280_BURST_READ_LENGTH (9) // 8 bytes + address
+#define BME280_BURST_READ_LENGTH (8) // 8 bytes only for I²C
 #define BME280_MAX_READ_LENGTH BME280_BURST_READ_LENGTH
 
 enum BME280_INTERVAL {
@@ -158,22 +161,17 @@ typedef struct {
 BME280_Ret bme280_init(const nrf_drv_twi_t *l_twi);
 
 /**
- * Set mode of BME280: 
- *  - Sleep  (off)
- *  - Forced (one sample, back to sleep) 
- *  - Normal (continuous)
+ * triggers measurements on the device, wait for them to complete
+ * then reads the data from the sensor
+ * All together, temp, hum, press with x1 sample
  */
-BME280_Ret bme280_set_mode(enum BME280_MODE mode);
+void bme280_measure();
 
 /**
- * Set sampling interval of BME280 in normal mode
- * Note that interval is a standby time between measurements,
- * so if you set 1000 ms actual sampling interval is 1000 ms + tsample
- */
-BME280_Ret bme280_set_interval(enum BME280_INTERVAL interval);
-
-/** Return current interval **/
-enum BME280_INTERVAL bme280_get_interval(void);
+ * dumps config registers 0xF2, 0xF3, 0xF4, 0xF5
+ * ctrl_hum, status, ctrl_meas, config
+ */ 
+void bme280_dump();
 
 /**
  *  Return true if measurement is in progress
@@ -190,24 +188,6 @@ int  bme280_is_measuring(void);
  *  bme280_read_measurements();
  */
 BME280_Ret bme280_read_measurements();
-
-/**
- *  Set oversampling. 
- *  OFF - measurements are not done
- *  1 - single measurement
- *  2, 4, 8, 16 Take series of measurements in one sampling interval / forced sample
- *
- *  Gives a tradeoff between noise, sampling time and power consumption
- */
-BME280_Ret bme280_set_oversampling_hum(uint8_t os);
-BME280_Ret bme280_set_oversampling_temp(uint8_t os);
-BME280_Ret bme280_set_oversampling_press(uint8_t os);
-
-/**
- *  Set IIR filter to low pass measurements. off, 2, 4, 8, 16
- *  Noise / settling time tradeoff
- */
-BME280_Ret bme280_set_iir(uint8_t iir);
 
 /**
  * Returns temperature in DegC, resolution is 0.01 DegC.
@@ -228,11 +208,5 @@ uint32_t bme280_get_pressure(void);
  * Output value of “50532” represents 50532/1024 = 49.356 %RH
  */
 uint32_t   bme280_get_humidity(void);
-
-// Used internally
-uint8_t    bme280_read_reg(uint8_t reg);
-BME280_Ret bme280_read_burst(uint8_t start, uint8_t length, uint8_t* buffer);
-BME280_Ret bme280_write_reg(uint8_t reg, uint8_t value);
-BME280_Ret bme280_platform_init();
 
 #endif

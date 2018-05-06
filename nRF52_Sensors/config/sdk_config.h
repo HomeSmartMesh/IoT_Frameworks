@@ -2040,7 +2040,7 @@
 // <e> BME_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef BME_CONFIG_LOG_ENABLED
-#define BME_CONFIG_LOG_ENABLED 1
+#define BME_CONFIG_LOG_ENABLED 0
 #endif
 // <o> BME_CONFIG_LOG_LEVEL  - Default Severity level
  
@@ -2051,7 +2051,7 @@
 // <4=> Debug 
 
 #ifndef BME_CONFIG_LOG_LEVEL
-#define BME_CONFIG_LOG_LEVEL 3
+#define BME_CONFIG_LOG_LEVEL 4
 #endif
 
 // <o> BME_CONFIG_INFO_COLOR  - ANSI escape code prefix.

@@ -238,15 +238,6 @@ uint32_t esb_tx_light_off()
     return NRF_SUCCESS;
 }
 
-void gpio_init( void )
-{
-    // Workaround for PAN_028 rev1.1 anomaly 22 - System: Issues with disable System OFF mechanism
-    nrf_delay_ms(1);
-
-    bsp_board_init(BSP_INIT_LEDS);
-}
-
-
 void recover_state()
 {
     uint32_t            loop_count = 0;
@@ -276,6 +267,8 @@ void recover_state()
 /* TWI instance. */
 static const nrf_drv_twi_t m_twi = NRF_DRV_TWI_INSTANCE(TWI_INSTANCE_ID);
 
+//TODO optimisation
+// * 400K did not work on 10 cm test wire lines => using 100K, to check again with PCB
 void twi_init(const nrf_drv_twi_t *p_twi)
 {
     ret_code_t err_code;
@@ -319,15 +312,23 @@ void twi_scan()
         NRF_LOG_FLUSH();
     }
 }
+void bme_measures_log()
+{
+    bme280_measure();
+    float temperature = (float)bme280_get_temperature();
+    NRF_LOG_INFO("temperature = "NRF_LOG_FLOAT_MARKER,NRF_LOG_FLOAT(temperature/100));
+    float humidity = (float)bme280_get_humidity();
+    NRF_LOG_INFO("humidity = "NRF_LOG_FLOAT_MARKER,NRF_LOG_FLOAT(humidity/1024));
+    float pressure = bme280_get_pressure();
+    NRF_LOG_INFO("pressure = "NRF_LOG_FLOAT_MARKER,NRF_LOG_FLOAT(pressure/(256*100)));
+    NRF_LOG_RAW_INFO("\r");
+}
 
 int main(void)
 {
     uint32_t err_code;
 
-    // Initialize
     clocks_start();
-
-    //uart_init();
 
     err_code = NRF_LOG_INIT(NULL);
     APP_ERROR_CHECK(err_code);
@@ -336,21 +337,22 @@ int main(void)
     err_code = esb_init();
     APP_ERROR_CHECK(err_code);
 
-    gpio_init();
-
-
 
     // Recover state if the device was woken from System OFF.
     recover_state();
 
-    NRF_LOG_RAW_INFO("____________________________\r");
-    NRF_LOG_INFO("Hello from nRF52 Sensors\r");
+    NRF_LOG_INFO("____________________________");
+    NRF_LOG_INFO("Hello from nRF52 Sensors");
+    NRF_LOG_INFO("____________________________");
 
     twi_init(&m_twi);
 
-    err_code = bme280_init(&m_twi);// - Hangs waiting for event
-    NRF_LOG_INFO("bme280_init() %d\r",err_code);
-    NRF_LOG_INFO("Done");
+    err_code = bme280_init(&m_twi);
+    APP_ERROR_CHECK(err_code);
+    NRF_LOG_INFO("bme280_init() done");
+    
+    bme_measures_log();
+
 
     // Check state of all buttons and send an esb packet with the button press if there is exactly one.
     //err_code = gpio_check_and_esb_tx();
