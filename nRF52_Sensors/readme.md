@@ -37,3 +37,7 @@
 * NRF_LOG_FLUSH(); must be called if not deferred
 * timestamp only when using app_timer.h
 
+# Tools
+* https://github.com/square/pylink
+* have to be used with a 32 bit python version
+
