@@ -1,0 +1,163 @@
+
+#include "mesh.h"
+
+#include "sdk_common.h"
+
+#include "boards.h"
+
+#include "nrf_esb.h"
+#include "nrf_esb_error_codes.h"
+
+#define NRF_LOG_MODULE_NAME mesh
+
+#if (MESH_CONFIG_LOG_ENABLED == 1)
+#define NRF_LOG_LEVEL MESH_CONFIG_LOG_LEVEL
+#else //MESH_CONFIG_LOG_ENABLED
+#define NRF_LOG_LEVEL 0
+#endif //MESH_CONFIG_LOG_ENABLED
+
+#include "nrf_log.h"
+NRF_LOG_MODULE_REGISTER();
+
+
+
+#define NodeId     NRF_UICR->CUSTOMER[0]
+#define RF_CHANNEL NRF_UICR->CUSTOMER[1]
+
+static nrf_esb_payload_t tx_payload = NRF_ESB_CREATE_PAYLOAD(0, 0x01, 0x00);
+static nrf_esb_payload_t rx_payload;
+static volatile bool esb_completed = false;
+
+
+void nrf_esb_event_handler(nrf_esb_evt_t const * p_event)
+{
+    switch (p_event->evt_id)
+    {
+        case NRF_ESB_EVENT_TX_SUCCESS:
+            break;
+        case NRF_ESB_EVENT_TX_FAILED:
+            (void) nrf_esb_flush_tx();
+            break;
+        case NRF_ESB_EVENT_RX_RECEIVED:
+            // Get the most recent element from the RX FIFO.
+            while (nrf_esb_read_rx_payload(&rx_payload) == NRF_SUCCESS) ;
+
+            // For each LED, set it as indicated in the rx_payload, but invert it for the button
+            // which is pressed. This is because the ack payload from the PRX is reflecting the
+            // state from before receiving the packet.
+            break;
+    }
+
+    esb_completed = true;
+}
+
+
+uint32_t mesh_init()
+{
+    uint32_t err_code;
+    uint8_t base_addr_0[4] = {0xE7, 0xE7, 0xE7, 0xE7};
+    uint8_t base_addr_1[4] = {0xC2, 0xC2, 0xC2, 0xC2};
+    uint8_t addr_prefix[8] = {0xE7, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8 };
+
+    nrf_esb_config_t nrf_esb_config         = NRF_ESB_DEFAULT_CONFIG;
+
+    nrf_esb_config.retransmit_count         = 0;
+    nrf_esb_config.selective_auto_ack       = true;//payload.noack  decides
+    nrf_esb_config.protocol                 = NRF_ESB_PROTOCOL_ESB_DPL;
+    nrf_esb_config.payload_length           = 8;
+    nrf_esb_config.bitrate                  = NRF_ESB_BITRATE_2MBPS;
+    nrf_esb_config.event_handler            = nrf_esb_event_handler;
+    nrf_esb_config.mode                     = NRF_ESB_MODE_PTX;
+    nrf_esb_config.crc                      = NRF_ESB_CRC_16BIT;
+
+    err_code = nrf_esb_init(&nrf_esb_config);
+    VERIFY_SUCCESS(err_code);
+
+    err_code = nrf_esb_set_base_address_0(base_addr_0);
+    VERIFY_SUCCESS(err_code);
+
+    err_code = nrf_esb_set_base_address_1(base_addr_1);
+    VERIFY_SUCCESS(err_code);
+
+    err_code = nrf_esb_set_prefixes(addr_prefix, 8);
+    VERIFY_SUCCESS(err_code);
+
+    err_code = nrf_esb_set_rf_channel(RF_CHANNEL);
+    VERIFY_SUCCESS(err_code);
+
+    tx_payload.length  = 8;
+    tx_payload.pipe    = 0;
+    tx_payload.data[0] = 0x00;
+
+    NRF_LOG_INFO("nodeId %d",NodeId);
+    NRF_LOG_INFO("channel %d",RF_CHANNEL);
+
+    return NRF_SUCCESS;
+}
+
+uint32_t mesh_tx_button(uint8_t state)
+{
+    uint32_t err_code;
+    tx_payload.length   = 3;//payload + header (crc length not included)
+    tx_payload.control = 0x80 | 2;// broadcast | ttl = 2
+    tx_payload.noack    = true;//it is a broadcast
+    tx_payload.pipe     = 0;
+    
+    tx_payload.data[0] = 0x06;//pid
+    tx_payload.data[1] = NodeId;//source - on_off_tag
+    tx_payload.data[2] = state;//Up or Down
+    
+    tx_payload.noack = true;
+    esb_completed = false;
+    err_code = nrf_esb_write_payload(&tx_payload);
+    VERIFY_SUCCESS(err_code);
+
+    return NRF_SUCCESS;
+}
+
+uint32_t mesh_tx_light_on()
+{
+    uint32_t err_code;
+    tx_payload.length   = 4;//payload + header (crc length not included)
+    tx_payload.control = 0x7B;// light
+    tx_payload.noack    = true;//it is a broadcast
+    tx_payload.pipe     = 0;
+    
+    tx_payload.data[0] = NodeId;//source
+    tx_payload.data[1] = 0x19;//dest
+    tx_payload.data[2] = 0xA0;//msb
+    tx_payload.data[3] = 0x00;//lsb
+    
+    tx_payload.noack = true;
+    esb_completed = false;
+    err_code = nrf_esb_write_payload(&tx_payload);
+    VERIFY_SUCCESS(err_code);
+
+    return NRF_SUCCESS;
+}
+
+uint32_t mesh_tx_light_off()
+{
+    uint32_t err_code;
+    tx_payload.length   = 4;//payload + header (crc length not included)
+    tx_payload.control = 0x7B;// light
+    tx_payload.noack    = true;//it is a broadcast
+    tx_payload.pipe     = 0;
+    
+    tx_payload.data[0] = NodeId;//source
+    tx_payload.data[1] = 0x19;//dest
+    tx_payload.data[2] = 0x00;//msb
+    tx_payload.data[3] = 0x00;//lsb
+    
+    tx_payload.noack = true;
+    esb_completed = false;
+    err_code = nrf_esb_write_payload(&tx_payload);
+    VERIFY_SUCCESS(err_code);
+
+    return NRF_SUCCESS;
+}
+
+void mesh_wait_tx()
+{
+    while(!esb_completed);
+}

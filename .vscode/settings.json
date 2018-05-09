@@ -9,6 +9,12 @@
         "vector": "cpp",
         "xstring": "cpp",
         "ios": "cpp",
-        "twi_master.h": "c"
+        "twi_master.h": "c",
+        "xmemory0": "cpp",
+        "sdk_common.h": "c",
+        "valarray": "c",
+        "iosfwd": "c",
+        "bme280.h": "c",
+        "twi.h": "c"
     }
 }

@@ -13,8 +13,10 @@ $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
 # Source files common to all targets
 SRC_FILES += \
   $(PROJ_DIR)/main.c \
-  $(PROJ_DIR)/drivers/bme280/bme280.c \
-  $(PROJ_DIR)/drivers/max44009/max44009.c \
+  $(PROJ_DIR)/app/twi.c \
+  $(PROJ_DIR)/app/mesh.c \
+  $(PROJ_DIR)/drivers/bme280.c \
+  $(PROJ_DIR)/drivers/max44009.c \
   $(SDK_ROOT)/external/fprintf/nrf_fprintf.c \
   $(SDK_ROOT)/external/fprintf/nrf_fprintf_format.c \
   $(SDK_ROOT)/components/boards/boards.c \
@@ -46,8 +48,8 @@ SRC_FILES += \
 INC_FOLDERS += \
   $(PROJ_DIR) \
   $(PROJ_DIR)/config \
-  $(PROJ_DIR)/drivers/bme280 \
-  $(PROJ_DIR)/drivers/max44009 \
+  $(PROJ_DIR)/app \
+  $(PROJ_DIR)/drivers \
   $(SDK_ROOT)/components \
   $(SDK_ROOT)/components/boards \
   $(SDK_ROOT)/components/drivers_nrf/nrf_soc_nosd \
@@ -161,10 +163,10 @@ $(foreach target, $(TARGETS), $(call define_target, $(target)))
 .PHONY: flash erase
 
 on:
-	jlink -CommandFile ./jlink/power_on.jlink
+	tools/on.bat
 
 off:
-	jlink -CommandFile jlink/power_off.jlink
+	tools/off.bat
 
 regs:
 	nrfjprog --readregs -f nrf52
@@ -180,5 +182,5 @@ erase:
 
 SDK_CONFIG_FILE := ./config/sdk_config.h
 CMSIS_CONFIG_TOOL := $(SDK_ROOT)/external_tools/cmsisconfig/CMSIS_Configuration_Wizard.jar
-conf:
+config:
 	java -jar $(CMSIS_CONFIG_TOOL) $(SDK_CONFIG_FILE)

@@ -5,6 +5,7 @@ import cfg
 nodes = cfg.get_local_nodes("../../config/nodes.json")
 uicr = cfg.get_local_nodes("../config/uicr_map.json")
 jlink = pylink.JLink()
+jlink.open(os.environ['SEG_JLEDU'])
 node_id = 0
 node = {}
 
@@ -44,7 +45,6 @@ def read_uicr_customer(reg_name):
     return jlink.memory_read32(address,1)[0]
 
 def start():
-    jlink.open(os.environ['SEG_JLEDU'])
     jlink.set_tif(pylink.enums.JLinkInterfaces.SWD)
     jlink.connect('NRF52832_XXAA', verbose=True)
     print('ARM Id: %d' % jlink.core_id())

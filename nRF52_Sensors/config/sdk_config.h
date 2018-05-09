@@ -460,6 +460,14 @@
 
 // </e>
 
+//=========================== TWI dependency ===============================
+
+#if TWI0_ENABLED
+#define TWI_INSTANCE_ID     0
+#elif TWI1_ENABLED
+#define TWI_INSTANCE_ID     1
+#endif
+
 
 // <e> UART_ENABLED - nrf_drv_uart - UART/UARTE peripheral driver - legacy layer
 //==========================================================
@@ -2054,36 +2062,23 @@
 #define BME_CONFIG_LOG_LEVEL 4
 #endif
 
-// <o> BME_CONFIG_INFO_COLOR  - ANSI escape code prefix.
- 
-// <0=> Default 
-// <1=> Black 
-// <2=> Red 
-// <3=> Green 
-// <4=> Yellow 
-// <5=> Blue 
-// <6=> Magenta 
-// <7=> Cyan 
-// <8=> White 
+// </e>
 
-#ifndef BME_CONFIG_INFO_COLOR
-#define BME_CONFIG_INFO_COLOR 0
+// <e> MESH_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef MESH_CONFIG_LOG_ENABLED
+#define MESH_CONFIG_LOG_ENABLED 1
 #endif
-
-// <o> BME_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+// <o> MESH_CONFIG_LOG_LEVEL  - Default Severity level
  
-// <0=> Default 
-// <1=> Black 
-// <2=> Red 
-// <3=> Green 
-// <4=> Yellow 
-// <5=> Blue 
-// <6=> Magenta 
-// <7=> Cyan 
-// <8=> White 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
 
-#ifndef BME_CONFIG_DEBUG_COLOR
-#define BME_CONFIG_DEBUG_COLOR 0
+#ifndef MESH_CONFIG_LOG_LEVEL
+#define MESH_CONFIG_LOG_LEVEL 3
 #endif
 
 // </e>
@@ -2105,37 +2100,6 @@
 #define MAX_CONFIG_LOG_LEVEL 4
 #endif
 
-// <o> MAX_CONFIG_INFO_COLOR  - ANSI escape code prefix.
- 
-// <0=> Default 
-// <1=> Black 
-// <2=> Red 
-// <3=> Green 
-// <4=> Yellow 
-// <5=> Blue 
-// <6=> Magenta 
-// <7=> Cyan 
-// <8=> White 
-
-#ifndef MAX_CONFIG_INFO_COLOR
-#define MAX_CONFIG_INFO_COLOR 0
-#endif
-
-// <o> MAX_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
- 
-// <0=> Default 
-// <1=> Black 
-// <2=> Red 
-// <3=> Green 
-// <4=> Yellow 
-// <5=> Blue 
-// <6=> Magenta 
-// <7=> Cyan 
-// <8=> White 
-
-#ifndef MAX_CONFIG_DEBUG_COLOR
-#define MAX_CONFIG_DEBUG_COLOR 0
-#endif
 
 // </e>
 

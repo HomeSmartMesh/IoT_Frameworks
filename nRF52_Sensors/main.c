@@ -37,7 +37,6 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-#include "nrf_esb.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -45,7 +44,6 @@
 #include "sdk_common.h"
 #include "nrf.h"
 #include "nrf_error.h"
-#include "nrf_esb_error_codes.h"
 #include "nrf_delay.h"
 #include "nrf_gpio.h"
 #include "boards.h"
@@ -56,29 +54,20 @@
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 
-#include "nrf_drv_twi.h"
+// --------------------- inputs from sdk_config --------------------- 
+// ---> TWI0_ENABLED ---> TWI1_ENABLED
 
+//drivers
 #include "bme280.h"
 #include "max44009.h"
-
-#define NodeId 73
-#define RF_CHANNEL 10
-
-#define Mesh_Pid_Alive 0x05
-#define Mesh_Pid_Reset 0x04
-
+//apps
+#include "twi.h"
+#include "mesh.h"
 
 #define RESET_MEMORY_TEST_BYTE  (0x0DUL)        /**< Known sequence written to a special register to check if this wake up is from System OFF. */
 #define RAM_RETENTION_OFF       (0x00000003UL)  /**< The flag used to turn off RAM retention on nRF52. */
 
-#define BTN_PRESSED     0                       /**< Value of a pressed button. */
-#define BTN_RELEASED    1                       /**< Value of a released button. */
-
 /*lint -save -esym(40, BUTTON_1) -esym(40, BUTTON_2) -esym(40, BUTTON_3) -esym(40, BUTTON_4) -esym(40, LED_1) -esym(40, LED_2) -esym(40, LED_3) -esym(40, LED_4) */
-
-static nrf_esb_payload_t tx_payload = NRF_ESB_CREATE_PAYLOAD(0, 0x01, 0x00);
-static nrf_esb_payload_t rx_payload;
-static volatile bool esb_completed = false;
 
 void system_off( void )
 {
@@ -108,135 +97,12 @@ void system_off( void )
 }
 
 
-void nrf_esb_event_handler(nrf_esb_evt_t const * p_event)
-{
-    switch (p_event->evt_id)
-    {
-        case NRF_ESB_EVENT_TX_SUCCESS:
-            break;
-        case NRF_ESB_EVENT_TX_FAILED:
-            (void) nrf_esb_flush_tx();
-            break;
-        case NRF_ESB_EVENT_RX_RECEIVED:
-            // Get the most recent element from the RX FIFO.
-            while (nrf_esb_read_rx_payload(&rx_payload) == NRF_SUCCESS) ;
-
-            // For each LED, set it as indicated in the rx_payload, but invert it for the button
-            // which is pressed. This is because the ack payload from the PRX is reflecting the
-            // state from before receiving the packet.
-            break;
-    }
-
-    esb_completed = true;
-}
-
-
 void clocks_start( void )
 {
     // Start HFCLK and wait for it to start.
     NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;
     NRF_CLOCK->TASKS_HFCLKSTART = 1;
     while (NRF_CLOCK->EVENTS_HFCLKSTARTED == 0);
-}
-
-
-uint32_t esb_init( void )
-{
-    uint32_t err_code;
-    uint8_t base_addr_0[4] = {0xE7, 0xE7, 0xE7, 0xE7};
-    uint8_t base_addr_1[4] = {0xC2, 0xC2, 0xC2, 0xC2};
-    uint8_t addr_prefix[8] = {0xE7, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8 };
-
-    nrf_esb_config_t nrf_esb_config         = NRF_ESB_DEFAULT_CONFIG;
-
-    nrf_esb_config.retransmit_count         = 0;
-    nrf_esb_config.selective_auto_ack       = true;//payload.noack  decides
-    nrf_esb_config.protocol                 = NRF_ESB_PROTOCOL_ESB_DPL;
-    nrf_esb_config.payload_length           = 8;
-    nrf_esb_config.bitrate                  = NRF_ESB_BITRATE_2MBPS;
-    nrf_esb_config.event_handler            = nrf_esb_event_handler;
-    nrf_esb_config.mode                     = NRF_ESB_MODE_PTX;
-    nrf_esb_config.crc                      = NRF_ESB_CRC_16BIT;
-
-    err_code = nrf_esb_init(&nrf_esb_config);
-    VERIFY_SUCCESS(err_code);
-
-    err_code = nrf_esb_set_base_address_0(base_addr_0);
-    VERIFY_SUCCESS(err_code);
-
-    err_code = nrf_esb_set_base_address_1(base_addr_1);
-    VERIFY_SUCCESS(err_code);
-
-    err_code = nrf_esb_set_prefixes(addr_prefix, 8);
-    VERIFY_SUCCESS(err_code);
-
-    err_code = nrf_esb_set_rf_channel(RF_CHANNEL);
-    VERIFY_SUCCESS(err_code);
-
-    tx_payload.length  = 8;
-    tx_payload.pipe    = 0;
-    tx_payload.data[0] = 0x00;
-
-    return NRF_SUCCESS;
-}
-
-uint32_t esb_tx_button(uint8_t state)
-{
-    uint32_t err_code;
-    tx_payload.length   = 3;//payload + header (crc length not included)
-    tx_payload.control = 0x80 | 2;// broadcast | ttl = 2
-    tx_payload.noack    = true;//it is a broadcast
-    tx_payload.pipe     = 0;
-    
-    tx_payload.data[0] = 0x06;//pid
-    tx_payload.data[1] = NodeId;//source - on_off_tag
-    tx_payload.data[2] = state;//Up or Down
-    
-    tx_payload.noack = true;
-    err_code = nrf_esb_write_payload(&tx_payload);
-    VERIFY_SUCCESS(err_code);
-
-    return NRF_SUCCESS;
-}
-
-uint32_t esb_tx_light_on()
-{
-    uint32_t err_code;
-    tx_payload.length   = 4;//payload + header (crc length not included)
-    tx_payload.control = 0x7B;// light
-    tx_payload.noack    = true;//it is a broadcast
-    tx_payload.pipe     = 0;
-    
-    tx_payload.data[0] = NodeId;//source
-    tx_payload.data[1] = 0x19;//dest
-    tx_payload.data[2] = 0xA0;//msb
-    tx_payload.data[3] = 0x00;//lsb
-    
-    tx_payload.noack = true;
-    err_code = nrf_esb_write_payload(&tx_payload);
-    VERIFY_SUCCESS(err_code);
-
-    return NRF_SUCCESS;
-}
-
-uint32_t esb_tx_light_off()
-{
-    uint32_t err_code;
-    tx_payload.length   = 4;//payload + header (crc length not included)
-    tx_payload.control = 0x7B;// light
-    tx_payload.noack    = true;//it is a broadcast
-    tx_payload.pipe     = 0;
-    
-    tx_payload.data[0] = NodeId;//source
-    tx_payload.data[1] = 0x19;//dest
-    tx_payload.data[2] = 0x00;//msb
-    tx_payload.data[3] = 0x00;//lsb
-    
-    tx_payload.noack = true;
-    err_code = nrf_esb_write_payload(&tx_payload);
-    VERIFY_SUCCESS(err_code);
-
-    return NRF_SUCCESS;
 }
 
 void recover_state()
@@ -252,68 +118,11 @@ void recover_state()
     loop_count++;
     NRF_POWER->GPREGRET = ( (RESET_MEMORY_TEST_BYTE << 4) | loop_count);
 
-    tx_payload.data[1] = loop_count << 4;
 }
-
-/* TWI instance ID. */
-#if TWI0_ENABLED
-#define TWI_INSTANCE_ID     0
-#elif TWI1_ENABLED
-#define TWI_INSTANCE_ID     1
-#endif
-
- /* Number of possible TWI addresses. */
- #define TWI_ADDRESSES      127
 
 /* TWI instance. */
 static const nrf_drv_twi_t m_twi = NRF_DRV_TWI_INSTANCE(TWI_INSTANCE_ID);
 
-//TODO optimisation
-// * 400K did not work on 10 cm test wire lines => using 100K, to check again with PCB
-void twi_init(const nrf_drv_twi_t *p_twi)
-{
-    ret_code_t err_code;
-
-    const nrf_drv_twi_config_t twi_config = {
-       .scl                = I2C_SCL,
-       .sda                = I2C_SDA,
-       .frequency          = NRF_DRV_TWI_FREQ_100K,
-       .interrupt_priority = APP_IRQ_PRIORITY_HIGH,
-       .clear_bus_init     = false
-    };
-
-    err_code = nrf_drv_twi_init(p_twi, &twi_config, NULL, NULL);
-    APP_ERROR_CHECK(err_code);
-
-    nrf_drv_twi_enable(p_twi);
-}
-
-//found BME280  @ 0x76
-//found MX44009 @ 0x4A
-void twi_scan()
-{
-    ret_code_t err_code;
-    uint8_t address;
-    uint8_t sample_data;
-    bool detected_device = false;
-
-    for (address = 1; address <= TWI_ADDRESSES; address++)
-    {
-        err_code = nrf_drv_twi_rx(&m_twi, address, &sample_data, sizeof(sample_data));
-        if (err_code == NRF_SUCCESS)
-        {
-            detected_device = true;
-            NRF_LOG_INFO("TWI device detected at address 0x%x.", address);
-        }
-        NRF_LOG_FLUSH();
-    }
-
-    if (!detected_device)
-    {
-        NRF_LOG_INFO("No device was found.");
-        NRF_LOG_FLUSH();
-    }
-}
 void bme_measures_log()
 {
     uint32_t err_code;
@@ -341,7 +150,7 @@ int main(void)
     APP_ERROR_CHECK(err_code);
     NRF_LOG_DEFAULT_BACKENDS_INIT();
 
-    err_code = esb_init();
+    err_code = mesh_init();
     APP_ERROR_CHECK(err_code);
 
 
@@ -372,14 +181,14 @@ int main(void)
     // Check state of all buttons and send an esb packet with the button press if there is exactly one.
     //err_code = gpio_check_and_esb_tx();
     //err_code = esb_tx_alive();
-    esb_tx_button(1);//down - active
+    mesh_tx_button(1);//down - active
 
     nrf_delay_ms(200);
     // Wait for esb completed and all buttons released before going to system off.
-    esb_completed = false;//reset the check
-    esb_tx_button(0);//down - passive
+    //reset the check
+    mesh_tx_button(0);//down - passive
+    mesh_wait_tx();
 
-    while(!esb_completed);
     system_off();
 
     while(true);

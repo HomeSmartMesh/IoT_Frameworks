@@ -192,9 +192,9 @@ if(len(sys.argv)>=2):
 
 mesh.start(config)
 
-chan = 2
+chan = 10
 
-node_id = 22
+node_id = 27
 
 if(len(sys.argv)>=3):
     node_id = int(sys.argv[2])
