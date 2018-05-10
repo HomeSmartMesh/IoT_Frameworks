@@ -20,9 +20,11 @@
 NRF_LOG_MODULE_REGISTER();
 
 
+#define Mesh_Pid_Alive 0x05
+#define Mesh_Pid_Reset 0x04
 
-#define NodeId     NRF_UICR->CUSTOMER[0]
-#define RF_CHANNEL NRF_UICR->CUSTOMER[1]
+#define UICR_NODE_ID     NRF_UICR->CUSTOMER[0]
+#define UICR_RF_CHANNEL NRF_UICR->CUSTOMER[1]
 
 static nrf_esb_payload_t tx_payload = NRF_ESB_CREATE_PAYLOAD(0, 0x01, 0x00);
 static nrf_esb_payload_t rx_payload;
@@ -82,15 +84,15 @@ uint32_t mesh_init()
     err_code = nrf_esb_set_prefixes(addr_prefix, 8);
     VERIFY_SUCCESS(err_code);
 
-    err_code = nrf_esb_set_rf_channel(RF_CHANNEL);
+    err_code = nrf_esb_set_rf_channel(UICR_RF_CHANNEL);
     VERIFY_SUCCESS(err_code);
 
     tx_payload.length  = 8;
     tx_payload.pipe    = 0;
     tx_payload.data[0] = 0x00;
 
-    NRF_LOG_INFO("nodeId %d",NodeId);
-    NRF_LOG_INFO("channel %d",RF_CHANNEL);
+    NRF_LOG_INFO("nodeId %d",UICR_NODE_ID);
+    NRF_LOG_INFO("channel %d",UICR_RF_CHANNEL);
 
     return NRF_SUCCESS;
 }
@@ -104,7 +106,7 @@ uint32_t mesh_tx_button(uint8_t state)
     tx_payload.pipe     = 0;
     
     tx_payload.data[0] = 0x06;//pid
-    tx_payload.data[1] = NodeId;//source - on_off_tag
+    tx_payload.data[1] = UICR_NODE_ID;//source - on_off_tag
     tx_payload.data[2] = state;//Up or Down
     
     tx_payload.noack = true;
@@ -123,7 +125,7 @@ uint32_t mesh_tx_light_on()
     tx_payload.noack    = true;//it is a broadcast
     tx_payload.pipe     = 0;
     
-    tx_payload.data[0] = NodeId;//source
+    tx_payload.data[0] = UICR_NODE_ID;//source
     tx_payload.data[1] = 0x19;//dest
     tx_payload.data[2] = 0xA0;//msb
     tx_payload.data[3] = 0x00;//lsb
@@ -144,7 +146,7 @@ uint32_t mesh_tx_light_off()
     tx_payload.noack    = true;//it is a broadcast
     tx_payload.pipe     = 0;
     
-    tx_payload.data[0] = NodeId;//source
+    tx_payload.data[0] = UICR_NODE_ID;//source
     tx_payload.data[1] = 0x19;//dest
     tx_payload.data[2] = 0x00;//msb
     tx_payload.data[3] = 0x00;//lsb
@@ -160,4 +162,29 @@ uint32_t mesh_tx_light_off()
 void mesh_wait_tx()
 {
     while(!esb_completed);
+}
+
+void mesh_tx_pid(uint8_t pid)
+{
+    esb_completed = false;//reset the check
+
+    tx_payload.length   = 2;//payload + header (crc length not included)
+    tx_payload.control = 0x80 | 2;// broadcast | ttl = 2
+    tx_payload.noack    = true;//it is a broadcast
+    tx_payload.pipe     = 0;
+
+    tx_payload.data[0] = pid;
+    
+    tx_payload.data[1] = UICR_NODE_ID;//source
+    
+    tx_payload.noack = true;
+    nrf_esb_write_payload(&tx_payload);
+
+    //wait till the transmission is complete
+    while(!esb_completed);
+}
+
+void mesh_tx_reset()
+{
+    mesh_tx_pid(Mesh_Pid_Reset);
 }

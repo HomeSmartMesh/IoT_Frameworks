@@ -46,55 +46,15 @@
 #ifdef USE_APP_CONFIG
 #include "app_config.h"
 #endif
-// <h> nRF_Drivers 
 
+// <h> Application
+
+// <e> CLOCKS_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
-// <e> NRFX_PRS_ENABLED - nrfx_prs - Peripheral Resource Sharing module
-//==========================================================
-#ifndef NRFX_PRS_ENABLED
-#define NRFX_PRS_ENABLED 1
+#ifndef CLOCKS_CONFIG_LOG_ENABLED
+#define CLOCKS_CONFIG_LOG_ENABLED 1
 #endif
-// <q> NRFX_PRS_BOX_0_ENABLED  - Enables box 0 in the module.
- 
-
-#ifndef NRFX_PRS_BOX_0_ENABLED
-#define NRFX_PRS_BOX_0_ENABLED 0
-#endif
-
-// <q> NRFX_PRS_BOX_1_ENABLED  - Enables box 1 in the module.
- 
-
-#ifndef NRFX_PRS_BOX_1_ENABLED
-#define NRFX_PRS_BOX_1_ENABLED 0
-#endif
-
-// <q> NRFX_PRS_BOX_2_ENABLED  - Enables box 2 in the module.
- 
-
-#ifndef NRFX_PRS_BOX_2_ENABLED
-#define NRFX_PRS_BOX_2_ENABLED 0
-#endif
-
-// <q> NRFX_PRS_BOX_3_ENABLED  - Enables box 3 in the module.
- 
-
-#ifndef NRFX_PRS_BOX_3_ENABLED
-#define NRFX_PRS_BOX_3_ENABLED 0
-#endif
-
-// <q> NRFX_PRS_BOX_4_ENABLED  - Enables box 4 in the module.
- 
-
-#ifndef NRFX_PRS_BOX_4_ENABLED
-#define NRFX_PRS_BOX_4_ENABLED 1
-#endif
-
-// <e> NRFX_PRS_CONFIG_LOG_ENABLED - Enables logging in the module.
-//==========================================================
-#ifndef NRFX_PRS_CONFIG_LOG_ENABLED
-#define NRFX_PRS_CONFIG_LOG_ENABLED 0
-#endif
-// <o> NRFX_PRS_CONFIG_LOG_LEVEL  - Default Severity level
+// <o> CLOCKS_CONFIG_LOG_LEVEL  - Default Severity level
  
 // <0=> Off 
 // <1=> Error 
@@ -102,43 +62,354 @@
 // <3=> Info 
 // <4=> Debug 
 
-#ifndef NRFX_PRS_CONFIG_LOG_LEVEL
-#define NRFX_PRS_CONFIG_LOG_LEVEL 3
-#endif
-
-// <o> NRFX_PRS_CONFIG_INFO_COLOR  - ANSI escape code prefix.
- 
-// <0=> Default 
-// <1=> Black 
-// <2=> Red 
-// <3=> Green 
-// <4=> Yellow 
-// <5=> Blue 
-// <6=> Magenta 
-// <7=> Cyan 
-// <8=> White 
-
-#ifndef NRFX_PRS_CONFIG_INFO_COLOR
-#define NRFX_PRS_CONFIG_INFO_COLOR 0
-#endif
-
-// <o> NRFX_PRS_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
- 
-// <0=> Default 
-// <1=> Black 
-// <2=> Red 
-// <3=> Green 
-// <4=> Yellow 
-// <5=> Blue 
-// <6=> Magenta 
-// <7=> Cyan 
-// <8=> White 
-
-#ifndef NRFX_PRS_CONFIG_DEBUG_COLOR
-#define NRFX_PRS_CONFIG_DEBUG_COLOR 0
+#ifndef CLOCKS_CONFIG_LOG_LEVEL
+#define CLOCKS_CONFIG_LOG_LEVEL 3
 #endif
 
 // </e>
+
+
+// <e> BME_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef BME_CONFIG_LOG_ENABLED
+#define BME_CONFIG_LOG_ENABLED 0
+#endif
+// <o> BME_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef BME_CONFIG_LOG_LEVEL
+#define BME_CONFIG_LOG_LEVEL 4
+#endif
+
+// </e>
+
+// <e> MESH_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef MESH_CONFIG_LOG_ENABLED
+#define MESH_CONFIG_LOG_ENABLED 1
+#endif
+// <o> MESH_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef MESH_CONFIG_LOG_LEVEL
+#define MESH_CONFIG_LOG_LEVEL 3
+#endif
+
+// </e>
+
+// <e> MAX_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef MAX_CONFIG_LOG_ENABLED
+#define MAX_CONFIG_LOG_ENABLED 0
+#endif
+// <o> MAX_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef MAX_CONFIG_LOG_LEVEL
+#define MAX_CONFIG_LOG_LEVEL 4
+#endif
+
+
+// </e>
+
+// <o> TWI_DEFAULT_CONFIG_FREQUENCY  - Frequency
+ 
+// <26738688=> 100k 
+// <67108864=> 250k 
+// <104857600=> 400k 
+
+#ifndef TWI_DEFAULT_CONFIG_FREQUENCY
+#define TWI_DEFAULT_CONFIG_FREQUENCY 26738688
+#endif
+
+
+// </h> 
+//==========================================================
+
+// <h> nRF_Drivers 
+//==========================================================
+// <e> CLOCK_ENABLED - nrf_drv_clock - CLOCK peripheral driver
+//==========================================================
+#ifndef CLOCK_ENABLED
+#define CLOCK_ENABLED 1
+#endif
+#if  CLOCK_ENABLED
+    // <o> CLOCK_CONFIG_XTAL_FREQ  - HF XTAL Frequency
+    
+    // <0=> Default (64 MHz) 
+
+    #ifndef CLOCK_CONFIG_XTAL_FREQ
+    #define CLOCK_CONFIG_XTAL_FREQ 0
+    #endif
+
+    // <o> CLOCK_CONFIG_LF_SRC  - LF Clock Source
+    
+    // <0=> RC 
+    // <1=> XTAL 
+    // <2=> Synth 
+
+    #ifndef CLOCK_CONFIG_LF_SRC
+    #define CLOCK_CONFIG_LF_SRC 1
+    #endif
+
+    // <o> CLOCK_CONFIG_IRQ_PRIORITY  - Interrupt priority
+    
+
+    // <i> Priorities 0,2 (nRF51) and 0,1,4,5 (nRF52) are reserved for SoftDevice
+    // <0=> 0 (highest) 
+    // <1=> 1 
+    // <2=> 2 
+    // <3=> 3 
+    // <4=> 4 
+    // <5=> 5 
+    // <6=> 6 
+    // <7=> 7 
+
+    #ifndef CLOCK_CONFIG_IRQ_PRIORITY
+    #define CLOCK_CONFIG_IRQ_PRIORITY 0
+    #endif
+
+    // <e> CLOCK_CONFIG_LOG_ENABLED - Enables logging in the module.
+    //==========================================================
+    #ifndef CLOCK_CONFIG_LOG_ENABLED
+    #define CLOCK_CONFIG_LOG_ENABLED 0
+    #endif
+    #if  CLOCK_CONFIG_LOG_ENABLED
+        // <o> CLOCK_CONFIG_LOG_LEVEL  - Default Severity level
+        
+        // <0=> Off 
+        // <1=> Error 
+        // <2=> Warning 
+        // <3=> Info 
+        // <4=> Debug 
+
+        #ifndef CLOCK_CONFIG_LOG_LEVEL
+        #define CLOCK_CONFIG_LOG_LEVEL 3
+        #endif
+
+        // <o> CLOCK_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+        
+        // <0=> Default 
+        // <1=> Black 
+        // <2=> Red 
+        // <3=> Green 
+        // <4=> Yellow 
+        // <5=> Blue 
+        // <6=> Magenta 
+        // <7=> Cyan 
+        // <8=> White 
+
+        #ifndef CLOCK_CONFIG_INFO_COLOR
+        #define CLOCK_CONFIG_INFO_COLOR 0
+        #endif
+
+        // <o> CLOCK_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+        
+        // <0=> Default 
+        // <1=> Black 
+        // <2=> Red 
+        // <3=> Green 
+        // <4=> Yellow 
+        // <5=> Blue 
+        // <6=> Magenta 
+        // <7=> Cyan 
+        // <8=> White 
+
+        #ifndef CLOCK_CONFIG_DEBUG_COLOR
+        #define CLOCK_CONFIG_DEBUG_COLOR 0
+        #endif
+
+    #endif //CLOCK_CONFIG_LOG_ENABLED
+    // </e>
+
+#endif //CLOCK_ENABLED
+// </e>
+
+// <e> RTC_ENABLED - nrf_drv_rtc - RTC peripheral driver
+//==========================================================
+#ifndef RTC_ENABLED
+#define RTC_ENABLED 1
+#endif
+#if  RTC_ENABLED
+    // <o> RTC_DEFAULT_CONFIG_FREQUENCY - Frequency  <16-32768> 
+
+
+    #ifndef RTC_DEFAULT_CONFIG_FREQUENCY
+    #define RTC_DEFAULT_CONFIG_FREQUENCY 32768
+    #endif
+
+    // <q> RTC_DEFAULT_CONFIG_RELIABLE  - Ensures safe compare event triggering
+    
+
+    #ifndef RTC_DEFAULT_CONFIG_RELIABLE
+    #define RTC_DEFAULT_CONFIG_RELIABLE 0
+    #endif
+
+    // <o> RTC_DEFAULT_CONFIG_IRQ_PRIORITY  - Interrupt priority
+    
+
+    // <i> Priorities 0,2 (nRF51) and 0,1,4,5 (nRF52) are reserved for SoftDevice
+    // <0=> 0 (highest) 
+    // <1=> 1 
+    // <2=> 2 
+    // <3=> 3 
+    // <4=> 4 
+    // <5=> 5 
+    // <6=> 6 
+    // <7=> 7 
+
+    #ifndef RTC_DEFAULT_CONFIG_IRQ_PRIORITY
+    #define RTC_DEFAULT_CONFIG_IRQ_PRIORITY 7
+    #endif
+
+    // <q> RTC0_ENABLED  - Enable RTC0 instance
+    #ifndef RTC0_ENABLED
+    #define RTC0_ENABLED 1
+    #endif
+    // <q> RTC1_ENABLED  - Enable RTC1 instance
+    #ifndef RTC1_ENABLED
+    #define RTC1_ENABLED 0
+    #endif
+    // <q> RTC2_ENABLED  - Enable RTC2 instance
+    #ifndef RTC2_ENABLED
+    #define RTC2_ENABLED 0
+    #endif
+
+    // <o> NRF_MAXIMUM_LATENCY_US - Maximum possible time[us] in highest priority interrupt 
+    #ifndef NRF_MAXIMUM_LATENCY_US
+    #define NRF_MAXIMUM_LATENCY_US 2000
+    #endif
+
+    // <e> RTC_CONFIG_LOG_ENABLED - Enables logging in the module.
+    //==========================================================
+    #ifndef RTC_CONFIG_LOG_ENABLED
+    #define RTC_CONFIG_LOG_ENABLED 0
+    #endif
+    #if  RTC_CONFIG_LOG_ENABLED
+        // <o> RTC_CONFIG_LOG_LEVEL  - Default Severity level
+        
+        // <0=> Off 
+        // <1=> Error 
+        // <2=> Warning 
+        // <3=> Info 
+        // <4=> Debug 
+
+        #ifndef RTC_CONFIG_LOG_LEVEL
+        #define RTC_CONFIG_LOG_LEVEL 3
+        #endif
+
+    #endif //RTC_CONFIG_LOG_ENABLED
+    // </e>
+
+#endif //RTC_ENABLED
+// </e>
+
+//==========================================================
+// <e> NRFX_PRS_ENABLED - nrfx_prs - Peripheral Resource Sharing module
+//==========================================================
+#ifndef NRFX_PRS_ENABLED
+#define NRFX_PRS_ENABLED 1
+#endif
+    // <q> NRFX_PRS_BOX_0_ENABLED  - Enables box 0 in the module.
+    
+
+    #ifndef NRFX_PRS_BOX_0_ENABLED
+    #define NRFX_PRS_BOX_0_ENABLED 0
+    #endif
+
+    // <q> NRFX_PRS_BOX_1_ENABLED  - Enables box 1 in the module.
+    
+
+    #ifndef NRFX_PRS_BOX_1_ENABLED
+    #define NRFX_PRS_BOX_1_ENABLED 0
+    #endif
+
+    // <q> NRFX_PRS_BOX_2_ENABLED  - Enables box 2 in the module.
+    
+
+    #ifndef NRFX_PRS_BOX_2_ENABLED
+    #define NRFX_PRS_BOX_2_ENABLED 0
+    #endif
+
+    // <q> NRFX_PRS_BOX_3_ENABLED  - Enables box 3 in the module.
+    
+
+    #ifndef NRFX_PRS_BOX_3_ENABLED
+    #define NRFX_PRS_BOX_3_ENABLED 0
+    #endif
+
+    // <q> NRFX_PRS_BOX_4_ENABLED  - Enables box 4 in the module.
+    
+
+    #ifndef NRFX_PRS_BOX_4_ENABLED
+    #define NRFX_PRS_BOX_4_ENABLED 1
+    #endif
+
+    // <e> NRFX_PRS_CONFIG_LOG_ENABLED - Enables logging in the module.
+    //==========================================================
+    #ifndef NRFX_PRS_CONFIG_LOG_ENABLED
+    #define NRFX_PRS_CONFIG_LOG_ENABLED 0
+    #endif
+    // <o> NRFX_PRS_CONFIG_LOG_LEVEL  - Default Severity level
+    
+    // <0=> Off 
+    // <1=> Error 
+    // <2=> Warning 
+    // <3=> Info 
+    // <4=> Debug 
+
+    #ifndef NRFX_PRS_CONFIG_LOG_LEVEL
+    #define NRFX_PRS_CONFIG_LOG_LEVEL 3
+    #endif
+
+    // <o> NRFX_PRS_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+    
+    // <0=> Default 
+    // <1=> Black 
+    // <2=> Red 
+    // <3=> Green 
+    // <4=> Yellow 
+    // <5=> Blue 
+    // <6=> Magenta 
+    // <7=> Cyan 
+    // <8=> White 
+
+    #ifndef NRFX_PRS_CONFIG_INFO_COLOR
+    #define NRFX_PRS_CONFIG_INFO_COLOR 0
+    #endif
+
+    // <o> NRFX_PRS_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+    
+    // <0=> Default 
+    // <1=> Black 
+    // <2=> Red 
+    // <3=> Green 
+    // <4=> Yellow 
+    // <5=> Blue 
+    // <6=> Magenta 
+    // <7=> Cyan 
+    // <8=> White 
+
+    #ifndef NRFX_PRS_CONFIG_DEBUG_COLOR
+    #define NRFX_PRS_CONFIG_DEBUG_COLOR 0
+    #endif
+
+    // </e>
 
 // </e>
 
@@ -388,15 +659,6 @@
 //==========================================================
 #ifndef TWI_ENABLED
 #define TWI_ENABLED 1
-#endif
-// <o> TWI_DEFAULT_CONFIG_FREQUENCY  - Frequency
- 
-// <26738688=> 100k 
-// <67108864=> 250k 
-// <104857600=> 400k 
-
-#ifndef TWI_DEFAULT_CONFIG_FREQUENCY
-#define TWI_DEFAULT_CONFIG_FREQUENCY 26738688
 #endif
 
 // <q> TWI_DEFAULT_CONFIG_CLR_BUS_INIT  - Enables bus clearing procedure during init
@@ -2042,64 +2304,6 @@
 #ifndef WDT_CONFIG_DEBUG_COLOR
 #define WDT_CONFIG_DEBUG_COLOR 0
 #endif
-
-// </e>
-
-// <e> BME_CONFIG_LOG_ENABLED - Enables logging in the module.
-//==========================================================
-#ifndef BME_CONFIG_LOG_ENABLED
-#define BME_CONFIG_LOG_ENABLED 0
-#endif
-// <o> BME_CONFIG_LOG_LEVEL  - Default Severity level
- 
-// <0=> Off 
-// <1=> Error 
-// <2=> Warning 
-// <3=> Info 
-// <4=> Debug 
-
-#ifndef BME_CONFIG_LOG_LEVEL
-#define BME_CONFIG_LOG_LEVEL 4
-#endif
-
-// </e>
-
-// <e> MESH_CONFIG_LOG_ENABLED - Enables logging in the module.
-//==========================================================
-#ifndef MESH_CONFIG_LOG_ENABLED
-#define MESH_CONFIG_LOG_ENABLED 1
-#endif
-// <o> MESH_CONFIG_LOG_LEVEL  - Default Severity level
- 
-// <0=> Off 
-// <1=> Error 
-// <2=> Warning 
-// <3=> Info 
-// <4=> Debug 
-
-#ifndef MESH_CONFIG_LOG_LEVEL
-#define MESH_CONFIG_LOG_LEVEL 3
-#endif
-
-// </e>
-
-// <e> MAX_CONFIG_LOG_ENABLED - Enables logging in the module.
-//==========================================================
-#ifndef MAX_CONFIG_LOG_ENABLED
-#define MAX_CONFIG_LOG_ENABLED 0
-#endif
-// <o> MAX_CONFIG_LOG_LEVEL  - Default Severity level
- 
-// <0=> Off 
-// <1=> Error 
-// <2=> Warning 
-// <3=> Info 
-// <4=> Debug 
-
-#ifndef MAX_CONFIG_LOG_LEVEL
-#define MAX_CONFIG_LOG_LEVEL 4
-#endif
-
 
 // </e>
 

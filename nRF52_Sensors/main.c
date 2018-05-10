@@ -61,64 +61,10 @@
 #include "bme280.h"
 #include "max44009.h"
 //apps
+#include "clocks.h"
 #include "twi.h"
 #include "mesh.h"
 
-#define RESET_MEMORY_TEST_BYTE  (0x0DUL)        /**< Known sequence written to a special register to check if this wake up is from System OFF. */
-#define RAM_RETENTION_OFF       (0x00000003UL)  /**< The flag used to turn off RAM retention on nRF52. */
-
-/*lint -save -esym(40, BUTTON_1) -esym(40, BUTTON_2) -esym(40, BUTTON_3) -esym(40, BUTTON_4) -esym(40, LED_1) -esym(40, LED_2) -esym(40, LED_3) -esym(40, LED_4) */
-
-void system_off( void )
-{
-    #ifdef NRF51
-        NRF_POWER->RAMON |= (POWER_RAMON_OFFRAM0_RAM0Off << POWER_RAMON_OFFRAM0_Pos) |
-                            (POWER_RAMON_OFFRAM1_RAM1Off << POWER_RAMON_OFFRAM1_Pos);
-    #endif //NRF51
-    #ifdef NRF52
-        NRF_POWER->RAM[0].POWER = RAM_RETENTION_OFF;
-        NRF_POWER->RAM[1].POWER = RAM_RETENTION_OFF;
-        NRF_POWER->RAM[2].POWER = RAM_RETENTION_OFF;
-        NRF_POWER->RAM[3].POWER = RAM_RETENTION_OFF;
-        NRF_POWER->RAM[4].POWER = RAM_RETENTION_OFF;
-        NRF_POWER->RAM[5].POWER = RAM_RETENTION_OFF;
-        NRF_POWER->RAM[6].POWER = RAM_RETENTION_OFF;
-        NRF_POWER->RAM[7].POWER = RAM_RETENTION_OFF;
-    #endif //NRF52
-
-    // Turn off LEDs before sleeping to conserve energy.
-    bsp_board_leds_off();
-
-    // Set nRF5 into System OFF. Reading out value and looping after setting the register
-    // to guarantee System OFF in nRF52.
-    NRF_POWER->SYSTEMOFF = 0x1;
-    (void) NRF_POWER->SYSTEMOFF;
-    while (true);
-}
-
-
-void clocks_start( void )
-{
-    // Start HFCLK and wait for it to start.
-    NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;
-    NRF_CLOCK->TASKS_HFCLKSTART = 1;
-    while (NRF_CLOCK->EVENTS_HFCLKSTARTED == 0);
-}
-
-void recover_state()
-{
-    uint32_t            loop_count = 0;
-    if ((NRF_POWER->GPREGRET >> 4) == RESET_MEMORY_TEST_BYTE)
-    {
-        // Take the loop_count value.
-        loop_count          = (uint8_t)(NRF_POWER->GPREGRET & 0xFUL);
-        NRF_POWER->GPREGRET = 0;
-    }
-
-    loop_count++;
-    NRF_POWER->GPREGRET = ( (RESET_MEMORY_TEST_BYTE << 4) | loop_count);
-
-}
 
 /* TWI instance. */
 static const nrf_drv_twi_t m_twi = NRF_DRV_TWI_INSTANCE(TWI_INSTANCE_ID);
@@ -144,24 +90,26 @@ int main(void)
 {
     uint32_t err_code;
 
-    clocks_start();
-
+    // ------------------------- Start Init ------------------------- 
     err_code = NRF_LOG_INIT(NULL);
     APP_ERROR_CHECK(err_code);
     NRF_LOG_DEFAULT_BACKENDS_INIT();
 
+    clocks_start();
+
     err_code = mesh_init();
     APP_ERROR_CHECK(err_code);
 
+    twi_init(&m_twi);
 
-    // Recover state if the device was woken from System OFF.
-    recover_state();
+    //only allow interrupts to start after init is done
+    rtc_config();
+    // ------------------------- Start App ------------------------- 
 
     NRF_LOG_INFO("____________________________");
     NRF_LOG_INFO("Hello from nRF52 Sensors");
     NRF_LOG_INFO("____________________________");
 
-    twi_init(&m_twi);
 
     //twi_scan();
 
@@ -177,20 +125,18 @@ int main(void)
 
     //bme_measures_log();
 
+    mesh_tx_reset();
+    //mesh_wait_tx();
 
-    // Check state of all buttons and send an esb packet with the button press if there is exactly one.
-    //err_code = gpio_check_and_esb_tx();
-    //err_code = esb_tx_alive();
-    mesh_tx_button(1);//down - active
+    //system_off();
 
-    nrf_delay_ms(200);
-    // Wait for esb completed and all buttons released before going to system off.
-    //reset the check
-    mesh_tx_button(0);//down - passive
-    mesh_wait_tx();
+    // ------------------------- Start Events ------------------------- 
 
-    system_off();
-
-    while(true);
+    while(true)
+    {
+        __SEV();
+        __WFE();
+        __WFE();
+    }
 }
 /*lint -restore */

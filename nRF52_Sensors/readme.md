@@ -38,7 +38,13 @@
 * timestamp only when using app_timer.h
 
 # Tools
+
+## Python jlink wrapper
 * https://github.com/square/pylink
 * http://pylink.readthedocs.io/en/latest/pylink.html
 * have to be used with a 32 bit python version
+
+## sdk_config GUI
+```make conf```
+* http://helmpcb.com/software/cmsis-configuration-wizard
 

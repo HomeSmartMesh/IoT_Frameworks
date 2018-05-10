@@ -9,7 +9,7 @@ jlink.open(os.environ['SEG_JLEDU'])
 node_id = 0
 node = {}
 
-def get_node_id(uid):
+def get_node_id_from_uid(uid):
     res =""
     for key,val in nodes.items():
         if "uid" in val:
@@ -57,7 +57,7 @@ def read_id():
     global node_id
     global node
     uid = get_uid()
-    node_id = get_node_id(uid)
+    node_id = get_node_id_from_uid(uid)
     node = nodes[node_id]
     print("device uid : %s" % uid )
     print("node mesh id : %s" % node_id )
@@ -65,30 +65,41 @@ def read_id():
     print("channel : %s" % node["channel"] )
     return
 
+def read_config():
+    for param,reg in uicr.items():
+        if param == "mesh_id":
+            read_uicr_customer(reg)
+            print("reg %s => (mesh_id:%s)"%(reg,node_id))
+        else:
+            read_uicr_customer(reg)
+            print("reg %s => (%s:%s)"%(reg,param,node[param]))
+    return
+
 def write_config():
-    print("reg %s <= (mesh_id:%s)"%(uicr["mesh_id"],node_id))
-    write_uicr_customer(            uicr["mesh_id"],node_id)
-    print("reg %s <= (channel:%s)"%(uicr["mesh_id"],node["channel"]))
-    write_uicr_customer(            uicr["channel"],node["channel"])
+    for param,reg in uicr.items():
+        if param == "mesh_id":
+            print("reg %s <= (mesh_id:%s)"%(reg,node_id))
+            write_uicr_customer(            reg,node_id)
+        else:
+            print("reg %s <= (%s:%s)"%(reg,param,node[param]))
+            write_uicr_customer(            reg,node[param])
 
     test_pass = True
-    test_id   = read_uicr_customer(uicr["mesh_id"])
-    if(test_id != int(node_id)):
-        test_pass = False
-    test_chan = read_uicr_customer(uicr["channel"])
-    if(test_chan != int(node["channel"])):
-        test_pass = False
+
+    for param,reg in uicr.items():
+        if param == "mesh_id":
+            test_val = read_uicr_customer(reg)
+            if(test_val == int(node_id)):
+                test_pass = False
+        else:
+            test_val = read_uicr_customer(reg)
+            if(test_val == int(node[param]))
+                test_pass = False
+            
     if(not test_pass):
         print("Verification failed")
-        print("mesh_id => %d"%test_id)
-        print("channel => %d"%test_chan)
+        read_config()
     else:
         print("write verified")
     return
 
-def read_config():
-    test_id   = read_uicr_customer(uicr["mesh_id"])
-    test_chan = read_uicr_customer(uicr["channel"])
-    print("mesh_id => %d"%test_id)
-    print("channel => %d"%test_chan)
-    return

@@ -15,4 +15,6 @@ uint32_t mesh_tx_light_off();
 
 void mesh_wait_tx();
 
+void mesh_tx_reset();
+
 #endif /*__MESH_H__*/

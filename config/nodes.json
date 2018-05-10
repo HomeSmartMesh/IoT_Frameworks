@@ -346,6 +346,7 @@
         "uid"           :"0xB2 E4 75 0D 0C FC 50 87",
         "add"           :"CA:8B:01:D5:45:CC",
         "data"          : ["acceleration","temperature","humidity","pressure","light"],
-        "channel"       : "10"
+        "channel"       : "10",
+        "sleep"         : "5"
         }
 }

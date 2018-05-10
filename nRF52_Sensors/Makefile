@@ -13,6 +13,7 @@ $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
 # Source files common to all targets
 SRC_FILES += \
   $(PROJ_DIR)/main.c \
+  $(PROJ_DIR)/app/clocks.c \
   $(PROJ_DIR)/app/twi.c \
   $(PROJ_DIR)/app/mesh.c \
   $(PROJ_DIR)/drivers/bme280.c \
@@ -37,11 +38,14 @@ SRC_FILES += \
   $(SDK_ROOT)/components/proprietary_rf/esb/nrf_esb.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_uart.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_twi.c \
+  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_clock.c \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c \
   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uart.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uarte.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_twim.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_clock.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_rtc.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/prs/nrfx_prs.c \
 
 # Include folders common to all targets
@@ -182,5 +186,5 @@ erase:
 
 SDK_CONFIG_FILE := ./config/sdk_config.h
 CMSIS_CONFIG_TOOL := $(SDK_ROOT)/external_tools/cmsisconfig/CMSIS_Configuration_Wizard.jar
-config:
+conf:
 	java -jar $(CMSIS_CONFIG_TOOL) $(SDK_CONFIG_FILE)
