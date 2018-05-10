@@ -86,6 +86,15 @@ void bme_measures_log()
     NRF_LOG_RAW_INFO("\r");
 }
 
+void app_rtc_handler()
+{
+    mesh_tx_alive();
+
+    uint32_t light = max44009_read_light(&m_twi);
+    float light_f = light;
+    NRF_LOG_INFO("light = "NRF_LOG_FLOAT_MARKER,NRF_LOG_FLOAT(light_f/1000));
+}
+
 int main(void)
 {
     uint32_t err_code;
@@ -103,25 +112,16 @@ int main(void)
     twi_init(&m_twi);
 
     //only allow interrupts to start after init is done
-    rtc_config();
+    rtc_config(app_rtc_handler);
     // ------------------------- Start App ------------------------- 
 
     NRF_LOG_INFO("____________________________");
     NRF_LOG_INFO("Hello from nRF52 Sensors");
     NRF_LOG_INFO("____________________________");
 
-
     //twi_scan();
 
     //max44009_test();
-
-    for(int i=0;i<10;i++)
-    {
-        uint32_t light = max44009_read_light(&m_twi);
-        float light_f = light;
-        NRF_LOG_INFO("light = "NRF_LOG_FLOAT_MARKER,NRF_LOG_FLOAT(light_f/1000));
-        nrf_delay_ms(1000);
-    }
 
     //bme_measures_log();
 

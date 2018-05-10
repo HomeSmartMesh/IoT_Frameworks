@@ -24,6 +24,8 @@ NRF_LOG_MODULE_REGISTER();
 
 const nrf_drv_rtc_t rtc = NRF_DRV_RTC_INSTANCE(0); /**< Declaring an instance of nrf_drv_rtc for RTC0. */
 
+static app_rtc_handler_t m_app_rtc_handler;
+
 void clocks_start( void )
 {
     ret_code_t err_code;
@@ -47,12 +49,17 @@ void rtc_handler(nrf_drv_rtc_int_type_t int_type)
         static uint8_t send = 1;
         NRF_LOG_INFO("rtc_handler() %d",send);
         send++;
+
+        m_app_rtc_handler();
+
     }
 }
 
-void rtc_config()
+void rtc_config(app_rtc_handler_t handler)
 {
     uint32_t err_code;
+
+    m_app_rtc_handler = handler;
 
     nrf_drv_clock_lfclk_request(NULL);
 

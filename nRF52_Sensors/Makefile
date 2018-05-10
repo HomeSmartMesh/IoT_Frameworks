@@ -184,6 +184,9 @@ flash: $(OUTPUT_DIRECTORY)/nrf52832_xxaa.hex
 erase:
 	nrfjprog -f nrf52 --eraseall
 
+reset:
+	nrfjprog -f nrf52 --reset
+
 SDK_CONFIG_FILE := ./config/sdk_config.h
 CMSIS_CONFIG_TOOL := $(SDK_ROOT)/external_tools/cmsisconfig/CMSIS_Configuration_Wizard.jar
 conf:

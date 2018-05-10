@@ -188,3 +188,33 @@ void mesh_tx_reset()
 {
     mesh_tx_pid(Mesh_Pid_Reset);
 }
+
+void mesh_tx_alive()
+{
+    mesh_tx_pid(Mesh_Pid_Alive);
+}
+
+void mesh_tx_data(uint8_t pid,uint8_t * data,uint8_t size)
+{
+    esb_completed = false;//reset the check
+
+    tx_payload.length   = 2 + size;//length,ctrl payload(pid,source,rf_payload)(crc not included in length)
+    tx_payload.control = 0x80 | 2;// broadcast | ttl = 2
+    tx_payload.noack    = true;//it is a broadcast
+    tx_payload.pipe     = 0;
+
+    tx_payload.data[0] = pid;//acceleration
+    
+    tx_payload.data[1] = UICR_NODE_ID;//source
+
+    for(int i=0;i<size;i++)
+    {
+        tx_payload.data[i+2]     = data[i];
+    }
+    
+    tx_payload.noack = true;
+    nrf_esb_write_payload(&tx_payload);
+
+    //wait till the transmission is complete
+    while(!esb_completed);
+}

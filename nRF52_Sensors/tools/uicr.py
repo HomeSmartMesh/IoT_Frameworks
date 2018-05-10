@@ -62,20 +62,23 @@ def read_id():
     print("device uid : %s" % uid )
     print("node mesh id : %s" % node_id )
     print("name : %s" % node["name"] )
-    print("channel : %s" % node["channel"] )
     return
 
 def read_config():
+    global node_id
+    global node
     for param,reg in uicr.items():
         if param == "mesh_id":
-            read_uicr_customer(reg)
-            print("reg %s => (mesh_id:%s)"%(reg,node_id))
+            val = read_uicr_customer(reg)
+            print("reg %s => (mesh_id target/db :%d / %s)"%(reg,val,node_id))
         else:
-            read_uicr_customer(reg)
-            print("reg %s => (%s:%s)"%(reg,param,node[param]))
+            val = read_uicr_customer(reg)
+            print("reg %s => (%s target/db :%d / %s)"%(reg,param,val,node[param]))
     return
 
 def write_config():
+    global node_id
+    global node
     for param,reg in uicr.items():
         if param == "mesh_id":
             print("reg %s <= (mesh_id:%s)"%(reg,node_id))
@@ -89,11 +92,11 @@ def write_config():
     for param,reg in uicr.items():
         if param == "mesh_id":
             test_val = read_uicr_customer(reg)
-            if(test_val == int(node_id)):
+            if(test_val != int(node_id)):
                 test_pass = False
         else:
             test_val = read_uicr_customer(reg)
-            if(test_val == int(node[param]))
+            if(test_val != int(node[param])):
                 test_pass = False
             
     if(not test_pass):
