@@ -16,6 +16,7 @@ SRC_FILES += \
   $(PROJ_DIR)/app/clocks.c \
   $(PROJ_DIR)/app/twi.c \
   $(PROJ_DIR)/app/mesh.c \
+  $(PROJ_DIR)/app/battery.c \
   $(PROJ_DIR)/drivers/bme280.c \
   $(PROJ_DIR)/drivers/max44009.c \
   $(SDK_ROOT)/external/fprintf/nrf_fprintf.c \
@@ -46,6 +47,7 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_twim.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_clock.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_rtc.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_saadc.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/prs/nrfx_prs.c \
 
 # Include folders common to all targets
