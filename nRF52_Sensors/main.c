@@ -34,30 +34,58 @@
 /* TWI instance. */
 static const nrf_drv_twi_t m_twi = NRF_DRV_TWI_INSTANCE(TWI_INSTANCE_ID);
 
-void bme_measures_log()
+void read_send_bme()
 {
-    uint32_t err_code;
-    err_code = bme280_init(&m_twi);
-    APP_ERROR_CHECK(err_code);
-    NRF_LOG_INFO("bme280_init() done");
-
     bme280_measure();
-    float temperature = (float)bme280_get_temperature();
-    NRF_LOG_INFO("temperature = "NRF_LOG_FLOAT_MARKER,NRF_LOG_FLOAT(temperature/100));
-    float humidity = (float)bme280_get_humidity();
-    NRF_LOG_INFO("humidity = "NRF_LOG_FLOAT_MARKER,NRF_LOG_FLOAT(humidity/1024));
-    float pressure = bme280_get_pressure();
-    NRF_LOG_INFO("pressure = "NRF_LOG_FLOAT_MARKER,NRF_LOG_FLOAT(pressure/(256*100)));
-    NRF_LOG_RAW_INFO("\r");
+
+    int32_t temp    = bme280_get_temperature();
+    uint32_t hum    = bme280_get_humidity();
+    uint32_t press  = bme280_get_pressure();
+
+    mesh_tx_bme(temp,hum,press);
+
+    #if(NRF_LOG_LEVEL <= NRF_LOG_LEVEL_INFO)
+        float temperature = (float)temp;
+        NRF_LOG_INFO("temperature = "NRF_LOG_FLOAT_MARKER,NRF_LOG_FLOAT(temperature/100));
+        float humidity = (float)hum;
+        NRF_LOG_INFO("humidity = "NRF_LOG_FLOAT_MARKER,NRF_LOG_FLOAT(humidity/1024));
+        float pressure = (float)press;
+        NRF_LOG_INFO("pressure = "NRF_LOG_FLOAT_MARKER,NRF_LOG_FLOAT(pressure/(256*100)));
+        NRF_LOG_RAW_INFO("\r");
+    #endif
+}
+
+void read_send_light()
+{
+    uint32_t light = max44009_read_light(&m_twi);
+    mesh_tx_light(light);
+    #if(NRF_LOG_LEVEL <= NRF_LOG_LEVEL_INFO)
+        float light_f = light;//TODO check log level
+        NRF_LOG_INFO("light = "NRF_LOG_FLOAT_MARKER" lux",NRF_LOG_FLOAT(light_f/1000));
+    #endif
 }
 
 void app_rtc_handler()
 {
-    mesh_tx_alive();
+    static uint32_t cycle_count = 0;
+    static const uint32_t period_alive  = 6;
+    static const uint32_t period_bme    = 3;
+    static const uint32_t period_light  = 3;
 
-    uint32_t light = max44009_read_light(&m_twi);
-    float light_f = light;
-    NRF_LOG_INFO("light = "NRF_LOG_FLOAT_MARKER" lux",NRF_LOG_FLOAT(light_f/1000));
+    if( (cycle_count % period_alive)==0)
+    {
+        mesh_tx_alive();
+    }
+    if( (cycle_count % period_bme)==0)
+    {
+        read_send_bme();
+    }
+    if( (cycle_count % period_light)==0)
+    {
+        read_send_light();
+    }
+
+
 }
 
 int main(void)
@@ -90,7 +118,9 @@ int main(void)
 
     //max44009_test();
 
-    //bme_measures_log();
+    //err_code = bme280_init(&m_twi);
+    //APP_ERROR_CHECK(err_code);
+    //NRF_LOG_INFO("bme280_init() done");
 
     mesh_tx_reset();
     //mesh_wait_tx();

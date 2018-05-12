@@ -22,6 +22,10 @@ NRF_LOG_MODULE_REGISTER();
 
 #define Mesh_Pid_Alive 0x05
 #define Mesh_Pid_Reset 0x04
+//light was 16bit redefined u32 bit
+#define Mesh_Pid_Light 0x07
+//bme280 no more with uncalibrated params
+#define Mesh_Pid_bme 0x0A
 
 #define UICR_NODE_ID     NRF_UICR->CUSTOMER[0]
 #define UICR_RF_CHANNEL NRF_UICR->CUSTOMER[1]
@@ -217,4 +221,27 @@ void mesh_tx_data(uint8_t pid,uint8_t * data,uint8_t size)
 
     //wait till the transmission is complete
     while(!esb_completed);
+}
+
+void mesh_tx_light(uint32_t light)
+{
+    mesh_tx_data(Mesh_Pid_Light,(uint8_t*)&light,4);
+}
+
+void mesh_tx_bme(int32_t temp,uint32_t hum,uint32_t press)
+{
+    uint8_t data[12];
+    data[0] = 0xFF & (uint8_t)(temp >> 24);
+    data[1] = 0xFF & (uint8_t)(temp >> 16);
+    data[2] = 0xFF & (uint8_t)(temp >> 8);
+    data[3] = 0xFF & (uint8_t)(temp );
+    data[4] = 0xFF & (uint8_t)(hum >> 24);
+    data[5] = 0xFF & (uint8_t)(hum >> 16);
+    data[6] = 0xFF & (uint8_t)(hum >> 8);
+    data[7] = 0xFF & (uint8_t)(hum );
+    data[8] = 0xFF & (uint8_t)(press >> 24);
+    data[9] = 0xFF & (uint8_t)(press >> 16);
+    data[10]= 0xFF & (uint8_t)(press >> 8);
+    data[11]= 0xFF & (uint8_t)(press );
+    mesh_tx_data(Mesh_Pid_bme,data,12);
 }

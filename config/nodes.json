@@ -347,6 +347,6 @@
         "add"           :"CA:8B:01:D5:45:CC",
         "data"          : ["acceleration","temperature","humidity","pressure","light"],
         "channel"       : "10",
-        "sleep"         : "5"
+        "sleep"         : "10"
         }
 }
