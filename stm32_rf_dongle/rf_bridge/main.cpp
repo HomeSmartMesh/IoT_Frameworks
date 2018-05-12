@@ -9,6 +9,8 @@
 //RGB LED
 #define USE_RGB_LED 			1
 
+#define BUTTON_RGB_STATUS 		0
+
 //APDS9960 (Colorlight sensor, gesture)
 #define USE_APDS_SENSOR 		1
 #define USE_APDS_LIGHT 			1
@@ -217,6 +219,34 @@ void rf_sniffed(uint8_t *data,uint8_t size)
 	led_count = 1;
 }
 
+#if(USE_RGB_LED == 1)
+void test_RGB()
+{
+        rgb_led.set(0x0F,0x00,0x00);
+        wait(0.3);
+        rgb_led.set(0x00,0x0F,0x00);
+        wait(0.3);
+        rgb_led.set(0x00,0x00,0x0F);
+        wait(0.3);
+        rgb_led.set(0x00,0x00,0x00);
+}
+
+void blink_RGB(uint8_t nb,uint8_t intensity,uint32_t delay_ms)
+{
+	for(;nb>0;nb--)
+	{
+        rgb_led.set(intensity,0x00,0x00);
+        wait_us_cpu(delay_ms*1000);
+        rgb_led.set(0x00,intensity,0x00);
+        wait_us_cpu(delay_ms*1000);
+        rgb_led.set(0x00,0x00,intensity);
+        wait_us_cpu(delay_ms*1000);
+        rgb_led.set(0x00,0x00,0x00);
+	}
+}
+#endif
+
+
 void rf_message(uint8_t *data,uint8_t size)
 {
 	#if(USE_RGB_LED == 1)
@@ -245,18 +275,21 @@ void rf_message(uint8_t *data,uint8_t size)
 	}
 }
 
-#if(USE_RGB_LED == 1)
-void test_RGB()
+void rf_broadcast(uint8_t *data,uint8_t size)
 {
-        rgb_led.set(0x0F,0x00,0x00);
-        wait(0.3);
-        rgb_led.set(0x00,0x0F,0x00);
-        wait(0.3);
-        rgb_led.set(0x00,0x00,0x0F);
-        wait(0.3);
-        rgb_led.set(0x00,0x00,0x00);
+	pc.printf("stm32_bridge> broadcast: pid 0x%02X\r\n",data[rf::ind::pid]);
+	#if(USE_RGB_LED == 1)
+		#if(BUTTON_RGB_STATUS == 1)
+		if(data[rf::ind::pid] == rf::pid::button)
+		{
+			if(data[rf::ind::source] == 49)
+			{
+				blink_RGB(5,0xFF,300);
+			}
+		}
+		#endif
+	#endif
 }
-#endif
 
 #if(USE_APDS_GESTURE == 1)
 void apds_poll_gesture()
@@ -461,6 +494,8 @@ void init()
 
     hsm.attach(&rf_sniffed,RfMesh::CallbackType::Sniff);
 	hsm.attach(&rf_message,RfMesh::CallbackType::Message);
+	hsm.attach(&rf_broadcast,RfMesh::CallbackType::Broadcast);
+	
 
 	#if (BRIDGE_MODE == 1)
 		hsm.setBridgeMode();
