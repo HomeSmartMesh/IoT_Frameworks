@@ -131,7 +131,14 @@ void rf_broadcast_catched(uint8_t *data,uint8_t size)
 			break;
 		case rf::pid::light:
 			{
-				prf.print_light(data+rf::ind::bcst_payload);
+				if(size == 8)
+				{
+					prf.print_light_uint32(data+rf::ind::bcst_payload);
+				}
+				else//6 as of 2 bytes payload
+				{
+					prf.print_light(data+rf::ind::bcst_payload);
+				}
 			}
 			break;
 		case rf::pid::light_n:
@@ -149,9 +156,21 @@ void rf_broadcast_catched(uint8_t *data,uint8_t size)
 				prf.print_magnet(data+rf::ind::bcst_payload);
 			}
 			break;
+		case rf::pid::battery:
+			{
+				prf.print_battery(data+rf::ind::bcst_payload);
+			}
+			break;
 		case rf::pid::bme280:
 			{
-				prf.print_bme280(data+rf::ind::bcst_payload);
+				if(size == 16)
+				{
+					prf.print_bme280_values(data[rf::ind::source],data+rf::ind::bcst_payload);
+				}
+				else// 8 for the raw data
+				{
+					prf.print_bme280(data+rf::ind::bcst_payload);
+				}
 			}
 			break;
 		case rf::pid::light_rgb:

@@ -348,5 +348,33 @@
         "data"          : ["acceleration","temperature","humidity","pressure","light"],
         "channel"       : "10",
         "sleep"         : "10"
+        },
+    "74":   {   "name"          :"nRF52_Dongle_1",
+        "board"         :"nRF52_Dongle",
+        "program"       :"nRF52_Dongle",
+        "uid"           :"0xA9 F2 36 5F E8 1E 63 D2",
+        "add"           :"",
+        "data"          : [],
+        "channel"       : "10",
+        "sleep"         : "10"
+        },
+    "75":   {   "name"          :"nRF52_SensorTag_1",
+        "board"         :"nRF52_Sensors",
+        "program"       :"nRF52_Sensors",
+        "uid"           :"0x85 B4 74 76 42 38 37 22",
+        "add"           :"",
+        "data"          : ["temperature","hunidity","pressure","light"],
+        "channel"       : "10",
+        "sleep"         : "20"
+        },
+    "76":   {   "name"          :"nRF52_SensorTag_2",
+        "board"         :"nRF52_Sensors",
+        "program"       :"nRF52_Sensors",
+        "uid"           :"0x0E AD B5 5F 07 C1 9D 85",
+        "add"           :"",
+        "data"          : ["temperature","hunidity","pressure","light"],
+        "channel"       : "10",
+        "sleep"         : "20"
         }
+            
 }
