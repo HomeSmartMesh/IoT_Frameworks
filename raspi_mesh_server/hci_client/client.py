@@ -201,9 +201,21 @@ if(len(sys.argv)>=3):
 if(len(sys.argv)>=4):
     chan = int(sys.argv[3])
 
-print("HCI Node %d on chan %d" % (node_id,chan))
-set_rx("msg",1)
-set_rx("bcast",1)
-set_rx("resp",1)
-set_retries(retries=10,delay=20)
-listen(chan)
+if(len(sys.argv)>=5):
+    func = sys.argv[4]
+else:
+    func = "-x"
+
+set_rx("msg",0)
+set_rx("bcast",0)
+set_rx("resp",0)
+set_channel(chan)
+
+
+if(func == "-l"):
+    print("HCI Node %d on chan %d" % (node_id,chan))
+    set_rx("msg",1)
+    set_rx("bcast",1)
+    set_rx("resp",1)
+    set_retries(retries=10,delay=20)
+    listen(chan)

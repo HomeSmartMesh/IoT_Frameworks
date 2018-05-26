@@ -135,7 +135,10 @@ def parse_control(byte):
     return res
 
 def node_name(byte):
-    return nodes[str(byte)]["name"]
+    res ="Unknown"
+    if(str(byte) in nodes):
+        res = nodes[str(byte)]["name"]
+    return res
 
 def parse_rf_data(data):
     rf_data_text = parse_pid(data[2])
