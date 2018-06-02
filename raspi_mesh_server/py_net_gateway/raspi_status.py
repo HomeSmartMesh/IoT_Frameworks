@@ -46,10 +46,10 @@ def raspi_loop_forever():
                 "time": tnow,
                 "tags":{
                     "host"  :hostname,
-                    "target":"iot_db"
+                    "target":"influxdb"
                 },
                 "fields": {
-                    "value": int(rasp.getUsedDiskDir("/home/pi/share/2017"))
+                    "value": int(rasp.getUsedDiskDir("/var/lib/influxdb/data"))
                 }
             },
             {
