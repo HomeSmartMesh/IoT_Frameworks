@@ -1,10 +1,10 @@
-OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=1, w=1016, h=285, FilterBarShown=0, 
-OpenWindow="Watched Data", DockArea=RIGHT, x=0, y=0, w=1016, h=1345, FilterBarShown=0, 
-OpenWindow="Functions", DockArea=LEFT, x=0, y=1, w=927, h=1339, FilterBarShown=1, 
-OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=1016, h=1345, FilterBarShown=0, ExecCountersShown=0
-OpenWindow="Registers", DockArea=LEFT, x=0, y=1, w=927, h=1339, FilterBarShown=0, 
-OpenWindow="Console", DockArea=RIGHT, x=0, y=1, w=1016, h=285, FilterBarShown=0, 
-OpenWindow="Breakpoints", DockArea=LEFT, x=0, y=0, w=927, h=318, FilterBarShown=0, 
+OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=1, w=751, h=269, FilterBarShown=0, 
+OpenWindow="Watched Data", DockArea=RIGHT, x=0, y=0, w=751, h=1361, FilterBarShown=0, 
+OpenWindow="Functions", DockArea=LEFT, x=0, y=1, w=927, h=1275, FilterBarShown=1, 
+OpenWindow="Registers", DockArea=LEFT, x=0, y=1, w=927, h=1275, FilterBarShown=0, 
+OpenWindow="Console", DockArea=RIGHT, x=0, y=1, w=751, h=269, FilterBarShown=0, 
+OpenWindow="Breakpoints", DockArea=LEFT, x=0, y=0, w=927, h=382, FilterBarShown=0, 
+OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=751, h=1361, FilterBarShown=0, ExecCountersShown=0
 OpenToolbar="Debug", Floating=0, x=0, y=0
 TableHeader="Call Stack", SortCol="Function", SortOrder="ASCENDING", VisibleCols=["Function";"Stack Info";"Source"], ColWidths=[182;170;664]
 TableHeader="Watched Data", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Value";"Location";"Size";"Refresh";"Type"], ColWidths=[140;134;134;74;105;429]

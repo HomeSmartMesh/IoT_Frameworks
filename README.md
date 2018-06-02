@@ -72,7 +72,7 @@ set -x                                # tell sh to display commands before execu
 ```
 
 
-```
+```bash
 #grafana
 sudo systemctl start grafana-server.service
 #iot_db
@@ -87,6 +87,23 @@ sleep 1 && python /home/pi/IoT_Frameworks/raspi_mesh_server/py_net_gateway/wemo_
 sleep 5 && python /home/pi/IoT_Frameworks/raspi_mesh_server/py_net_gateway/milight_gateway.py &
 
 ```
+
+Another example
+
+```
+/home/pi/IoT_Frameworks/raspi_mesh_server/rf_gateway/gateway &
+
+python /home/pi/IoT_Frameworks/raspi_mesh_server/py_net_gateway/wemo_client.py &
+
+python /home/pi/IoT_Frameworks/raspi_mesh_server/py_net_gateway/milight_gateway.py &
+
+python /home/pi/IoT_Frameworks/raspi_mesh_server/ruler/ruler.py &
+
+python /home/pi/IoT_Frameworks/raspi_mesh_server/py_net_gateway/raspi_status.py &
+
+sleep 15 && python /home/pi/IoT_Frameworks/raspi_mesh_server/py_db_proxy/influx_client.py &
+```
+
 
 ### Protocol helper
 0x05 : Alive
