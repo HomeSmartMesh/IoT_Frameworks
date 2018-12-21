@@ -3,9 +3,12 @@
 # [More recent github for Raspberry Pi scripts and nRF52](https://github.com/nRFMesh/nRF52_Mesh)
 
 # Status
-This repo is no longer in active maintenance, its two main topics are :
-* raspberry pi scripts and services, moved to the nRF52 repo
-* STM8 and STM32 based firmwares that are now replaced by [nRF52](https://github.com/nRFMesh/nRF52_Mesh) abd [ESP32_iot](https://github.com/HomeSmartMesh/esp32_iot)
+This repo is no longer in active maintenance, its main topics are :
+* raspberry pi scripts and services, moved to the [nRF52](https://github.com/nRFMesh/nRF52_Mesh) repo
+* microcontrolled based firmware
+  * Low power STM8 replaced by off the shelf nRF51 and custom [nRF52](https://github.com/nRFMesh/nRF52_Mesh)
+  * Power connected STM32 replaced by [ESP32_iot](https://github.com/HomeSmartMesh/esp32_iot)
+
 
 # Hardware
 ### Wireless Sensor Tag
