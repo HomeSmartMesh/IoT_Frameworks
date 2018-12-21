@@ -1,4 +1,11 @@
-# [Gallery and Dashboard on website](https://homesmartmesh.github.io/)
+# [website with overview, tutorials, mind maps,...](https://www.homesmartmesh.com/)
+
+# [More recent github for Raspberry Pi scripts and nRF52](https://github.com/nRFMesh/nRF52_Mesh)
+
+# Status
+This repo is no longer in active maintenance, its two main topics are :
+* raspberry pi scripts and services, moved to the nRF52 repo
+* STM8 and STM32 based firmwares that are now replaced by [nRF52](https://github.com/nRFMesh/nRF52_Mesh) abd [ESP32_iot](https://github.com/HomeSmartMesh/esp32_iot)
 
 # Hardware
 ### Wireless Sensor Tag
