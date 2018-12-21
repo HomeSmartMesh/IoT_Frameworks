@@ -7,7 +7,9 @@
 //------------------------------------- CONFIG -----------------------------------------
 #define FLASH_HEADER	0x0800FFF0
 #define F_NODEID	*(uint8_t *) FLASH_HEADER
-#define F_CHANNEL	*(uint8_t *) (FLASH_HEADER+0x01)
+//#define F_CHANNEL	*(uint8_t *) (FLASH_HEADER+0x01)
+//issue hexeditor failure
+#define F_CHANNEL	10
 
 #define RF_BOARD_DONGLE 1
 #define RF_BOARD_PIO 	0

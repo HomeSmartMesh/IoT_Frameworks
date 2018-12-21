@@ -58,9 +58,10 @@
 #include "bmp180_app.h"
 #include "ap3216c.h"
 
-#define NodeId 45
-#define SLEEP_SEC 10
-#define RF_CHANNEL 2
+#define NodeId         NRF_UICR->CUSTOMER[0]
+#define RF_CHANNEL     NRF_UICR->CUSTOMER[1]
+#define SLEEP_SEC      NRF_UICR->CUSTOMER[2]
+
 
 #define Mesh_Pid_Alive 0x05
 #define Mesh_Pid_Reset 0x04
@@ -296,21 +297,16 @@ static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
         nrf_drv_rtc_int_enable(&rtc, NRF_RTC_INT_COMPARE0_MASK);
         DEBUG_PRINTF("rtc_handler(COMPARE)\r\n");
 
-        static uint8_t send = 1;
-        if(send == 1)
-        {
-            send_accell();
-            DEBUG_PRINTF("send_accell()\r\n");
-            blink_green();
-        }
-        else if(send == 2)
+        send_accell();
+        blink_green();
+
+        /*else if(send == 2)
         {
             blink_blue();
             send_temperature();
         }
         else if(send == 3)
         {
-            //blink_blue();//do not blink not to influence the light measure
             send_pressure();
             ap_measure_light();//measurement takes 250 ms, so cpu goes in LP
         }
@@ -318,12 +314,7 @@ static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
         {
             blink_blue();
             send_light();
-        }
-        else
-        {
-            send = 0;
-        }
-        send++;
+        }*/
     }
 }
 /** @brief Function initialization and configuration of RTC driver instance.
@@ -367,9 +358,9 @@ void init()
     nrf_drv_clock_lfclk_request(NULL);
 
     nrf_gpio_pin_write(LED_RGB_BLUE, 0 );
-    nrf_delay_ms(300);
+    nrf_delay_ms(60);
     nrf_gpio_pin_write(LED_RGB_BLUE, 1 );
-    nrf_delay_ms(300);
+    nrf_delay_ms(60);
 
     mpu_start();//intialises the twi
 

@@ -6,7 +6,7 @@
 
 //------------------------------------- CONFIG -----------------------------------------
 const uint8_t CHANNEL = 10;
-const uint8_t NODEID = 23;
+const uint8_t NODEID = 65;
 //--------------------------------------------------------------------------------------
 
 Serial   rasp(PB_10, PB_11, 115200);
@@ -51,20 +51,9 @@ int main()
 {
     init();
 
-    payload[rfi_size] = 30;
-    payload[rfi_pid] =  mesh::p2p::BIT7_DIRECTED    | mesh::p2p::BIT6_MSGACK | 
-                        mesh::p2p::BIT5_MESSAGE     | rf_pid_ping;
-    payload[rfi_src] = NODEID;
-    payload[rfi_dst] = 24;
-    for(int i = 4;i<30;i++)
-    {
-        payload[i] = i;
-    }
-
-
     while(1) 
     {
         wait_ms(100);
-        hsm.send_msg(payload);
+        hsm.broadcast(rf::pid::reset);
     }
 }

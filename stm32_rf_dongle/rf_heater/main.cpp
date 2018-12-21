@@ -7,7 +7,8 @@
 //------------------------------------- CONFIG -----------------------------------------
 #define FLASH_HEADER	0x0800FFF0
 #define F_NODEID	*(uint8_t *) FLASH_HEADER
-#define F_CHANNEL	*(uint8_t *) (FLASH_HEADER+0x01)
+#define F_CHANNEL	2
+//#define F_CHANNEL	*(uint8_t *) (FLASH_HEADER+0x01)
 //--------------------------------------------------------------------------------------
 #define RF_BOARD_DONGLE 1
 #define RF_BOARD_PIO 	0
@@ -26,12 +27,55 @@ DigitalOut myled(PC_13);
 Ticker tick_call;
 
 DigitalOut heater(PB_13);
-const uint8_t HEAT_MAX = 10;
+const uint8_t HEAT_CYCLE = 10;
+const uint8_t DURATION_MAX = 60;//60 minutes
+const uint32_t WATCH_SEC_MAX = 3700;
 
+uint8_t heat_mode = 0;
 uint8_t heat_val = 0;
+uint32_t state_duration_cycles = 0;
 uint8_t tick_cycle = 0;
-bool is_user_act = false;
 
+void heat_wave_mn(uint8_t val,uint32_t minutes)
+{
+	//Clamp on max 1 hour
+
+	if(val > HEAT_CYCLE)
+	{
+		minutes = 0;
+		rasp.printf("stm32_heater> heat_wave value unexpected, switching off\r");
+		heat_val = 0;
+		state_duration_cycles = 0;
+	}
+	else if(val == 0)
+	{
+		minutes = 0;
+		rasp.printf("stm32_heater> heat_wave value 0, switching off\r");
+		heat_val = 0;
+		state_duration_cycles = 0;
+	}
+	else if(minutes > DURATION_MAX)
+	{
+		minutes = 0;
+		rasp.printf("stm32_heater> heat_wave duration unexpected, switching off\r");
+		heat_val = 0;
+		state_duration_cycles = 0;
+	}
+	else if(minutes == 0)
+	{
+		rasp.printf("stm32_heater> heat_wave with 0 duration, switching off\r");
+		heat_val = 0;
+		state_duration_cycles = 0;
+	}
+	else// 0 <= minutes <= 60
+	{
+		uint32_t cycles = minutes * 6;//one cycle is 10 sec
+		rasp.printf("stm32_heater> heat_wave @ %d for %lu cycles\r",val,cycles);
+		state_duration_cycles = cycles;
+		heat_val = val;
+	}
+	hsm.broadcast_byte(rf::pid::heat,heat_val);
+}
 
 void rf_message_to_me(uint8_t *data,uint8_t size)
 {
@@ -39,37 +83,52 @@ void rf_message_to_me(uint8_t *data,uint8_t size)
 	print_tab(&rasp,data,size);
 	if(data[rf::ind::pid] == rf::pid::heat)
 	{
-		uint8_t heat_cmd = data[5];//heat_val payload : Size Control Pid  SrcId TrgId  HeatVal CRC
-		if(heat_cmd == 11)
-		{
-			heat_val += 2;//Up go up quickly, significant step
-			if(heat_val > 10)
-			{
-				heat_val = 10;
-			}
-		}
-		else if(heat_cmd == 12)
-		{
-			if(heat_val > 0)
-			{
-				heat_val--;//decrease slowly
-			}//else do nothing, already off
-		}
-		else if(heat_cmd <= 10)//direct value order
-		{
-			heat_val = heat_cmd;
-		}
-
+		uint8_t request_heat_val 		= data[rf::ind::p2p_payload+0];//payload[0] => heat val
+		uint8_t request_heat_time_mn 	= data[rf::ind::p2p_payload+1];//payload[1] => heat mn
 		tick_cycle = 0;//restart a new cycle for immidiate application
-		rasp.printf("stm32_heater> (From RF) Set Heat Val to %d\r",heat_val);
-		is_user_act = true;
+		rasp.printf("stm32_heater> RF request heat_wave_mn(%d,%u)\r",request_heat_val,request_heat_time_mn);
+		heat_wave_mn(request_heat_val,request_heat_time_mn);
 	}
 
 }
 
+//called every heat cycle of HEAT_CYCLE seconds
+void handle_cycle()
+{
+	//Transitions
+	if(state_duration_cycles == 0)
+	{
+		if(heat_val != 0)
+		{
+			heat_val = 0;
+			rasp.printf("stm32_heater> heating over\n");
+		}
+	}
+	else
+	{
+		rasp.printf("stm32_heater> heating @ %d for %d more cycles\n",heat_val,state_duration_cycles);
+		state_duration_cycles--;
+	}
+}
+
 void the_ticker()
 {
+	static uint32_t heat_watch = WATCH_SEC_MAX;//a bit 
+	static uint8_t alive_count = 0;
 	static uint8_t l_heat_val = 0;
+
+	//heat max on watchdog
+	if(heat_val != 0)
+	{
+		if(heat_watch != 0)
+		{
+			heat_watch--;
+		}
+	}
+	else//it's off : reset watchdog
+	{
+		heat_watch = WATCH_SEC_MAX;
+	}
 
 	if(tick_cycle == 0)
 	{
@@ -94,9 +153,21 @@ void the_ticker()
 	//rasp.printf("tick %d ; heat_output %d ; heat val %d\r",tick_cycle,heater.read(),l_heat_val);
 
 	tick_cycle++;
-	if(tick_cycle == HEAT_MAX)
+	if(tick_cycle == HEAT_CYCLE)
 	{
 		tick_cycle = 0;
+		handle_cycle();
+	}
+	
+	if(alive_count == 0)
+	{
+		alive_count = 60;
+		//hsm.broadcast(rf::pid::alive);
+		hsm.broadcast_byte(rf::pid::heat,heat_val);
+	}
+	else
+	{
+		alive_count--;
 	}
 }
 
@@ -125,23 +196,16 @@ void init()
 
 const float one_minute = 60;
 
-void long_wait(uint8_t min)
+void wait_mn(uint8_t min)
 {
-	//hsm.broadcast_byte(rf::pid::heat,heat_val);
-	rasp.printf("stm32_heater> Level %u : for %u min\n",heat_val,min);
 	wait(min * one_minute);
 }
-
-void pulse_heat(uint8_t val)
+void wait_hr(uint8_t hour)
 {
-	heat_val = val;
-	long_wait(5);//Level 10 for 5 min
-	if(heat_val > 3 )heat_val-=3;
-	long_wait(10);//l 7
-	if(heat_val > 2 )heat_val-=2;
-	long_wait(30);//l 5
-	if(heat_val > 2 )heat_val-=3;
-	long_wait(60);//l 2
+	for(int i=0;i<hour;i++)
+	{
+		wait_mn(60);
+	}
 }
 
 int main() 
@@ -161,17 +225,10 @@ int main()
 	hsm.broadcast(rf::pid::reset);
 	wait(1);
 	
-	pulse_heat(10);//friendly to user increase decrease
-	//after the run_heater_program, the heat_cal stays at 2
-
-	//heat_val = 0;rasp.printf("stm32_heater> Program Over\r");
+	heat_wave_mn(10,3);
 
 	while(1) 
     {
-		if(heat_val > 2)
-		{
-			heat_val--;
-		}
-		long_wait(10);//here we wait 10 min
+		wait(1);
 	}
 }

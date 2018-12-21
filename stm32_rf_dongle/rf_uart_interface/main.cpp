@@ -8,7 +8,8 @@
 //------------------------------------- CONFIG -----------------------------------------
 #define FLASH_HEADER	0x0800FFF0
 #define F_NODEID	*(uint8_t *) FLASH_HEADER
-#define F_CHANNEL	*(uint8_t *) (FLASH_HEADER+0x01)
+#define F_CHANNEL	2
+//#define F_CHANNEL	*(uint8_t *) (FLASH_HEADER+0x01)
 
 #define RF_BOARD_DONGLE 1
 #define RF_BOARD_PIO 	0
@@ -55,8 +56,10 @@ void text_message_received(uint8_t *data,uint8_t size)
     if(strbegins(buffer,"msg") == 0)
     {
         //msg size payload
-        //light from 23 to 15 @ 2000
+        //light from 23 to 25 @ 2000
 		//msg 0x06 0x7B 0x17 0x19 0x07 0xD0
+		// set heating val to 1 (0x41 -> 0x38):
+		//tmsg 0x06 0x72 0x09 0x41 0x38 0x01
 		uint8_t charpos = 4;
 		msg_size = get_hex(buffer,charpos);
 		tab_send[0] = msg_size;
