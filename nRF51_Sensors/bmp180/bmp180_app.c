@@ -316,17 +316,17 @@ void bmp_measure()
 
 //this function is currently triggering an independent measure for the temperature
 //Return the temperature in steps of 0.01 deg Celsius
-//int16 x100
+//int32 x100
 void bmp_get_temperature(uint8_t *data)
 {
 	u16 v_uncomp_temp_u16 = bmp180_get_uncomp_temperature();
 	int32_t temperature = (int32_t)bmp180_get_temperature(v_uncomp_temp_u16);
 	temperature *= 10;
 	uint8_t *pData = (uint8_t*)&temperature;//from 0.1 to 0.01 format
-	data[0] = pData[3];//reverse to big
-	data[1] = pData[2];
-	data[2] = pData[1];
-	data[3] = pData[0];
+	data[0] = pData[0];
+	data[1] = pData[1];
+	data[2] = pData[2];
+	data[3] = pData[3];
 }
 
 //this function is currently triggering an independent measure for the pressure
@@ -337,8 +337,8 @@ void bmp_get_pressure(uint8_t *data)
 	int32_t pressure = bmp180_get_pressure(v_uncomp_press_u32);
 	pressure *= 256;
 	uint8_t *pData = (uint8_t*)&pressure;//max is ~ 1200
-	data[0] = pData[3];//reverse to big
-	data[1] = pData[2];
-	data[2] = pData[1];
-	data[3] = pData[0];
+	data[0] = pData[0];
+	data[1] = pData[1];
+	data[2] = pData[2];
+	data[3] = pData[3];
 }

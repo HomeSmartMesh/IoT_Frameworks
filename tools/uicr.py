@@ -31,12 +31,20 @@ node_id = 0
 node = {}
 
 def get_node_id_from_uid(uid):
-    res =""
     for key,val in nodes.items():
         if "uid" in val:
+            #uid_str = val["uid"]
+            #if isinstance(val["uid"], unicode):
+            #        uid_str = val["uid"].encode('utf-8')
+            #uid_s = uid.replace(' ','')
+            #uid_str_s = uid_str.replace(' ','')
+            #print("cuid = ",uid_str_s)
+            #print("cuid type = ",type(uid_str_s))
+            #print("uid = ",uid_s)
+            #print("uid type = ",type(uid_s))
             if val["uid"] == uid:
-                res = key
-    return res
+                return key
+    return None
 
 def get_uid_32():
     device_id = jlink.memory_read32(0x100000A4, 2)
@@ -72,7 +80,7 @@ def write_uicr_customer(reg_name,val):
 
 def start():
     jlink.set_tif(pylink.enums.JLinkInterfaces.SWD)
-    jlink.connect('NRF51822_XXAA', verbose=True)
+    jlink.connect('NRF51802_XXAA', verbose=True)
     print('ARM Id: %d' % jlink.core_id())
     print('CPU Id: %d' % jlink.core_cpu())
     print('Core Name: %s' % jlink.core_name())

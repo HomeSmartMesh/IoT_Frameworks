@@ -66,6 +66,11 @@
 #define Mesh_Pid_Alive 0x05
 #define Mesh_Pid_Reset 0x04
 
+//light u32 bit (lux x 1000)
+#define Mesh_Pid_Light 0x07
+
+#define Mesh_Pid_Temperature 0x08
+
 #ifdef NRF_LOG_USES_RTT
 #include "SEGGER_RTT.h"
 #define DEBUG_PRINTF(...)           SEGGER_RTT_printf(0, __VA_ARGS__)
@@ -116,7 +121,7 @@ void nrf_esb_event_handler(nrf_esb_evt_t const * p_event)
     esb_completed = true;
 }
 
-//
+
 void mesh_tx_data(uint8_t pid,uint8_t * data,uint8_t size)
 {
     esb_completed = false;//reset the check
@@ -126,7 +131,7 @@ void mesh_tx_data(uint8_t pid,uint8_t * data,uint8_t size)
     tx_payload.noack    = true;//it is a broadcast
     tx_payload.pipe     = 0;
 
-    tx_payload.data[0] = pid;//acceleration
+    tx_payload.data[0] = pid;
     
     tx_payload.data[1] = NodeId;//source
 
@@ -268,13 +273,6 @@ void send_accell()
     mesh_tx_data(0x13,accell_data,6);//sends and waits tx
 }
 
-void send_temperature()
-{
-    uint8_t data[2];
-    bmp_get_temperature(data);
-    mesh_tx_data(0x08,data,4);//sends and waits tx
-}
-
 void send_pressure()
 {
     uint8_t data[2];
@@ -282,39 +280,63 @@ void send_pressure()
     mesh_tx_data(0x12,data,4);//sends and waits tx
 }
 
-void send_light()
+void mesh_tx_light()
 {
-    uint8_t data[2];
+    uint8_t data[4];
     ap_get_light(data);
-    mesh_tx_data(0x14,data,2);//0x14 new light
+    mesh_tx_data(Mesh_Pid_Light,data,4);
+}
+
+void mesh_tx_temperature()
+{
+    uint8_t data[4];
+    bmp_get_temperature(data);
+    mesh_tx_data(Mesh_Pid_Temperature,data,4);//sends and waits tx
+
+}
+
+uint32_t mesh_tx_alive()
+{
+    static uint32_t live_count = 0;
+
+    uint8_t data[5];
+    data[0] = 0xFF & (uint8_t)(live_count >> 24);
+    data[1] = 0xFF & (uint8_t)(live_count >> 16);
+    data[2] = 0xFF & (uint8_t)(live_count >> 8);
+    data[3] = 0xFF & (uint8_t)(live_count );
+    data[4] = NRF_RADIO->TXPOWER;
+
+    mesh_tx_data(Mesh_Pid_Alive,data,5);
+    
+    return live_count++;//returns the first used value before the increment
 }
 
 static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
 {
+    static int cycle = 1; 
     if (int_type == NRF_DRV_RTC_INT_COMPARE0)
     {
         nrf_drv_rtc_counter_clear(&rtc);
         nrf_drv_rtc_int_enable(&rtc, NRF_RTC_INT_COMPARE0_MASK);
         DEBUG_PRINTF("rtc_handler(COMPARE)\r\n");
 
-        send_accell();
-        blink_green();
-
-        /*else if(send == 2)
+        if(cycle == 0)
         {
             blink_blue();
-            send_temperature();
+            mesh_tx_alive();
+            cycle = 1;
         }
-        else if(send == 3)
+        else if(cycle == 1)
         {
-            send_pressure();
+            mesh_tx_temperature();
             ap_measure_light();//measurement takes 250 ms, so cpu goes in LP
+            cycle = 2;
         }
-        else if(send == 4)
+        else if(cycle == 2)
         {
-            blink_blue();
-            send_light();
-        }*/
+            mesh_tx_light();
+            cycle = 0;
+        }
     }
 }
 /** @brief Function initialization and configuration of RTC driver instance.

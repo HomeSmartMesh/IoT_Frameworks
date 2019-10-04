@@ -1,16 +1,16 @@
 PROJECT_NAME     := mesh_sensors_node
-TARGETS          := nrf51822_xxaa
+TARGETS          := nrf51802_xxaa
 OUTPUT_DIRECTORY := _build
 
-SDK_ROOT := ./nRF5_SDK_12.3.0_prf
-PROJ_DIR := .
+SDK_ROOT := ../nRF5_SDK_12.3.0_prf
+PROJ_DIR := ..
 
-$(OUTPUT_DIRECTORY)/nrf51822_xxaa.out: \
-  LINKER_SCRIPT  := esb_low_power_ptx_gcc_nrf51_aa.ld
+$(OUTPUT_DIRECTORY)/nrf51802_xxaa.out: \
+  LINKER_SCRIPT  := ../esb_low_power_ptx_gcc_nrf51_aa.ld
 
 # Source files common to all targets
 SRC_FILES += \
-  $(PROJ_DIR)/main.c \
+  ./main.c \
   $(PROJ_DIR)/mpu6050_app/mpu6050_app.c \
   $(PROJ_DIR)/bmp180/bmp180.c \
   $(PROJ_DIR)/bmp180/bmp180_app.c \
@@ -72,7 +72,7 @@ LIB_FILES += \
 CFLAGS += -DNRF51
 CFLAGS += -DBOARD_SENSOR_TAG
 CFLAGS += -DESB_PRESENT
-CFLAGS += -DNRF51822
+CFLAGS += -DNRF51802
 CFLAGS += -DBSP_DEFINES_ONLY
 CFLAGS += -mcpu=cortex-m0
 CFLAGS += -mthumb -mabi=aapcs
@@ -93,7 +93,7 @@ ASMFLAGS += -x assembler-with-cpp
 ASMFLAGS += -DNRF51
 ASMFLAGS += -DBOARD_SENSOR_TAG
 ASMFLAGS += -DESB_PRESENT
-ASMFLAGS += -DNRF51822
+ASMFLAGS += -DNRF51802
 ASMFLAGS += -DBSP_DEFINES_ONLY
 
 # Linker flags
@@ -108,12 +108,12 @@ LDFLAGS += --specs=nano.specs -lc -lnosys
 .PHONY: $(TARGETS) default all clean help flash 
 
 # Default target - first one defined
-default: nrf51822_xxaa
+default: nrf51802_xxaa
 
 # Print all targets that can be built
 help:
 	@echo following targets are available:
-	@echo 	nrf51822_xxaa
+	@echo 	nrf51802_xxaa
 
 TEMPLATE_PATH := $(SDK_ROOT)/components/toolchain/gcc
 
@@ -121,8 +121,17 @@ include $(TEMPLATE_PATH)/Makefile.common
 
 $(foreach target, $(TARGETS), $(call define_target, $(target)))
 
+on:
+	$(PROJ_DIR)/../tools/on.bat
+
+off:
+	$(PROJ_DIR)/../tools/off.bat
+
+regs:
+	nrfjprog --readregs -f nrf51
+
 # Flash the program
-flash: $(OUTPUT_DIRECTORY)/nrf51822_xxaa.hex
+flash: $(OUTPUT_DIRECTORY)/nrf51802_xxaa.hex
 	@echo Flashing: $<
 	nrfjprog --program $< -f nrf51 --sectorerase
 	nrfjprog --reset -f nrf51
@@ -134,7 +143,7 @@ reset:
 	nrfjprog -f nrf51 --reset
 
 paramr:
-	C:\Python27\python.exe ../tools/uicr.py ../tools/uicr_map.json -r
+	C:\Python27\python.exe ../../tools/uicr.py ../../tools/uicr_map.json -r
 
 paramw:
-	C:\Python27\python.exe ../tools/uicr.py ../tools/uicr_map.json -w
+	C:\Python27\python.exe ../../tools/uicr.py ../../tools/uicr_map.json -w

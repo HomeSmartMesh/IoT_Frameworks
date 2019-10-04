@@ -59,9 +59,7 @@
 #include "ap3216c.h"
 
 #define NodeId         NRF_UICR->CUSTOMER[0]
-//#define RF_CHANNEL     NRF_UICR->CUSTOMER[1]
-//workaround "make paramw" failing while reporting success
-#define RF_CHANNEL     10
+#define RF_CHANNEL     NRF_UICR->CUSTOMER[1]
 #define SLEEP_SEC      NRF_UICR->CUSTOMER[2]
 
 
@@ -201,6 +199,9 @@ uint32_t esb_init( void )
 
     err_code = nrf_esb_set_rf_channel(RF_CHANNEL);
     VERIFY_SUCCESS(err_code);
+
+//    err_code = nrf_esb_set_tx_power(RADIO_TXPOWER_TXPOWER_Neg4dBm);
+//    VERIFY_SUCCESS(err_code);
 
     tx_payload.length  = 8;
     tx_payload.pipe    = 0;
@@ -345,7 +346,7 @@ static void rtc_config(void)
     //nrf_drv_rtc_tick_enable(&rtc,true);
 
     //Set compare channel to trigger interrupt after COMPARE_COUNTERTIME seconds
-    err_code = nrf_drv_rtc_cc_set(&rtc,0,SLEEP_SEC * 2,true);
+    err_code = nrf_drv_rtc_cc_set(&rtc,0,SLEEP_SEC * 8,true);
     if(err_code)
     {
         DEBUG_PRINTF("nrf_drv_rtc_cc_set() fail(%d)\r\n",err_code);
